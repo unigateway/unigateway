@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://mqgateway.com/configuration/schema#",
+  "title": "Aetas Smart Home MQGateway 1.0 Configuration file",
+  "description": "JSON schema for Aetas Smart Home MQGateway Configuration file",
+  "type": "object",
+  "required": [
+    "configVersion",
+    "name",
+    "mqttHostname",
+    "system",
+    "rooms"
+  ],
+  "properties": {
+    "configVersion": {
+      "description": "Version of RoomHub configuration file",
+      "type": "string",
+      "pattern": "^1\\..*$"
+    },
+    "name": {
+      "description": "Unique name of Gateway",
+      "type": "string"
+    },
+    "destinationIpAddress": {
+      "description": "Address IP of Gateway to send configuration to (alternatively can be passed as parameter to run command) ",
+      "type": "string"
+    },
+    "mqttHostname": {
+      "description": "Address IP or hostname of MQTT server",
+      "type": "string"
+    },
+    "system": {
+      "description": "System configuration",
+      "type": "object",
+      "$ref": "#/definitions/system"
+    },
+    "rooms": {
+      "description": "List of rooms managed by this Gateway",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "required": [
+          "name",
+          "points"
+        ],
+        "properties": {
+          "name": {
+            "description": "Name of the room",
+            "type": "string"
+          },
+          "points": {
+            "description": "List of points (each place connected with single cable)",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/definitions/point"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "system": {
+      "type": "object",
+      "required": [
+        "platform"
+      ],
+      "properties": {
+        "networkAdapter": {
+          "description": "name of the network adapter to use for MQTT communication (e.g. eth0)",
+          "type": "string"
+        },
+        "platform": {
+          "description": "name of the platform used (e.g. NANOPI)",
+          "type": "string",
+          "items": {
+            "enum": [
+              "NANOPI",
+              "RASPBERRYPI",
+              "SIMULATED"
+            ]
+          }
+        },
+        "components": {
+          "description": "configuration for platform electronic components",
+          "type": "object",
+          "properties": {
+            "mcp23017": {
+              "type": "object",
+              "properties": {
+                "ports": {
+                  "description": "ports on I2C where mcp23017 devices can be found",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "point": {
+      "type": "object",
+      "required": [
+        "name",
+        "portNumber",
+        "devices"
+      ],
+      "properties": {
+        "name": {
+          "description": "Name of the point",
+          "type": "string"
+        },
+        "portNumber": {
+          "description": "Number of port in Gateway to which point is connected (1-16)",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "devices": {
+          "description": "List of devices connected to single point/cable",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/device"
+          }
+        }
+      }
+    },
+    "device": {
+      "type": "object",
+      "required": [
+        "name",
+        "id",
+        "wires",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "description": "Name of the device",
+          "type": "string",
+          "maxLength": 32
+        },
+        "id": {
+          "description": "Unique identifier for the device across all devices on this Gateway",
+          "type": "string",
+          "pattern": "^[^\\s]*$",
+          "maxLength": 32
+        },
+        "wires": {
+          "description": "List of wires to which device is connected",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "BLUE",
+              "BLUE_WHITE",
+              "GREEN",
+              "GREEN_WHITE",
+              "BROWN",
+              "BROWN_WHITE"
+            ]
+          }
+        },
+        "type": {
+          "description": "Type of device",
+          "enum": [
+            "RELAY",
+            "SWITCH_BUTTON",
+            "REED_SWITCH",
+            "BME280",
+            "SCT013",
+            "DHT22",
+            "MOTION_DETECTOR",
+            "EMULATED_SWITCH"
+          ]
+        },
+        "config": {
+          "description": "Additional configuration used by some devices (see documentation for details)",
+          "type": "object"
+        }
+      }
+    }
+  }
+}

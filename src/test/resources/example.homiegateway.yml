@@ -1,0 +1,40 @@
+configVersion: "1.0"
+name: "TestGw1"
+mqttHostname: "10.0.88.100"
+system:
+  networkAdapter: "enp0s25"
+  platform: SIMULATED
+  components:
+    mcp23017:
+      ports: ["20","21","22","23"]
+rooms:
+  - name: "workshop"
+    points:
+      - name: "workshop light switch box"
+        portNumber: 1
+        devices:
+          - name: "workshop light"
+            id: "workshop_light"
+            wires: ["BLUE_WHITE"]
+            type: RELAY # DIGITAL_OUTPUT
+          - name: "workshop light switch"
+            id: "workshop_light_switch"
+            wires: ["BLUE"]
+            type: SWITCH_BUTTON # DIGITAL_INPUT
+            config:
+              debounceMs: 50
+  - name: "bedroom"
+    points:
+      - name: "bedroom light switch box"
+        portNumber: 2
+        devices:
+          - name: "bedroom light"
+            id: "bedroom_light"
+            wires: ["BLUE_WHITE"]
+            type: RELAY
+          - name: "bedroom light switch"
+            id: "bedroom_light_switch"
+            wires: ["BLUE"]
+            type: SWITCH_BUTTON
+            config:
+              debounceMs: 50
