@@ -47,8 +47,8 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
     )
   }
 
-  private fun getMacAddress(networkInterface: NetworkInterface): String {
-    val mac = networkInterface.hardwareAddress
+  private fun getMacAddress(networkInterface: NetworkInterface?): String {
+    val mac = networkInterface?.hardwareAddress
     if (mac == null) {
       LOGGER.warn { "Could not find MAC address of network interface" }
       return ""
