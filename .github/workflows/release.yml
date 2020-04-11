@@ -24,7 +24,7 @@ jobs:
         env:
           SimulatedPlatform: "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider"
           VERSION_TAG: ${{ steps.version_tag_name.outputs.VERSION_TAG }}
-          GH_TOKEN: ${{ GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Stop Docker with Mosquitto for tests
         run: docker rm -f mosquitto
       - name: Store tests results as artifact
