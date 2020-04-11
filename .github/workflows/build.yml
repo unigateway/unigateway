@@ -22,7 +22,7 @@ jobs:
     - name: Tag new build
       run: ./gradlew release -Prelease.disableChecks -Prelease.pushTagsOnly
     - name: Store JAR file as artifact
-        uses: actions/upload-artifact@v2-preview
-        with:
-          name: application
-          path: build/libs/*.jar
+      uses: actions/upload-artifact@v2-preview
+      with:
+        name: application
+        path: build/libs/*.jar
