@@ -16,7 +16,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Run tests
-      run: ./gradlew check build
+      run: ./gradlew check shadowJar
       env:
         SimulatedPlatform: "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider"
     - name: Store tests results as artifact
