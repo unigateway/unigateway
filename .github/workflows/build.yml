@@ -19,14 +19,12 @@ jobs:
       run: ./gradlew check build
       env:
         SimulatedPlatform: "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider"
-    - name: Junit Report to Annotations
-      uses: ashley-taylor/junit-report-annotations-action@v1.0
-      if: always()
+    - name: Store tests results as artifact
+      uses: actions/upload-artifact@v2-preview
+      if: failure()
       with:
-        access-token: ${{ secrets.GITHUB_TOKEN }}
-        path: "build/test-results/test/*.xml"
-        numFailures: 10
-        testSrcPath: "src/test/groovy/"
+        name: tests-results
+        path: build/reports/tests/
     - name: Store JAR file as artifact
       uses: actions/upload-artifact@v2-preview
       with:
