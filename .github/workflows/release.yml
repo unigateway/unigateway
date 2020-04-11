@@ -15,8 +15,8 @@ jobs:
       - name: Run Docker with Mosquitto for tests
         run: docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto
       - name: Read version from tag
-          id: version_tag_name
-          run: echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
+        id: version_tag_name
+        run: echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
       - name: Run tests and release
         run: ./gradlew check release -Prelease.disableChecks -Prelease.pushTagsOnly -Prelease.forceVersion=$VERSION_TAG
         env:
