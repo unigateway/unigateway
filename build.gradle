@@ -15,9 +15,6 @@ plugins {
     id 'pl.allegro.tech.build.axion-release' version '1.11.0'
 }
 
-group 'com.mqgateway'
-version = scmVersion.version
-
 repositories {
     mavenCentral()
 }
@@ -75,5 +72,19 @@ jar {
 }
 
 scmVersion {
-    versionIncrementer 'incrementPrerelease', [initialPreReleaseIfNotOnPrerelease: 'alpha.1']
+    versionIncrementer 'incrementMinor'
+    versionCreator { version, position ->
+        return "$version-${position.shortRevision}"
+    }
+}
+
+group 'com.mqgateway'
+version = scmVersion.version
+
+processResources {
+    def props = [version: version]
+    from ('src/main/resources') {
+        include 'application.properties'
+        expand (props)
+    }
 }

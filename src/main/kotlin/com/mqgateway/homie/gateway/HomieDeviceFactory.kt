@@ -15,13 +15,12 @@ import java.net.NetworkInterface
 
 private val LOGGER = KotlinLogging.logger {}
 
-class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory) {
+class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, private val firmwareVersion: String) {
 
   companion object {
     private const val HOMIE_VERSION = "4.0.0"
     private const val HOMIE_IMPLEMENTATION = "Aetas"
     private const val FIRMWARE_NAME = "Aetas MqGateway"
-    private const val FIRMWARE_VERSION = "1.0.0"
   }
 
   fun toHomieDevice(gateway: Gateway): HomieDevice {
@@ -42,7 +41,7 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory) {
         listOf("org.homie.legacy-firmware"),
         HOMIE_IMPLEMENTATION,
         FIRMWARE_NAME,
-        FIRMWARE_VERSION,
+        firmwareVersion,
         networkInterface.inetAddresses.asSequence().map { it.hostAddress }.joinToString(),
         getMacAddress(networkInterface)
     )

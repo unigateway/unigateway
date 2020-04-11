@@ -14,6 +14,7 @@ import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
 import com.mqgateway.homie.gateway.HomieDeviceFactory
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
+import java.util.Properties
 
 
 private val LOGGER = KotlinLogging.logger {}
@@ -23,6 +24,10 @@ private const val DEFAULT_GATEWAY_CONFIG_PATH = "gateway.yml"
 
 fun main(args: Array<String>) {
   LOGGER.info { "HomieGateway started. Initialization..." }
+
+  LOGGER.debug { "Loading application properties" }
+  val properties = Properties()
+  properties.load(object{}.javaClass.getResourceAsStream("application.properties").bufferedReader())
 
   LOGGER.debug { "Loading gateway configuration" }
   val gatewayConfigPath = if (args.isNotEmpty()) args[0] else DEFAULT_GATEWAY_CONFIG_PATH
@@ -40,7 +45,7 @@ fun main(args: Array<String>) {
 
   LOGGER.debug { "Preparing Homie configuration with MQTT connection" }
   val mqttClientFactory = HiveMqttClientFactory(gateway.mqttHostname)
-  val homieDevice = HomieDeviceFactory(mqttClientFactory).toHomieDevice(gateway)
+  val homieDevice = HomieDeviceFactory(mqttClientFactory, properties.getProperty("version")).toHomieDevice(gateway)
   val homieReceiver = GatewayHomieReceiver(deviceRegistry)
   homieDevice.connect(homieReceiver)
   deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
