@@ -35,6 +35,11 @@ jobs:
           path: build/reports/tests/
       - name: Prepare application artifact
         run: ./gradlew clean shadowJar
+      - name: Store JAR file as artifact
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: application
+          path: build/libs/*.jar
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -50,9 +55,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION_TAG: ${{ steps.version_tag_name.outputs.VERSION_TAG }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/libs/mqgateway-$VERSION_TAG-all.jar
-          asset_name: mqgateway-$VERSION_TAG.jar
+          asset_name: mqgateway-${{ steps.version_tag_name.outputs.VERSION_TAG }}.jar
           asset_content_type: application/java-archive
