@@ -37,7 +37,7 @@ class HomieDeviceFactoryTest extends Specification {
 	MqttClientFactoryStub mqttClientFactoryStub = new MqttClientFactoryStub()
 
 	@Subject
-	HomieDeviceFactory homieDeviceFactory = new HomieDeviceFactory(mqttClientFactoryStub)
+	HomieDeviceFactory homieDeviceFactory = new HomieDeviceFactory(mqttClientFactoryStub, "test-version")
 
 	def "should create HomieDevice with nodes and properties based on gateway configuration"() {
 		given:

@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
 
   LOGGER.debug { "Loading application properties" }
   val properties = Properties()
-  properties.load(object{}.javaClass.getResourceAsStream("application.properties").bufferedReader())
+  properties.load(object{}.javaClass.getResourceAsStream("/application.properties").bufferedReader())
 
   LOGGER.debug { "Loading gateway configuration" }
   val gatewayConfigPath = if (args.isNotEmpty()) args[0] else DEFAULT_GATEWAY_CONFIG_PATH

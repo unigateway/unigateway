@@ -15,7 +15,7 @@ import spock.util.concurrent.PollingConditions
 
 class RelayDeviceTest extends Specification {
 
-	def pinImpl = new PinImpl("com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", 150, "pin0", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
+	def pinImpl = new PinImpl("com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", 150, "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
 	def gpioProvider = new SimulatedGpioProvider()
 	def pin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pinImpl)
 
