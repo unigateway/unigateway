@@ -16,7 +16,9 @@ jobs:
         run: docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto
       - name: Read version from tag
         id: version_tag_name
-        run: echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
+        run: |
+          echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=SHA_7::${GITHUB_SHA:7}
       - name: Run tests and release
         run: |
           echo "releasing version: $VERSION_TAG"
@@ -57,6 +59,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/libs/mqgateway-${{ steps.version_tag_name.outputs.VERSION_TAG }}-all.jar
+          asset_path: build/libs/mqgateway-${{ steps.version_tag_name.outputs.VERSION_TAG }}-${{ steps.version_tag_name.outputs.SHA_7 }}-all.jar
           asset_name: mqgateway-${{ steps.version_tag_name.outputs.VERSION_TAG }}.jar
           asset_content_type: application/java-archive
