@@ -62,6 +62,7 @@ fun main(args: Array<String>) {
 // TODO building on Azure DevOps
 // TODO log to file instead of system out + logs rotation
 // TODO RS485 bus
+// TODO start Mosquitto Docker with test containers instead of in GitHub actions
 // TODO Telegraf on every MqGateway PI
 // TODO Grafana Loki + Promtail for log aggregation
 // TODO Control by REST API (micronaut)

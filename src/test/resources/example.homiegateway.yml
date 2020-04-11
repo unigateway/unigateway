@@ -1,6 +1,6 @@
 configVersion: "1.0"
 name: "TestGw1"
-mqttHostname: "10.0.88.100"
+mqttHostname: "127.0.0.1"
 system:
   networkAdapter: "enp0s25"
   platform: SIMULATED
