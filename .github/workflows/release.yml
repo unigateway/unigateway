@@ -18,7 +18,7 @@ jobs:
         id: version_tag_name
         run: |
           echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
-          echo ::set-output name=SHA_7::${GITHUB_SHA:7}
+          echo ::set-output name=SHA_7::${GITHUB_SHA::7}
       - name: Run tests and release
         run: |
           echo "releasing version: $VERSION_TAG"
