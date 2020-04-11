@@ -1,0 +1,55 @@
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Create release
+
+jobs:
+  build:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Docker with Mosquitto for tests
+        run: docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto
+      - name: Read version from tag
+          id: version_tag_name
+          run: echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
+      - name: Run tests and release
+        run: ./gradlew check release -Prelease.disableChecks -Prelease.pushTagsOnly -Prelease.forceVersion=$VERSION_TAG
+        env:
+          SimulatedPlatform: "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider"
+          VERSION_TAG: ${{ steps.version_tag_name.outputs.VERSION_TAG }}
+      - name: Stop Docker with Mosquitto for tests
+        run: docker rm -f mosquitto
+      - name: Store tests results as artifact
+        uses: actions/upload-artifact@v2-preview
+        if: failure()
+        with:
+          name: tests-results
+          path: build/reports/tests/
+      - name: Prepare application artifact
+        run: ./gradlew clean shadowJar
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_TAG: ${{ steps.version_tag_name.outputs.VERSION_TAG }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/mqgateway-$VERSION_TAG-all.jar
+          asset_name: mqgateway-$VERSION_TAG.jar
+          asset_content_type: application/java-archive

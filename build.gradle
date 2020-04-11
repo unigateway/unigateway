@@ -88,3 +88,5 @@ processResources {
         expand (props)
     }
 }
+
+processResources.outputs.upToDateWhen { false }
