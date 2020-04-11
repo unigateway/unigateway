@@ -42,7 +42,7 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
         HOMIE_IMPLEMENTATION,
         FIRMWARE_NAME,
         firmwareVersion,
-        networkInterface.inetAddresses.asSequence().map { it.hostAddress }.joinToString(),
+        networkInterface?.inetAddresses?.asSequence()?.map { it.hostAddress }?.joinToString(),
         getMacAddress(networkInterface)
     )
   }
