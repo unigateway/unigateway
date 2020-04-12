@@ -12,6 +12,6 @@ class ApplicationStartsTest extends Specification {
 
 	def "should start application with simulated GPIOs"() {
 		expect:
-		MainKt.main("src/test/resources/example.gateway.yml")
+		MainKt.main("src/test/resources/example.gateway.yaml")
 	}
 }

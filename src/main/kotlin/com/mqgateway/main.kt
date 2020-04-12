@@ -19,7 +19,7 @@ import java.util.Properties
 
 private val LOGGER = KotlinLogging.logger {}
 
-private const val DEFAULT_GATEWAY_CONFIG_PATH = "gateway.yml"
+private const val DEFAULT_GATEWAY_CONFIG_PATH = "gateway.yaml"
 
 
 fun main(args: Array<String>) {

@@ -18,3 +18,4 @@ out/
 ### MqGateway ###
 .previousConfig.cbor
 .previousConfig.MD5
+/logs
