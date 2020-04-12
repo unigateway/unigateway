@@ -57,11 +57,3 @@ fun main(args: Array<String>) {
   LOGGER.info { "Initialization finished successfully. Running normally." }
 
 }
-
-// TODO Telegraf on every MqGateway PI
-// TODO Grafana Loki + Promtail for log aggregation
-// TODO Configuration changes with Ansible+Docker
-// TODO OTA update with Ansible+Docker
-
-// TODO OTA update by looking at specific URL, downloading new jar file and restarting app
-// TODO accept configuration file (yaml) by HTTP and restart application after accepting it
