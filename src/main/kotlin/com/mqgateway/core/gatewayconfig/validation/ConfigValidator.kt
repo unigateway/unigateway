@@ -15,7 +15,8 @@ class ConfigValidator(private val yamlObjectMapper: ObjectMapper) {
       listOf(
           UniqueDeviceIdsValidator(),
           UniquePortNumbersForPointsValidator(),
-          DeviceNameValidator()
+          DeviceNameValidator(),
+          WireUsageValidator()
       )
 
   fun validateGateway(gateway: Gateway): ValidationResult {
