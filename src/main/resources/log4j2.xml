@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+  <properties>
+    <property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{1.} - %msg%n</property>
+    <property name="APPENDER">${sys:log.appender:-rollingFile}</property>
+  </properties>
   <appenders>
     <console name="stdout" target="SYSTEM_OUT">
-      <patternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n" />
+      <patternLayout pattern="${LOG_PATTERN}" />
     </console>
+
+    <RollingFile name="rollingFile" fileName="logs/application.log" filePattern="logs/app-%d{MM-dd-yyyy}.log.gz" ignoreExceptions="false">
+      <PatternLayout>
+        <Pattern>${LOG_PATTERN}</Pattern>
+      </PatternLayout>
+      <TimeBasedTriggeringPolicy interval="1"/>
+      <DefaultRolloverStrategy max="5" />
+    </RollingFile>
+    <RollingFile  name="rollingFileJson" fileName="logs/application.log.json" filePattern="logs/app-%d{MM-dd-yyyy}.log.json.gz" ignoreExceptions="false">
+      <TimeBasedTriggeringPolicy interval="1"/>
+      <DefaultRolloverStrategy max="5" />
+      <JsonLayout complete="false" compact="false" />
+    </RollingFile>
   </appenders>
 
   <loggers>
-    <Logger name="pl.aetas.mqgateway" level="debug" additivity="false">
-      <appenderRef ref="stdout" />
-    </Logger>
     <root level="info">
-      <appenderRef ref="stdout" />
+      <appenderRef ref="${APPENDER}" />
     </root>
+    <Logger name="com.mqgateway" level="debug" additivity="false">
+      <appenderRef ref="${APPENDER}" />
+    </Logger>
   </loggers>
 </configuration>
