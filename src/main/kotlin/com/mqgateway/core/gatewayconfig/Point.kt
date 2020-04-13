@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Point(
-    val name: String,
-    val portNumber: Int,
-    val devices: List<DeviceConfig>
+  val name: String,
+  val portNumber: Int,
+  val devices: List<DeviceConfig>
 )

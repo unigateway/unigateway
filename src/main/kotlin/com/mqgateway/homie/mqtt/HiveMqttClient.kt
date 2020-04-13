@@ -3,7 +3,7 @@ package com.mqgateway.homie.mqtt
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient
 
-class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient): MqttClient {
+class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
 
   override fun connect(willMessage: MqttMessage, cleanSession: Boolean) {
     mqttClient.connectWith()
@@ -42,5 +42,4 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient): MqttClient {
         .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes))) }
         .send()
   }
-
 }

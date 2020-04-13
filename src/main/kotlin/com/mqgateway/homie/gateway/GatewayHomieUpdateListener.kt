@@ -1,8 +1,8 @@
 package com.mqgateway.homie.gateway
 
-import mu.KotlinLogging
 import com.mqgateway.core.device.UpdateListener
 import com.mqgateway.homie.HomieDevice
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 

@@ -1,20 +1,20 @@
 package com.mqgateway.core.device
 
+import com.mqgateway.core.gatewayconfig.DevicePropertyType
+import com.mqgateway.core.gatewayconfig.DeviceType
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.PinState
 import com.pi4j.io.gpio.event.GpioPinListenerDigital
 import mu.KotlinLogging
-import com.mqgateway.core.gatewayconfig.DevicePropertyType
-import com.mqgateway.core.gatewayconfig.DeviceType
 
 private val LOGGER = KotlinLogging.logger {}
 
 abstract class DigitalInputDevice(
-    id: String,
-    type: DeviceType,
-    private val digitalInputPin: GpioPinDigitalInput,
-    protected val debounceMs: Int
-): Device(id, type) {
+  id: String,
+  type: DeviceType,
+  private val digitalInputPin: GpioPinDigitalInput,
+  protected val debounceMs: Int
+) : Device(id, type) {
 
   override fun initDevice() {
     super.initDevice()

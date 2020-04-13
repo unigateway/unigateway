@@ -1,9 +1,9 @@
 package com.mqgateway.homie.gateway
 
-import mu.KotlinLogging
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.HomieMqttTopic
 import com.mqgateway.homie.HomieReceiver
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -19,5 +19,4 @@ class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : 
   }
 }
 
-class DeviceNotFoundException(deviceId: String): Exception("Device with $deviceId not found in device registry")
-
+class DeviceNotFoundException(deviceId: String) : Exception("Device with $deviceId not found in device registry")

@@ -13,5 +13,4 @@ enum class SystemPlatform {
 data class ComponentsConfiguration(val mcp23017: Mcp23017Configuration)
 
 @Serializable
-data class Mcp23017Configuration(val ports: List<String> = listOf("0x20","0x21","0x22","0x23"))
-
+data class Mcp23017Configuration(val ports: List<String> = listOf("0x20", "0x21", "0x22", "0x23"))

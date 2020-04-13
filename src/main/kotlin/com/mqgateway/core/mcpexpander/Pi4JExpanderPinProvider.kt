@@ -1,5 +1,6 @@
 package com.mqgateway.core.mcpexpander
 
+import com.mqgateway.core.gatewayconfig.WireColor
 import com.pi4j.gpio.extension.mcp.MCP23017Pin
 import com.pi4j.io.gpio.GpioController
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -7,17 +8,21 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.Pin
 import com.pi4j.io.gpio.PinPullResistance
 import com.pi4j.io.gpio.PinState
-import com.mqgateway.core.gatewayconfig.WireColor
 import java.lang.IllegalArgumentException
 
 interface ExpanderPinProvider {
   fun pinDigitalOutput(portNumber: Int, wireColor: WireColor, name: String, defaultState: PinState = PinState.HIGH): GpioPinDigitalOutput
-  fun pinDigitalInput(portNumber: Int, wireColor: WireColor, name: String, resistance: PinPullResistance = PinPullResistance.PULL_UP): GpioPinDigitalInput
+  fun pinDigitalInput(
+    portNumber: Int,
+    wireColor: WireColor,
+    name: String,
+    resistance: PinPullResistance = PinPullResistance.PULL_UP
+  ): GpioPinDigitalInput
 }
 
 class Pi4JExpanderPinProvider(
-    private val gpio: GpioController,
-    private val mcpExpanders: McpExpanders
+  private val gpio: GpioController,
+  private val mcpExpanders: McpExpanders
 ) : ExpanderPinProvider {
 
   override fun pinDigitalOutput(portNumber: Int, wireColor: WireColor, name: String, defaultState: PinState): GpioPinDigitalOutput {
@@ -49,6 +54,5 @@ class Pi4JExpanderPinProvider(
       15 -> MCP23017Pin.GPIO_B7
       else -> throw IllegalArgumentException("Wrong port number or wireColor. Calculated expanderPinNumber cannot be outside of [0,15] range.")
     }
-
   }
 }

@@ -1,7 +1,7 @@
 package com.mqgateway.core.device
 
-import mu.KotlinLogging
 import com.mqgateway.core.gatewayconfig.DeviceType
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -46,4 +46,4 @@ abstract class Device(val id: String, val type: DeviceType) {
   }
 }
 
-class UnsupportedStateChangeException(deviceId: String, propertyId: String): Exception("deviceId=$deviceId, propertyId=$propertyId")
+class UnsupportedStateChangeException(deviceId: String, propertyId: String) : Exception("deviceId=$deviceId, propertyId=$propertyId")

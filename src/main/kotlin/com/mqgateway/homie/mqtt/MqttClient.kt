@@ -8,8 +8,8 @@ interface MqttClient {
 }
 
 data class MqttMessage(
-    val topic: String,
-    val payload: String,
-    val qos: Int = 0,
-    val retain: Boolean = false
+  val topic: String,
+  val payload: String,
+  val qos: Int = 0,
+  val retain: Boolean = false
 )

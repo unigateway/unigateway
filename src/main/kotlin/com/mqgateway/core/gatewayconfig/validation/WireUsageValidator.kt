@@ -3,7 +3,7 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.Gateway
 
-class WireUsageValidator: GatewayValidator {
+class WireUsageValidator : GatewayValidator {
   override fun validate(gateway: Gateway): List<ValidationFailureReason> {
     val deviceConfigs: List<List<DeviceConfig>> = gateway.rooms.flatMap { room -> room.points }.map { it.devices }
 
@@ -19,10 +19,9 @@ class WireUsageValidator: GatewayValidator {
         .map {
           SameWireUsedInManyDevices(it)
         }
-
   }
 
-  class SameWireUsedInManyDevices(val devices: List<DeviceConfig>): ValidationFailureReason() {
+  class SameWireUsedInManyDevices(val devices: List<DeviceConfig>) : ValidationFailureReason() {
 
     override fun getDescription(): String {
       val duplicatedWiresNames = devices.map { it.wires }.let { it[0].intersect(it[1]) }.map { it.name }

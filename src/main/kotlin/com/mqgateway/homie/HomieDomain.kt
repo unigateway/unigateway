@@ -1,9 +1,9 @@
 package com.mqgateway.homie
 
-import mu.KotlinLogging
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
+import mu.KotlinLogging
 
 private const val HOMIE_PREFIX = "homie"
 
@@ -12,17 +12,17 @@ private val LOGGER = KotlinLogging.logger {}
 const val HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS = 1
 
 class HomieDevice(
-    mqttClientFactory: MqttClientFactory,
-    val id: String,
-    val nodes: Map<String, HomieNode>,
-    val homie: String,
-    val name: String,
-    val extensions: List<String> = emptyList(),
-    val implementation: String? = null,
-    val firmwareName: String?,
-    val firmwareVersion: String?,
-    val ip: String? = null,
-    val mac: String? = null
+  mqttClientFactory: MqttClientFactory,
+  val id: String,
+  val nodes: Map<String, HomieNode>,
+  val homie: String,
+  val name: String,
+  val extensions: List<String> = emptyList(),
+  val implementation: String? = null,
+  val firmwareName: String?,
+  val firmwareVersion: String?,
+  val ip: String? = null,
+  val mac: String? = null
 ) {
 
   private val baseTopic = "$HOMIE_PREFIX/$id"
@@ -31,7 +31,6 @@ class HomieDevice(
       { LOGGER.info { "MQTT connection established" }; this.changeState(State.READY) },
       { LOGGER.error { "MQTT connection lost" } }
   )
-
 
   fun connect(homieReceiver: HomieReceiver) {
     LOGGER.info { "Connecting to MQTT" }
@@ -73,11 +72,11 @@ class HomieDevice(
 }
 
 data class HomieNode(
-    val deviceId: String,
-    val id: String,
-    val name: String,
-    val type: String,
-    val properties: Map<String, HomieProperty>
+  val deviceId: String,
+  val id: String,
+  val name: String,
+  val type: String,
+  val properties: Map<String, HomieProperty>
 ) {
 
   private val baseTopic = "$HOMIE_PREFIX/$deviceId/$id"
@@ -91,17 +90,16 @@ data class HomieNode(
   }
 }
 
-
 data class HomieProperty(
-    val deviceId: String,
-    val nodeId: String,
-    val id: String,
-    val name: String,
-    val datatype: DataType,
-    val format: String? = null,
-    val settable: Boolean = false,
-    val retained: Boolean = false,
-    val unit: Unit = Unit.NONE
+  val deviceId: String,
+  val nodeId: String,
+  val id: String,
+  val name: String,
+  val datatype: DataType,
+  val format: String? = null,
+  val settable: Boolean = false,
+  val retained: Boolean = false,
+  val unit: Unit = Unit.NONE
 ) {
 
   private val baseTopic = "$HOMIE_PREFIX/$deviceId/$nodeId/$id"
@@ -141,4 +139,3 @@ data class HomieProperty(
     METER("m"), FEET("ft"), PASCAL("Pa"), PSI("psi"), COUNT("#"), NONE("_")
   }
 }
-

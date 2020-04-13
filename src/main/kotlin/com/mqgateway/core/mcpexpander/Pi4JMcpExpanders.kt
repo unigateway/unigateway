@@ -1,7 +1,7 @@
 package com.mqgateway.core.mcpexpander
 
-import com.pi4j.io.gpio.GpioProvider
 import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider as Pi4jMcp23017GpioProvider
+import com.pi4j.io.gpio.GpioProvider
 
 /**
  * Initializes collection of MCP23017 expanders based on given bus number and addresses in I2c bus
@@ -14,5 +14,4 @@ class Pi4JMcpExpanders(i2CBusNumber: Int, expanderAddresses: List<Int>) : McpExp
   private val expanders: List<GpioProvider> = expanderAddresses.map { Pi4jMcp23017GpioProvider(i2CBusNumber, it) }
 
   override fun getByPort(portNumber: Int) = expanders[(portNumber - 1) / 4]
-
 }

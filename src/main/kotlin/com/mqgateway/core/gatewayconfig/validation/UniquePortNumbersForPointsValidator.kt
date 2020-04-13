@@ -3,15 +3,14 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.Point
 
-
-class UniquePortNumbersForPointsValidator: GatewayValidator {
+class UniquePortNumbersForPointsValidator : GatewayValidator {
 
   override fun validate(gateway: Gateway): List<ValidationFailureReason> {
-    val points: List<Point> = gateway.rooms.flatMap { room -> room.points}
+    val points: List<Point> = gateway.rooms.flatMap { room -> room.points }
     return points.groupBy { point -> point.portNumber }.filter { it.value.size > 1 }.values.toList().map { DuplicatedPortNumbersOnPoints(it) }
   }
 
-  class DuplicatedPortNumbersOnPoints(val points: List<Point>): ValidationFailureReason() {
+  class DuplicatedPortNumbersOnPoints(val points: List<Point>) : ValidationFailureReason() {
 
     override fun getDescription(): String {
       val duplicatedPortNumber = points.first().portNumber

@@ -11,5 +11,4 @@ class DeviceRegistry(private val devices: Set<Device>) {
   fun initailizeDevices() {
     devices.forEach { it.init() }
   }
-
 }

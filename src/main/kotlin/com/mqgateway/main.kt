@@ -1,9 +1,5 @@
 package com.mqgateway
 
-import com.pi4j.io.gpio.GpioController
-import com.pi4j.io.gpio.GpioFactory
-import com.pi4j.io.i2c.I2CBus
-import mu.KotlinLogging
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
@@ -14,20 +10,22 @@ import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
 import com.mqgateway.homie.gateway.HomieDeviceFactory
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
+import com.pi4j.io.gpio.GpioController
+import com.pi4j.io.gpio.GpioFactory
+import com.pi4j.io.i2c.I2CBus
 import java.util.Properties
-
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 private const val DEFAULT_GATEWAY_CONFIG_PATH = "gateway.yaml"
-
 
 fun main(args: Array<String>) {
   LOGGER.info { "HomieGateway started. Initialization..." }
 
   LOGGER.debug { "Loading application properties" }
   val properties = Properties()
-  properties.load(object{}.javaClass.getResourceAsStream("/application.properties").bufferedReader())
+  properties.load(object {}.javaClass.getResourceAsStream("/application.properties").bufferedReader())
 
   LOGGER.debug { "Loading gateway configuration" }
   val gatewayConfigPath = if (args.isNotEmpty()) args[0] else DEFAULT_GATEWAY_CONFIG_PATH
@@ -50,10 +48,8 @@ fun main(args: Array<String>) {
   homieDevice.connect(homieReceiver)
   deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
 
-
   LOGGER.debug { "Devices initialization" }
   deviceRegistry.initailizeDevices()
-  
-  LOGGER.info { "Initialization finished successfully. Running normally." }
 
+  LOGGER.info { "Initialization finished successfully. Running normally." }
 }

@@ -1,8 +1,11 @@
 package com.mqgateway.homie.gateway
 
-import mu.KotlinLogging
 import com.mqgateway.core.gatewayconfig.DeviceConfig
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.*
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.homie.HomieDevice
@@ -12,6 +15,7 @@ import com.mqgateway.homie.HomieProperty.DataType
 import com.mqgateway.homie.HomieProperty.Unit
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import java.net.NetworkInterface
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -61,23 +65,30 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
   }
 
   private fun toHomieNode(gatewayName: String, deviceConfig: DeviceConfig) =
-      HomieNode(gatewayName, deviceConfig.id, deviceConfig.name, deviceConfig.type.name.toLowerCase(), getHomiePropertiesFor(gatewayName, deviceConfig.id, deviceConfig.type))
+      HomieNode(gatewayName, deviceConfig.id, deviceConfig.name, deviceConfig.type.name.toLowerCase(),
+        getHomiePropertiesFor(gatewayName, deviceConfig.id, deviceConfig.type))
 
   private fun getHomiePropertiesFor(deviceName: String, nodeId: String, type: DeviceType): Map<String, HomieProperty> {
     return when (type) {
       DeviceType.RELAY ->
-        mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF", settable = true, retained = true))
+        mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF",
+          settable = true, retained = true))
       DeviceType.SWITCH_BUTTON ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "PRESSED,RELEASED"))
       DeviceType.MOTION_DETECTOR ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF"))
       DeviceType.BME280 ->
         mapOf(
-            TEMPERATURE.toString() to HomieProperty(deviceName, nodeId, TEMPERATURE.toString(), TEMPERATURE.toString(), DataType.FLOAT, null, settable = false, retained = true, unit = Unit.CELSIUS),
-            HUMIDITY.toString() to HomieProperty(deviceName, nodeId, HUMIDITY.toString(), HUMIDITY.toString(), DataType.FLOAT, "0:100", settable = false, retained = true, unit = Unit.PERCENT),
-            PRESSURE.toString() to HomieProperty(deviceName, nodeId, PRESSURE.toString(), PRESSURE.toString(), DataType.INTEGER, null, settable = false, retained = true, unit = Unit.PASCAL),
-            UPTIME.toString() to HomieProperty(deviceName, nodeId, UPTIME.toString(), UPTIME.toString(), DataType.INTEGER, null, settable = false, retained = false),
-            STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "STARTING,READY,LOST", settable = false, retained = true)
+            TEMPERATURE.toString() to HomieProperty(deviceName, nodeId, TEMPERATURE.toString(), TEMPERATURE.toString(), DataType.FLOAT, null,
+              settable = false, retained = true, unit = Unit.CELSIUS),
+            HUMIDITY.toString() to HomieProperty(deviceName, nodeId, HUMIDITY.toString(), HUMIDITY.toString(), DataType.FLOAT, "0:100",
+              settable = false, retained = true, unit = Unit.PERCENT),
+            PRESSURE.toString() to HomieProperty(deviceName, nodeId, PRESSURE.toString(), PRESSURE.toString(), DataType.INTEGER, null,
+              settable = false, retained = true, unit = Unit.PASCAL),
+            UPTIME.toString() to HomieProperty(deviceName, nodeId, UPTIME.toString(), UPTIME.toString(), DataType.INTEGER, null,
+              settable = false, retained = false),
+            STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "STARTING,READY,LOST",
+              settable = false, retained = true)
         )
       DeviceType.REED_SWITCH ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF"))
@@ -86,5 +97,4 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
       DeviceType.EMULATED_SWITCH -> TODO()
     }
   }
-
 }

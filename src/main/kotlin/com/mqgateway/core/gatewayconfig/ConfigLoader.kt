@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import kotlinx.serialization.cbor.Cbor
-import mu.KotlinLogging
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import java.io.File
 import java.security.MessageDigest
-
+import kotlinx.serialization.cbor.Cbor
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -90,5 +89,5 @@ object ConfigLoader {
     return mapper
   }
 
-  class ValidationFailedException(message: String): Exception(message)
+  class ValidationFailedException(message: String) : Exception(message)
 }

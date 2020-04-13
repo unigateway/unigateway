@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.core.report.LogLevel
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import mu.KotlinLogging
 import com.mqgateway.core.gatewayconfig.Gateway
+import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -53,5 +53,3 @@ class ConfigValidator(private val yamlObjectMapper: ObjectMapper) {
 }
 
 data class ValidationResult(val succeeded: Boolean, val failureReasons: List<ValidationFailureReason> = emptyList())
-
-

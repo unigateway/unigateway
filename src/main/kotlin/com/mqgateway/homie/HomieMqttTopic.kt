@@ -1,13 +1,15 @@
 package com.mqgateway.homie
 
-data class HomieMqttTopic(val root: String,
-                          val rootAttribute: String? = null,
-                          val deviceId: String? = null,
-                          val deviceAttribute: String? = null,
-                          val nodeId: String? = null,
-                          val nodeAttribute: String? = null,
-                          val propertyId: String? = null,
-                          val propertyAttribute: String? = null) {
+data class HomieMqttTopic(
+  val root: String,
+  val rootAttribute: String? = null,
+  val deviceId: String? = null,
+  val deviceAttribute: String? = null,
+  val nodeId: String? = null,
+  val nodeAttribute: String? = null,
+  val propertyId: String? = null,
+  val propertyAttribute: String? = null
+) {
 
   companion object {
     fun fromString(topicString: String): HomieMqttTopic {
@@ -35,5 +37,4 @@ data class HomieMqttTopic(val root: String,
       return HomieMqttTopic(root, rootAttribute, deviceId, deviceAttribute, nodeId, nodeAttribute, propertyId, propertyAttribute)
     }
   }
-
 }

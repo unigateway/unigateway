@@ -1,15 +1,20 @@
 package com.mqgateway.core.gatewayconfig
 
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.VALUE
 import kotlinx.serialization.Serializable
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.*
 
 @Serializable
 data class DeviceConfig(
-    val id: String,
-    val name: String,
-    val type: DeviceType,
-    val wires: List<WireColor>,
-    val config: Map<String, String>? = null
+  val id: String,
+  val name: String,
+  val type: DeviceType,
+  val wires: List<WireColor>,
+  val config: Map<String, String>? = null
 )
 
 enum class DeviceType(vararg val properties: DevicePropertyType) {

@@ -1,8 +1,8 @@
 package com.mqgateway.core.pi4j
 
+import com.mqgateway.core.gatewayconfig.SystemPlatform
 import com.pi4j.platform.Platform
 import com.pi4j.platform.PlatformManager
-import com.mqgateway.core.gatewayconfig.SystemPlatform
 
 object Pi4jConfigurer {
 

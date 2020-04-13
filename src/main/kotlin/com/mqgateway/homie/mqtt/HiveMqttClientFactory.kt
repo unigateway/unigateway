@@ -17,5 +17,4 @@ class HiveMqttClientFactory(private val mqttServerHost: String) : MqttClientFact
 
     return HiveMqttClient(hiveClient)
   }
-
 }

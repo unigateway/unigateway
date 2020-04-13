@@ -3,12 +3,12 @@ package com.mqgateway.homie.mqtt
 import mu.KotlinLogging
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttClient as PahoClient
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 
 private val LOGGER = KotlinLogging.logger {}
 
-class PahoMqttClient(private val mqttClient: PahoClient): MqttClient {
+class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
 
   override fun connect(willMessage: MqttMessage, cleanSession: Boolean) {
     val options = MqttConnectOptions()
@@ -29,7 +29,6 @@ class PahoMqttClient(private val mqttClient: PahoClient): MqttClient {
     LOGGER.trace { "Message published" }
   }
 
-
   override fun publishAsync(mqttMessage: MqttMessage) {
     publishSync(mqttMessage)
   }
@@ -41,11 +40,12 @@ class PahoMqttClient(private val mqttClient: PahoClient): MqttClient {
       LOGGER.trace { "Callback on received message processed" }
     }
   }
-
 }
 
-class PahoMqttCallback(private val onConnectComplete: (reconnected: Boolean) -> Unit = {},
-                       private val onConnectionLost: (cause: Throwable?) -> Unit = {}): MqttCallbackExtended {
+class PahoMqttCallback(
+  private val onConnectComplete: (reconnected: Boolean) -> Unit = {},
+  private val onConnectionLost: (cause: Throwable?) -> Unit = {}
+) : MqttCallbackExtended {
 
   override fun connectComplete(reconnect: Boolean, serverURI: String?) {
     LOGGER.debug { "Connect complete. Calling onConnectComplete." }
@@ -64,5 +64,4 @@ class PahoMqttCallback(private val onConnectComplete: (reconnected: Boolean) -> 
   override fun deliveryComplete(token: IMqttDeliveryToken?) {
     // not needed
   }
-
 }

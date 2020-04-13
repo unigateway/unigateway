@@ -9,4 +9,3 @@ interface GatewayValidator {
 abstract class ValidationFailureReason {
   abstract fun getDescription(): String
 }
-
