@@ -5,6 +5,7 @@ import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.mcpexpander.McpExpandersFactory
 import com.mqgateway.core.mcpexpander.Pi4JExpanderPinProvider
+import com.mqgateway.core.onewire.OneWireBus
 import com.mqgateway.core.pi4j.Pi4jConfigurer
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
@@ -38,8 +39,10 @@ fun main(args: Array<String>) {
   val mcpExpanders = McpExpandersFactory.create(I2CBus.BUS_0, mcpPorts)
 
   LOGGER.debug { "Registering devices" }
-  val deviceFactory = DeviceFactory(Pi4JExpanderPinProvider(gpio, mcpExpanders))
+  val oneWireBus = OneWireBus()
+  val deviceFactory = DeviceFactory(Pi4JExpanderPinProvider(gpio, mcpExpanders), oneWireBus)
   val deviceRegistry = DeviceRegistry(deviceFactory.createAll(gateway))
+  oneWireBus.start()
 
   LOGGER.debug { "Preparing Homie configuration with MQTT connection" }
   val mqttClientFactory = HiveMqttClientFactory(gateway.mqttHostname)
@@ -49,7 +52,7 @@ fun main(args: Array<String>) {
   deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
 
   LOGGER.debug { "Devices initialization" }
-  deviceRegistry.initailizeDevices()
+  deviceRegistry.initializeDevices()
 
   LOGGER.info { "Initialization finished successfully. Running normally." }
 }

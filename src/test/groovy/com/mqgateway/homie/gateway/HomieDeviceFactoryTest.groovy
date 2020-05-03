@@ -137,6 +137,21 @@ class HomieDeviceFactoryTest extends Specification {
 		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "bme280_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
 		node.properties[STATE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "state", "state", ENUM, "STARTING,READY,LOST", false, true, NONE)
 	}
+
+	def "should create HomieProperties for DS18B20"() {
+		given:
+		DeviceConfig device = new DeviceConfig("ds18b20_in_test", "Test DS18B20", DeviceType.DS18B20, [WireColor.BLUE], null)
+		Gateway gateway = gateway([room([point([device])])])
+
+		when:
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+
+		then:
+		def node = homieDevice.nodes["ds18b20_in_test"]
+		node.properties.keySet() == [TEMPERATURE.toString(), STATE.toString()].toSet()
+		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "ds18b20_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
+		node.properties[STATE.toString()] == new HomieProperty("gtwName", "ds18b20_in_test", "state", "state", ENUM, "CONNECTED,DISCONNECTED", false, true, NONE)
+	}
 }
 
 

@@ -8,7 +8,7 @@ class DeviceRegistry(private val devices: Set<Device>) {
     devices.forEach { it.addListener(updateListener) }
   }
 
-  fun initailizeDevices() {
+  fun initializeDevices() {
     devices.forEach { it.init() }
   }
 }

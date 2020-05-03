@@ -38,3 +38,12 @@ rooms:
             type: SWITCH_BUTTON
             config:
               debounceMs: 50
+      - name: "bedroom measurements box"
+        portNumber: 3
+        devices:
+          - name: "bedroom DS18B20"
+            id: "bedroom_ds18b20"
+            wires: ["BROWN"]
+            type: DS18B20
+            config:
+              oneWireAddress: "28-00da18b20000"

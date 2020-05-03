@@ -4,6 +4,7 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
+import com.mqgateway.core.onewire.OneWireBus
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinPullResistance
@@ -19,9 +20,10 @@ import spock.lang.Subject
 class DeviceFactoryTest extends Specification {
 
 	ExpanderPinProvider pinProvider = Mock()
+	OneWireBus oneWireBus = new OneWireBus(File.createTempDir().absolutePath, 50000)
 
 	@Subject
-	DeviceFactory deviceFactory = new DeviceFactory(pinProvider)
+	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, oneWireBus)
 
 	def "should create relay"() {
 		given:
@@ -85,5 +87,20 @@ class DeviceFactoryTest extends Specification {
 		device instanceof MotionSensorDevice
 		device.id == "myMotionDetector"
 		device.type == DeviceType.MOTION_DETECTOR
+	}
+
+	def "should create DS18B20"() {
+		given:
+		def deviceConfig = new DeviceConfig("myDS18B20", "Test DS18B20", DeviceType.DS18B20, [WireColor.BROWN], ["oneWireAddress": "28-00da18b20000"])
+		Gateway gateway = gateway([room([point("point name", 6, [deviceConfig])])])
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		def device = devices.first()
+		device instanceof DS18B20Device
+		device.id == "myDS18B20"
+		device.type == DeviceType.DS18B20
 	}
 }

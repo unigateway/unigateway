@@ -4,8 +4,11 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.mcpexpander.ExpanderPinProvider
+import com.mqgateway.core.onewire.OneWireBus
+import com.mqgateway.core.onewire.OneWireBusDeviceFactory
+import java.lang.IllegalStateException
 
-class DeviceFactory(private val pinProvider: ExpanderPinProvider) {
+class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val oneWireBus: OneWireBus) {
 
   fun createAll(gateway: Gateway): Set<Device> {
     return gateway.rooms
@@ -37,6 +40,12 @@ class DeviceFactory(private val pinProvider: ExpanderPinProvider) {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
         val debounceMs = deviceConfig.config?.get(DigitalInputDevice.CONFIG_DEBOUNCE_KEY)?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
         MotionSensorDevice(deviceConfig.id, pin, debounceMs)
+      }
+      DeviceType.DS18B20 -> {
+        val oneWireAddress = deviceConfig.config?.get(OneWireDevice.CONFIG_ONE_WIRE_ADDRESS_KEY)
+          ?: throw IllegalStateException("OneWire device requires 'oneWireAddress' in configuration")
+        val oneWireBusDevice = oneWireBus.registerDevice(OneWireBusDeviceFactory.create(oneWireAddress))
+        return DS18B20Device(deviceConfig.id, oneWireBusDevice)
       }
       DeviceType.BME280 -> TODO()
       DeviceType.SCT013 -> TODO()

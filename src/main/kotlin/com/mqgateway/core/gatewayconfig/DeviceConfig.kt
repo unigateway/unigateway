@@ -22,10 +22,15 @@ enum class DeviceType(vararg val properties: DevicePropertyType) {
   SWITCH_BUTTON(STATE),
   REED_SWITCH(STATE),
   BME280(TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, STATE),
+  DS18B20(TEMPERATURE, STATE),
   SCT013(VALUE),
   DHT22(TEMPERATURE, HUMIDITY),
   MOTION_DETECTOR(STATE),
-  EMULATED_SWITCH(STATE)
+  EMULATED_SWITCH(STATE);
+
+  companion object {
+    fun isOneWire(type: DeviceType) = type in setOf(BME280, DS18B20)
+  }
 }
 
 enum class DevicePropertyType {

@@ -13,7 +13,7 @@ class DeviceRegistryTest extends Specification {
 		DeviceRegistry deviceRegistry = new DeviceRegistry(devices)
 
 		when:
-		deviceRegistry.initailizeDevices()
+		deviceRegistry.initializeDevices()
 
 		then:
 		devices.every {

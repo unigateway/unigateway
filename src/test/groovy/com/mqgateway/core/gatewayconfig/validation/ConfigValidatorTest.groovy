@@ -113,6 +113,50 @@ class ConfigValidatorTest extends Specification {
 		reason.devices*.id.toSet() == ["dev-on-blue-1", "dev-on-blue-2"].toSet()
 	}
 
+	def "should accept two 1-wire devices on the same wire"() {
+		given:
+		def gateway = gatewayWith(
+			roomWith(
+				pointWith(
+					someDevice("onewire-on-brown-1", "onewire-on-brown-1", DeviceType.DS18B20, [WireColor.BROWN], [oneWireAddress: "28-00da18b10001"]),
+					someDevice("dev-on-green",  "dev-on-green",  DeviceType.MOTION_DETECTOR, [WireColor.GREEN]),
+					someDevice("onewire-on-brown-2", "onewire-on-brown-2", DeviceType.DS18B20, [WireColor.BROWN], [oneWireAddress: "28-0115a3a147ff"])
+				)
+			)
+		)
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		result.succeeded
+	}
+
+	def "should validation fail when one wire device misses oneWireAddress in config"() {
+		given:
+		def gateway = gatewayWith(
+			roomWith(
+				pointWith(
+					someDevice("one-wire-without-address-1", "one-wire-without-address-1", DeviceType.DS18B20, [WireColor.BROWN])
+				),
+				pointWith(
+					someDevice("one-wire-with-address-2", "one-wire-with-address-2", DeviceType.DS18B20, [WireColor.BROWN], [oneWireAddress: "28-00da18b10001"]),
+					someDevice("one-wire-without-address-3", "one-wire-without-address-3", DeviceType.DS18B20, [WireColor.BROWN_WHITE])
+				)
+			)
+		)
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+
+		result.failureReasons*.class.every {  it == OneWireDeviceAddressValidator.OneWireDeviceAddressMissing.class }
+
+		result.failureReasons*.device*.id.toSet() == ["one-wire-without-address-1", "one-wire-without-address-3"].toSet()
+	}
+
 	SystemConfiguration someSystemConfiguration() {
 		new SystemConfiguration("eth0", SystemPlatform.NANOPI, new ComponentsConfiguration(new Mcp23017Configuration(["20", "21"])))
 	}
@@ -134,8 +178,9 @@ class ConfigValidatorTest extends Specification {
 	DeviceConfig someDevice(String id = UUID.randomUUID().toString(),
 							String name = UUID.randomUUID().toString().replace("-", ""),
 							DeviceType type = DeviceType.RELAY,
-							List<WireColor> wires = [WireColor.BLUE]) {
+							List<WireColor> wires = [WireColor.BLUE],
+							Map<String, String> config = [:]) {
 
-		new DeviceConfig(id, name, type, wires, [:])
+		new DeviceConfig(id, name, type, wires, config)
 	}
 }
