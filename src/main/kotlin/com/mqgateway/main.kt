@@ -22,6 +22,15 @@ private val LOGGER = KotlinLogging.logger {}
 private const val DEFAULT_GATEWAY_CONFIG_PATH = "gateway.yaml"
 
 fun main(args: Array<String>) {
+  try {
+    startMqGateway(args)
+  } catch (e: Throwable) {
+    LOGGER.error("Application error", e)
+    throw e
+  }
+}
+
+fun startMqGateway(args: Array<String>) {
   LOGGER.info { "HomieGateway started. Initialization..." }
 
   LOGGER.debug { "Loading application properties" }
