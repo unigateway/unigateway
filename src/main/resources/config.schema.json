@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://mqgateway.com/configuration/schema#",
-  "title": "Aetas Smart Home MQGateway 1.0 Configuration file",
-  "description": "JSON schema for Aetas Smart Home MQGateway Configuration file",
+  "title": "Aetas Smart Home MqGateway 1.0 Configuration file",
+  "description": "JSON schema for Aetas Smart Home MqGateway Configuration file",
   "type": "object",
   "required": [
     "configVersion",
@@ -13,7 +13,7 @@
   ],
   "properties": {
     "configVersion": {
-      "description": "Version of RoomHub configuration file",
+      "description": "Version of MqGateway configuration file",
       "type": "string",
       "pattern": "^1\\..*$"
     },
