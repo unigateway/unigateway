@@ -14,8 +14,8 @@ import com.mqgateway.homie.HomieProperty
 import com.mqgateway.homie.HomieProperty.DataType
 import com.mqgateway.homie.HomieProperty.Unit
 import com.mqgateway.homie.mqtt.MqttClientFactory
-import java.net.NetworkInterface
 import mu.KotlinLogging
+import java.net.NetworkInterface
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -27,7 +27,7 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
     private const val FIRMWARE_NAME = "Aetas MqGateway"
   }
 
-  fun toHomieDevice(gateway: Gateway): HomieDevice {
+  fun toHomieDevice(gateway: Gateway, networkAdapter: String): HomieDevice {
 
     val homieNodes: Map<String, HomieNode> = gateway.rooms
         .flatMap { it.points }
@@ -35,7 +35,7 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
         .map { it.id to toHomieNode(gateway.name, it) }
         .toMap()
 
-    val networkInterface = NetworkInterface.getByName(gateway.system.networkAdapter)
+    val networkInterface = NetworkInterface.getByName(networkAdapter)
     return HomieDevice(
         mqttClientFactory,
         gateway.name,
@@ -92,12 +92,6 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
         )
       DeviceType.REED_SWITCH ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF"))
-      DeviceType.DS18B20 -> mapOf(
-        TEMPERATURE.toString() to HomieProperty(deviceName, nodeId, TEMPERATURE.toString(), TEMPERATURE.toString(), DataType.FLOAT, null,
-          settable = false, retained = true, unit = Unit.CELSIUS),
-        STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "CONNECTED,DISCONNECTED",
-          settable = false, retained = true)
-      )
       DeviceType.SCT013 -> TODO()
       DeviceType.DHT22 -> TODO()
       DeviceType.EMULATED_SWITCH -> TODO()

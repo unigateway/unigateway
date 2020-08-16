@@ -16,15 +16,11 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
-import com.mqgateway.core.gatewayconfig.ComponentsConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
-import com.mqgateway.core.gatewayconfig.Mcp23017Configuration
 import com.mqgateway.core.gatewayconfig.Point
 import com.mqgateway.core.gatewayconfig.Room
-import com.mqgateway.core.gatewayconfig.SystemConfiguration
-import com.mqgateway.core.gatewayconfig.SystemPlatform
 import com.mqgateway.core.gatewayconfig.WireColor
 import com.mqgateway.homie.HomieNode
 import com.mqgateway.homie.HomieProperty
@@ -41,10 +37,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieDevice with nodes and properties based on gateway configuration"() {
 		given:
-		def netInterface = NetworkInterface.getByIndex(1)
-		def systemConfiguration = new SystemConfiguration(netInterface.name, SystemPlatform.SIMULATED,
-														  new ComponentsConfiguration(new Mcp23017Configuration(["20", "21", "22", "23"])))
-		Gateway gateway = new Gateway("1.0", "gtwName", "127.0.0.1", systemConfiguration, [
+		Gateway gateway = new Gateway("1.0", "gtwName", "127.0.0.1", [
 			new Room("room1", [
 				new Point("point1", 1, [
 					new DeviceConfig("device1", "device1 name", DeviceType.RELAY, [WireColor.BLUE], [:])
@@ -53,7 +46,7 @@ class HomieDeviceFactoryTest extends Specification {
 		])
 
 		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
 
 		then:
 		homieDevice.id == "gtwName"
@@ -70,7 +63,7 @@ class HomieDeviceFactoryTest extends Specification {
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
 
 		then:
 		def node = homieDevice.nodes["relay_in_test"]
@@ -84,7 +77,7 @@ class HomieDeviceFactoryTest extends Specification {
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
 
 		then:
 		def node = homieDevice.nodes["motiondetector_in_test"]
@@ -98,7 +91,7 @@ class HomieDeviceFactoryTest extends Specification {
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
 
 		then:
 		def node = homieDevice.nodes["switchButton_in_test"]
@@ -112,7 +105,7 @@ class HomieDeviceFactoryTest extends Specification {
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
 
 		then:
 		def node = homieDevice.nodes["reedSwitch_in_test"]
@@ -126,7 +119,7 @@ class HomieDeviceFactoryTest extends Specification {
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
 
 		then:
 		def node = homieDevice.nodes["bme280_in_test"]
@@ -136,21 +129,6 @@ class HomieDeviceFactoryTest extends Specification {
 		node.properties[PRESSURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "pressure", "pressure", INTEGER, null, false, true, PASCAL)
 		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "bme280_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
 		node.properties[STATE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "state", "state", ENUM, "STARTING,READY,LOST", false, true, NONE)
-	}
-
-	def "should create HomieProperties for DS18B20"() {
-		given:
-		DeviceConfig device = new DeviceConfig("ds18b20_in_test", "Test DS18B20", DeviceType.DS18B20, [WireColor.BLUE], null)
-		Gateway gateway = gateway([room([point([device])])])
-
-		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway)
-
-		then:
-		def node = homieDevice.nodes["ds18b20_in_test"]
-		node.properties.keySet() == [TEMPERATURE.toString(), STATE.toString()].toSet()
-		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "ds18b20_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
-		node.properties[STATE.toString()] == new HomieProperty("gtwName", "ds18b20_in_test", "state", "state", ENUM, "CONNECTED,DISCONNECTED", false, true, NONE)
 	}
 }
 

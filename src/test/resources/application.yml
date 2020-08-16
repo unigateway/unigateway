@@ -1,0 +1,2 @@
+gateway:
+  config-path: example.gateway.yaml

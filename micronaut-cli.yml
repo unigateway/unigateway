@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.mqgateway
+testFramework: spock
+sourceLanguage: kotlin
+buildTool: gradle
+features: [app-name, docker, file-watch, gradle, http-client, kotlin, kotlin-application, kotlin-extension-functions, log4j2, management, micrometer, micrometer-influx, netty-server, readme, shade, spock, testcontainers, yaml]

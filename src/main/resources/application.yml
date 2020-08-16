@@ -1,0 +1,21 @@
+endpoints:
+  prometheus:
+    sensitive: false
+
+micronaut:
+  application:
+    name: mqgateway
+  metrics:
+    enabled: true
+
+gateway:
+  app-version: <%=version%>
+  config-path: gateway.yaml
+  system:
+    network-adapter: eth0
+    platform: NANOPI
+    components:
+      mcp23017:
+        ports: ["20","21","22","23"]
+      serial:
+        device: "/dev/ttyS1"

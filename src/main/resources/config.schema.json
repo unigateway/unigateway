@@ -8,7 +8,6 @@
     "configVersion",
     "name",
     "mqttHostname",
-    "system",
     "rooms"
   ],
   "properties": {
@@ -28,11 +27,6 @@
     "mqttHostname": {
       "description": "Address IP or hostname of MQTT server",
       "type": "string"
-    },
-    "system": {
-      "description": "System configuration",
-      "type": "object",
-      "$ref": "#/definitions/system"
     },
     "rooms": {
       "description": "List of rooms managed by this Gateway",
@@ -61,47 +55,6 @@
     }
   },
   "definitions": {
-    "system": {
-      "type": "object",
-      "required": [
-        "platform"
-      ],
-      "properties": {
-        "networkAdapter": {
-          "description": "name of the network adapter to use for MQTT communication (e.g. eth0)",
-          "type": "string"
-        },
-        "platform": {
-          "description": "name of the platform used (e.g. NANOPI)",
-          "type": "string",
-          "items": {
-            "enum": [
-              "NANOPI",
-              "RASPBERRYPI",
-              "SIMULATED"
-            ]
-          }
-        },
-        "components": {
-          "description": "configuration for platform electronic components",
-          "type": "object",
-          "properties": {
-            "mcp23017": {
-              "type": "object",
-              "properties": {
-                "ports": {
-                  "description": "ports on I2C where mcp23017 devices can be found",
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "point": {
       "type": "object",
       "required": [
@@ -175,8 +128,7 @@
             "SCT013",
             "DHT22",
             "MOTION_DETECTOR",
-            "EMULATED_SWITCH",
-            "DS18B20"
+            "EMULATED_SWITCH"
           ]
         },
         "config": {

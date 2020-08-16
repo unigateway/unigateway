@@ -1,0 +1,11 @@
+gateway:
+  app-version: SNAPSHOT
+  config-path: "src/test/resources/example.gateway.yaml"
+  system:
+    network-adapter: enp0s25
+    platform: simulated
+    components:
+      mcp23017:
+        ports: ["20","21","22","23"]
+      serial:
+        device: "/dev/tty1"

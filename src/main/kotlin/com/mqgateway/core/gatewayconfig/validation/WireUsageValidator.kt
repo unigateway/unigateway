@@ -1,7 +1,6 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.core.gatewayconfig.DeviceConfig
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 
 class WireUsageValidator : GatewayValidator {
@@ -9,7 +8,6 @@ class WireUsageValidator : GatewayValidator {
     val deviceConfigs: List<List<DeviceConfig>> = gateway.rooms.flatMap { room -> room.points }.map { it.devices }
 
     return deviceConfigs
-        .map { devices -> devices.filterNot { DeviceType.isOneWire(it.type) } }
         .map { devices ->
           devices.filter { device ->
             val otherDevices = devices.filterNot { otherDevice -> otherDevice.id == device.id }

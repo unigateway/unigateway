@@ -1,12 +1,6 @@
 configVersion: "1.0"
 name: "TestGw1"
 mqttHostname: "127.0.0.1"
-system:
-  networkAdapter: "enp0s25"
-  platform: SIMULATED
-  components:
-    mcp23017:
-      ports: ["20","21","22","23"]
 rooms:
   - name: "workshop"
     points:
@@ -38,12 +32,3 @@ rooms:
             type: SWITCH_BUTTON
             config:
               debounceMs: 50
-      - name: "bedroom measurements box"
-        portNumber: 3
-        devices:
-          - name: "bedroom DS18B20"
-            id: "bedroom_ds18b20"
-            wires: ["BROWN"]
-            type: DS18B20
-            config:
-              oneWireAddress: "28-00da18b20000"
