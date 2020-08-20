@@ -6,10 +6,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
+import kotlinx.serialization.cbor.Cbor
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
+import mu.KotlinLogging
 import java.io.File
 import java.security.MessageDigest
-import kotlinx.serialization.cbor.Cbor
-import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -30,7 +32,7 @@ object ConfigLoader {
     LOGGER.trace("previousConfigHash=$storedConfigurationFileHash newConfigHash=$currentConfigurationFileHash")
     if (currentConfigurationFileHash == storedConfigurationFileHash) {
       LOGGER.debug { "Configuration file has not changed. Loading configuration from binary store." }
-      return Cbor().load(Gateway.serializer(), File(CONFIGURATION_FILE_QUICK_PATH).readBytes())
+      return Cbor.decodeFromByteArray(File(CONFIGURATION_FILE_QUICK_PATH).readBytes())
     } else {
       LOGGER.info { "New configuration detected. Starting validation." }
 
@@ -41,7 +43,7 @@ object ConfigLoader {
 
       File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
 
-      val gatewayCbor: ByteArray = Cbor().dump(Gateway.serializer(), gateway)
+      val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
       File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
 
       return gateway
@@ -55,8 +57,8 @@ object ConfigLoader {
 
   private fun calculateHash(byteArray: ByteArray): String {
     return MessageDigest.getInstance(HASH_ALGORITHM)
-        .digest(byteArray)
-        .fold("", { str, it -> str + "%02x".format(it) })
+      .digest(byteArray)
+      .fold("", { str, it -> str + "%02x".format(it) })
   }
 
   private fun validateConfigurationAgainstJsonSchema(gatewayConfigJsonNode: JsonNode) {

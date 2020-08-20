@@ -15,6 +15,7 @@ import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.pi4j.io.gpio.GpioFactory
 import com.pi4j.io.i2c.I2CBus
+import com.pi4j.io.serial.Baud
 import com.pi4j.io.serial.Serial
 import com.pi4j.io.serial.SerialConfig
 import com.pi4j.io.serial.SerialFactory
@@ -65,7 +66,10 @@ internal class ComponentsFactory {
   @Singleton
   fun serial(gatewaySystemProperties: GatewaySystemProperties): Serial {
     val serial = SerialFactory.createInstance()
-    serial.open(SerialConfig().device(gatewaySystemProperties.components.serial.device))
+    serial.open(SerialConfig()
+      .device(gatewaySystemProperties.components.serial.device)
+      .baud(Baud.getInstance(gatewaySystemProperties.components.serial.baud))
+    )
     return serial
   }
 }

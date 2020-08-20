@@ -16,8 +16,13 @@ fun main(args: Array<String>) {
     .packages("com.mqgateway")
     .start()
 
-  val mqGateway = context.getBean(MqGateway::class.java)
-  mqGateway.initialize()
+  try {
+    val mqGateway = context.getBean(MqGateway::class.java)
+    mqGateway.initialize()
+  } catch (throwable: Throwable) {
+    LOGGER.error(throwable) { "Fatal error" }
+    throw throwable
+  }
 }
 
 @Singleton
