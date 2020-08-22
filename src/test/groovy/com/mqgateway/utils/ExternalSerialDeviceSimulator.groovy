@@ -38,7 +38,7 @@ class ExternalSerialDeviceSimulator {
 		askForDataPin.addListener(new GpioPinListenerDigital() {
 			@Override
 			void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				if (event.getState() == PinState.HIGH) {
+				if (event.getState() == PinState.LOW) {
 					onBeforeSendingMessage.call()
 					serial.sendFakeMessage(messageToSend)
 				}

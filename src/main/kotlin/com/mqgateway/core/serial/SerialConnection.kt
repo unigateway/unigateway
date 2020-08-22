@@ -34,12 +34,12 @@ class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Lo
       LOGGER.debug { "Device $id is asking for Serial data" }
 
       deferredUntilMessageReceived = CompletableDeferred()
-      askForDataPin.high()
+      askForDataPin.low()
 
       val receivedMessage = withTimeoutOrNull(maxWaitTimeMs) {
         deferredUntilMessageReceived.await()
       }
-      askForDataPin.low()
+      askForDataPin.high()
       if (receivedMessage != null) {
         LOGGER.info { "Data received on serial for device '$id': $receivedMessage" }
       }

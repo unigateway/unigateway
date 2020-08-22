@@ -29,7 +29,7 @@ abstract class PeriodicSerialInputDevice(
 
   override fun initDevice() {
     super.initDevice()
-    toDevicePin.state = PinState.LOW
+    toDevicePin.state = PinState.HIGH
 
     fromDevicePin.addListener(GpioPinListenerDigital { event ->
       if (event.state == PinState.HIGH) { pingReceived() }
