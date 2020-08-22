@@ -151,6 +151,26 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		}
 	}
 
+	def "should not fail and do not pass message to implementation when external device returned error message"() {
+		given:
+		device.addListener(updateListenerStub)
+		device.init()
+		def fakeSerialDevice = new ExternalSerialDeviceSimulator(outputPin, inputPin, serialStub)
+		fakeSerialDevice.ping()
+		fakeSerialDevice.setMessageToSend("error;this is fake error message from tests")
+		conditions.eventually {
+			def update = updateListenerStub.receivedUpdates.first()
+			update.propertyId == "lastPing"
+			update.newValue != null
+		}
+
+		when:
+		device.askForSerialDataNow()
+
+		then:
+		device.message == null
+	}
+
 	DeviceElements prepareSerialDevice(String name) {
 		def pin1Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
 		def pin2Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))

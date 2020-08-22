@@ -46,7 +46,14 @@ abstract class PeriodicSerialInputDevice(
       val message = runBlocking {
         serialConnection.askForData(id, toDevicePin)
       } ?: throw SerialMessageNotReceivedException(id)
-      messageReceived(message)
+      if (message.startsWith("error")) {
+        val parts = message.split(';')
+        if (parts[0] == "error") {
+          LOGGER.error { "Device $id responded with an error: ${parts[1]}" }
+        }
+      } else {
+        messageReceived(message)
+      }
     } else {
       LOGGER.warn { "No ping from $id since ${acceptablePingPeriod.seconds} seconds. Not asking for data." }
     }
