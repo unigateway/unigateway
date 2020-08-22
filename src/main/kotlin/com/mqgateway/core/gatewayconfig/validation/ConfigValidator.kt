@@ -12,12 +12,14 @@ private val LOGGER = KotlinLogging.logger {}
 class ConfigValidator(private val yamlObjectMapper: ObjectMapper) {
 
   private val validators =
-      listOf(
-          UniqueDeviceIdsValidator(),
-          UniquePortNumbersForPointsValidator(),
-          DeviceNameValidator(),
-          WireUsageValidator()
-      )
+    listOf(
+      UniqueDeviceIdsValidator(),
+      UniquePortNumbersForPointsValidator(),
+      DeviceNameValidator(),
+      WireUsageValidator(),
+      SerialDeviceWiresValidator(),
+      SerialDeviceAdditionalConfigValidator()
+    )
 
   fun validateGateway(gateway: Gateway): ValidationResult {
 

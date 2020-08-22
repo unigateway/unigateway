@@ -32,11 +32,15 @@ class YamlParserTest extends Specification {
 		gateway.rooms*.name.toSet() == ["workshop", "bedroom"].toSet()
 
 		def workshop = gateway.rooms.find { it.name == "workshop" }
-		workshop.points*.name  == ["workshop light switch box"]
+		workshop.points*.name.toSet()  == ["workshop light switch box", "workshop multi-box"].toSet()
 
 		def workshopPoint1 = workshop.points.find { it.name == "workshop light switch box" }
 		workshopPoint1.portNumber == 1
 		workshopPoint1.devices*.name.toSet() == ["workshop light", "workshop light switch"].toSet()
+
+		def workshopPoint2 = workshop.points.find { it.name == "workshop multi-box" }
+		workshopPoint2.portNumber == 3
+		workshopPoint2.devices*.name.toSet() == ["bme280 device"].toSet()
 
 		def workshopLightDevice = workshopPoint1.devices.find { it.name == "workshop light" }
 		workshopLightDevice.id == "workshop_light"
@@ -48,5 +52,12 @@ class YamlParserTest extends Specification {
 		workshopLightSwitchDevice.type == DeviceType.SWITCH_BUTTON
 		workshopLightSwitchDevice.wires == [WireColor.BLUE]
 		workshopLightSwitchDevice.config.get("debounceMs") == "50"
+
+		def workshopBme280Device = workshopPoint2.devices.find { it.name == "bme280 device" }
+		workshopBme280Device.id == "bme280_workshop"
+		workshopBme280Device.type == DeviceType.BME280
+		workshopBme280Device.wires == [WireColor.GREEN, WireColor.GREEN_WHITE]
+		workshopBme280Device.config.get("periodBetweenAskingForDataInSec") == "30"
+		workshopBme280Device.config.get("acceptablePingPeriodInSec") == "20"
 	}
 }

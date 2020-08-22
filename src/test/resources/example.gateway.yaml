@@ -17,6 +17,16 @@ rooms:
             type: SWITCH_BUTTON # DIGITAL_INPUT
             config:
               debounceMs: 50
+      - name: "workshop multi-box"
+        portNumber: 3
+        devices:
+          - name: "bme280 device"
+            id: "bme280_workshop"
+            wires: ["GREEN", "GREEN_WHITE"]
+            type: BME280
+            config:
+              periodBetweenAskingForDataInSec: 30
+              acceptablePingPeriodInSec: 20
   - name: "bedroom"
     points:
       - name: "bedroom light switch box"

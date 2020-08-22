@@ -1,12 +1,12 @@
-package com.mqgateway.core.device
+package com.mqgateway.core.device.serial
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.serial.SerialConnection
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinState
 import com.pi4j.io.gpio.event.GpioPinListenerDigital
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.time.Duration
@@ -15,15 +15,14 @@ import kotlin.concurrent.fixedRateTimer
 
 private val LOGGER = KotlinLogging.logger {}
 
-@ObsoleteCoroutinesApi
 abstract class PeriodicSerialInputDevice(
   id: String,
   type: DeviceType,
   private val toDevicePin: GpioPinDigitalOutput,
   private val fromDevicePin: GpioPinDigitalInput,
   private val serialConnection: SerialConnection,
-  private val periodBetweenAskingForData: Duration = Duration.ofSeconds(60 * 3),
-  private val acceptablePingPeriod: Duration = Duration.ofSeconds(60)
+  private val periodBetweenAskingForData: Duration,
+  private val acceptablePingPeriod: Duration
 ) : Device(id, type) {
 
   private var lastPingDate: LocalDateTime? = null
@@ -59,7 +58,7 @@ abstract class PeriodicSerialInputDevice(
     notify("lastPing", lastPingDate.toString())
   }
 
-  protected abstract fun messageReceived(message: String)
+  protected abstract fun messageReceived(rawMessage: String)
 }
 
 class SerialMessageNotReceivedException(deviceId: String) : RuntimeException("Requested data from device '$deviceId', but not received on time")

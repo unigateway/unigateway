@@ -8,6 +8,7 @@ import com.mqgateway.core.mcpexpander.McpExpanders
 import com.mqgateway.core.mcpexpander.McpExpandersFactory
 import com.mqgateway.core.mcpexpander.Pi4JExpanderPinProvider
 import com.mqgateway.core.pi4j.Pi4jConfigurer
+import com.mqgateway.core.serial.SerialConnection
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.HomieDeviceFactory
@@ -20,6 +21,7 @@ import com.pi4j.io.serial.Serial
 import com.pi4j.io.serial.SerialConfig
 import com.pi4j.io.serial.SerialFactory
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import javax.inject.Singleton
 
 @Factory
@@ -39,9 +41,10 @@ internal class ComponentsFactory {
   }
 
   @Singleton
-  fun deviceRegistry(mcpExpanders: McpExpanders, gateway: Gateway): DeviceRegistry {
+  fun deviceRegistry(mcpExpanders: McpExpanders, gateway: Gateway, serialConnection: SerialConnection?): DeviceRegistry {
     val gpioController = GpioFactory.getInstance()
-    val deviceFactory = DeviceFactory(Pi4JExpanderPinProvider(gpioController, mcpExpanders))
+    val expanderPinProvider = Pi4JExpanderPinProvider(gpioController, mcpExpanders)
+    val deviceFactory = DeviceFactory(expanderPinProvider, serialConnection)
     return DeviceRegistry(deviceFactory.createAll(gateway))
   }
 
@@ -64,6 +67,7 @@ internal class ComponentsFactory {
   fun homieReceiver(deviceRegistry: DeviceRegistry) = GatewayHomieReceiver(deviceRegistry)
 
   @Singleton
+  @Requires(property = "gateway.system.serial.enabled", value = "true")
   fun serial(gatewaySystemProperties: GatewaySystemProperties): Serial {
     val serial = SerialFactory.createInstance()
     serial.open(SerialConfig()
@@ -71,5 +75,13 @@ internal class ComponentsFactory {
       .baud(Baud.getInstance(gatewaySystemProperties.components.serial.baud))
     )
     return serial
+  }
+
+  @Singleton
+  @Requires(property = "gateway.system.serial.enabled", value = "true")
+  fun serialConnection(serial: Serial): SerialConnection {
+    val serialConnection = SerialConnection(serial)
+    serialConnection.init()
+    return serialConnection
   }
 }

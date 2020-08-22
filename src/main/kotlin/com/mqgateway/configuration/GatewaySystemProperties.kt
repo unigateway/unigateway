@@ -30,6 +30,7 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
 
     @ConfigurationProperties("serial")
     data class Serial @ConfigurationInject constructor(
+      val enabled: Boolean = true,
       @NotBlank val device: String = "/dev/ttyS1",
       val baud: Int = 9600
     )

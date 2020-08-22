@@ -1,4 +1,4 @@
-package com.mqgateway.core.serial
+package com.mqgateway.utils
 
 
 import com.pi4j.io.serial.Baud
@@ -325,8 +325,7 @@ class SerialStub implements Serial {
 
 	void sendFakeMessage(String message) {
 		eventListeners.each {
-			SerialDataEvent event = new SerialDataEvent(this, message.bytes)
-			it.dataReceived((SerialDataEvent) event)
+			it.dataReceived(new SerialDataEvent(this, message.bytes))
 		}
 	}
 }

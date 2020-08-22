@@ -108,6 +108,96 @@ class ConfigValidatorTest extends Specification {
 		reason.devices*.id.toSet() == ["dev-on-blue-1", "dev-on-blue-2"].toSet()
 	}
 
+	def "should fail validation of serial device when periodBetweenAskingForDataInSec #description"() {
+		given:
+		def devices = [
+			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE], ["periodBetweenAskingForDataInSec": wrongValue.toString()]),
+			someDevice("correctConfig", "device2", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE], ["periodBetweenAskingForDataInSec": correctValue.toString()]),
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == SerialDeviceAdditionalConfigValidator.IncorrectPeriodBetweenAskingForData }
+
+		List<SerialDeviceAdditionalConfigValidator.IncorrectPeriodBetweenAskingForData> reasons =
+			result.failureReasons.findAll { it instanceof SerialDeviceAdditionalConfigValidator.IncorrectPeriodBetweenAskingForData }
+		reasons*.device.id == ["withWrongConfig"]
+
+		where:
+		description            | wrongValue            | correctValue
+		"is less than 10"      | 9                     | 10
+		"is more then MAX_INT" | Integer.MAX_VALUE + 1 | Integer.MAX_VALUE
+	}
+
+	def "should fail validation of serial device when acceptablePingPeriodInSec #description"() {
+		given:
+		def devices = [
+			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE], ["acceptablePingPeriodInSec": wrongValue.toString()]),
+			someDevice("correctConfig", "device2", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE], ["acceptablePingPeriodInSec": correctValue.toString()]),
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == SerialDeviceAdditionalConfigValidator.IncorrectAcceptablePingPeriod }
+
+		List<SerialDeviceAdditionalConfigValidator.IncorrectAcceptablePingPeriod> reasons =
+			result.failureReasons.findAll { it instanceof SerialDeviceAdditionalConfigValidator.IncorrectAcceptablePingPeriod }
+		reasons*.device.id == ["withWrongConfig"]
+
+		where:
+		description            | wrongValue            | correctValue
+		"is less than 10"      | 9                     | 10
+		"is more then MAX_INT" | Integer.MAX_VALUE + 1 | Integer.MAX_VALUE
+	}
+
+	def "should fail validation of serial device when number of configured wires is not 2"() {
+		given:
+		def devices = [
+			someDevice("withWrongConfig1", "device1", DeviceType.BME280, []),
+			someDevice("withWrongConfig2", "device2", DeviceType.BME280, [WireColor.GREEN]),
+			someDevice("withWrongConfig3", "device3", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE, WireColor.GREEN_WHITE])
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
+
+		List<SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice> reasons =
+			result.failureReasons.findAll { it instanceof SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
+		reasons*.device.id.toSet() == ["withWrongConfig1", "withWrongConfig2", "withWrongConfig3"].toSet()
+	}
+
+	def "should fail validation of serial device when it has set same wire twice"() {
+		given:
+		def devices = [
+			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN]),
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
+
+		List<SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice> reasons =
+			result.failureReasons.findAll { it instanceof SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
+		reasons*.device.id == ["withWrongConfig"]
+	}
+
 	static Gateway gatewayWith(Room[] rooms) {
 		new Gateway("1.0", "some gateway", "192.168.1.123", rooms.toList())
 	}

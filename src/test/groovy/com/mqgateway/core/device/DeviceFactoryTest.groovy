@@ -4,6 +4,9 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
+import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
+import com.mqgateway.core.serial.SerialConnection
+import com.mqgateway.utils.SerialStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinPullResistance
@@ -21,7 +24,7 @@ class DeviceFactoryTest extends Specification {
 	ExpanderPinProvider pinProvider = Mock()
 
 	@Subject
-	DeviceFactory deviceFactory = new DeviceFactory(pinProvider)
+	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new SerialConnection(new SerialStub(), 5000))
 
 	def "should create relay"() {
 		given:
@@ -85,5 +88,39 @@ class DeviceFactoryTest extends Specification {
 		device instanceof MotionSensorDevice
 		device.id == "myMotionDetector"
 		device.type == DeviceType.MOTION_DETECTOR
+	}
+
+	def "should create BME280"() {
+		given:
+		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
+											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"])
+		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
+		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_toDevicePin", PinState.LOW) >> Mock(GpioPinDigitalOutput)
+		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myBME280_fromDevicePin", PinPullResistance.PULL_DOWN) >> Mock(GpioPinDigitalInput)
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		def device = devices.first()
+		device instanceof BME280PeriodicSerialInputDevice
+		device.id == "myBME280"
+		device.type == DeviceType.BME280
+	}
+
+	def "should omit creation of serial device (e.g. bme280) when serial connection is not passed to factory"() {
+		given:
+		DeviceFactory deviceFactory = new DeviceFactory(pinProvider, null)
+		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
+											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"])
+		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
+		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_toDevicePin", PinState.LOW) >> Mock(GpioPinDigitalOutput)
+		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myBME280_fromDevicePin", PinPullResistance.PULL_DOWN) >> Mock(GpioPinDigitalInput)
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		devices.isEmpty()
 	}
 }

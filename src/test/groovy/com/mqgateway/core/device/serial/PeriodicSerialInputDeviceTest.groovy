@@ -1,9 +1,10 @@
-package com.mqgateway.core.device
+package com.mqgateway.core.device.serial
+
 
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.serial.ExternalSerialDeviceSimulator
+import com.mqgateway.utils.ExternalSerialDeviceSimulator
 import com.mqgateway.core.serial.SerialConnection
-import com.mqgateway.core.serial.SerialStub
+import com.mqgateway.utils.SerialStub
 import com.mqgateway.utils.UpdateListenerStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
