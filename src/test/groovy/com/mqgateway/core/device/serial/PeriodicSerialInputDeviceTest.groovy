@@ -45,10 +45,10 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		given:
 		device.addListener(updateListenerStub)
 		device.init()
-		inputPin.low()
+		inputPin.high()
 
 		when:
-		inputPin.high()
+		inputPin.low()
 
 		then:
 		conditions.eventually {

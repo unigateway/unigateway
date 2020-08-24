@@ -32,7 +32,7 @@ abstract class PeriodicSerialInputDevice(
     toDevicePin.state = PinState.HIGH
 
     fromDevicePin.addListener(GpioPinListenerDigital { event ->
-      if (event.state == PinState.HIGH) { pingReceived() }
+      if (event.state == PinState.LOW) { pingReceived() }
     })
 
     fixedRateTimer(name = "serial-$id-timer", daemon = true, period = periodBetweenAskingForData.toMillis()) {

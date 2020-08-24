@@ -25,8 +25,8 @@ class ExternalSerialDeviceSimulator {
 	}
 
 	void ping() {
-		pingPin.low()
 		pingPin.high()
+		pingPin.low()
 	}
 
 	void beforeSendingMessage(Closure closure) {

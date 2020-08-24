@@ -95,8 +95,8 @@ class DeviceFactoryTest extends Specification {
 		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
 											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"])
 		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
-		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_toDevicePin", PinState.LOW) >> Mock(GpioPinDigitalOutput)
-		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myBME280_fromDevicePin", PinPullResistance.PULL_DOWN) >> Mock(GpioPinDigitalInput)
+		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_toDevicePin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
+		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myBME280_fromDevicePin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
 
 		when:
 		def devices = deviceFactory.createAll(gateway)

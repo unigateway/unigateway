@@ -10,8 +10,6 @@ import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.mcpexpander.ExpanderPinProvider
 import com.mqgateway.core.serial.SerialConnection
-import com.pi4j.io.gpio.PinPullResistance
-import com.pi4j.io.gpio.PinState
 import java.time.Duration
 
 class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val serialConnection: SerialConnection?) {
@@ -53,11 +51,8 @@ class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val se
 
         serialConnection ?: throw SerialDisabledException(deviceConfig.id)
 
-        val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin", PinState.LOW)
-        val fromDevicePin = pinProvider.pinDigitalInput(
-          portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin",
-          PinPullResistance.PULL_DOWN
-        )
+        val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
+        val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
         val periodBetweenAskingForData =
           Duration.ofSeconds(deviceConfig.config?.get(CONFIG_PERIOD_BETWEEN_ASK_KEY)?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
         val acceptablePingPeriod =

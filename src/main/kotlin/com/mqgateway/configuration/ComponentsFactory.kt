@@ -67,7 +67,7 @@ internal class ComponentsFactory {
   fun homieReceiver(deviceRegistry: DeviceRegistry) = GatewayHomieReceiver(deviceRegistry)
 
   @Singleton
-  @Requires(property = "gateway.system.serial.enabled", value = "true")
+  @Requires(property = "gateway.system.components.serial.enabled", value = "true")
   fun serial(gatewaySystemProperties: GatewaySystemProperties): Serial {
     val serial = SerialFactory.createInstance()
     serial.open(SerialConfig()
@@ -78,7 +78,7 @@ internal class ComponentsFactory {
   }
 
   @Singleton
-  @Requires(property = "gateway.system.serial.enabled", value = "true")
+  @Requires(property = "gateway.system.components.serial.enabled", value = "true")
   fun serialConnection(serial: Serial): SerialConnection {
     val serialConnection = SerialConnection(serial)
     serialConnection.init()
