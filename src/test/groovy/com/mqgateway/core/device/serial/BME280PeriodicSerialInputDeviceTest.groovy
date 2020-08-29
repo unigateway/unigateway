@@ -46,7 +46,7 @@ class BME280PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.setMessageToSend("2073600;2296;54555;99241")
 		conditions.eventually {
 			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "lastPing"
+			update.propertyId == "last_ping"
 			update.newValue != null
 		}
 

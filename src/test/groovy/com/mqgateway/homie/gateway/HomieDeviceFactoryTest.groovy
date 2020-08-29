@@ -1,6 +1,7 @@
 package com.mqgateway.homie.gateway
 
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
@@ -8,6 +9,7 @@ import static com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import static com.mqgateway.homie.HomieProperty.DataType.ENUM
 import static com.mqgateway.homie.HomieProperty.DataType.FLOAT
 import static com.mqgateway.homie.HomieProperty.DataType.INTEGER
+import static com.mqgateway.homie.HomieProperty.DataType.STRING
 import static com.mqgateway.homie.HomieProperty.Unit.CELSIUS
 import static com.mqgateway.homie.HomieProperty.Unit.NONE
 import static com.mqgateway.homie.HomieProperty.Unit.PASCAL
@@ -123,12 +125,13 @@ class HomieDeviceFactoryTest extends Specification {
 
 		then:
 		def node = homieDevice.nodes["bme280_in_test"]
-		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), PRESSURE.toString(), UPTIME.toString(), STATE.toString()].toSet()
+		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), PRESSURE.toString(), UPTIME.toString(), STATE.toString(), LAST_PING.toString()].toSet()
 		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
 		node.properties[HUMIDITY.toString()] == new HomieProperty("gtwName", "bme280_in_test", "humidity", "humidity", FLOAT, "0:100", false, true, PERCENT)
 		node.properties[PRESSURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "pressure", "pressure", INTEGER, null, false, true, PASCAL)
 		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "bme280_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
 		node.properties[STATE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "state", "state", ENUM, "STARTING,READY,LOST", false, true, NONE)
+		node.properties[LAST_PING.toString()] == new HomieProperty("gtwName", "bme280_in_test", "last_ping", "last_ping", STRING, null, false, true, NONE)
 	}
 }
 

@@ -41,7 +41,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		serialConnection.init()
 	}
 
-	def "should set lastPing property on ping (HIGH state) from device"() {
+	def "should set last_ping property on ping (HIGH state) from device"() {
 		given:
 		device.addListener(updateListenerStub)
 		device.init()
@@ -53,7 +53,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		then:
 		conditions.eventually {
 			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "lastPing"
+			update.propertyId == "last_ping"
 			update.newValue != null
 		}
 	}
@@ -67,7 +67,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.setMessageToSend("Some test message 123456")
 		conditions.eventually {
 			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "lastPing"
+			update.propertyId == "last_ping"
 			update.newValue != null
 		}
 
@@ -105,7 +105,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.ping()
 		conditions.eventually {
 			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "lastPing"
+			update.propertyId == "last_ping"
 			update.newValue != null
 		}
 
@@ -132,7 +132,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		conditions.eventually {
 			devicesElements.collect {it.device.id }.every {deviceId ->
-				def update = updateListenerStub.receivedUpdates.find {it.deviceId == deviceId && it.propertyId == "lastPing" }
+				def update = updateListenerStub.receivedUpdates.find {it.deviceId == deviceId && it.propertyId == "last_ping" }
 				update.newValue != null
 			}
 		}
@@ -160,7 +160,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.setMessageToSend("error;this is fake error message from tests")
 		conditions.eventually {
 			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "lastPing"
+			update.propertyId == "last_ping"
 			update.newValue != null
 		}
 

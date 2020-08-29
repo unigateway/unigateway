@@ -1,6 +1,7 @@
 package com.mqgateway.core.gatewayconfig
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
@@ -21,7 +22,7 @@ enum class DeviceType(vararg val properties: DevicePropertyType) {
   RELAY(STATE),
   SWITCH_BUTTON(STATE),
   REED_SWITCH(STATE),
-  BME280(TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, STATE),
+  BME280(TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING),
   SCT013(VALUE),
   DHT22(TEMPERATURE, HUMIDITY),
   MOTION_DETECTOR(STATE),
@@ -29,7 +30,7 @@ enum class DeviceType(vararg val properties: DevicePropertyType) {
 }
 
 enum class DevicePropertyType {
-  STATE, VALUE, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME;
+  STATE, VALUE, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING;
   override fun toString(): String = this.name.toLowerCase()
 }
 

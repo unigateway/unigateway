@@ -2,6 +2,7 @@ package com.mqgateway.homie.gateway
 
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
@@ -88,6 +89,8 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
             UPTIME.toString() to HomieProperty(deviceName, nodeId, UPTIME.toString(), UPTIME.toString(), DataType.INTEGER, null,
               settable = false, retained = false),
             STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "STARTING,READY,LOST",
+              settable = false, retained = true),
+            LAST_PING.toString() to HomieProperty(deviceName, nodeId, LAST_PING.toString(), LAST_PING.toString(), DataType.STRING, null,
               settable = false, retained = true)
         )
       DeviceType.REED_SWITCH ->

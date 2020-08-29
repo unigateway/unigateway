@@ -1,6 +1,7 @@
 package com.mqgateway.core.device.serial
 
 import com.mqgateway.core.device.Device
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.serial.SerialConnection
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -62,7 +63,7 @@ abstract class PeriodicSerialInputDevice(
   private fun pingReceived() {
     LOGGER.debug { "Ping from serial device $id received" }
     lastPingDate = LocalDateTime.now()
-    notify("lastPing", lastPingDate.toString())
+    notify(LAST_PING.toString(), lastPingDate.toString())
   }
 
   protected abstract fun messageReceived(rawMessage: String)
