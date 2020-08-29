@@ -92,7 +92,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		device.message == null
 	}
 
-	def "should throw exception if message not received"() {
+	def "should not throw exception if message not received"() {
 		given:
 		outputPin.low()
 		SerialConnection serialConnection = new SerialConnection(serialStub, 50)
@@ -113,7 +113,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		device.askForSerialDataNow()
 
 		then:
-		thrown(SerialMessageNotReceivedException)
+		notThrown()
 
 	}
 

@@ -46,8 +46,10 @@ abstract class PeriodicSerialInputDevice(
       LOGGER.debug { "Asking for data from device $id" }
       val message = runBlocking {
         serialConnection.askForData(id, toDevicePin)
-      } ?: throw SerialMessageNotReceivedException(id)
-      if (message.startsWith("error")) {
+      }
+      if (message == null) {
+        LOGGER.error { "Could not get message from serial device $id" }
+      } else if (message.startsWith("error")) {
         val parts = message.split(';')
         if (parts[0] == "error") {
           LOGGER.error { "Device $id responded with an error: ${parts[1]}" }
