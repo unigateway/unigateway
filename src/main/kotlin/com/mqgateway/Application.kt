@@ -35,6 +35,10 @@ class MqGateway(
   fun initialize() {
     LOGGER.info { "MqGateway started. Initialization..." }
 
+    Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
+      LOGGER.error(exception) { "Uncaught exception in thread '${thread.name}'." }
+    }
+
     homieDevice.connect(homieReceiver)
     deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
     deviceRegistry.initializeDevices()
