@@ -14,6 +14,7 @@ import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.HomieDeviceFactory
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClientFactory
+import com.pi4j.io.gpio.GpioController
 import com.pi4j.io.gpio.GpioFactory
 import com.pi4j.io.i2c.I2CBus
 import com.pi4j.io.serial.Baud
@@ -35,14 +36,23 @@ internal class ComponentsFactory {
 
   @Singleton
   fun mcpExpanders(gatewaySystemProperties: GatewaySystemProperties): McpExpanders {
-    Pi4jConfigurer.setup(gatewaySystemProperties.platform)
     val mcpPorts: List<Int> = gatewaySystemProperties.components.mcp23017.ports.map { it.toInt(16) }
     return McpExpandersFactory.create(I2CBus.BUS_0, mcpPorts)
   }
 
   @Singleton
-  fun deviceRegistry(mcpExpanders: McpExpanders, gateway: Gateway, serialConnection: SerialConnection?): DeviceRegistry {
-    val gpioController = GpioFactory.getInstance()
+  fun gpioController(gatewaySystemProperties: GatewaySystemProperties): GpioController {
+    Pi4jConfigurer.setup(gatewaySystemProperties.platform)
+    return GpioFactory.getInstance()
+  }
+
+  @Singleton
+  fun deviceRegistry(
+    gpioController: GpioController,
+    mcpExpanders: McpExpanders,
+    gateway: Gateway,
+    serialConnection: SerialConnection?
+  ): DeviceRegistry {
     val expanderPinProvider = Pi4JExpanderPinProvider(gpioController, mcpExpanders)
     val deviceFactory = DeviceFactory(expanderPinProvider, serialConnection)
     return DeviceRegistry(deviceFactory.createAll(gateway))
