@@ -64,4 +64,24 @@ class BME280PeriodicSerialInputDeviceTest extends Specification {
 		humidity == "54.555"
 		pressure == "99241"
 	}
+
+	def "should not throw exception when cannot parse message"() {
+		given:
+		bme280.addListener(updateListenerStub)
+		bme280.init()
+		def fakeSerialDevice = new ExternalSerialDeviceSimulator(outputPin, inputPin, serialStub)
+		fakeSerialDevice.ping()
+		fakeSerialDevice.setMessageToSend("2073600;2296;54555;wrongmessage")
+		conditions.eventually {
+			def update = updateListenerStub.receivedUpdates.first()
+			update.propertyId == "last_ping"
+			update.newValue != null
+		}
+
+		when:
+		bme280.askForSerialDataIfDeviceIsAvailable()
+
+		then:
+		notThrown()
+	}
 }

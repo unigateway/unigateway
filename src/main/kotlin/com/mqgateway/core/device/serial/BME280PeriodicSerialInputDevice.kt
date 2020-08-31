@@ -8,7 +8,10 @@ import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.serial.SerialConnection
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
+import mu.KotlinLogging
 import java.time.Duration
+
+private val LOGGER = KotlinLogging.logger {}
 
 class BME280PeriodicSerialInputDevice(
   id: String,
@@ -25,6 +28,10 @@ class BME280PeriodicSerialInputDevice(
    */
   override fun messageReceived(rawMessage: String) {
     val message = parseMessage(rawMessage)
+    if (message == null) {
+      LOGGER.warn("Message from device $id could not be parsed: $message")
+      return
+    }
 
     notify(UPTIME.toString(), message.uptimeInSec.toString())
     notify(TEMPERATURE.toString(), message.temperatureInCelsius.toString())
@@ -32,13 +39,17 @@ class BME280PeriodicSerialInputDevice(
     notify(PRESSURE.toString(), message.pressureInPa.toString())
   }
 
-  private fun parseMessage(message: String): BME280Message {
-    val parts = message.split(';')
-    val uptime = parts[0].toInt()
-    val temperatureInCelsius = parts[1].toFloat() / 100
-    val humidity = parts[2].toFloat() / 1000
-    val pressureInPa = parts[3].toInt()
-    return BME280Message(uptime, temperatureInCelsius, humidity, pressureInPa)
+  private fun parseMessage(message: String): BME280Message? {
+    return try {
+      val parts = message.split(';')
+      val uptime = parts[0].toInt()
+      val temperatureInCelsius = parts[1].toFloat() / 100
+      val humidity = parts[2].toFloat() / 1000
+      val pressureInPa = parts[3].toInt()
+      BME280Message(uptime, temperatureInCelsius, humidity, pressureInPa)
+    } catch(e: Exception) {
+      null
+    }
   }
 
   data class BME280Message(val uptimeInSec: Int, val temperatureInCelsius: Float, val humidity: Float, val pressureInPa: Int)
