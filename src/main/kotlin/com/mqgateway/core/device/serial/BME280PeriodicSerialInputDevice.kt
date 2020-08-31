@@ -47,7 +47,7 @@ class BME280PeriodicSerialInputDevice(
       val humidity = parts[2].toFloat() / 1000
       val pressureInPa = parts[3].toInt()
       BME280Message(uptime, temperatureInCelsius, humidity, pressureInPa)
-    } catch(e: Exception) {
+    } catch (e: Exception) {
       null
     }
   }
