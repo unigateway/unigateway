@@ -67,9 +67,12 @@ class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val se
           acceptablePingPeriod
         )
       }
+      DeviceType.EMULATED_SWITCH -> {
+        val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+        EmulatedSwitchButtonDevice(deviceConfig.id, pin)
+      }
       DeviceType.SCT013 -> TODO()
       DeviceType.DHT22 -> TODO()
-      DeviceType.EMULATED_SWITCH -> TODO()
     }
   }
 
