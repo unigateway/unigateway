@@ -28,7 +28,7 @@ class ReedSwitchDeviceTest extends Specification {
 		pin.getDebounce(PinState.HIGH) == 150
 	}
 
-	def "should notify listeners on reed switch closed (HIGH state)"() {
+	def "should notify listeners on reed switch open (HIGH state)"() {
 		given:
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
@@ -40,11 +40,11 @@ class ReedSwitchDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "CLOSED")
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "OPEN")
 		}
 	}
 
-	def "should notify listeners on reed switch opened (LOW state)"() {
+	def "should notify listeners on reed switch closed (LOW state)"() {
 		given:
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
@@ -56,7 +56,7 @@ class ReedSwitchDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "OPENED")
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "CLOSED")
 		}
 	}
 }

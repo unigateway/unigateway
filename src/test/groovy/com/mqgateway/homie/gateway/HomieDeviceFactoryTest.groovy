@@ -112,7 +112,7 @@ class HomieDeviceFactoryTest extends Specification {
 		then:
 		def node = homieDevice.nodes["reedSwitch_in_test"]
 		node.properties.keySet() == [STATE.toString()].toSet()
-		node.properties[STATE.toString()] == new HomieProperty("gtwName", "reedSwitch_in_test", "state", "state", ENUM, "ON,OFF", false, false, NONE)
+		node.properties[STATE.toString()] == new HomieProperty("gtwName", "reedSwitch_in_test", "state", "state", ENUM, "OPEN,CLOSED", false, true, NONE)
 	}
 
 	def "should create HomieProperties for BME280"() {
