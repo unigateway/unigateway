@@ -94,7 +94,7 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
               settable = false, retained = true)
         )
       DeviceType.REED_SWITCH ->
-        mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF"))
+        mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "OPEN,CLOSED", retained = true))
       DeviceType.EMULATED_SWITCH ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "PRESSED,RELEASED",
           settable = true, retained = false))

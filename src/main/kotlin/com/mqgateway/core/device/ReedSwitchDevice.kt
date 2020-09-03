@@ -16,13 +16,13 @@ class ReedSwitchDevice(
   }
 
   override fun updatableProperty() = STATE
-  override fun highStateValue() = CLOSED_STATE_VALUE
-  override fun lowStateValue() = OPENED_STATE_VALUE
+  override fun highStateValue() = OPEN_STATE_VALUE
+  override fun lowStateValue() = CLOSED_STATE_VALUE
 
   companion object {
     const val CONFIG_DEBOUNCE_DEFAULT = 50
 
     private const val CLOSED_STATE_VALUE = "CLOSED"
-    private const val OPENED_STATE_VALUE = "OPENED"
+    private const val OPEN_STATE_VALUE = "OPEN"
   }
 }
