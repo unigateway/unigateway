@@ -78,29 +78,35 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "PRESSED,RELEASED"))
       DeviceType.MOTION_DETECTOR ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF"))
-      DeviceType.BME280 ->
-        mapOf(
-            TEMPERATURE.toString() to HomieProperty(deviceName, nodeId, TEMPERATURE.toString(), TEMPERATURE.toString(), DataType.FLOAT, null,
-              settable = false, retained = true, unit = Unit.CELSIUS),
-            HUMIDITY.toString() to HomieProperty(deviceName, nodeId, HUMIDITY.toString(), HUMIDITY.toString(), DataType.FLOAT, "0:100",
-              settable = false, retained = true, unit = Unit.PERCENT),
-            PRESSURE.toString() to HomieProperty(deviceName, nodeId, PRESSURE.toString(), PRESSURE.toString(), DataType.INTEGER, null,
-              settable = false, retained = true, unit = Unit.PASCAL),
-            UPTIME.toString() to HomieProperty(deviceName, nodeId, UPTIME.toString(), UPTIME.toString(), DataType.INTEGER, null,
-              settable = false, retained = false),
-            STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "STARTING,READY,LOST",
-              settable = false, retained = true),
-            LAST_PING.toString() to HomieProperty(deviceName, nodeId, LAST_PING.toString(), LAST_PING.toString(), DataType.STRING, null,
-              settable = false, retained = true)
-        )
+      DeviceType.BME280 -> mapOf(
+        TEMPERATURE.toString() to HomieProperty(deviceName, nodeId, TEMPERATURE.toString(), TEMPERATURE.toString(), DataType.FLOAT, null,
+          settable = false, retained = true, unit = Unit.CELSIUS),
+        HUMIDITY.toString() to HomieProperty(deviceName, nodeId, HUMIDITY.toString(), HUMIDITY.toString(), DataType.FLOAT, "0:100",
+          settable = false, retained = true, unit = Unit.PERCENT),
+        PRESSURE.toString() to HomieProperty(deviceName, nodeId, PRESSURE.toString(), PRESSURE.toString(), DataType.INTEGER, null,
+          settable = false, retained = true, unit = Unit.PASCAL),
+        UPTIME.toString() to HomieProperty(deviceName, nodeId, UPTIME.toString(), UPTIME.toString(), DataType.INTEGER, null,
+          settable = false, retained = false),
+        LAST_PING.toString() to HomieProperty(deviceName, nodeId, LAST_PING.toString(), LAST_PING.toString(), DataType.STRING, null,
+          settable = false, retained = true)
+      )
       DeviceType.REED_SWITCH ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "OPEN,CLOSED",
           retained = true))
       DeviceType.EMULATED_SWITCH ->
         mapOf(STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "PRESSED,RELEASED",
           settable = true, retained = false))
+      DeviceType.DHT22 -> mapOf(
+        TEMPERATURE.toString() to HomieProperty(deviceName, nodeId, TEMPERATURE.toString(), TEMPERATURE.toString(), DataType.FLOAT, null,
+          settable = false, retained = true, unit = Unit.CELSIUS),
+        HUMIDITY.toString() to HomieProperty(deviceName, nodeId, HUMIDITY.toString(), HUMIDITY.toString(), DataType.FLOAT, "0:100",
+          settable = false, retained = true, unit = Unit.PERCENT),
+        UPTIME.toString() to HomieProperty(deviceName, nodeId, UPTIME.toString(), UPTIME.toString(), DataType.INTEGER, null,
+          settable = false, retained = false),
+        LAST_PING.toString() to HomieProperty(deviceName, nodeId, LAST_PING.toString(), LAST_PING.toString(), DataType.STRING, null,
+          settable = false, retained = true)
+      )
       DeviceType.SCT013 -> TODO()
-      DeviceType.DHT22 -> TODO()
     }
   }
 }

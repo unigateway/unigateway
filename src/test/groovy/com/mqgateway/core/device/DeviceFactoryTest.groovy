@@ -5,6 +5,7 @@ import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
+import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
 import com.mqgateway.core.serial.SerialConnection
 import com.mqgateway.utils.SerialStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -122,5 +123,23 @@ class DeviceFactoryTest extends Specification {
 
 		then:
 		devices.isEmpty()
+	}
+
+	def "should create DHT22"() {
+		given:
+		def deviceConfig = new DeviceConfig("myDHT22", "Test DHT22 device", DeviceType.DHT22, [WireColor.GREEN, WireColor.GREEN_WHITE],
+											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"])
+		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
+		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myDHT22_toDevicePin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
+		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myDHT22_fromDevicePin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		def device = devices.first()
+		device instanceof DHT22PeriodicSerialInputDevice
+		device.id == "myDHT22"
+		device.type == DeviceType.DHT22
 	}
 }

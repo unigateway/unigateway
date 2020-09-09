@@ -5,6 +5,7 @@ import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companio
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_DEFAULT
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
+import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
@@ -71,8 +72,26 @@ class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val se
         val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
         EmulatedSwitchButtonDevice(deviceConfig.id, pin)
       }
+      DeviceType.DHT22 -> {
+        serialConnection ?: throw SerialDisabledException(deviceConfig.id)
+
+        val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
+        val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
+        val periodBetweenAskingForData =
+          Duration.ofSeconds(deviceConfig.config?.get(CONFIG_PERIOD_BETWEEN_ASK_KEY)?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
+        val acceptablePingPeriod =
+          Duration.ofSeconds(deviceConfig.config?.get(CONFIG_ACCEPTABLE_PING_PERIOD_KEY)?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
+
+        DHT22PeriodicSerialInputDevice(
+          deviceConfig.id,
+          toDevicePin,
+          fromDevicePin,
+          serialConnection,
+          periodBetweenAskingForData,
+          acceptablePingPeriod
+        )
+      }
       DeviceType.SCT013 -> TODO()
-      DeviceType.DHT22 -> TODO()
     }
   }
 
