@@ -8,7 +8,8 @@ import com.mqgateway.core.mcpexpander.McpExpanders
 import com.mqgateway.core.mcpexpander.McpExpandersFactory
 import com.mqgateway.core.mcpexpander.Pi4JExpanderPinProvider
 import com.mqgateway.core.pi4j.Pi4jConfigurer
-import com.mqgateway.core.serial.SerialConnection
+import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.HomieDeviceFactory
@@ -51,10 +52,11 @@ internal class ComponentsFactory {
     gpioController: GpioController,
     mcpExpanders: McpExpanders,
     gateway: Gateway,
+    timersScheduler: TimersScheduler,
     serialConnection: SerialConnection?
   ): DeviceRegistry {
     val expanderPinProvider = Pi4JExpanderPinProvider(gpioController, mcpExpanders)
-    val deviceFactory = DeviceFactory(expanderPinProvider, serialConnection)
+    val deviceFactory = DeviceFactory(expanderPinProvider, timersScheduler, serialConnection)
     return DeviceRegistry(deviceFactory.createAll(gateway))
   }
 

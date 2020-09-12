@@ -1,6 +1,6 @@
 package com.mqgateway.core.device.serial
 
-import com.mqgateway.core.serial.SerialConnection
+import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.utils.ExternalSerialDeviceSimulator
 import com.mqgateway.utils.SerialStub
 import com.mqgateway.utils.UpdateListenerStub

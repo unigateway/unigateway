@@ -5,6 +5,7 @@ import static com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import static com.mqgateway.homie.HomieProperty.DataType.ENUM
 import static com.mqgateway.homie.HomieProperty.DataType.FLOAT
@@ -148,6 +149,21 @@ class HomieDeviceFactoryTest extends Specification {
 		node.properties[HUMIDITY.toString()] == new HomieProperty("gtwName", "dht22_in_test", "humidity", "humidity", FLOAT, "0:100", false, true, PERCENT)
 		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "dht22_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
 		node.properties[LAST_PING.toString()] == new HomieProperty("gtwName", "dht22_in_test", "last_ping", "last_ping", STRING, null, false, true, NONE)
+	}
+
+	def "should create HomieProperties for TimerSwitch"() {
+		given:
+		DeviceConfig device = new DeviceConfig("timerswitch_in_test", "Test Timer Switch", DeviceType.TIMER_SWITCH, [WireColor.BLUE], null)
+		Gateway gateway = gateway([room([point([device])])])
+
+		when:
+		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
+
+		then:
+		def node = homieDevice.nodes["timerswitch_in_test"]
+		node.properties.keySet() == [STATE.toString(), TIMER.toString()].toSet()
+		node.properties[STATE.toString()] == new HomieProperty("gtwName", "timerswitch_in_test", "state", "state", ENUM, "ON,OFF", false, true, NONE)
+		node.properties[TIMER.toString()] == new HomieProperty("gtwName", "timerswitch_in_test", "timer", "timer", INTEGER, "0:1440", true, true, NONE)
 	}
 }
 

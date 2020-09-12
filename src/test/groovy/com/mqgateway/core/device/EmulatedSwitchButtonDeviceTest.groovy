@@ -27,7 +27,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 	@Unroll
 	def "should change pin state to LOW when requested to be PRESSED"() {
 		when:
-		emulatedSwitch.changeState("state", "PRESSED")
+		emulatedSwitch.change("state", "PRESSED")
 
 		then:
 		pin.getState() == PinState.LOW
@@ -41,7 +41,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 		def conditions = new PollingConditions()
 
 		when:
-		emulatedSwitch.changeState("state", "PRESSED")
+		emulatedSwitch.change("state", "PRESSED")
 
 		then:
 		conditions.eventually {
@@ -57,7 +57,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 		def conditions = new PollingConditions()
 
 		when:
-		emulatedSwitch.changeState("state", "PRESSED")
+		emulatedSwitch.change("state", "PRESSED")
 
 		then:
 		conditions.eventually {

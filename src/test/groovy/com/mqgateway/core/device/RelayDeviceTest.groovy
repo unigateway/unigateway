@@ -29,7 +29,7 @@ class RelayDeviceTest extends Specification {
 	@Unroll
 	def "should change pin state when requested to #newState"(String newState, PinState pinState) {
 		when:
-		relay.changeState("state", newState)
+		relay.change("state", newState)
 
 		then:
 		pin.getState() == pinState
@@ -48,7 +48,7 @@ class RelayDeviceTest extends Specification {
 		def conditions = new PollingConditions()
 
 		when:
-		relay.changeState("state", "ON")
+		relay.change("state", "ON")
 
 		then:
 		conditions.eventually {
@@ -64,7 +64,7 @@ class RelayDeviceTest extends Specification {
 		def conditions = new PollingConditions()
 
 		when:
-		relay.changeState("state", "OFF")
+		relay.change("state", "OFF")
 
 		then:
 		conditions.eventually {

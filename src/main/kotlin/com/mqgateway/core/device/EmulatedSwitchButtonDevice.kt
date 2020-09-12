@@ -1,5 +1,6 @@
 package com.mqgateway.core.device
 
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinState
@@ -15,15 +16,15 @@ class EmulatedSwitchButtonDevice(id: String, pin: GpioPinDigitalOutput) : Digita
     pin.state = newPinState
   }
 
-  override fun changeState(propertyId: String, newValue: String) {
+  override fun change(propertyId: String, newValue: String) {
     LOGGER.debug { "Changing state on emulated switch $id to $newValue" }
     if (newValue == "PRESSED") {
       changeState(EmulatedSwitchState.PRESSED)
-      notify(propertyId, newValue)
+      notify(STATE, newValue)
       thread {
         Thread.sleep(TIME_BEFORE_RELEASE_IN_MS)
         changeState(EmulatedSwitchState.RELEASED)
-        notify(propertyId, "RELEASED")
+        notify(STATE, "RELEASED")
       }
     }
   }

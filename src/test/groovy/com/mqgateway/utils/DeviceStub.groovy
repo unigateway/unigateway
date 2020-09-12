@@ -21,7 +21,7 @@ class DeviceStub extends Device {
 	}
 
 	@Override
-	void changeState(@NotNull String propertyId, @NotNull String newValue) {
+	void change(@NotNull String propertyId, @NotNull String newValue) {
 		properties.put(propertyId, newValue)
 	}
 

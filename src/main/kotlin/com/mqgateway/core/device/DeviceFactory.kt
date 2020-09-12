@@ -10,10 +10,15 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.mcpexpander.ExpanderPinProvider
-import com.mqgateway.core.serial.SerialConnection
+import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
 import java.time.Duration
 
-class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val serialConnection: SerialConnection?) {
+class DeviceFactory(
+  private val pinProvider: ExpanderPinProvider,
+  private val timersScheduler: TimersScheduler,
+  private val serialConnection: SerialConnection?
+) {
 
   fun createAll(gateway: Gateway): Set<Device> {
     return gateway.rooms
@@ -21,7 +26,7 @@ class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val se
         .flatMap { point ->
           val portNumber = point.portNumber
           point.devices
-            .filter { serialConnection != null || it.type != DeviceType.BME280 }
+            .filter { serialConnection != null || !it.type.isSerialDevice() }
             .map { create(portNumber, it) }
         }.toSet()
   }
@@ -90,6 +95,10 @@ class DeviceFactory(private val pinProvider: ExpanderPinProvider, private val se
           periodBetweenAskingForData,
           acceptablePingPeriod
         )
+      }
+      DeviceType.TIMER_SWITCH -> {
+        val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+        TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
       }
       DeviceType.SCT013 -> TODO()
     }

@@ -128,7 +128,8 @@
             "SCT013",
             "DHT22",
             "MOTION_DETECTOR",
-            "EMULATED_SWITCH"
+            "EMULATED_SWITCH",
+            "TIMER_SWITCH"
           ]
         },
         "config": {

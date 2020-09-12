@@ -6,7 +6,8 @@ import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
 import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
-import com.mqgateway.core.serial.SerialConnection
+import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.SerialStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
@@ -25,7 +26,7 @@ class DeviceFactoryTest extends Specification {
 	ExpanderPinProvider pinProvider = Mock()
 
 	@Subject
-	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new SerialConnection(new SerialStub(), 5000))
+	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new SerialConnection(new SerialStub(), 5000))
 
 	def "should create relay"() {
 		given:
@@ -111,7 +112,7 @@ class DeviceFactoryTest extends Specification {
 
 	def "should omit creation of serial device (e.g. bme280) when serial connection is not passed to factory"() {
 		given:
-		DeviceFactory deviceFactory = new DeviceFactory(pinProvider, null)
+		DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), null)
 		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
 											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"])
 		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
@@ -141,5 +142,21 @@ class DeviceFactoryTest extends Specification {
 		device instanceof DHT22PeriodicSerialInputDevice
 		device.id == "myDHT22"
 		device.type == DeviceType.DHT22
+	}
+
+	def "should create timer switch"() {
+		given:
+		def timerSwitchDeviceConfig = new DeviceConfig("myTimerSwitch", "Test timer switch", DeviceType.TIMER_SWITCH, [WireColor.BLUE], null)
+		Gateway gateway = gateway([room([point("point name", 2, [timerSwitchDeviceConfig])])])
+		pinProvider.pinDigitalOutput(2, WireColor.BLUE, "myTimerSwitch_pin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		def device = devices.first()
+		device instanceof TimerSwitchRelayDevice
+		device.id == "myTimerSwitch"
+		device.type == DeviceType.TIMER_SWITCH
 	}
 }

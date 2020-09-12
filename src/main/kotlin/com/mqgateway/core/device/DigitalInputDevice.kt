@@ -21,7 +21,7 @@ abstract class DigitalInputDevice(
     digitalInputPin.addListener(GpioPinListenerDigital { event ->
       val newState = if (event.state == PinState.HIGH) { highStateValue() } else { lowStateValue() }
       LOGGER.info { "Device($id) state changed to $newState" }
-      notify(updatableProperty().toString(), newState)
+      notify(updatableProperty(), newState)
     })
   }
 

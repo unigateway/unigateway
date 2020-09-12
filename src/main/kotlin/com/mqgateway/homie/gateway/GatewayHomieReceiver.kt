@@ -15,7 +15,7 @@ class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : 
     val gatewayDevice = gatewayDeviceRegistry.getById(homieTopic.nodeId!!) ?: throw DeviceNotFoundException(homieTopic.nodeId)
     LOGGER.trace { "Device found in registry (${gatewayDevice.id})" }
 
-    gatewayDevice.changeState(homieTopic.propertyId!!, payload)
+    gatewayDevice.change(homieTopic.propertyId!!, payload)
   }
 }
 

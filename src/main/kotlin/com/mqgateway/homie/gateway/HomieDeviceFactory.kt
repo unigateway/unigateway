@@ -6,6 +6,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
@@ -105,6 +106,12 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
           settable = false, retained = false),
         LAST_PING.toString() to HomieProperty(deviceName, nodeId, LAST_PING.toString(), LAST_PING.toString(), DataType.STRING, null,
           settable = false, retained = true)
+      )
+      DeviceType.TIMER_SWITCH -> mapOf(
+        STATE.toString() to HomieProperty(deviceName, nodeId, STATE.toString(), STATE.toString(), DataType.ENUM, "ON,OFF",
+          settable = false, retained = true),
+        TIMER.toString() to HomieProperty(deviceName, nodeId, TIMER.toString(), TIMER.toString(), DataType.INTEGER, "0:1440",
+          settable = true, retained = true)
       )
       DeviceType.SCT013 -> TODO()
     }

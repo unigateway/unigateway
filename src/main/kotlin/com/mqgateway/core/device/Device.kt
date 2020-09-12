@@ -1,5 +1,6 @@
 package com.mqgateway.core.device
 
+import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
 import mu.KotlinLogging
 
@@ -30,10 +31,14 @@ abstract class Device(val id: String, val type: DeviceType) {
     // To be implemented by devices extending this class if needed
   }
 
-  fun notify(propertyId: String, newValue: String) {
+  fun notify(propertyId: DevicePropertyType, newValue: Number) {
+    notify(propertyId, newValue.toString())
+  }
+
+  fun notify(propertyId: DevicePropertyType, newValue: String) {
     LOGGER.trace { "Notifying listeners about property value change ($id.$propertyId = $newValue)" }
     updateListeners.forEach {
-      it.valueUpdated(id, propertyId, newValue)
+      it.valueUpdated(id, propertyId.toString(), newValue)
     }
   }
 
@@ -41,7 +46,7 @@ abstract class Device(val id: String, val type: DeviceType) {
     updateListeners.add(updateListener)
   }
 
-  open fun changeState(propertyId: String, newValue: String) {
+  open fun change(propertyId: String, newValue: String) {
     throw UnsupportedStateChangeException(id, propertyId)
   }
 }

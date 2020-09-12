@@ -5,7 +5,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.serial.SerialConnection
+import com.mqgateway.core.utils.SerialConnection
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import mu.KotlinLogging
@@ -33,10 +33,10 @@ class BME280PeriodicSerialInputDevice(
       return
     }
 
-    notify(UPTIME.toString(), message.uptimeInSec.toString())
-    notify(TEMPERATURE.toString(), message.temperatureInCelsius.toString())
-    notify(HUMIDITY.toString(), message.humidity.toString())
-    notify(PRESSURE.toString(), message.pressureInPa.toString())
+    notify(UPTIME, message.uptimeInSec)
+    notify(TEMPERATURE, message.temperatureInCelsius)
+    notify(HUMIDITY, message.humidity)
+    notify(PRESSURE, message.pressureInPa)
   }
 
   private fun parseMessage(message: String): BME280Message? {

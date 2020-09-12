@@ -1,4 +1,4 @@
-package com.mqgateway.core.serial
+package com.mqgateway.core.utils
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.serial.Serial
