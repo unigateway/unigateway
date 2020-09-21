@@ -85,7 +85,7 @@ class HomieDeviceFactoryTest extends Specification {
 		then:
 		def node = homieDevice.nodes["motiondetector_in_test"]
 		node.properties.keySet() == [STATE.toString()].toSet()
-		node.properties[STATE.toString()] == new HomieProperty("gtwName", "motiondetector_in_test", "state", "state", ENUM, "ON,OFF", false, false, NONE)
+		node.properties[STATE.toString()] == new HomieProperty("gtwName", "motiondetector_in_test", "state", "state", ENUM, "ON,OFF", false, true, NONE)
 	}
 
 	def "should create HomieProperties for SwitchButton"() {
@@ -126,12 +126,13 @@ class HomieDeviceFactoryTest extends Specification {
 
 		then:
 		def node = homieDevice.nodes["bme280_in_test"]
-		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), PRESSURE.toString(), UPTIME.toString(), LAST_PING.toString()].toSet()
+		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), PRESSURE.toString(), UPTIME.toString(), LAST_PING.toString(), STATE.toString()].toSet()
 		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
 		node.properties[HUMIDITY.toString()] == new HomieProperty("gtwName", "bme280_in_test", "humidity", "humidity", FLOAT, "0:100", false, true, PERCENT)
 		node.properties[PRESSURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "pressure", "pressure", INTEGER, null, false, true, PASCAL)
 		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "bme280_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
 		node.properties[LAST_PING.toString()] == new HomieProperty("gtwName", "bme280_in_test", "last_ping", "last_ping", STRING, null, false, true, NONE)
+		node.properties[STATE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "state", "state", ENUM, "ONLINE,OFFLINE", false, true, NONE)
 	}
 
 	def "should create HomieProperties for DHT22"() {
@@ -144,11 +145,12 @@ class HomieDeviceFactoryTest extends Specification {
 
 		then:
 		def node = homieDevice.nodes["dht22_in_test"]
-		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), UPTIME.toString(), LAST_PING.toString()].toSet()
+		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), UPTIME.toString(), LAST_PING.toString(), STATE.toString()].toSet()
 		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "dht22_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
 		node.properties[HUMIDITY.toString()] == new HomieProperty("gtwName", "dht22_in_test", "humidity", "humidity", FLOAT, "0:100", false, true, PERCENT)
 		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "dht22_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
 		node.properties[LAST_PING.toString()] == new HomieProperty("gtwName", "dht22_in_test", "last_ping", "last_ping", STRING, null, false, true, NONE)
+		node.properties[STATE.toString()] == new HomieProperty("gtwName", "dht22_in_test", "state", "state", ENUM, "ONLINE,OFFLINE", false, true, NONE)
 	}
 
 	def "should create HomieProperties for TimerSwitch"() {

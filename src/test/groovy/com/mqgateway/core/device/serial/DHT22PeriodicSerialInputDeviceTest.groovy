@@ -45,8 +45,7 @@ class DHT22PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.ping()
 		fakeSerialDevice.setMessageToSend("273600;21.45;71.84")
 		conditions.eventually {
-			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "last_ping"
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping" }
 			update.newValue != null
 		}
 
@@ -71,8 +70,7 @@ class DHT22PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.ping()
 		fakeSerialDevice.setMessageToSend("273600;21.45;!1.84")
 		conditions.eventually {
-			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "last_ping"
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping" }
 			update.newValue != null
 		}
 
