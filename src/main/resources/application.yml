@@ -21,3 +21,7 @@ gateway:
         enabled: true
         device: "/dev/ttyS1"
         baud: 9600
+
+homeassistant:
+  enabled: true
+  root-topic: "homeassistant"

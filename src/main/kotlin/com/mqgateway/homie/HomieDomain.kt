@@ -5,7 +5,7 @@ import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
 import mu.KotlinLogging
 
-private const val HOMIE_PREFIX = "homie"
+const val HOMIE_PREFIX = "homie"
 
 private val LOGGER = KotlinLogging.logger {}
 

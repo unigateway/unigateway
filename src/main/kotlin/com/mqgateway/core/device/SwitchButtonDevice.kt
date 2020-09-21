@@ -4,6 +4,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.pi4j.io.gpio.GpioPinDigitalInput
 
+// TODO maj: add long press functionality
 class SwitchButtonDevice(
   id: String,
   private val pin: GpioPinDigitalInput,

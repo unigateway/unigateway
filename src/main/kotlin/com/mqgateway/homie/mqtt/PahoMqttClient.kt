@@ -3,8 +3,8 @@ package com.mqgateway.homie.mqtt
 import mu.KotlinLogging
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
-import org.eclipse.paho.client.mqttv3.MqttClient as PahoClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
+import org.eclipse.paho.client.mqttv3.MqttClient as PahoClient
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -31,6 +31,10 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
 
   override fun publishAsync(mqttMessage: MqttMessage) {
     publishSync(mqttMessage)
+  }
+
+  override fun disconnect() {
+    mqttClient.disconnect()
   }
 
   override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {

@@ -42,4 +42,8 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
         .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes))) }
         .send()
   }
+
+  override fun disconnect() {
+    mqttClient.disconnect()
+  }
 }

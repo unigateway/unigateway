@@ -38,4 +38,9 @@ class MqttClientStub implements MqttClient {
 	void publishAsync(@NotNull MqttMessage mqttMessage) {
 		publishSync(mqttMessage)
 	}
+
+	@Override
+	void disconnect() {
+		connected = false
+	}
 }
