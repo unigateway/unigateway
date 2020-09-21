@@ -90,7 +90,7 @@ class SwitchButtonDeviceTest extends Specification {
 
 		when:
 		pin.low()
-		sleep(LONG_PRESS_MS + 1)
+		sleep(LONG_PRESS_MS + 100)
 		pin.high()
 
 		then:
