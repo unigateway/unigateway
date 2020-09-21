@@ -13,12 +13,17 @@ import spock.util.concurrent.PollingConditions
 
 class SwitchButtonDeviceTest extends Specification {
 
-	def pinImpl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
+	public static final int LONG_PRESS_MS = 100
+	def pinImpl = new PinImpl("com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", 150, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
 	def gpioProvider = new SimulatedGpioProvider()
 	def pin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pinImpl)
 
 	@Subject
-	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 200)
+	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
+
+	void setup() {
+		pin.setMode(PinMode.DIGITAL_INPUT)
+	}
 
 	def "should set debounce on pin during initialization"() {
 		when:
@@ -57,6 +62,40 @@ class SwitchButtonDeviceTest extends Specification {
 		then:
 		conditions.eventually {
 			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "RELEASED")
+		}
+	}
+
+	def "should notify listeners on switch button long pressed"() {
+		given:
+		def listenerStub = new UpdateListenerStub()
+		device.addListener(listenerStub)
+		device.init()
+		def conditions = new PollingConditions()
+
+		when:
+		pin.low()
+
+		then:
+		conditions.eventually {
+			assert listenerStub.receivedUpdates.find {it.newValue == "LONG_PRESSED" }
+		}
+	}
+
+	def "should notify listeners on switch button long released"() {
+		given:
+		def listenerStub = new UpdateListenerStub()
+		device.addListener(listenerStub)
+		device.init()
+		def conditions = new PollingConditions()
+
+		when:
+		pin.low()
+		sleep(LONG_PRESS_MS + 1)
+		pin.high()
+
+		then:
+		conditions.eventually {
+			assert listenerStub.receivedUpdates.find {it.newValue == "LONG_RELEASED" }
 		}
 	}
 }

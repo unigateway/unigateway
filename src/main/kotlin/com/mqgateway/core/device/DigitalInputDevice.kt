@@ -22,12 +22,15 @@ abstract class DigitalInputDevice(
       val newState = if (event.state == PinState.HIGH) { highStateValue() } else { lowStateValue() }
       LOGGER.info { "Device($id) state changed to $newState" }
       notify(updatableProperty(), newState)
+      additionalOnStateChanged(newState)
     })
   }
 
   protected abstract fun updatableProperty(): DevicePropertyType
   protected abstract fun highStateValue(): String
   protected abstract fun lowStateValue(): String
+
+  protected open fun additionalOnStateChanged(newState: String) {}
 
   companion object {
     const val CONFIG_DEBOUNCE_KEY = "debounceMs"

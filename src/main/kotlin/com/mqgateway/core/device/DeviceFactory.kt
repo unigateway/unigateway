@@ -41,7 +41,9 @@ class DeviceFactory(
       DeviceType.SWITCH_BUTTON -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
         val debounceMs = deviceConfig.config?.get(DigitalInputDevice.CONFIG_DEBOUNCE_KEY)?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
-        SwitchButtonDevice(deviceConfig.id, pin, debounceMs)
+        val longPressTimeMs =
+          deviceConfig.config?.get(SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY)?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
+        SwitchButtonDevice(deviceConfig.id, pin, debounceMs, longPressTimeMs)
       }
       DeviceType.REED_SWITCH -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
