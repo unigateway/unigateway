@@ -55,7 +55,7 @@ enum class DeviceType(vararg val properties: Property) {
     Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
     Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
     Property(PRESSURE, INTEGER, null, retained = true, unit = PASCAL),
-    Property(UPTIME, INTEGER, null, retained = true, unit = SECOND),
+    Property(UPTIME, INTEGER, null, retained = false, unit = SECOND),
     Property(LAST_PING, DATETIME, null, retained = true),
     Property(STATE, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
@@ -67,6 +67,7 @@ enum class DeviceType(vararg val properties: Property) {
   DHT22(
     Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
     Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
+    Property(UPTIME, INTEGER, null, retained = false, unit = SECOND),
     Property(LAST_PING, DATETIME, null, retained = true),
     Property(STATE, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
@@ -78,7 +79,7 @@ enum class DeviceType(vararg val properties: Property) {
   ),
   TIMER_SWITCH(
     Property(STATE, ENUM, "ON,OFF", retained = true),
-    Property(TIMER, INTEGER, "0:1440", settable = true, unit = SECOND)
+    Property(TIMER, INTEGER, "0:1440", settable = true, retained = true, unit = SECOND)
   );
 
   fun isSerialDevice() = this in SERIAL_BASED_DEVICES
