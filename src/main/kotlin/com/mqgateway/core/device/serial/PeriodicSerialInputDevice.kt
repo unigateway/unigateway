@@ -2,6 +2,7 @@ package com.mqgateway.core.device.serial
 
 import com.mqgateway.core.device.Device
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.utils.SerialConnection
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -55,10 +56,12 @@ abstract class PeriodicSerialInputDevice(
           LOGGER.error { "Device $id responded with an error: ${parts[1]}" }
         }
       } else {
+        notify(STATE, AVAILABILITY_ONLINE_STATE)
         messageReceived(message)
       }
     } else {
       LOGGER.warn { "No ping from $id since ${acceptablePingPeriod.seconds} seconds. Not asking for data." }
+      notify(STATE, AVAILABILITY_OFFLINE_STATE)
     }
   }
 
@@ -69,6 +72,9 @@ abstract class PeriodicSerialInputDevice(
   }
 
   protected abstract fun messageReceived(rawMessage: String)
-}
 
-class SerialMessageNotReceivedException(deviceId: String) : RuntimeException("Requested data from device '$deviceId', but not received on time")
+  companion object {
+    const val AVAILABILITY_ONLINE_STATE = "ONLINE"
+    const val AVAILABILITY_OFFLINE_STATE = "OFFLINE"
+  }
+}

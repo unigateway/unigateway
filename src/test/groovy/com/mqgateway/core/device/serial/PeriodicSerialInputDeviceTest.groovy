@@ -52,8 +52,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "last_ping"
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping"}
 			update.newValue != null
 		}
 	}
@@ -66,8 +65,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.ping()
 		fakeSerialDevice.setMessageToSend("Some test message 123456")
 		conditions.eventually {
-			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "last_ping"
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping"}
 			update.newValue != null
 		}
 
@@ -104,8 +102,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		def fakeSerialDevice = new ExternalSerialDeviceSimulator(outputPin, inputPin, serialStub)
 		fakeSerialDevice.ping()
 		conditions.eventually {
-			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "last_ping"
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping"}
 			update.newValue != null
 		}
 
@@ -159,8 +156,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.ping()
 		fakeSerialDevice.setMessageToSend("error;this is fake error message from tests")
 		conditions.eventually {
-			def update = updateListenerStub.receivedUpdates.first()
-			update.propertyId == "last_ping"
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping"}
 			update.newValue != null
 		}
 
@@ -169,6 +165,44 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		then:
 		device.message == null
+	}
+
+	def "should notify that device is OFFLINE when no ping has been received since acceptable ping period"() {
+		given:
+		device.addListener(updateListenerStub)
+		device.init()
+		def fakeSerialDevice = new ExternalSerialDeviceSimulator(outputPin, inputPin, serialStub)
+		fakeSerialDevice.setMessageToSend("Some test message 123456")
+
+		when:
+		device.askForSerialDataNow()
+
+		then:
+		conditions.eventually {
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "state"}
+			update.newValue == "OFFLINE"
+		}
+	}
+
+	def "should notify that device is ONLINE when ping has been received within acceptable ping period"() {
+		given:
+		device.addListener(updateListenerStub)
+		device.init()
+		def fakeSerialDevice = new ExternalSerialDeviceSimulator(outputPin, inputPin, serialStub)
+		fakeSerialDevice.ping()
+		fakeSerialDevice.setMessageToSend("Some test message 123456")
+		conditions.eventually {
+			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping"}
+			update.newValue != null
+		}
+
+		when:
+		device.askForSerialDataNow()
+
+		then:
+		conditions.eventually {
+			updateListenerStub.receivedUpdates.find {it.propertyId == "state" && it.newValue == "ONLINE"}
+		}
 	}
 
 	DeviceElements prepareSerialDevice(String name) {

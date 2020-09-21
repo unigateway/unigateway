@@ -64,7 +64,7 @@ internal class ComponentsFactory {
   fun mqttClientFactory(gateway: Gateway): MqttClientFactory = HiveMqttClientFactory(gateway.mqttHostname)
 
   @Singleton
-  fun homeDevice(
+  fun homieDevice(
     mqttClientFactory: MqttClientFactory,
     gatewayApplicationProperties: GatewayApplicationProperties,
     gatewaySystemProperties: GatewaySystemProperties,

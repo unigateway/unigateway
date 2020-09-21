@@ -22,7 +22,7 @@ class ReedSwitchDevice(
   companion object {
     const val CONFIG_DEBOUNCE_DEFAULT = 50
 
-    private const val CLOSED_STATE_VALUE = "CLOSED"
-    private const val OPEN_STATE_VALUE = "OPEN"
+    const val CLOSED_STATE_VALUE = "CLOSED"
+    const val OPEN_STATE_VALUE = "OPEN"
   }
 }

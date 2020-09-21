@@ -22,7 +22,9 @@ class SwitchButtonDevice(
   companion object {
     const val CONFIG_DEBOUNCE_DEFAULT = 50
 
-    private const val PRESSED_STATE_VALUE = "PRESSED"
-    private const val RELEASED_STATE_VALUE = "RELEASED"
+    const val PRESSED_STATE_VALUE = "PRESSED"
+    const val RELEASED_STATE_VALUE = "RELEASED"
+    const val LONG_PRESSED_STATE_VALUE = "LONG_PRESSED"
+    const val LONG_RELEASED_STATE_VALUE = "LONG_RELEASED"
   }
 }

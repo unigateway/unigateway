@@ -24,7 +24,7 @@ class RelayDevice(id: String, pin: GpioPinDigitalOutput) : DigitalOutputDevice(i
 
   override fun change(propertyId: String, newValue: String) {
     LOGGER.debug { "Changing state on relay $id to $newValue" }
-    if (newValue == "ON") {
+    if (newValue == STATE_ON) {
       changeState(CLOSED)
     } else {
       changeState(OPEN)

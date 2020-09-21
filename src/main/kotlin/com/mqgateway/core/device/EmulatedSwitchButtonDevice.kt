@@ -18,13 +18,13 @@ class EmulatedSwitchButtonDevice(id: String, pin: GpioPinDigitalOutput) : Digita
 
   override fun change(propertyId: String, newValue: String) {
     LOGGER.debug { "Changing state on emulated switch $id to $newValue" }
-    if (newValue == "PRESSED") {
+    if (newValue == PRESSED_STATE_VALUE) {
       changeState(EmulatedSwitchState.PRESSED)
       notify(STATE, newValue)
       thread {
         Thread.sleep(TIME_BEFORE_RELEASE_IN_MS)
         changeState(EmulatedSwitchState.RELEASED)
-        notify(STATE, "RELEASED")
+        notify(STATE, RELEASED_STATE_VALUE)
       }
     }
   }
@@ -34,6 +34,8 @@ class EmulatedSwitchButtonDevice(id: String, pin: GpioPinDigitalOutput) : Digita
   }
 
   companion object {
+    const val PRESSED_STATE_VALUE = "PRESSED"
+    const val RELEASED_STATE_VALUE = "RELEASED"
     val PRESSED_STATE = PinState.LOW
     val RELEASED_STATE = PinState.getInverseState(PRESSED_STATE)!!
     const val TIME_BEFORE_RELEASE_IN_MS = 500L

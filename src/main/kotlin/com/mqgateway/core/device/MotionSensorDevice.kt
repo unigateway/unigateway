@@ -22,7 +22,7 @@ class MotionSensorDevice(
   companion object {
     const val CONFIG_DEBOUNCE_DEFAULT = 50
 
-    private const val MOVE_START_STATE_VALUE = "ON"
-    private const val MOVE_STOP_STATE_VALUE = "OFF"
+    const val MOVE_START_STATE_VALUE = "ON"
+    const val MOVE_STOP_STATE_VALUE = "OFF"
   }
 }
