@@ -87,10 +87,12 @@ class SwitchButtonDeviceTest extends Specification {
 		device.addListener(listenerStub)
 		device.init()
 		def conditions = new PollingConditions()
+		pin.low()
+		conditions.eventually {
+			assert listenerStub.receivedUpdates.find {it.newValue == "LONG_PRESSED" }
+		}
 
 		when:
-		pin.low()
-		sleep(LONG_PRESS_MS + 100)
 		pin.high()
 
 		then:
