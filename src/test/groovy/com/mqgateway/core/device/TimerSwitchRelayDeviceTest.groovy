@@ -83,7 +83,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
 		timerSwitch.change("timer", "10")
 
 		when:
-		timerSwitch.updateTimer(LocalDateTime.now().plusMinutes(10))
+		timerSwitch.updateTimer(LocalDateTime.now().plusMinutes(10).plusSeconds(1))
 
 		then:
 		conditions.eventually {
