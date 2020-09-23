@@ -1,2 +1,6 @@
 gateway:
   config-path: example.gateway.yaml
+
+homeassistant:
+  enabled: true
+  root-topic: "homeassistant"

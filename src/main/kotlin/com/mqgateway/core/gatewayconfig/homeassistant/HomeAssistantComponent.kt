@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped
 
 abstract class HomeAssistantComponent(
   @JsonIgnore val componentType: HomeAssistantComponentType,
-  @JsonUnwrapped val properties: HomeAssistantComponentBasicProperties) {
-}
+  @field:JsonUnwrapped val properties: HomeAssistantComponentBasicProperties
+)
 
 data class HomeAssistantComponentBasicProperties(
-  @JsonProperty("name") val name: String,
+  @field:JsonProperty("name") val name: String,
   @JsonIgnore val nodeId: String,
   @JsonIgnore val objectId: String
 )
@@ -24,31 +24,30 @@ enum class HomeAssistantComponentType(val value: String) {
   TRIGGER("device_automation"),
 }
 
-
 data class HomeAssistantLight(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @JsonProperty("state_topic") val stateTopic: String,
-  @JsonProperty("command_topic") val commandTopic: String,
-  @JsonProperty("retain") val retain: Boolean,
-  @JsonProperty("payload_on") val payloadOn: String,
-  @JsonProperty("payload_off") val payloadOff: String
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("command_topic") val commandTopic: String,
+  @field:JsonProperty("retain") val retain: Boolean,
+  @field:JsonProperty("payload_on") val payloadOn: String,
+  @field:JsonProperty("payload_off") val payloadOff: String
 ) : HomeAssistantComponent(HomeAssistantComponentType.LIGHT, basicProperties)
 
 data class HomeAssistantSwitch(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @JsonProperty("state_topic") val stateTopic: String,
-  @JsonProperty("command_topic") val commandTopic: String,
-  @JsonProperty("retain") val retain: Boolean,
-  @JsonProperty("payload_on") val payloadOn: String,
-  @JsonProperty("payload_off") val payloadOff: String
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("command_topic") val commandTopic: String,
+  @field:JsonProperty("retain") val retain: Boolean,
+  @field:JsonProperty("payload_on") val payloadOn: String,
+  @field:JsonProperty("payload_off") val payloadOff: String
 ) : HomeAssistantComponent(HomeAssistantComponentType.SWITCH, basicProperties)
 
 data class HomeAssistantBinarySensor(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @JsonProperty("state_topic") val stateTopic: String,
-  @JsonProperty("payload_on") val payloadOn: String,
-  @JsonProperty("payload_off") val payloadOff: String,
-  @JsonProperty("device_class") val deviceClass: DeviceClass
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("payload_on") val payloadOn: String,
+  @field:JsonProperty("payload_off") val payloadOff: String,
+  @field:JsonProperty("device_class") val deviceClass: DeviceClass
 ) : HomeAssistantComponent(HomeAssistantComponentType.BINARY_SENSOR, basicProperties) {
   enum class DeviceClass(val value: String) {
     MOTION("motion"),
@@ -59,12 +58,12 @@ data class HomeAssistantBinarySensor(
 
 data class HomeAssistantSensor(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @JsonProperty("availability_topic") val availabilityTopic: String,
-  @JsonProperty("payload_available") val payloadAvailable: String,
-  @JsonProperty("payload_not_available") val payloadNotAvailable: String,
-  @JsonProperty("device_class") val deviceClass: DeviceClass,
-  @JsonProperty("state_topic") val stateTopic: String,
-  @JsonProperty("unit_of_measurement") val unitOfMeasurement: String
+  @field:JsonProperty("availability_topic") val availabilityTopic: String,
+  @field:JsonProperty("payload_available") val payloadAvailable: String,
+  @field:JsonProperty("payload_not_available") val payloadNotAvailable: String,
+  @field:JsonProperty("device_class") val deviceClass: DeviceClass,
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("unit_of_measurement") val unitOfMeasurement: String
 ) : HomeAssistantComponent(HomeAssistantComponentType.SENSOR, basicProperties) {
   enum class DeviceClass(val value: String) {
     None("None"),
@@ -85,10 +84,10 @@ data class HomeAssistantSensor(
 
 data class HomeAssistantTrigger(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @JsonProperty("topic") val topic: String,
-  @JsonProperty("payload") val payload: String,
-  @JsonProperty("type") val type: TriggerType,
-  @JsonProperty("subtype") val subtype: String,
+  @field:JsonProperty("topic") val topic: String,
+  @field:JsonProperty("payload") val payload: String,
+  @field:JsonProperty("type") val type: TriggerType,
+  @field:JsonProperty("subtype") val subtype: String
 ) : HomeAssistantComponent(HomeAssistantComponentType.TRIGGER, basicProperties) {
 
   @JsonProperty("automation_type")
@@ -107,19 +106,19 @@ data class HomeAssistantTrigger(
 
 data class HomeAssistantCover(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @JsonProperty("state_topic") val stateTopic: String,
-  @JsonProperty("command_topic") val commandTopic: String,
-  @JsonProperty("device_class") val deviceClass: DeviceClass,
-  @JsonProperty("payload_open") val payloadOpen: String,
-  @JsonProperty("payload_close") val payloadClose: String,
-  @JsonProperty("payload_stop") val payloadStop: String,
-  @JsonProperty("position_open") val positionOpen: Int = 100,
-  @JsonProperty("position_closed") val positionClosed: Int = 0,
-  @JsonProperty("state_open") val stateOpen: String,
-  @JsonProperty("state_closed") val stateClosed: String,
-  @JsonProperty("state_opening") val stateOpening: String,
-  @JsonProperty("state_closing") val stateClosing: String,
-  @JsonProperty("retain") val retain: Boolean,
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("command_topic") val commandTopic: String,
+  @field:JsonProperty("device_class") val deviceClass: DeviceClass,
+  @field:JsonProperty("payload_open") val payloadOpen: String,
+  @field:JsonProperty("payload_close") val payloadClose: String,
+  @field:JsonProperty("payload_stop") val payloadStop: String,
+  @field:JsonProperty("position_open") val positionOpen: Int = 100,
+  @field:JsonProperty("position_closed") val positionClosed: Int = 0,
+  @field:JsonProperty("state_open") val stateOpen: String,
+  @field:JsonProperty("state_closed") val stateClosed: String,
+  @field:JsonProperty("state_opening") val stateOpening: String,
+  @field:JsonProperty("state_closing") val stateClosing: String,
+  @field:JsonProperty("retain") val retain: Boolean
 
 ) : HomeAssistantComponent(HomeAssistantComponentType.COVER, basicProperties) {
   enum class DeviceClass {
@@ -136,4 +135,3 @@ data class HomeAssistantCover(
     WINDOW
   }
 }
-

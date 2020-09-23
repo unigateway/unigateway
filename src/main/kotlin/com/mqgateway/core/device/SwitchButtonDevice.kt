@@ -10,7 +10,6 @@ import kotlin.concurrent.schedule
 
 private val LOGGER = KotlinLogging.logger {}
 
-// TODO maj: add long press functionality
 class SwitchButtonDevice(
   id: String,
   private val pin: GpioPinDigitalInput,

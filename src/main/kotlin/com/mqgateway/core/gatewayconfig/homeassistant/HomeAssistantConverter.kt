@@ -10,11 +10,7 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
-import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.BINARY_SENSOR
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.LIGHT
-import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.SENSOR
-import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.SWITCH
-import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.TRIGGER
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_LONG_PRESS
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_LONG_RELEASE
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_SHORT_PRESS
@@ -24,12 +20,10 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-// TODO maj add logs
-// TODO maj write tests
 class HomeAssistantConverter {
 
   fun convert(gateway: Gateway): List<HomeAssistantComponent> {
-
+    LOGGER.info { "Converting Gateway configuration to HomeAssistant auto-discovery config" }
     val devices = gateway.rooms
       .flatMap { it.points }
       .flatMap { it.devices }
@@ -37,11 +31,11 @@ class HomeAssistantConverter {
     return devices.flatMap { device ->
       val basicProperties = HomeAssistantComponentBasicProperties(device.name, gateway.name, device.id)
 
-      when (device.type) {
+      val components = when (device.type) {
         DeviceType.RELAY -> {
           val stateTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           val commandTopic = homieCommandTopic(gateway, device, DevicePropertyType.STATE)
-          if (device.config?.get(DEVICE_CONFIG_HA_COMPONENT) == LIGHT.toString()) {
+          if (device.config?.get(DEVICE_CONFIG_HA_COMPONENT).equals(LIGHT.value, true)) {
             listOf(HomeAssistantLight(basicProperties, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
           } else {
             listOf(HomeAssistantSwitch(basicProperties, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
@@ -60,7 +54,7 @@ class HomeAssistantConverter {
             HomeAssistantTrigger(
               basicProperties,
               homieStateTopic,
-              SwitchButtonDevice.PRESSED_STATE_VALUE,
+              SwitchButtonDevice.RELEASED_STATE_VALUE,
               BUTTON_SHORT_RELEASE,
               "button"
             ),
@@ -215,6 +209,10 @@ class HomeAssistantConverter {
         }
         DeviceType.TIMER_SWITCH -> listOf()
       }
+
+      LOGGER.debug { "Device ${device.id} (${device.type}) converted to HA components types: ${components.map { it.componentType }}" }
+      LOGGER.trace { "Device $device converted to HA components: $components" }
+      return@flatMap components
     }
   }
 
@@ -226,18 +224,7 @@ class HomeAssistantConverter {
     return homieStateTopic(gateway, device, propertyType) + "/set"
   }
 
-  private val defaultMqGatewayTypeToHaComponent = mapOf(
-    DeviceType.RELAY to LIGHT,
-    DeviceType.SWITCH_BUTTON to TRIGGER,
-    DeviceType.EMULATED_SWITCH to SWITCH,
-    DeviceType.MOTION_DETECTOR to BINARY_SENSOR,
-    DeviceType.REED_SWITCH to BINARY_SENSOR,
-    DeviceType.BME280 to SENSOR,
-    DeviceType.DHT22 to SENSOR,
-  )
-
   companion object {
     const val DEVICE_CONFIG_HA_COMPONENT: String = "haComponent"
   }
 }
-

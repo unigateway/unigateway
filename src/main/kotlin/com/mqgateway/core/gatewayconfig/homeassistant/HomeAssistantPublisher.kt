@@ -3,10 +3,10 @@ package com.mqgateway.core.gatewayconfig.homeassistant
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttMessage
+import mu.KotlinLogging
 
+private val LOGGER = KotlinLogging.logger {}
 
-// TODO maj: test this class
-// TODO maj: add logs
 class HomeAssistantPublisher(
   private val objectMapper: ObjectMapper
 ) {
@@ -17,8 +17,8 @@ class HomeAssistantPublisher(
       val payload = objectMapper.writeValueAsString(component)
       MqttMessage(topic, payload, 1, true)
     }.forEach { mqttMessage ->
+      LOGGER.debug { "Publishing MQTT message: $mqttMessage" }
       mqttClient.publishSync(mqttMessage)
     }
-
   }
 }

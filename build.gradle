@@ -77,10 +77,10 @@ dependencies {
     // Tests
     testImplementation(enforcedPlatform("io.micronaut:micronaut-bom:$micronautVersion"))
     testImplementation("io.micronaut:micronaut-inject-groovy")
+    testImplementation('org.codehaus.groovy:groovy:3.0.5')
+    testImplementation('org.codehaus.groovy:groovy-all:3.0.5')
     testImplementation(platform("org.spockframework:spock-bom:2.0-M2-groovy-3.0"))
-    testImplementation("org.spockframework:spock-core") {
-        exclude group: "org.codehaus.groovy", module: "groovy-all"
-    }
+    testImplementation("org.spockframework:spock-core")
     testImplementation("io.micronaut.test:micronaut-test-spock")
     testImplementation("net.bytebuddy:byte-buddy:1.9.3")
     testImplementation("org.objenesis:objenesis:2.6")

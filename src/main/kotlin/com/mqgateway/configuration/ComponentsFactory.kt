@@ -4,6 +4,7 @@ import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfigChangedListener
 import com.mqgateway.core.mcpexpander.McpExpanders
 import com.mqgateway.core.mcpexpander.McpExpandersFactory
 import com.mqgateway.core.mcpexpander.Pi4JExpanderPinProvider
@@ -30,9 +31,11 @@ import javax.inject.Singleton
 internal class ComponentsFactory {
 
   @Singleton
-  fun gatewayConfiguration(gatewayApplicationProperties: GatewayApplicationProperties): Gateway {
-    val gateway = ConfigLoader.load(gatewayApplicationProperties.configPath)
-    return gateway
+  fun gatewayConfiguration(
+    gatewayApplicationProperties: GatewayApplicationProperties,
+    configChangedListeners: Set<GatewayConfigChangedListener>
+  ): Gateway {
+    return ConfigLoader(configChangedListeners).load(gatewayApplicationProperties.configPath)
   }
 
   @Singleton

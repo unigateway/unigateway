@@ -2,22 +2,21 @@ package com.mqgateway.core.gatewayconfig.homeassistant
 
 import com.mqgateway.configuration.HomeAssistantProperties
 import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfigChangedListener
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
 import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-// TODO test this?
 class HomeAssistantConfigurer(
   private val properties: HomeAssistantProperties,
   private val converter: HomeAssistantConverter,
   private val publisher: HomeAssistantPublisher,
-  private val mqttClientFactory: MqttClientFactory,
-  private val gateway: Gateway
-) {
+  private val mqttClientFactory: MqttClientFactory
+) : GatewayConfigChangedListener {
 
-  fun sendHomeAssistantConfiguration() {
+  private fun sendHomeAssistantConfiguration(gateway: Gateway) {
     val mqttClient = mqttClientFactory.create(
       "${gateway.name}-homeassistant-configurator",
       { LOGGER.info { "HomeAssistant configurator connected" } },
@@ -29,5 +28,11 @@ class HomeAssistantConfigurer(
     publisher.publish(mqttClient, properties.rootTopic, components)
 
     mqttClient.disconnect()
+  }
+
+  override fun onGatewayConfigChanged(gateway: Gateway) {
+    LOGGER.info { "Publishing HomeAssistant configuration" }
+    sendHomeAssistantConfiguration(gateway)
+    LOGGER.info { "HomeAssistant configuration published" }
   }
 }
