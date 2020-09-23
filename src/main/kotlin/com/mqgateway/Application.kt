@@ -1,11 +1,16 @@
 package com.mqgateway
 
+import com.mqgateway.configuration.HomeAssistantProperties
 import com.mqgateway.core.device.DeviceRegistry
+import com.mqgateway.core.gatewayconfig.ConfigLoader
+import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantConfigurer
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
 import io.micronaut.runtime.Micronaut.build
 import mu.KotlinLogging
+import javax.inject.Inject
 import javax.inject.Singleton
 
 private val LOGGER = KotlinLogging.logger {}
@@ -29,8 +34,14 @@ fun main(args: Array<String>) {
 class MqGateway(
   private val deviceRegistry: DeviceRegistry,
   private val homieDevice: HomieDevice,
-  private val homieReceiver: GatewayHomieReceiver
+  private val homieReceiver: GatewayHomieReceiver,
+  private val gateway: Gateway,
+  private val configLoader: ConfigLoader,
+  private val homeAssistantProperties: HomeAssistantProperties
 ) {
+
+  @Inject
+  lateinit var homeAssistantConfigurer: HomeAssistantConfigurer
 
   fun initialize() {
     LOGGER.info { "MqGateway started. Initialization..." }
@@ -42,6 +53,10 @@ class MqGateway(
     homieDevice.connect(homieReceiver)
     deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
     deviceRegistry.initializeDevices()
+
+    if (homeAssistantProperties.enabled && configLoader.configReloaded) {
+      homeAssistantConfigurer.sendHomeAssistantConfiguration(gateway)
+    }
 
     LOGGER.info { "Initialization finished successfully. Running normally." }
   }

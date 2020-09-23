@@ -15,7 +15,7 @@ import java.security.MessageDigest
 
 private val LOGGER = KotlinLogging.logger {}
 
-class ConfigLoader(private val configChangedListeners: Set<GatewayConfigChangedListener>) {
+class ConfigLoader {
 
   companion object {
     private const val HASH_ALGORITHM = "MD5"
@@ -23,11 +23,14 @@ class ConfigLoader(private val configChangedListeners: Set<GatewayConfigChangedL
     private const val CONFIGURATION_FILE_QUICK_PATH = ".previousConfig.cbor"
   }
 
+  var configReloaded = false
+
   private val yamlObjectMapper = yamlObjectMapper()
   private val yamlParser = YamlParser(yamlObjectMapper)
   private val configValidator = ConfigValidator(yamlObjectMapper)
 
   fun load(gatewayConfigPath: String): Gateway {
+    configReloaded = false
     val gatewayConfigBytes = File(gatewayConfigPath).readBytes()
     val currentConfigurationFileHash = calculateHash(gatewayConfigBytes)
     val storedConfigurationFileHash = loadStoredConfigurationFileHash()
@@ -48,14 +51,10 @@ class ConfigLoader(private val configChangedListeners: Set<GatewayConfigChangedL
       val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
       File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
 
-      onNewConfigurationLoaded(gateway)
+      configReloaded = true
 
       return gateway
     }
-  }
-
-  fun onNewConfigurationLoaded(gateway: Gateway) {
-    configChangedListeners.forEach { it.onGatewayConfigChanged(gateway) }
   }
 
   private fun loadStoredConfigurationFileHash(): String? {
@@ -100,8 +99,4 @@ class ConfigLoader(private val configChangedListeners: Set<GatewayConfigChangedL
   }
 
   class ValidationFailedException(message: String) : Exception(message)
-}
-
-interface GatewayConfigChangedListener {
-  fun onGatewayConfigChanged(gateway: Gateway)
 }

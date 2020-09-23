@@ -4,7 +4,6 @@ import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.Gateway
-import com.mqgateway.core.gatewayconfig.GatewayConfigChangedListener
 import com.mqgateway.core.mcpexpander.McpExpanders
 import com.mqgateway.core.mcpexpander.McpExpandersFactory
 import com.mqgateway.core.mcpexpander.Pi4JExpanderPinProvider
@@ -32,10 +31,9 @@ internal class ComponentsFactory {
 
   @Singleton
   fun gatewayConfiguration(
-    gatewayApplicationProperties: GatewayApplicationProperties,
-    configChangedListeners: Set<GatewayConfigChangedListener>
+    gatewayApplicationProperties: GatewayApplicationProperties
   ): Gateway {
-    return ConfigLoader(configChangedListeners).load(gatewayApplicationProperties.configPath)
+    return ConfigLoader().load(gatewayApplicationProperties.configPath)
   }
 
   @Singleton
