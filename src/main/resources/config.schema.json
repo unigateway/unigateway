@@ -95,7 +95,7 @@
         "name": {
           "description": "Name of the device",
           "type": "string",
-          "maxLength": 32
+          "maxLength": 64
         },
         "id": {
           "description": "Unique identifier for the device across all devices on this Gateway",

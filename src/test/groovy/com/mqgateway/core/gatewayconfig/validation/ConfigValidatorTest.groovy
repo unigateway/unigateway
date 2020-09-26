@@ -64,25 +64,6 @@ class ConfigValidatorTest extends Specification {
 		reason.points*.name.toSet() == ["A", "B"].toSet()
 	}
 
-	def "should validation failed when any device name is more than 32 characters long"() {
-		given:
-		def devices = [
-			new DeviceConfig("1", "12345678901234567890123456789012", DeviceType.RELAY, [WireColor.BLUE_WHITE], [:]),
-			new DeviceConfig("2", "123456789012345678901234567890123", DeviceType.RELAY, [WireColor.BLUE], [:])
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == DeviceNameValidator.IllegalDeviceNameValue.class }
-
-		List<DeviceNameValidator.IllegalDeviceNameValue> reasons = result.failureReasons.findAll { it instanceof DeviceNameValidator.IllegalDeviceNameValue }
-		reasons*.device.id == ["2"]
-	}
-
 	def "should validation fail when the same wire is used in many devices"() {
 		given:
 		def gateway = gatewayWith(

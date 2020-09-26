@@ -15,7 +15,6 @@ class ConfigValidator(private val yamlObjectMapper: ObjectMapper) {
     listOf(
       UniqueDeviceIdsValidator(),
       UniquePortNumbersForPointsValidator(),
-      DeviceNameValidator(),
       WireUsageValidator(),
       SerialDeviceWiresValidator(),
       SerialDeviceAdditionalConfigValidator()
