@@ -36,7 +36,7 @@ class MqGateway(
   private val homieDevice: HomieDevice,
   private val homieReceiver: GatewayHomieReceiver,
   private val gateway: Gateway,
-  private val configLoader: ConfigLoader,
+  private val gatewayConfigLoader: ConfigLoader,
   private val homeAssistantProperties: HomeAssistantProperties
 ) {
 
@@ -54,7 +54,7 @@ class MqGateway(
     deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
     deviceRegistry.initializeDevices()
 
-    if (homeAssistantProperties.enabled && configLoader.configReloaded) {
+    if (homeAssistantProperties.enabled && gatewayConfigLoader.configReloaded) {
       homeAssistantConfigurer.sendHomeAssistantConfiguration(gateway)
     }
 

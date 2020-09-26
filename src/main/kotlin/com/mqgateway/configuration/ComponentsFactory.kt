@@ -30,10 +30,16 @@ import javax.inject.Singleton
 internal class ComponentsFactory {
 
   @Singleton
+  fun gatewayConfigLoader(): ConfigLoader {
+    return ConfigLoader()
+  }
+
+  @Singleton
   fun gatewayConfiguration(
-    gatewayApplicationProperties: GatewayApplicationProperties
+    gatewayApplicationProperties: GatewayApplicationProperties,
+    gatewayConfigLoader: ConfigLoader
   ): Gateway {
-    return ConfigLoader().load(gatewayApplicationProperties.configPath)
+    return gatewayConfigLoader.load(gatewayApplicationProperties.configPath)
   }
 
   @Singleton

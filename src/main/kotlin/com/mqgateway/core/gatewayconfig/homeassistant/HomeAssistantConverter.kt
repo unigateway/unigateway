@@ -45,28 +45,28 @@ class HomeAssistantConverter {
           val homieStateTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           listOf(
             HomeAssistantTrigger(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_PRESS"),
               homieStateTopic,
               SwitchButtonDevice.PRESSED_STATE_VALUE,
               BUTTON_SHORT_PRESS,
               "button"
             ),
             HomeAssistantTrigger(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_RELEASE"),
               homieStateTopic,
               SwitchButtonDevice.RELEASED_STATE_VALUE,
               BUTTON_SHORT_RELEASE,
               "button"
             ),
             HomeAssistantTrigger(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LONG_PRESS"),
               homieStateTopic,
               SwitchButtonDevice.LONG_PRESSED_STATE_VALUE,
               BUTTON_LONG_PRESS,
               "button"
             ),
             HomeAssistantTrigger(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LONG_RELEASE"),
               homieStateTopic,
               SwitchButtonDevice.LONG_RELEASED_STATE_VALUE,
               BUTTON_LONG_RELEASE,
@@ -115,7 +115,7 @@ class HomeAssistantConverter {
 
           listOf(
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_TEMPERATURE"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -124,7 +124,7 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.TEMPERATURE).unit.value
             ),
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_HUMIDITY"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -133,7 +133,7 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.HUMIDITY).unit.value
             ),
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_PRESSURE"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -142,7 +142,7 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.PRESSURE).unit.value
             ),
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LAST_PING"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -156,7 +156,7 @@ class HomeAssistantConverter {
           val availabilityTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           listOf(
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_TEMPERATURE"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -165,7 +165,7 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.TEMPERATURE).unit.value
             ),
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_HUMIDITY"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -174,7 +174,7 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.HUMIDITY).unit.value
             ),
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LAST_PING"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -188,7 +188,7 @@ class HomeAssistantConverter {
           val availabilityTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           listOf(
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_POWER"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -197,7 +197,7 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.POWER).unit.value
             ),
             HomeAssistantSensor(
-              basicProperties,
+              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LAST_PING"),
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,

@@ -20,7 +20,7 @@ class HomeAssistantConfigurer(
     val mqttClient = mqttClientFactory.create(
       "${gateway.name}-homeassistant-configurator",
       { LOGGER.info { "HomeAssistant configurator connected" } },
-      { LOGGER.error { "HomeAssistant configurator disconnected unexpectedly" } })
+      { LOGGER.error { "HomeAssistant configurator disconnected" } })
 
     mqttClient.connect(MqttMessage("${properties.rootTopic}/state", "disconnected", 0, false), true)
 

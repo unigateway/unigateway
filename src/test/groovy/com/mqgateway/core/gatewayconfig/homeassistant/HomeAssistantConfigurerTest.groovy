@@ -30,7 +30,7 @@ class HomeAssistantConfigurerTest extends Specification {
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
-		configurer.onGatewayConfigChanged(gateway)
+		configurer.sendHomeAssistantConfiguration(gateway)
 
 		then:
 		def mqttClient = mqttClientFactory.mqttClient
