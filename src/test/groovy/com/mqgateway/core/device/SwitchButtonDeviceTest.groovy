@@ -18,6 +18,8 @@ class SwitchButtonDeviceTest extends Specification {
 	def gpioProvider = new SimulatedGpioProvider()
 	def pin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pinImpl)
 
+	def conditions = new PollingConditions(initialDelay: 0.1, timeout: 1)
+
 	@Subject
 	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
 
@@ -38,7 +40,6 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		def conditions = new PollingConditions()
 
 		when:
 		pin.setState(PinState.LOW)
@@ -54,7 +55,6 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		def conditions = new PollingConditions()
 
 		when:
 		pin.setState(PinState.HIGH)
@@ -70,7 +70,6 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		def conditions = new PollingConditions()
 
 		when:
 		pin.low()
@@ -86,7 +85,6 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		def conditions = new PollingConditions()
 		pin.low()
 		conditions.eventually {
 			assert listenerStub.receivedUpdates.find {it.newValue == "LONG_PRESSED" }

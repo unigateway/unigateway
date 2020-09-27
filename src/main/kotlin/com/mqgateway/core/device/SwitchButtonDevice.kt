@@ -6,6 +6,7 @@ import com.pi4j.io.gpio.GpioPinDigitalInput
 import mu.KotlinLogging
 import java.time.Instant
 import java.util.Timer
+import java.util.TimerTask
 import kotlin.concurrent.schedule
 
 private val LOGGER = KotlinLogging.logger {}
@@ -18,7 +19,8 @@ class SwitchButtonDevice(
 ) : DigitalInputDevice(id, DeviceType.SWITCH_BUTTON, pin, debounceMs) {
 
   private var pressedTime: Instant? = null
-  private var longPressTimer: Timer? = null
+  private val longPressTimer = Timer("SwitchButtonLongPress", false)
+  private var longPressTimerTask: TimerTask? = null
   private var longPressDone = false
 
   override fun initDevice() {
@@ -34,9 +36,8 @@ class SwitchButtonDevice(
     super.additionalOnStateChanged(newState)
     if (newState == PRESSED_STATE_VALUE) {
       pressedTime = Instant.now()
-      longPressTimer = Timer("SwitchButtonLongPress", false)
-      longPressTimer!!.schedule(longPressTimeMs) {
-        if (pressedTime?.isBefore(Instant.now().minusMillis(longPressTimeMs)) == true) {
+      longPressTimerTask = longPressTimer.schedule(longPressTimeMs) {
+        if (pressedTime?.isBefore(Instant.now().minusMillis(longPressTimeMs - 1)) == true) {
           LOGGER.debug { "SwitchButtonDevice '$id' pressed for more then $longPressTimeMs ms" }
           notify(updatableProperty(), LONG_PRESSED_STATE_VALUE)
           longPressDone = true
@@ -48,7 +49,7 @@ class SwitchButtonDevice(
       pressedTime = null
       notify(updatableProperty(), LONG_RELEASED_STATE_VALUE)
     } else {
-      longPressTimer?.cancel()
+      longPressTimerTask?.cancel()
       pressedTime = null
     }
   }
