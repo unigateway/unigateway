@@ -12,7 +12,7 @@ private val LOGGER = KotlinLogging.logger {}
 
 class RelayDevice(id: String, pin: GpioPinDigitalOutput) : DigitalOutputDevice(id, DeviceType.RELAY, pin) {
 
-  private fun changeState(newState: RelayState) {
+  fun changeState(newState: RelayState) {
     if (newState == CLOSED) {
       pin.state = RELAY_CLOSED_STATE
       notify(STATE, STATE_ON)

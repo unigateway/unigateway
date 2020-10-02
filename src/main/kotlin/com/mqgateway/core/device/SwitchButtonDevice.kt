@@ -19,7 +19,7 @@ class SwitchButtonDevice(
 ) : DigitalInputDevice(id, DeviceType.SWITCH_BUTTON, pin, debounceMs) {
 
   private var pressedTime: Instant? = null
-  private val longPressTimer = Timer("SwitchButtonLongPress", false)
+  private val longPressTimer = Timer("SwitchButtonLongPress_$id", false)
   private var longPressTimerTask: TimerTask? = null
   private var longPressDone = false
 

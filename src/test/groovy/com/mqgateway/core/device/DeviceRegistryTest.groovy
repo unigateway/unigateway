@@ -32,7 +32,7 @@ class DeviceRegistryTest extends Specification {
 		devices.each { it.notify(DevicePropertyType.STATE, "new value") }
 
 		then:
-		def expectedUpdates = (1..4).collect { new UpdateListenerStub.Update("test_$it", "state", "new value") }
+		def expectedUpdates = (1..4).collect { new UpdateListenerStub.Update("test_$it", "state", "new value", null) }
 		updateListenerStub.receivedUpdates.toSet() == expectedUpdates.toSet()
 	}
 }

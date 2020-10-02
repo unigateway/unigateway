@@ -13,6 +13,10 @@ class UpdateListenerStub implements UpdateListener {
 		receivedUpdates.add(new Update(deviceId, propertyId, newValue))
 	}
 
+	List<Update> updatesByPropertyId(@NotNull String propertyId) {
+		receivedUpdates.findAll {it.propertyId == propertyId}
+	}
+
 	static final class Update {
 		String deviceId
 		String propertyId

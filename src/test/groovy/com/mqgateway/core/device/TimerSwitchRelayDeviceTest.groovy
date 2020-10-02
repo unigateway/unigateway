@@ -70,7 +70,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
 		then:
 		conditions.eventually {
 			def stateUpdate = listenerStub.receivedUpdates.find { it.propertyId == "state" }
-			assert stateUpdate == new UpdateListenerStub.Update("timerSwitch1", "state", "ON")
+			assert stateUpdate == new UpdateListenerStub.Update("timerSwitch1", "state", "ON", null)
 		}
 	}
 
@@ -88,7 +88,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
 		then:
 		conditions.eventually {
 			def stateUpdate = listenerStub.receivedUpdates.findAll { it.propertyId == "state" }.last()
-			assert stateUpdate == new UpdateListenerStub.Update("timerSwitch1", "state", "OFF")
+			assert stateUpdate == new UpdateListenerStub.Update("timerSwitch1", "state", "OFF", null)
 		}
 	}
 
@@ -106,7 +106,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
 		then:
 		conditions.eventually {
 			def stateUpdate = listenerStub.receivedUpdates.findAll { it.propertyId == "state" }.last()
-			assert stateUpdate == new UpdateListenerStub.Update("timerSwitch1", "state", "OFF")
+			assert stateUpdate == new UpdateListenerStub.Update("timerSwitch1", "state", "OFF", null)
 		}
 	}
 }

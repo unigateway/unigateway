@@ -33,6 +33,10 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
     publishSync(mqttMessage)
   }
 
+  override fun read(topic: String): String? {
+    TODO("Not yet implemented")
+  }
+
   override fun disconnect() {
     mqttClient.disconnect()
   }

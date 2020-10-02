@@ -119,6 +119,12 @@ data class HomieProperty(
     if (unit != Unit.NONE) {
       mqttClient.publishSync(MqttMessage("$baseTopic/\$unit", unit.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
+    // TODO test: should read initial property value from MQTT when property is retained and value already exists
+    if (retained) {
+      mqttClient.read(baseTopic)?.let {
+        homieReceiver.initProperty(nodeId, id, it)
+      }
+    }
     if (settable) {
       mqttClient.subscribeAsync("$baseTopic/set") { homieReceiver.propertySet(it.topic, it.payload) }
     }

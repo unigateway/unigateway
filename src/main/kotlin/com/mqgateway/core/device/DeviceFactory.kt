@@ -102,6 +102,7 @@ class DeviceFactory(
         val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
         TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
       }
+      DeviceType.SHUTTER -> TODO() // TODO implement
       DeviceType.SCT013 -> TODO()
     }
   }

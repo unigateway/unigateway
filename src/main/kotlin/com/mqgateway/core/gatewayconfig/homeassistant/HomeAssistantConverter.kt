@@ -208,6 +208,7 @@ class HomeAssistantConverter {
           )
         }
         DeviceType.TIMER_SWITCH -> listOf()
+        DeviceType.SHUTTER -> TODO() // TODO implement
       }
 
       LOGGER.debug { "Device ${device.id} (${device.type}) converted to HA components types: ${components.map { it.componentType }}" }

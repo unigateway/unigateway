@@ -51,4 +51,9 @@ class MqttClientStub implements MqttClient {
 		connected = false
 		disconnectionTime = Instant.now()
 	}
+
+	@Override
+	String read(@NotNull String topic) {
+		return null
+	}
 }

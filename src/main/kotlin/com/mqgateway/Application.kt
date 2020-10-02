@@ -52,6 +52,7 @@ class MqGateway(
 
     homieDevice.connect(homieReceiver)
     deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
+    // TODO: push current state to devices fetched from MQTT broker
     deviceRegistry.initializeDevices()
 
     if (homeAssistantProperties.enabled && gatewayConfigLoader.configReloaded) {
