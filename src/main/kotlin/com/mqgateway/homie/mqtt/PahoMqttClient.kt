@@ -34,7 +34,11 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
   }
 
   override fun read(topic: String): String? {
-    TODO("Not yet implemented")
+    var result: String? = null
+    subscribeAsync(topic) { result = it.payload }
+    Thread.sleep(PahoMqttCallback.READING_WAIT_TIME_MS)
+    mqttClient.unsubscribe(topic)
+    return result
   }
 
   override fun disconnect() {
@@ -71,5 +75,9 @@ class PahoMqttCallback(
 
   override fun deliveryComplete(token: IMqttDeliveryToken?) {
     // not needed
+  }
+
+  companion object {
+    const val READING_WAIT_TIME_MS = 50L
   }
 }

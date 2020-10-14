@@ -45,7 +45,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("emulatedSwitch1", "state", "PRESSED", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("emulatedSwitch1", "state", "PRESSED")
 		}
 	}
 
@@ -61,7 +61,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates[1] == new UpdateListenerStub.Update("emulatedSwitch1", "state", "RELEASED", null)
+			assert listenerStub.receivedUpdates[1] == new UpdateListenerStub.Update("emulatedSwitch1", "state", "RELEASED")
 		}
 	}
 }

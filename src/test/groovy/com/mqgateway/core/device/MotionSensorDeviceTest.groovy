@@ -41,7 +41,7 @@ class MotionSensorDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "ON", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "ON")
 		}
 	}
 
@@ -57,7 +57,7 @@ class MotionSensorDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "OFF", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "OFF")
 		}
 	}
 }

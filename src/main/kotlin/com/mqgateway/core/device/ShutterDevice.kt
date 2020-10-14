@@ -10,6 +10,7 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.Timer
+import java.util.TimerTask
 import kotlin.concurrent.schedule
 import kotlin.math.absoluteValue
 
@@ -36,6 +37,7 @@ class ShutterDevice(
     }
 
   private var stoppingTimer = Timer("ShutterMove_$id", false)
+  private var scheduledStopTimerTask: TimerTask? = null
   private var clock = Clock.systemDefaultZone()
 
   override fun initProperty(propertyId: String, value: String) {
@@ -58,17 +60,17 @@ class ShutterDevice(
 
   private fun initializeCurrentPositionToClosed() {
     goDown()
-    stoppingTimer.schedule(fullCloseTimeMs + ADDITIONAL_MS_FOR_RESET_POSITION) { // TODO make this 1000 as constant or prepare some kind of "resetPosition" function
+    stoppingTimer.schedule(fullCloseTimeMs + EXTRA_MS_FOR_RESET_POSITION) {
       stop()
       currentPosition = 0
     }
-
   }
 
   override fun change(propertyId: String, newValue: String) {
     if (currentPosition == null) {
       LOGGER.warn {
-        "Current position in device $id is unknown. It is currently in state '$state'. It is running initialization and this command will be ignored."
+        "Current position in device $id is unknown. It is currently in state '$state'. " +
+            "It is assumed that initialization is running, so this command will be ignored."
       }
       return
     }
@@ -79,48 +81,51 @@ class ShutterDevice(
       currentPosition = actualCurrentPosition
     }
 
-
     val targetPosition: Int? = calculateTargetPosition(propertyId, newValue)
-
-    // TODO if targetPosition is 0 or 100 run full reset
-
     if (targetPosition == null) {
       LOGGER.error { "Could not calculate target position for device $id (propertyId=$propertyId, newValue=$newValue)" }
       return
     }
 
+    val requiredMoveTimeMs = calculateRequiredMoveTimeMs(currentPosition!!, targetPosition)
 
-    val positionDifferenceToMove = targetPosition - currentPosition!!
-    val requiredDirection = if (positionDifferenceToMove > 0) State.OPENING else State.CLOSING
-    val goUpOrDownTimeMs = if (requiredDirection == State.OPENING) fullOpenTimeMs else fullCloseTimeMs
-    val requiredMoveTimeMs = (goUpOrDownTimeMs * (positionDifferenceToMove.absoluteValue.toFloat() / 100)).toLong()
+    scheduledStopTimerTask?.cancel()
 
-    if (requiredDirection == State.OPENING) {
-      LOGGER.info{ "Command received to move shutter $id UP to position $targetPosition (${requiredMoveTimeMs}ms)" }
+    val directionToGo = if (targetPosition > currentPosition!!) State.OPENING else State.CLOSING
+    if (directionToGo == State.OPENING) {
+      LOGGER.info { "Command received to move shutter $id UP to position $targetPosition (${requiredMoveTimeMs}ms)" }
       goUp()
     } else {
-      LOGGER.info{ "Command received to move shutter $id DOWN to position $targetPosition (${requiredMoveTimeMs}ms)" }
+      LOGGER.info { "Command received to move shutter $id DOWN to position $targetPosition (${requiredMoveTimeMs}ms)" }
       goDown()
     }
 
-    stoppingTimer.schedule(requiredMoveTimeMs) {
-      LOGGER.info{ "Stopping shutter $id after move" }
+    scheduledStopTimerTask = stoppingTimer.schedule(requiredMoveTimeMs) {
+      LOGGER.info { "Stopping shutter $id after move" }
       stop()
       currentPosition = targetPosition
     }
+  }
 
-    // TODO maj cancelling of scheduled timer in case of new property received (stop or something)
+  private fun calculateRequiredMoveTimeMs(currentPosition: Int, targetPosition: Int): Long {
+    val positionDifferenceToMove = targetPosition - currentPosition
+    val requiredDirection = if (positionDifferenceToMove > 0) State.OPENING else State.CLOSING
+    val goUpOrDownTimeMs = if (requiredDirection == State.OPENING) fullOpenTimeMs else fullCloseTimeMs
 
+    return if (targetPosition == POSITION_OPEN || targetPosition == POSITION_CLOSED) {
+      goUpOrDownTimeMs + EXTRA_MS_FOR_RESET_POSITION
+    } else {
+      (goUpOrDownTimeMs * (positionDifferenceToMove.absoluteValue.toFloat() / 100)).toLong()
+    }
   }
 
   private fun calculateTargetPosition(propertyId: String, newValue: String): Int? {
-    // TODO test failing cases when targetPosition == null
     return when (propertyId) {
       STATE.toString() -> {
         when (newValue) {
-          Command.OPEN.name -> 100
-          Command.CLOSE.name -> 0
-          Command.STOP.name -> currentPosition // TODO test case when it is stopped during movement
+          Command.OPEN.name -> POSITION_OPEN
+          Command.CLOSE.name -> POSITION_CLOSED
+          Command.STOP.name -> currentPosition
           else -> null
         }
       }
@@ -128,15 +133,13 @@ class ShutterDevice(
         newValue.toIntOrNull()
       }
       else -> {
-        LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
+        LOGGER.warn { "Trying to change unsupported property '$id.$propertyId'" }
         null
       }
     }
   }
 
   private fun calculateActualCurrentPosition(): Int {
-
-    // TODO test it
     return when (state) {
       State.STOPPED -> currentPosition!!
       State.OPENING -> {
@@ -183,8 +186,8 @@ class ShutterDevice(
 
   companion object {
     const val POSITION_CLOSED = 0
-    const val POSITION_OPEN = 0
-    const val ADDITIONAL_MS_FOR_RESET_POSITION = 1000
+    const val POSITION_OPEN = 100
+    const val EXTRA_MS_FOR_RESET_POSITION = 1000
   }
 
   private enum class Command {

@@ -46,7 +46,7 @@ class SwitchButtonDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "PRESSED", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "PRESSED")
 		}
 	}
 
@@ -61,7 +61,7 @@ class SwitchButtonDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "RELEASED", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "RELEASED")
 		}
 	}
 

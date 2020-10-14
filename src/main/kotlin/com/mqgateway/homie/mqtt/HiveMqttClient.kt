@@ -36,12 +36,10 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
         .send()
   }
 
-  // TODO test this
   override fun read(topic: String): String? {
     var result: String? = null
     subscribeAsync(topic) { result = it.payload }
-    Thread.sleep(100) // TODO make it parametrized or constant at least
-    // TODO it may be super unstable - consider at least subscribeSync
+    Thread.sleep(READING_WAIT_TIME_MS)
     mqttClient.unsubscribeWith().topicFilter(topic).send()
     return result
   }
@@ -55,5 +53,9 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
 
   override fun disconnect() {
     mqttClient.disconnect()
+  }
+
+  companion object {
+    const val READING_WAIT_TIME_MS = 50L
   }
 }

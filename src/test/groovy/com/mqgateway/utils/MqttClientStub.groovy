@@ -54,6 +54,6 @@ class MqttClientStub implements MqttClient {
 
 	@Override
 	String read(@NotNull String topic) {
-		return null
+		return publishedMessages.find {it.retain && it.topic == topic}?.payload
 	}
 }

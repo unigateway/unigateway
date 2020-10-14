@@ -40,7 +40,7 @@ class ReedSwitchDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "OPEN", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "OPEN")
 		}
 	}
 
@@ -56,7 +56,7 @@ class ReedSwitchDeviceTest extends Specification {
 
 		then:
 		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "CLOSED", null)
+			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "CLOSED")
 		}
 	}
 }
