@@ -5,6 +5,7 @@ interface MqttClient {
   fun publishSync(mqttMessage: MqttMessage)
   fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit)
   fun publishAsync(mqttMessage: MqttMessage)
+  fun read(topic: String): String?
   fun disconnect()
 }
 

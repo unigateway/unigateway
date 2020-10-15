@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://mqgateway.com/configuration/schema#",
-  "title": "Aetas Smart Home MqGateway 1.0 Configuration file",
+  "title": "Aetas Smart Home MqGateway 1.1 Configuration file",
   "description": "JSON schema for Aetas Smart Home MqGateway Configuration file",
   "type": "object",
   "required": [
@@ -14,7 +14,7 @@
     "configVersion": {
       "description": "Version of MqGateway configuration file",
       "type": "string",
-      "pattern": "^1\\..*$"
+      "pattern": "^1\\.0|1\\.1$"
     },
     "name": {
       "description": "Unique name of Gateway",
@@ -85,11 +85,23 @@
     },
     "device": {
       "type": "object",
-      "required": [
-        "name",
-        "id",
-        "wires",
-        "type"
+      "oneOf": [
+        {
+          "required": [
+            "name",
+            "id",
+            "wires",
+            "type"
+          ]
+        },
+        {
+          "required": [
+            "name",
+            "id",
+            "internalDevices",
+            "type"
+          ]
+        }
       ],
       "properties": {
         "name": {
@@ -129,12 +141,53 @@
             "DHT22",
             "MOTION_DETECTOR",
             "EMULATED_SWITCH",
-            "TIMER_SWITCH"
+            "TIMER_SWITCH",
+            "SHUTTER"
           ]
+        }
+      },
+      "if": {
+        "properties": {
+          "type": {"const": "SHUTTER"}
+        }
+      },
+      "then": {
+        "required": ["internalDevices", "config"],
+        "properties": {
+          "internalDevices": {
+            "$ref": "#/definitions/shutterInternalDevices"
+          },
+          "config": {
+            "$ref": "#/definitions/shutterConfig"
+          }
+        }
+      }
+    },
+    "shutterInternalDevices": {
+      "description": "Relays configuration for SHUTTER device",
+      "type": "object",
+      "required": ["stopRelay", "upDownRelay"],
+      "properties": {
+        "stopRelay": {
+          "$ref": "#/definitions/device"
         },
-        "config": {
-          "description": "Additional configuration used by some devices (see documentation for details)",
-          "type": "object"
+        "upDownRelay": {
+          "$ref": "#/definitions/device"
+        }
+      }
+    },
+    "shutterConfig": {
+      "description": "Additional configuration for SHUTTER device",
+      "type": "object",
+      "required": ["fullOpenTimeMs", "fullCloseTimeMs"],
+      "properties": {
+        "fullOpenTimeMs": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "fullCloseTimeMs": {
+          "type": "integer",
+          "exclusiveMinimum": 0
         }
       }
     }

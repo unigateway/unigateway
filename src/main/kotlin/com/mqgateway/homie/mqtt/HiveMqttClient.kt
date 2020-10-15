@@ -36,6 +36,14 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
         .send()
   }
 
+  override fun read(topic: String): String? {
+    var result: String? = null
+    subscribeAsync(topic) { result = it.payload }
+    Thread.sleep(READING_WAIT_TIME_MS)
+    mqttClient.unsubscribeWith().topicFilter(topic).send()
+    return result
+  }
+
   override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
     mqttClient.toAsync()
         .subscribeWith().topicFilter(topicFilter)
@@ -45,5 +53,9 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
 
   override fun disconnect() {
     mqttClient.disconnect()
+  }
+
+  companion object {
+    const val READING_WAIT_TIME_MS = 50L
   }
 }

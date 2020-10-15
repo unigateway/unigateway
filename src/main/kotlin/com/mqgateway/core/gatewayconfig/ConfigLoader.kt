@@ -1,9 +1,6 @@
 package com.mqgateway.core.gatewayconfig
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import kotlinx.serialization.cbor.Cbor
@@ -15,7 +12,7 @@ import java.security.MessageDigest
 
 private val LOGGER = KotlinLogging.logger {}
 
-class ConfigLoader {
+class ConfigLoader(private val yamlParser: YamlParser, private val configValidator: ConfigValidator) {
 
   companion object {
     private const val HASH_ALGORITHM = "MD5"
@@ -24,10 +21,6 @@ class ConfigLoader {
   }
 
   var configReloaded = false
-
-  private val yamlObjectMapper = yamlObjectMapper()
-  private val yamlParser = YamlParser(yamlObjectMapper)
-  private val configValidator = ConfigValidator(yamlObjectMapper)
 
   fun load(gatewayConfigPath: String): Gateway {
     configReloaded = false
@@ -90,12 +83,6 @@ class ConfigLoader {
       }
       throw ValidationFailedException("Gateway configuration validation failed. See logs.")
     }
-  }
-
-  private fun yamlObjectMapper(): ObjectMapper {
-    val mapper = ObjectMapper(YAMLFactory())
-    mapper.registerModule(KotlinModule())
-    return mapper
   }
 
   class ValidationFailedException(message: String) : Exception(message)

@@ -26,7 +26,7 @@ class HomeAssistantConfigurerTest extends Specification {
 
 	def "should connect to MQTT and disconnect after sending HA configurations when gateway configuration has been changed"() {
 		given:
-		DeviceConfig device = new DeviceConfig("switchButton_in_test", "Switch Button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE_WHITE], null)
+		DeviceConfig device = new DeviceConfig("switchButton_in_test", "Switch Button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE_WHITE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:

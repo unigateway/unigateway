@@ -9,16 +9,7 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class ConfigValidator(private val yamlObjectMapper: ObjectMapper) {
-
-  private val validators =
-    listOf(
-      UniqueDeviceIdsValidator(),
-      UniquePortNumbersForPointsValidator(),
-      WireUsageValidator(),
-      SerialDeviceWiresValidator(),
-      SerialDeviceAdditionalConfigValidator()
-    )
+class ConfigValidator(private val yamlObjectMapper: ObjectMapper, private val validators: List<GatewayValidator>) {
 
   fun validateGateway(gateway: Gateway): ValidationResult {
 

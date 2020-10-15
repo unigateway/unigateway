@@ -43,7 +43,7 @@ class HomieDeviceFactoryTest extends Specification {
 		Gateway gateway = new Gateway("1.0", "gtwName", "127.0.0.1", [
 			new Room("room1", [
 				new Point("point1", 1, [
-					new DeviceConfig("device1", "device1 name", DeviceType.RELAY, [WireColor.BLUE], [:])
+					new DeviceConfig("device1", "device1 name", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
 				])
 			])
 		])
@@ -62,7 +62,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for Relay"() {
 		given:
-		DeviceConfig device = new DeviceConfig("relay_in_test", "Test Relay", DeviceType.RELAY, [WireColor.BLUE], null)
+		DeviceConfig device = new DeviceConfig("relay_in_test", "Test Relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
@@ -76,7 +76,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for MotionDetector"() {
 		given:
-		DeviceConfig device = new DeviceConfig("motiondetector_in_test", "Motion Detector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], null)
+		DeviceConfig device = new DeviceConfig("motiondetector_in_test", "Motion Detector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
@@ -90,7 +90,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for SwitchButton"() {
 		given:
-		DeviceConfig device = new DeviceConfig("switchButton_in_test", "Switch Button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE_WHITE], null)
+		DeviceConfig device = new DeviceConfig("switchButton_in_test", "Switch Button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE_WHITE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
@@ -104,7 +104,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for ReedSwitch"() {
 		given:
-		DeviceConfig device = new DeviceConfig("reedSwitch_in_test", "Reed Switch", DeviceType.REED_SWITCH, [WireColor.GREEN], null)
+		DeviceConfig device = new DeviceConfig("reedSwitch_in_test", "Reed Switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
@@ -118,7 +118,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for BME280"() {
 		given:
-		DeviceConfig device = new DeviceConfig("bme280_in_test", "Test BME280", DeviceType.BME280, [WireColor.BLUE], null)
+		DeviceConfig device = new DeviceConfig("bme280_in_test", "Test BME280", DeviceType.BME280, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
@@ -137,7 +137,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for DHT22"() {
 		given:
-		DeviceConfig device = new DeviceConfig("dht22_in_test", "Test DHT22", DeviceType.DHT22, [WireColor.BLUE], null)
+		DeviceConfig device = new DeviceConfig("dht22_in_test", "Test DHT22", DeviceType.DHT22, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:
@@ -155,7 +155,7 @@ class HomieDeviceFactoryTest extends Specification {
 
 	def "should create HomieProperties for TimerSwitch"() {
 		given:
-		DeviceConfig device = new DeviceConfig("timerswitch_in_test", "Test Timer Switch", DeviceType.TIMER_SWITCH, [WireColor.BLUE], null)
+		DeviceConfig device = new DeviceConfig("timerswitch_in_test", "Test Timer Switch", DeviceType.TIMER_SWITCH, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point([device])])])
 
 		when:

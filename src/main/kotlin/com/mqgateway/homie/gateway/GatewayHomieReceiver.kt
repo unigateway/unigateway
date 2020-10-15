@@ -9,6 +9,14 @@ private val LOGGER = KotlinLogging.logger {}
 
 class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : HomieReceiver {
 
+  override fun initProperty(nodeId: String, propertyId: String, value: String) {
+    LOGGER.debug { "Initializing property ($propertyId $value)" }
+    val gatewayDevice = gatewayDeviceRegistry.getById(nodeId) ?: throw DeviceNotFoundException(nodeId)
+    LOGGER.trace { "Device found in registry (${gatewayDevice.id})" }
+
+    gatewayDevice.initProperty(propertyId, value)
+  }
+
   override fun propertySet(mqttTopic: String, payload: String) {
     LOGGER.debug { "Setting property command received from MQTT ($mqttTopic $payload)" }
     val homieTopic = HomieMqttTopic.fromString(mqttTopic)

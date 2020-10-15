@@ -119,6 +119,11 @@ data class HomieProperty(
     if (unit != Unit.NONE) {
       mqttClient.publishSync(MqttMessage("$baseTopic/\$unit", unit.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
+    if (retained) {
+      mqttClient.read(baseTopic)?.let {
+        homieReceiver.initProperty(nodeId, id, it)
+      }
+    }
     if (settable) {
       mqttClient.subscribeAsync("$baseTopic/set") { homieReceiver.propertySet(it.topic, it.payload) }
     }

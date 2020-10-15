@@ -10,6 +10,7 @@ import com.mqgateway.core.gatewayconfig.DataUnit.PERCENT
 import com.mqgateway.core.gatewayconfig.DataUnit.SECOND
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.POWER
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
@@ -24,8 +25,9 @@ data class DeviceConfig(
   val id: String,
   val name: String,
   val type: DeviceType,
-  val wires: List<WireColor>,
-  val config: Map<String, String>? = null
+  val wires: List<WireColor> = emptyList(),
+  val config: Map<String, String> = emptyMap(),
+  val internalDevices: Map<String, DeviceConfig> = emptyMap()
 )
 
 data class DeviceProperty(
@@ -80,6 +82,10 @@ enum class DeviceType(vararg val properties: Property) {
   TIMER_SWITCH(
     Property(STATE, ENUM, "ON,OFF", retained = true),
     Property(TIMER, INTEGER, "0:1440", settable = true, retained = true, unit = SECOND)
+  ),
+  SHUTTER(
+    Property(POSITION, INTEGER, "0:100", settable = true, retained = true, unit = PERCENT),
+    Property(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
   );
 
   fun isSerialDevice() = this in SERIAL_BASED_DEVICES
@@ -92,7 +98,7 @@ enum class DeviceType(vararg val properties: Property) {
 }
 
 enum class DevicePropertyType {
-  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER;
+  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION;
 
   override fun toString(): String = this.name.toLowerCase()
 }

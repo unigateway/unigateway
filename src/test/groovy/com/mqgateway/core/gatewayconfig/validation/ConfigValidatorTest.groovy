@@ -8,10 +8,21 @@ import com.mqgateway.core.gatewayconfig.Point
 import com.mqgateway.core.gatewayconfig.Room
 import com.mqgateway.core.gatewayconfig.WireColor
 import spock.lang.Specification
+import spock.lang.Subject
 
 class ConfigValidatorTest extends Specification {
 
-	ConfigValidator configValidator = new ConfigValidator(new ObjectMapper())
+	def validators = [
+	    new UniqueDeviceIdsValidator(),
+		new UniquePortNumbersForPointsValidator(),
+		new WireUsageValidator(),
+		new SerialDeviceWiresValidator(),
+		new SerialDeviceAdditionalConfigValidator(),
+		new ShutterAdditionalConfigValidator()
+	]
+
+	@Subject
+	ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), validators)
 	int nextPortNumber = 1
 
 	def "should validation failed when there are more than one device with the same id"() {
@@ -179,6 +190,30 @@ class ConfigValidatorTest extends Specification {
 		reasons*.device.id == ["withWrongConfig"]
 	}
 
+	def "should fail validation of shutter device when any internal device is not of RELAY type"() {
+		given:
+		def devices = [
+			someDevice("withWrongInternalDevice", "shutter1", DeviceType.SHUTTER, [],
+					   [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
+					   [
+						   stopRelay: someDevice("1", "relay1", DeviceType.RELAY, [WireColor.BLUE]),
+						   upDownRelay: someDevice("1", "emulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
+					   ]),
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
+
+		List<ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice> reasons =
+			result.failureReasons.findAll { it instanceof ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
+		reasons*.device.id == ["withWrongInternalDevice"]
+	}
+
 	static Gateway gatewayWith(Room[] rooms) {
 		new Gateway("1.0", "some gateway", "192.168.1.123", rooms.toList())
 	}
@@ -197,8 +232,9 @@ class ConfigValidatorTest extends Specification {
 								   String name = UUID.randomUUID().toString().replace("-", ""),
 								   DeviceType type = DeviceType.RELAY,
 								   List<WireColor> wires = [WireColor.BLUE],
-								   Map<String, String> config = [:]) {
+								   Map<String, String> config = [:],
+								   Map<String, DeviceConfig> internalDevices = [:]) {
 
-		new DeviceConfig(id, name, type, wires, config)
+		new DeviceConfig(id, name, type, wires, config, internalDevices)
 	}
 }

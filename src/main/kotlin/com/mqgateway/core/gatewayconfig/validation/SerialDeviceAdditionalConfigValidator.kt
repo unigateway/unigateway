@@ -5,7 +5,9 @@ import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companio
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
+import javax.inject.Singleton
 
+@Singleton
 class SerialDeviceAdditionalConfigValidator : GatewayValidator {
   override fun validate(gateway: Gateway): List<ValidationFailureReason> {
     val devices: List<DeviceConfig> = gateway.rooms
@@ -14,12 +16,12 @@ class SerialDeviceAdditionalConfigValidator : GatewayValidator {
       .filter { device -> device.type in listOf(DeviceType.BME280) }
 
     val incorrectPeriodBetweenAskingForData = devices.filter { device ->
-      val periodBetweenAsk = device.config?.get(CONFIG_PERIOD_BETWEEN_ASK_KEY)?.toLong()
+      val periodBetweenAsk = device.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong()
       periodBetweenAsk != null && (periodBetweenAsk < 10 || periodBetweenAsk > Int.MAX_VALUE)
     }.map { IncorrectPeriodBetweenAskingForData(it) }
 
     val incorrectAcceptablePingPeriod = devices.filter { device ->
-      val acceptablePingPeriod = device.config?.get(CONFIG_ACCEPTABLE_PING_PERIOD_KEY)?.toLong()
+      val acceptablePingPeriod = device.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong()
       acceptablePingPeriod != null && (acceptablePingPeriod < 10 || acceptablePingPeriod > Int.MAX_VALUE)
     }.map { IncorrectAcceptablePingPeriod(it) }
 

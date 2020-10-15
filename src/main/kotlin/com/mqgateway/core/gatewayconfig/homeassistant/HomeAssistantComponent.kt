@@ -106,18 +106,20 @@ data class HomeAssistantTrigger(
 
 data class HomeAssistantCover(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("state_topic") val stateTopic: String?,
   @field:JsonProperty("command_topic") val commandTopic: String,
+  @field:JsonProperty("position_topic") val positionTopic: String?,
+  @field:JsonProperty("set_position_topic") val setPositionTopic: String?,
   @field:JsonProperty("device_class") val deviceClass: DeviceClass,
   @field:JsonProperty("payload_open") val payloadOpen: String,
   @field:JsonProperty("payload_close") val payloadClose: String,
   @field:JsonProperty("payload_stop") val payloadStop: String,
-  @field:JsonProperty("position_open") val positionOpen: Int = 100,
-  @field:JsonProperty("position_closed") val positionClosed: Int = 0,
-  @field:JsonProperty("state_open") val stateOpen: String,
-  @field:JsonProperty("state_closed") val stateClosed: String,
-  @field:JsonProperty("state_opening") val stateOpening: String,
-  @field:JsonProperty("state_closing") val stateClosing: String,
+  @field:JsonProperty("position_open") val positionOpen: Int? = 100,
+  @field:JsonProperty("position_closed") val positionClosed: Int? = 0,
+  @field:JsonProperty("state_open") val stateOpen: String?,
+  @field:JsonProperty("state_closed") val stateClosed: String?,
+  @field:JsonProperty("state_opening") val stateOpening: String?,
+  @field:JsonProperty("state_closing") val stateClosing: String?,
   @field:JsonProperty("retain") val retain: Boolean
 
 ) : HomeAssistantComponent(HomeAssistantComponentType.COVER, basicProperties) {
