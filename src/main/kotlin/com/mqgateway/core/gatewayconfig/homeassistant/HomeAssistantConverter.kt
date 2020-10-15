@@ -227,7 +227,7 @@ class HomeAssistantConverter {
             ShutterDevice.State.CLOSING.name,
             false
           )
-        ) // TODO check (where will HA send STOP if position_topic is defined? same for OPEN and CLOSE)
+        )
         DeviceType.TIMER_SWITCH -> listOf()
       }
 

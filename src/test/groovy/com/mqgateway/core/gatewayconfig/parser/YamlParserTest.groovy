@@ -87,6 +87,5 @@ class YamlParserTest extends Specification {
 		upDownRelayDevice.id == "bedroom_shutter_updown_relay"
 		upDownRelayDevice.type == DeviceType.RELAY
 		upDownRelayDevice.wires == [WireColor.BLUE_WHITE]
-	} // TODO think about adding JSON schema validators tests
-	// TODO think about replacing current JSON schema validator with networknt/json-schema-validator
+	}
 }
