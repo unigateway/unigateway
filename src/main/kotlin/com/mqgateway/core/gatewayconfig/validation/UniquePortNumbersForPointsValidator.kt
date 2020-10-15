@@ -2,7 +2,9 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.Point
+import javax.inject.Singleton
 
+@Singleton
 class UniquePortNumbersForPointsValidator : GatewayValidator {
 
   override fun validate(gateway: Gateway): List<ValidationFailureReason> {

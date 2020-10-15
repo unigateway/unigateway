@@ -17,10 +17,11 @@ abstract class Device(val id: String, val type: DeviceType) {
   /**
    * Add listeners before calling this method
    */
-  fun init() {
+  @JvmOverloads
+  fun init(listenersExpected: Boolean = true) {
     LOGGER.info { "Initializing device type='$type' id='$id'" }
-    if (updateListeners.isEmpty()) {
-      LOGGER.warn { "No update listener registered for device id='$id'" }
+    if (listenersExpected && updateListeners.isEmpty()) {
+      LOGGER.error { "No update listener registered for device id='$id'" }
     }
     initDevice()
     initialized = true

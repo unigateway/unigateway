@@ -40,19 +40,19 @@ class DeviceFactory(
       }
       DeviceType.SWITCH_BUTTON -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        val debounceMs = deviceConfig.config?.get(DigitalInputDevice.CONFIG_DEBOUNCE_KEY)?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
+        val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
         val longPressTimeMs =
-          deviceConfig.config?.get(SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY)?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
+          deviceConfig.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
         SwitchButtonDevice(deviceConfig.id, pin, debounceMs, longPressTimeMs)
       }
       DeviceType.REED_SWITCH -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        val debounceMs = deviceConfig.config?.get(DigitalInputDevice.CONFIG_DEBOUNCE_KEY)?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
+        val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
         ReedSwitchDevice(deviceConfig.id, pin, debounceMs)
       }
       DeviceType.MOTION_DETECTOR -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        val debounceMs = deviceConfig.config?.get(DigitalInputDevice.CONFIG_DEBOUNCE_KEY)?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
+        val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
         MotionSensorDevice(deviceConfig.id, pin, debounceMs)
       }
       DeviceType.BME280 -> {
@@ -62,9 +62,9 @@ class DeviceFactory(
         val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
         val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
         val periodBetweenAskingForData =
-          Duration.ofSeconds(deviceConfig.config?.get(CONFIG_PERIOD_BETWEEN_ASK_KEY)?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
+          Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
         val acceptablePingPeriod =
-          Duration.ofSeconds(deviceConfig.config?.get(CONFIG_ACCEPTABLE_PING_PERIOD_KEY)?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
+          Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
 
         BME280PeriodicSerialInputDevice(
           deviceConfig.id,
@@ -85,9 +85,9 @@ class DeviceFactory(
         val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
         val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
         val periodBetweenAskingForData =
-          Duration.ofSeconds(deviceConfig.config?.get(CONFIG_PERIOD_BETWEEN_ASK_KEY)?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
+          Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
         val acceptablePingPeriod =
-          Duration.ofSeconds(deviceConfig.config?.get(CONFIG_ACCEPTABLE_PING_PERIOD_KEY)?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
+          Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
 
         DHT22PeriodicSerialInputDevice(
           deviceConfig.id,
@@ -102,7 +102,14 @@ class DeviceFactory(
         val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
         TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
       }
-      DeviceType.SHUTTER -> TODO() // TODO implement
+      DeviceType.SHUTTER -> {
+        val stopRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("stopRelay")) as RelayDevice
+        val upDownRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("upDownRelay")) as RelayDevice
+        ShutterDevice(
+          deviceConfig.id, stopRelayDevice, upDownRelayDevice,
+          deviceConfig.config.getValue("fullOpenTimeMs").toLong(), deviceConfig.config.getValue("fullCloseTimeMs").toLong()
+        )
+      }
       DeviceType.SCT013 -> TODO()
     }
   }

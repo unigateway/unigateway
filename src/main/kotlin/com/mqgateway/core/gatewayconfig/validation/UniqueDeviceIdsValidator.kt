@@ -2,7 +2,9 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.Gateway
+import javax.inject.Singleton
 
+@Singleton
 class UniqueDeviceIdsValidator : GatewayValidator {
 
   override fun validate(gateway: Gateway): List<ValidationFailureReason> {

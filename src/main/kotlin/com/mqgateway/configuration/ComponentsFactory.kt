@@ -1,9 +1,15 @@
 package com.mqgateway.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.parser.YamlParser
+import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
+import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.mcpexpander.McpExpanders
 import com.mqgateway.core.mcpexpander.McpExpandersFactory
 import com.mqgateway.core.mcpexpander.Pi4JExpanderPinProvider
@@ -30,8 +36,17 @@ import javax.inject.Singleton
 internal class ComponentsFactory {
 
   @Singleton
-  fun gatewayConfigLoader(): ConfigLoader {
-    return ConfigLoader()
+  fun gatewayConfigLoader(yamlObjectMapper: ObjectMapper, gatewayValidators: List<GatewayValidator>): ConfigLoader {
+    val yamlParser = YamlParser(yamlObjectMapper)
+    val configValidator = ConfigValidator(yamlObjectMapper, gatewayValidators)
+    return ConfigLoader(yamlParser, configValidator)
+  }
+
+  @Singleton
+  fun yamlObjectMapper(): ObjectMapper {
+    val mapper = ObjectMapper(YAMLFactory())
+    mapper.registerModule(KotlinModule())
+    return mapper
   }
 
   @Singleton

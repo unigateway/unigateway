@@ -50,8 +50,8 @@ class ShutterDevice(
 
   override fun initDevice() {
     super.initDevice()
-    stopRelay.init()
-    upDownRelay.init()
+    stopRelay.init(false)
+    upDownRelay.init(false)
     if (currentPosition == null) {
       LOGGER.warn { "Shutter position is unknown. It will be initialized now by closing the shutter." }
       initializeCurrentPositionToClosed()
@@ -190,11 +190,11 @@ class ShutterDevice(
     const val EXTRA_MS_FOR_RESET_POSITION = 1000
   }
 
-  private enum class Command {
+  enum class Command {
     OPEN, CLOSE, STOP
   }
 
-  private enum class State {
+  enum class State {
     OPENING, CLOSING, STOPPED
   }
 }

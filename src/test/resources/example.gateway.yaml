@@ -1,4 +1,4 @@
-configVersion: "1.0"
+configVersion: "1.1"
 name: "TestGw1"
 mqttHostname: "127.0.0.1"
 rooms:
@@ -42,3 +42,23 @@ rooms:
             type: SWITCH_BUTTON
             config:
               debounceMs: 50
+      - name: "bedroom shutters box"
+        portNumber: 4
+        devices:
+          - name: "bedroom shutter"
+            id: "bedroom_shutter"
+            type: SHUTTER
+            internalDevices:
+              stopRelay:
+                name: "bedroom shutter stop relay"
+                id: "bedroom_shutter_stop_relay"
+                type: RELAY
+                wires: ["BLUE"]
+              upDownRelay:
+                name: "bedroom shutter up-down relay"
+                id: "bedroom_shutter_updown_relay"
+                type: RELAY
+                wires: ["BLUE_WHITE"]
+            config:
+              fullCloseTimeMs: 14000
+              fullOpenTimeMs: 17000

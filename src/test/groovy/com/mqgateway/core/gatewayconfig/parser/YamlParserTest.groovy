@@ -26,7 +26,7 @@ class YamlParserTest extends Specification {
 		Gateway gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
 
 		then:
-		gateway.configVersion == "1.0"
+		gateway.configVersion == "1.1"
 		gateway.name == "TestGw1"
 		gateway.mqttHostname == "127.0.0.1"
 		gateway.rooms*.name.toSet() == ["workshop", "bedroom"].toSet()
@@ -60,4 +60,33 @@ class YamlParserTest extends Specification {
 		workshopBme280Device.config.get("periodBetweenAskingForDataInSec") == "30"
 		workshopBme280Device.config.get("acceptablePingPeriodInSec") == "20"
 	}
+
+	def "should parse shutter device from YAML Gateway configuration file"() {
+		given:
+		def yamlFileBytes = YamlParserTest.getResourceAsStream("/example.gateway.yaml").bytes
+
+		when:
+		Gateway gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
+
+		then:
+		def bedroom = gateway.rooms.find { it.name == "bedroom" }
+		def bedroomPoint = bedroom.points.find { it.name == "bedroom shutters box" }
+		def bedroomShutterDevice = bedroomPoint.devices.find {it.name == "bedroom shutter"}
+		bedroomShutterDevice.id == "bedroom_shutter"
+		bedroomShutterDevice.type == DeviceType.SHUTTER
+		bedroomShutterDevice.wires == []
+
+		def stopRelayDevice = bedroomShutterDevice.internalDevices.get("stopRelay")
+		stopRelayDevice.name == "bedroom shutter stop relay"
+		stopRelayDevice.id == "bedroom_shutter_stop_relay"
+		stopRelayDevice.type == DeviceType.RELAY
+		stopRelayDevice.wires == [WireColor.BLUE]
+
+		def upDownRelayDevice = bedroomShutterDevice.internalDevices.get("upDownRelay")
+		upDownRelayDevice.name == "bedroom shutter up-down relay"
+		upDownRelayDevice.id == "bedroom_shutter_updown_relay"
+		upDownRelayDevice.type == DeviceType.RELAY
+		upDownRelayDevice.wires == [WireColor.BLUE_WHITE]
+	} // TODO think about adding JSON schema validators tests
+	// TODO think about replacing current JSON schema validator with networknt/json-schema-validator
 }

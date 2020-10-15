@@ -4,6 +4,7 @@ import com.mqgateway.core.device.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.MotionSensorDevice
 import com.mqgateway.core.device.ReedSwitchDevice
 import com.mqgateway.core.device.RelayDevice
+import com.mqgateway.core.device.ShutterDevice
 import com.mqgateway.core.device.SwitchButtonDevice
 import com.mqgateway.core.device.serial.PeriodicSerialInputDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfig
@@ -35,7 +36,7 @@ class HomeAssistantConverter {
         DeviceType.RELAY -> {
           val stateTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           val commandTopic = homieCommandTopic(gateway, device, DevicePropertyType.STATE)
-          if (device.config?.get(DEVICE_CONFIG_HA_COMPONENT).equals(LIGHT.value, true)) {
+          if (device.config[DEVICE_CONFIG_HA_COMPONENT].equals(LIGHT.value, true)) {
             listOf(HomeAssistantLight(basicProperties, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
           } else {
             listOf(HomeAssistantSwitch(basicProperties, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
@@ -207,8 +208,27 @@ class HomeAssistantConverter {
             )
           )
         }
+        DeviceType.SHUTTER -> listOf(
+          HomeAssistantCover(
+            basicProperties,
+            homieStateTopic(gateway, device, DevicePropertyType.STATE),
+            homieCommandTopic(gateway, device, DevicePropertyType.STATE),
+            homieStateTopic(gateway, device, DevicePropertyType.POSITION),
+            homieCommandTopic(gateway, device, DevicePropertyType.POSITION),
+            HomeAssistantCover.DeviceClass.SHUTTER,
+            ShutterDevice.Command.OPEN.name,
+            ShutterDevice.Command.CLOSE.name,
+            ShutterDevice.Command.STOP.name,
+            ShutterDevice.POSITION_OPEN,
+            ShutterDevice.POSITION_CLOSED,
+            null,
+            null,
+            ShutterDevice.State.OPENING.name,
+            ShutterDevice.State.CLOSING.name,
+            false
+          )
+        ) // TODO check (where will HA send STOP if position_topic is defined? same for OPEN and CLOSE)
         DeviceType.TIMER_SWITCH -> listOf()
-        DeviceType.SHUTTER -> TODO() // TODO implement
       }
 
       LOGGER.debug { "Device ${device.id} (${device.type}) converted to HA components types: ${components.map { it.componentType }}" }

@@ -3,7 +3,9 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
+import javax.inject.Singleton
 
+@Singleton
 class SerialDeviceWiresValidator : GatewayValidator {
   override fun validate(gateway: Gateway): List<ValidationFailureReason> {
     val devices: List<DeviceConfig> = gateway.rooms

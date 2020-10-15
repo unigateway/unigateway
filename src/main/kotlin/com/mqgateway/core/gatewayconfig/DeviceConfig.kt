@@ -25,8 +25,9 @@ data class DeviceConfig(
   val id: String,
   val name: String,
   val type: DeviceType,
-  val wires: List<WireColor>,
-  val config: Map<String, String>? = null
+  val wires: List<WireColor> = emptyList(),
+  val config: Map<String, String> = emptyMap(),
+  val internalDevices: Map<String, DeviceConfig> = emptyMap()
 )
 
 data class DeviceProperty(

@@ -2,6 +2,7 @@ package com.mqgateway.core.gatewayconfig.homeassistant
 
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POWER
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
@@ -26,7 +27,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway relay to HA light when set explicitly in gateway configuration"() {
 		given:
-		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], ["haComponent":"light"])
+		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], ["haComponent":"light"], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
@@ -48,7 +49,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway relay to HA switch when haComponent not set explicitly in gateway configuration"() {
 		given:
-		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], null)
+		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
@@ -70,7 +71,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway SWITCH_BUTTON to 4 HA triggers"() {
 		given:
-		def switchButtonDeviceConfig = new DeviceConfig("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], null)
+		def switchButtonDeviceConfig = new DeviceConfig("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
@@ -101,7 +102,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway REED_SWITCH to HA binary sensor"() {
 		given:
-		def reedSwitchDeviceConfig = new DeviceConfig("myReedSwitch", "Test reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE], null)
+		def reedSwitchDeviceConfig = new DeviceConfig("myReedSwitch", "Test reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [reedSwitchDeviceConfig])])])
 
 		when:
@@ -122,7 +123,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway MOTION_DETECTOR to HA binary sensor"() {
 		given:
-		def motionDetectorDeviceConfig = new DeviceConfig("myMotionDetector", "Test motion detector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], null)
+		def motionDetectorDeviceConfig = new DeviceConfig("myMotionDetector", "Test motion detector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [motionDetectorDeviceConfig])])])
 
 		when:
@@ -143,7 +144,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway EMULATED_SWITCH to HA switch"() {
 		given:
-		def emulatedSwitchDeviceConfig = new DeviceConfig("myEmulatedSwitch", "Test emulated switch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], null)
+		def emulatedSwitchDeviceConfig = new DeviceConfig("myEmulatedSwitch", "Test emulated switch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [emulatedSwitchDeviceConfig])])])
 
 		when:
@@ -165,7 +166,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway BME280 to 4 HA sensors"() {
 		given:
-		def bme280DeviceConfig = new DeviceConfig("myBme280", "Test bme280", DeviceType.BME280, [WireColor.BLUE], null)
+		def bme280DeviceConfig = new DeviceConfig("myBme280", "Test bme280", DeviceType.BME280, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [bme280DeviceConfig])])])
 
 		when:
@@ -201,7 +202,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway DTH22 to 3 HA sensors"() {
 		given:
-		def dht22DeviceConfig = new DeviceConfig("myDht22", "Test dht22", DeviceType.DHT22, [WireColor.BLUE], null)
+		def dht22DeviceConfig = new DeviceConfig("myDht22", "Test dht22", DeviceType.DHT22, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [dht22DeviceConfig])])])
 
 		when:
@@ -234,7 +235,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway SCT013 to 2 HA sensors"() {
 		given:
-		def sct013DeviceConfig = new DeviceConfig("mySct013", "Test SCT013", DeviceType.SCT013, [WireColor.BLUE], null)
+		def sct013DeviceConfig = new DeviceConfig("mySct013", "Test SCT013", DeviceType.SCT013, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [sct013DeviceConfig])])])
 
 		when:
@@ -260,6 +261,39 @@ class HomeAssistantConverterTest extends Specification {
 		power.unitOfMeasurement == DataUnit.WATT.value
 		lastPing.stateTopic == expectedStateTopic(gateway.name, sct013DeviceConfig.id, LAST_PING.toString())
 		lastPing.unitOfMeasurement == DataUnit.NONE.value
+	}
+
+	def "should convert MqGateway SHUTTER to HA cover"() {
+		given:
+		def shutterDevice = new DeviceConfig("myShutter", "Test shutter device", DeviceType.SHUTTER, [],
+											 [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
+											 [
+												 stopRelay  : new DeviceConfig("stopRelay", "relay1", DeviceType.RELAY, [WireColor.BLUE], [:], [:]),
+												 upDownRelay: new DeviceConfig("upDownRelay", "relay2", DeviceType.RELAY, [WireColor.GREEN], [:], [:])
+											 ])
+		Gateway gateway = gateway([room([point("point name", 3, [shutterDevice])])])
+
+		when:
+		def components = converter.convert(gateway)
+
+		then:
+		components.size() == 1
+		HomeAssistantCover cover = components.first() as HomeAssistantCover
+		cover.componentType == HomeAssistantComponentType.COVER
+		cover.deviceClass == HomeAssistantCover.DeviceClass.SHUTTER
+		cover.properties.name == "Test shutter device"
+		cover.properties.nodeId == "gtwName"
+		cover.properties.objectId == "myShutter"
+		cover.stateTopic == expectedStateTopic(gateway.name, shutterDevice.id, STATE.toString())
+		cover.commandTopic == expectedCommandTopic(gateway.name, shutterDevice.id, STATE.toString())
+		cover.retain == false
+		cover.payloadClose == "CLOSE"
+		cover.payloadOpen == "OPEN"
+		cover.payloadStop == "STOP"
+		cover.positionClosed == 0
+		cover.positionOpen == 100
+		cover.positionTopic == expectedStateTopic(gateway.name, shutterDevice.id, POSITION.toString())
+		cover.setPositionTopic == expectedCommandTopic(gateway.name, shutterDevice.id, POSITION.toString())
 	}
 
 
