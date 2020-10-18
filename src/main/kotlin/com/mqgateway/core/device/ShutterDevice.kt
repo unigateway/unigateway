@@ -96,6 +96,7 @@ class ShutterDevice(
     }
 
     val requiredMove = calculateRequiredMove(currentPosition!!, targetPosition)
+    LOGGER.info { "Calculated move for shutter $id: $requiredMove" }
 
     scheduledStopTimerTask?.cancel()
     if (requiredMove.direction == Direction.UP) {
