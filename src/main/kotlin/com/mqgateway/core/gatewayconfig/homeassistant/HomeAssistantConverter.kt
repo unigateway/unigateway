@@ -223,8 +223,6 @@ class HomeAssistantConverter {
             ShutterDevice.POSITION_CLOSED,
             null,
             null,
-            ShutterDevice.State.OPENING.name,
-            ShutterDevice.State.CLOSING.name,
             false
           )
         )

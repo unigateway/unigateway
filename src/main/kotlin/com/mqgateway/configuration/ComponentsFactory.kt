@@ -30,19 +30,21 @@ import com.pi4j.io.serial.SerialConfig
 import com.pi4j.io.serial.SerialFactory
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Factory
 internal class ComponentsFactory {
 
   @Singleton
-  fun gatewayConfigLoader(yamlObjectMapper: ObjectMapper, gatewayValidators: List<GatewayValidator>): ConfigLoader {
+  fun gatewayConfigLoader(@Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper, gatewayValidators: List<GatewayValidator>): ConfigLoader {
     val yamlParser = YamlParser(yamlObjectMapper)
     val configValidator = ConfigValidator(yamlObjectMapper, gatewayValidators)
     return ConfigLoader(yamlParser, configValidator)
   }
 
   @Singleton
+  @Named("yamlObjectMapper")
   fun yamlObjectMapper(): ObjectMapper {
     val mapper = ObjectMapper(YAMLFactory())
     mapper.registerModule(KotlinModule())

@@ -55,7 +55,7 @@ class ShutterDeviceTest extends Specification {
 		then:
 		stoppingTimer.lastScheduledDelay == (FULL_CLOSE_MS * 0.3).toLong()
 		stopPin.state == PinState.LOW
-		upDownPin.state == PinState.LOW
+		upDownPin.state == PinState.HIGH
 		stoppingTimer.runNow()
 		stopPin.state == PinState.HIGH
 		upDownPin.state == PinState.HIGH
@@ -73,7 +73,7 @@ class ShutterDeviceTest extends Specification {
 		then:
 		stoppingTimer.lastScheduledDelay == (FULL_OPEN_MS * 0.55).toLong()
 		stopPin.state == PinState.LOW
-		upDownPin.state == PinState.HIGH
+		upDownPin.state == PinState.LOW
 		stoppingTimer.runNow()
 		stopPin.state == PinState.HIGH
 		upDownPin.state == PinState.HIGH
@@ -93,7 +93,7 @@ class ShutterDeviceTest extends Specification {
 		listenerStub.updatesByPropertyId(POSITION.toString())[1].newValue == "20"
 	}
 
-	def "should notify about OPENING/CLOSING and STOPPED when moving from #startPosition to #targetPosition"() {
+	def "should notify about OPENING/CLOSING and final state when moving from #startPosition to #targetPosition"() {
 		given:
 		shutterDevice.addListener(listenerStub)
 		shutterDevice.initProperty(POSITION.toString(), startPosition.toString())
@@ -103,17 +103,18 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.change(POSITION.toString(), targetPosition.toString())
 
 		then:
-		listenerStub.updatesByPropertyId("state").size() == 1
+		listenerStub.updatesByPropertyId("state").size() == 2
 		listenerStub.updatesByPropertyId("state")[0].newValue == expectedUpdates[0]
-		stoppingTimer.runNow()
 		listenerStub.updatesByPropertyId("state")[1].newValue == expectedUpdates[1]
+		stoppingTimer.runNow()
+		listenerStub.updatesByPropertyId("state")[2].newValue == expectedUpdates[2]
 
 		where:
 		startPosition | targetPosition | expectedUpdates
-		10            | 50             | ["OPENING", "STOPPED"]
-		60            | 20             | ["CLOSING", "STOPPED"]
-		0             | 100            | ["OPENING", "STOPPED"]
-		100           | 0              | ["CLOSING", "STOPPED"]
+		10            | 50             | ["OPEN", "OPENING", "OPEN"]
+		60            | 20             | ["OPEN", "CLOSING", "OPEN"]
+		0             | 100            | ["CLOSED", "OPENING", "OPEN"]
+		100           | 0              | ["OPEN", "CLOSING", "CLOSED"]
 
 	}
 
@@ -129,7 +130,7 @@ class ShutterDeviceTest extends Specification {
 		listenerStub.updatesByPropertyId("state").size() == 1
 		listenerStub.updatesByPropertyId("state")[0].newValue == "CLOSING"
 		stoppingTimer.runNow()
-		listenerStub.updatesByPropertyId("state")[1].newValue == "STOPPED"
+		listenerStub.updatesByPropertyId("state")[1].newValue == "CLOSED"
 		listenerStub.updatesByPropertyId("position")[0].newValue == "0"
 	}
 
@@ -166,7 +167,7 @@ class ShutterDeviceTest extends Specification {
 		listenerStub.updatesByPropertyId("position")[1].newValue == expectedPositionOnChange
 		stoppingTimer.runNow()
 		listenerStub.updatesByPropertyId("position")[2].newValue == "70"
-		listenerStub.updatesByPropertyId("state")[2].newValue == "STOPPED"
+		listenerStub.updatesByPropertyId("state").last().newValue == "OPEN"
 
 		where:
 		initialPosition | targetPositon | changedAfterMs      | expectedPositionOnChange | directionWhenChanged
@@ -184,7 +185,9 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.change("something", "OPEN")
 
 		then:
-		listenerStub.getReceivedUpdates() == [new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80")]
+		listenerStub.getReceivedUpdates() == [
+			new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80"),
+			new UpdateListenerStub.Update(shutterDevice.id, STATE.toString(), "OPEN")]
 		notThrown()
 	}
 
@@ -198,7 +201,9 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.change(STATE.toString(), "90")
 
 		then:
-		listenerStub.getReceivedUpdates() == [new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80")]
+		listenerStub.getReceivedUpdates() == [
+			new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80"),
+			new UpdateListenerStub.Update(shutterDevice.id, STATE.toString(), "OPEN")]
 		notThrown()
 	}
 
@@ -212,7 +217,9 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.change(POSITION.toString(), "OPEN")
 
 		then:
-		listenerStub.getReceivedUpdates() == [new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80")]
+		listenerStub.getReceivedUpdates() == [
+			new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80"),
+			new UpdateListenerStub.Update(shutterDevice.id, STATE.toString(), "OPEN")]
 		notThrown()
 	}
 
@@ -220,16 +227,22 @@ class ShutterDeviceTest extends Specification {
 		given:
 		shutterDevice.clockForTests = clock
 		shutterDevice.addListener(listenerStub)
-		shutterDevice.initProperty(POSITION.toString(), "90")
+		shutterDevice.initProperty(POSITION.toString(), startPosition.toString())
 		shutterDevice.init()
-		shutterDevice.change(POSITION.toString(), "10")
-		clock.plus(Duration.ofMillis((FULL_CLOSE_MS * 0.25).toLong()))
+		shutterDevice.change(POSITION.toString(), aimPosition.toString())
+		clock.plus(Duration.ofMillis(stoppedAfterMs.toLong()))
 
 		when:
 		shutterDevice.change(STATE.toString(), "STOP")
 
 		then:
-		listenerStub.updatesByPropertyId(POSITION.toString()).last().newValue == (90-25).toString()
+		listenerStub.updatesByPropertyId(POSITION.toString()).last().newValue == expectedPosition.toString()
+
+		where:
+		startPosition | aimPosition | stoppedAfterMs       | expectedPosition
+		90            | 10          | FULL_CLOSE_MS * 0.25 | 90 - 25
+		0             | 30          | FULL_OPEN_MS * 0.2   | 0 + 20
+
 	}
 
 	def "should cancel previously scheduled stopping when new command has been received"() {
@@ -286,7 +299,27 @@ class ShutterDeviceTest extends Specification {
 		targetPositionDesc | targetPosition | expectedScheduledTimeBeforeStop
 		"closed"           | "0"            | FULL_CLOSE_MS + ShutterDevice.EXTRA_MS_FOR_RESET_POSITION
 		"open"             | "100"          | FULL_OPEN_MS + ShutterDevice.EXTRA_MS_FOR_RESET_POSITION
+	}
 
+	def "should never go beyond 0-100 with position"() {
+		given:
+		shutterDevice.clockForTests = clock
+		shutterDevice.addListener(listenerStub)
+		shutterDevice.initProperty(POSITION.toString(), startPosition.toString())
+		shutterDevice.init()
+
+		when:
+		shutterDevice.change(POSITION.toString(), aimPosition.toString())
+		clock.plus(Duration.ofMillis(moveTimeMs.toLong()))
+		shutterDevice.change(STATE.toString(), "STOP")
+
+		then:
+		listenerStub.updatesByPropertyId(POSITION.toString()).last().newValue == expectedPosition.toString()
+
+		where:
+		startPosition | aimPosition | moveTimeMs          | expectedPosition
+		1             | 0           | FULL_CLOSE_MS * 0.2 | 0
+		99            | 100         | FULL_OPEN_MS * 0.1  | 100
 	}
 }
 

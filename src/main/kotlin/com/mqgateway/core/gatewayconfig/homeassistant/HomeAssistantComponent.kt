@@ -118,8 +118,6 @@ data class HomeAssistantCover(
   @field:JsonProperty("position_closed") val positionClosed: Int? = 0,
   @field:JsonProperty("state_open") val stateOpen: String?,
   @field:JsonProperty("state_closed") val stateClosed: String?,
-  @field:JsonProperty("state_opening") val stateOpening: String?,
-  @field:JsonProperty("state_closing") val stateClosing: String?,
   @field:JsonProperty("retain") val retain: Boolean
 
 ) : HomeAssistantComponent(HomeAssistantComponentType.COVER, basicProperties) {

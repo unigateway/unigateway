@@ -13,6 +13,8 @@ import java.util.Timer
 import java.util.TimerTask
 import kotlin.concurrent.schedule
 import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -30,7 +32,7 @@ class ShutterDevice(
       value?.let { notify(POSITION, it) }
     }
   private var moveStartTime: Instant? = null
-  private var state: State = State.STOPPED
+  private var state: State = State.UNKNOWN
     private set(value) {
       field = value
       notify(STATE, value.name)
@@ -46,6 +48,11 @@ class ShutterDevice(
       return
     }
     currentPosition = value.toInt()
+    state = if (currentPosition == POSITION_CLOSED) {
+      State.CLOSED
+    } else {
+      State.OPEN
+    }
   }
 
   override fun initDevice() {
@@ -63,6 +70,7 @@ class ShutterDevice(
     stoppingTimer.schedule(fullCloseTimeMs + EXTRA_MS_FOR_RESET_POSITION) {
       stop()
       currentPosition = 0
+      state = State.CLOSED
     }
   }
 
@@ -104,6 +112,11 @@ class ShutterDevice(
       LOGGER.info { "Stopping shutter $id after move" }
       stop()
       currentPosition = targetPosition
+      state = if (currentPosition == POSITION_CLOSED) {
+        State.CLOSED
+      } else {
+        State.OPEN
+      }
     }
   }
 
@@ -141,29 +154,31 @@ class ShutterDevice(
 
   private fun calculateActualCurrentPosition(): Int {
     return when (state) {
-      State.STOPPED -> currentPosition!!
+      State.OPEN -> currentPosition!!
+      State.CLOSED -> currentPosition!!
       State.OPENING -> {
         val moveTimeMs = Duration.between(moveStartTime, Instant.now(clock)).toMillis()
         val percentageMoved: Int = ((moveTimeMs.toFloat() / fullOpenTimeMs) * 100).toInt()
-        currentPosition!! + percentageMoved
+        min(currentPosition!! + percentageMoved, 100)
       }
       State.CLOSING -> {
         val moveTimeMs = Duration.between(moveStartTime, Instant.now(clock)).toMillis()
         val percentageMoved: Int = ((moveTimeMs.toFloat() / fullCloseTimeMs) * 100).toInt()
-        currentPosition!! - percentageMoved
+        max(currentPosition!! - percentageMoved, 0)
       }
+      State.UNKNOWN -> throw IllegalStateException("Shutter $id is in state: $state which is unexpected. Unable to continue.")
     }
   }
 
   private fun goDown() {
-    upDownRelay.changeState(CLOSED)
+    upDownRelay.changeState(OPEN)
     stopRelay.changeState(CLOSED)
     moveStartTime = Instant.now(clock)
     state = State.CLOSING
   }
 
   private fun goUp() {
-    upDownRelay.changeState(OPEN)
+    upDownRelay.changeState(CLOSED)
     stopRelay.changeState(CLOSED)
     moveStartTime = Instant.now(clock)
     state = State.OPENING
@@ -173,7 +188,6 @@ class ShutterDevice(
     stopRelay.changeState(OPEN)
     upDownRelay.changeState(OPEN)
     moveStartTime = null
-    state = State.STOPPED
   }
 
   fun setStoppingTimerForTests(timer: Timer) {
@@ -195,6 +209,6 @@ class ShutterDevice(
   }
 
   enum class State {
-    OPENING, CLOSING, STOPPED
+    OPENING, CLOSING, OPEN, CLOSED, UNKNOWN
   }
 }
