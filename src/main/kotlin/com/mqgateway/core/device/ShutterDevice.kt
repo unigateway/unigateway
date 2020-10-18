@@ -67,7 +67,7 @@ class ShutterDevice(
 
   private fun initializeCurrentPositionToClosed() {
     goDown()
-    stoppingTimer.schedule(fullCloseTimeMs + EXTRA_MS_FOR_RESET_POSITION) {
+    stoppingTimer.schedule(fullCloseTimeMs) {
       stop()
       currentPosition = 0
       state = State.CLOSED
@@ -95,20 +95,20 @@ class ShutterDevice(
       return
     }
 
-    val requiredMoveTimeMs = calculateRequiredMoveTimeMs(currentPosition!!, targetPosition)
+    val requiredMove = calculateRequiredMove(currentPosition!!, targetPosition)
 
     scheduledStopTimerTask?.cancel()
-
-    val directionToGo = if (targetPosition > currentPosition!!) State.OPENING else State.CLOSING
-    if (directionToGo == State.OPENING) {
-      LOGGER.info { "Command received to move shutter $id UP to position $targetPosition (${requiredMoveTimeMs}ms)" }
+    if (requiredMove.direction == Direction.UP) {
+      LOGGER.info { "Command received to move shutter $id UP to position $targetPosition (${requiredMove}ms)" }
       goUp()
-    } else {
-      LOGGER.info { "Command received to move shutter $id DOWN to position $targetPosition (${requiredMoveTimeMs}ms)" }
+    } else if (requiredMove.direction == Direction.DOWN) {
+      LOGGER.info { "Command received to move shutter $id DOWN to position $targetPosition (${requiredMove}ms)" }
       goDown()
+    } else {
+      return
     }
 
-    scheduledStopTimerTask = stoppingTimer.schedule(requiredMoveTimeMs) {
+    scheduledStopTimerTask = stoppingTimer.schedule(requiredMove.time.toMillis()) {
       LOGGER.info { "Stopping shutter $id after move" }
       stop()
       currentPosition = targetPosition
@@ -120,16 +120,26 @@ class ShutterDevice(
     }
   }
 
-  private fun calculateRequiredMoveTimeMs(currentPosition: Int, targetPosition: Int): Long {
+  private fun calculateRequiredMove(currentPosition: Int, targetPosition: Int): Move {
     val positionDifferenceToMove = targetPosition - currentPosition
-    val requiredDirection = if (positionDifferenceToMove > 0) State.OPENING else State.CLOSING
-    val goUpOrDownTimeMs = if (requiredDirection == State.OPENING) fullOpenTimeMs else fullCloseTimeMs
+    val requiredDirection = when {
+      positionDifferenceToMove > 0 -> Direction.UP
+      positionDifferenceToMove < 0 -> Direction.DOWN
+      else -> Direction.STAY
+    }
+    val goUpOrDownTimeMs = when (requiredDirection) {
+      Direction.UP -> fullOpenTimeMs
+      Direction.DOWN -> fullCloseTimeMs
+      Direction.STAY -> 0
+    }
 
-    return if (targetPosition == POSITION_OPEN || targetPosition == POSITION_CLOSED) {
-      goUpOrDownTimeMs + EXTRA_MS_FOR_RESET_POSITION
+    val timeMs = if (requiredDirection != Direction.STAY && (targetPosition == POSITION_OPEN || targetPosition == POSITION_CLOSED)) {
+      goUpOrDownTimeMs
     } else {
       (goUpOrDownTimeMs * (positionDifferenceToMove.absoluteValue.toFloat() / 100)).toLong()
     }
+
+    return Move(requiredDirection, Duration.ofMillis(timeMs))
   }
 
   private fun calculateTargetPosition(propertyId: String, newValue: String): Int? {
@@ -201,7 +211,6 @@ class ShutterDevice(
   companion object {
     const val POSITION_CLOSED = 0
     const val POSITION_OPEN = 100
-    const val EXTRA_MS_FOR_RESET_POSITION = 1000
   }
 
   enum class Command {
@@ -210,5 +219,11 @@ class ShutterDevice(
 
   enum class State {
     OPENING, CLOSING, OPEN, CLOSED, UNKNOWN
+  }
+
+  data class Move(val direction: Direction, val time: Duration)
+
+  enum class Direction {
+    UP, DOWN, STAY
   }
 }

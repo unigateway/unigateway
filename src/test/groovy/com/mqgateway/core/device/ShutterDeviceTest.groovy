@@ -126,7 +126,7 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.init()
 
 		then:
-		stoppingTimer.lastScheduledDelay > FULL_CLOSE_MS
+		stoppingTimer.lastScheduledDelay == FULL_CLOSE_MS
 		listenerStub.updatesByPropertyId("state").size() == 1
 		listenerStub.updatesByPropertyId("state")[0].newValue == "CLOSING"
 		stoppingTimer.runNow()
@@ -283,7 +283,7 @@ class ShutterDeviceTest extends Specification {
 		"CLOSE"   | "0"
 	}
 
-	def "should move shutter for more than full time when target position is fully #targetPositionDesc (#targetPosition) regardless of initial position"() {
+	def "should move shutter for full time when target position is fully #targetPositionDesc (#targetPosition) regardless of initial position"() {
 		given:
 		shutterDevice.addListener(listenerStub)
 		shutterDevice.initProperty(POSITION.toString(), "10")
@@ -293,12 +293,12 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.change(POSITION.toString(), targetPosition)
 
 		then:
-		stoppingTimer.lastScheduledDelay == expectedScheduledTimeBeforeStop
+		stoppingTimer.lastScheduledDelay == expectedScheduledTimeBeforeStop.toLong()
 
 		where:
 		targetPositionDesc | targetPosition | expectedScheduledTimeBeforeStop
-		"closed"           | "0"            | FULL_CLOSE_MS + ShutterDevice.EXTRA_MS_FOR_RESET_POSITION
-		"open"             | "100"          | FULL_OPEN_MS + ShutterDevice.EXTRA_MS_FOR_RESET_POSITION
+		"closed"           | "0"            | FULL_CLOSE_MS
+		"open"             | "100"          | FULL_OPEN_MS
 	}
 
 	def "should never go beyond 0-100 with position"() {
@@ -320,6 +320,25 @@ class ShutterDeviceTest extends Specification {
 		startPosition | aimPosition | moveTimeMs          | expectedPosition
 		1             | 0           | FULL_CLOSE_MS * 0.2 | 0
 		99            | 100         | FULL_OPEN_MS * 0.1  | 100
+	}
+
+	def "should stay at fully #positionDesc position when starting from fully #positionDesc and received #aimPosition"() {
+		given:
+		shutterDevice.addListener(listenerStub)
+		shutterDevice.initProperty(POSITION.toString(), startPosition.toString())
+		shutterDevice.init()
+
+		when:
+		shutterDevice.change(POSITION.toString(), aimPosition.toString())
+
+		then:
+		!listenerStub.updatesByPropertyId(STATE.toString()).any {it.newValue == ShutterDevice.State.OPENING.name()}
+		!listenerStub.updatesByPropertyId(STATE.toString()).any {it.newValue == ShutterDevice.State.CLOSING.name()}
+
+		where:
+		positionDesc | startPosition | aimPosition
+		"open"       | "100"         | "100"
+		"closed"     | "0"           | "0"
 	}
 }
 
