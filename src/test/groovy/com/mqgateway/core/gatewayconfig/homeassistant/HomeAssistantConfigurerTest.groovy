@@ -20,7 +20,7 @@ class HomeAssistantConfigurerTest extends Specification {
 
 	@Subject
 	HomeAssistantConfigurer configurer = new HomeAssistantConfigurer(new HomeAssistantProperties(true, "testRoot"),
-																	 new HomeAssistantConverter(),
+																	 new HomeAssistantConverter("0.0.999-TEST-ONLY"),
 																	 new HomeAssistantPublisher(new ObjectMapper()),
 																	 mqttClientFactory)
 

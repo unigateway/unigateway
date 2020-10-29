@@ -62,14 +62,13 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
   }
 
   private fun validateConfigurationAgainstJsonSchema(gatewayConfigJsonNode: JsonNode) {
-    // val validAgainstJsonSchema = configValidator.validateAgainstJsonSchema(gatewayConfigJsonNode)
-    // if (validAgainstJsonSchema) {
-    //   LOGGER.info { "JSON schema validation succeeded ✔" }
-    // } else {
-    //   LOGGER.error { "JSON Schema validation failed ✕" }
-    //   TODO do something about this validation
-      // throw ValidationFailedException("JSON Schema validation failed. See logs.")
-    // }
+    val validAgainstJsonSchema = configValidator.validateAgainstJsonSchema(gatewayConfigJsonNode)
+    if (validAgainstJsonSchema) {
+      LOGGER.info { "JSON schema validation succeeded ✔" }
+    } else {
+      LOGGER.error { "JSON Schema validation failed ✕" }
+      throw ValidationFailedException("JSON Schema validation failed. See logs.")
+    }
   }
 
   private fun validateGatewayConfigurationValues(gateway: Gateway) {

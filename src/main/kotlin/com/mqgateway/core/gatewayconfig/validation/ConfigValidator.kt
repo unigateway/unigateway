@@ -2,9 +2,9 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.fge.jsonschema.core.report.LogLevel
-import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.mqgateway.core.gatewayconfig.Gateway
+import com.networknt.schema.JsonSchemaFactory
+import com.networknt.schema.SpecVersion
 import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
@@ -28,19 +28,17 @@ class ConfigValidator(private val yamlObjectMapper: ObjectMapper, private val va
     LOGGER.trace { "Reading JSON schema from file" }
     val schemaNode = yamlObjectMapper.readTree(javaClass.getResourceAsStream("/config.schema.json"))
 
-    val factory = JsonSchemaFactory.byDefault()
-    val schemaValidator = factory.getJsonSchema(schemaNode)
+    val factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
+    val schemaValidator = factory.getSchema(schemaNode)
 
     LOGGER.trace { "Running validation" }
     val schemaValidationReport = schemaValidator.validate(gatewayJsonNode)
 
-    for (processingMessage in schemaValidationReport) {
-      if (processingMessage.logLevel in listOf(LogLevel.ERROR, LogLevel.FATAL)) {
-        LOGGER.error { "Processing message ${processingMessage.message}" }
-      }
+    for (validationMessage in schemaValidationReport) {
+        LOGGER.error { "Processing message ${validationMessage.message}" }
     }
 
-    return schemaValidationReport.isSuccess
+    return schemaValidationReport.isEmpty()
   }
 }
 
