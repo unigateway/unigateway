@@ -67,10 +67,11 @@ data class HomeAssistantBinarySensor(
   @field:JsonProperty("state_topic") val stateTopic: String,
   @field:JsonProperty("payload_on") val payloadOn: String,
   @field:JsonProperty("payload_off") val payloadOff: String,
-  @field:JsonProperty("device_class") val deviceClass: DeviceClass
+  @field:JsonIgnore val deviceClass: DeviceClass
 ) : HomeAssistantComponent(HomeAssistantComponentType.BINARY_SENSOR, basicProperties) {
 
   @field:JsonProperty("unique_id") val uniqueId: String = "${properties.nodeId}_${properties.objectId}"
+  @field:JsonProperty("device_class") val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
 
   enum class DeviceClass(val value: String) {
     NONE("None"),
