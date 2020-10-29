@@ -14,8 +14,8 @@ import javax.inject.Singleton
 internal class HomeAssistantFactory {
 
   @Singleton
-  fun homeAssistantConverter(): HomeAssistantConverter {
-    return HomeAssistantConverter()
+  fun homeAssistantConverter(gatewayApplicationProperties: GatewayApplicationProperties): HomeAssistantConverter {
+    return HomeAssistantConverter(gatewayApplicationProperties.appVersion)
   }
 
   @Singleton

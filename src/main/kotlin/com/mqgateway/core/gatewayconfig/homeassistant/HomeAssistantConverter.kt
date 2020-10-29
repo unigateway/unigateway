@@ -21,7 +21,7 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class HomeAssistantConverter {
+class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
 
   fun convert(gateway: Gateway): List<HomeAssistantComponent> {
     LOGGER.info { "Converting Gateway configuration to HomeAssistant auto-discovery config" }
@@ -30,55 +30,90 @@ class HomeAssistantConverter {
       .flatMap { it.devices }
 
     return devices.flatMap { device ->
-      val basicProperties = HomeAssistantComponentBasicProperties(device.name, gateway.name, device.id)
+      val haDevice = HomeAssistantDevice(
+        identifiers = listOf("${gateway.name}_${device.id}"),
+        name = device.name,
+        manufacturer = "Aetas",
+        viaDevice = gateway.name,
+        firmwareVersion = gatewayFirmwareVersion,
+        model = "MqGateway ${device.type.name}"
+      )
+      val basicProperties = HomeAssistantComponentBasicProperties(haDevice, gateway.name, device.id)
 
       val components = when (device.type) {
         DeviceType.RELAY -> {
           val stateTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           val commandTopic = homieCommandTopic(gateway, device, DevicePropertyType.STATE)
           if (device.config[DEVICE_CONFIG_HA_COMPONENT].equals(LIGHT.value, true)) {
-            listOf(HomeAssistantLight(basicProperties, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
+            listOf(HomeAssistantLight(basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
           } else {
-            listOf(HomeAssistantSwitch(basicProperties, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
+            listOf(HomeAssistantSwitch(basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
           }
         }
         DeviceType.SWITCH_BUTTON -> {
           val homieStateTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
-          listOf(
-            HomeAssistantTrigger(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_PRESS"),
-              homieStateTopic,
-              SwitchButtonDevice.PRESSED_STATE_VALUE,
-              BUTTON_SHORT_PRESS,
-              "button"
-            ),
-            HomeAssistantTrigger(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_RELEASE"),
-              homieStateTopic,
-              SwitchButtonDevice.RELEASED_STATE_VALUE,
-              BUTTON_SHORT_RELEASE,
-              "button"
-            ),
-            HomeAssistantTrigger(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LONG_PRESS"),
-              homieStateTopic,
-              SwitchButtonDevice.LONG_PRESSED_STATE_VALUE,
-              BUTTON_LONG_PRESS,
-              "button"
-            ),
-            HomeAssistantTrigger(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LONG_RELEASE"),
-              homieStateTopic,
-              SwitchButtonDevice.LONG_RELEASED_STATE_VALUE,
-              BUTTON_LONG_RELEASE,
-              "button"
-            )
-          )
+          when {
+            device.config[DEVICE_CONFIG_HA_COMPONENT].equals(HomeAssistantComponentType.TRIGGER.value, true) -> {
+              listOf(
+                HomeAssistantTrigger(
+                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_PRESS"),
+                      homieStateTopic,
+                      SwitchButtonDevice.PRESSED_STATE_VALUE,
+                      BUTTON_SHORT_PRESS,
+                      "button"
+                ),
+                HomeAssistantTrigger(
+                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_RELEASE"),
+                      homieStateTopic,
+                      SwitchButtonDevice.RELEASED_STATE_VALUE,
+                      BUTTON_SHORT_RELEASE,
+                      "button"
+                ),
+                HomeAssistantTrigger(
+                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LONG_PRESS"),
+                      homieStateTopic,
+                      SwitchButtonDevice.LONG_PRESSED_STATE_VALUE,
+                      BUTTON_LONG_PRESS,
+                      "button"
+                ),
+                HomeAssistantTrigger(
+                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LONG_RELEASE"),
+                      homieStateTopic,
+                      SwitchButtonDevice.LONG_RELEASED_STATE_VALUE,
+                      BUTTON_LONG_RELEASE,
+                      "button"
+                )
+              )
+            }
+            device.config[DEVICE_CONFIG_HA_COMPONENT].equals(HomeAssistantComponentType.SENSOR.value, true) -> {
+              listOf(
+                HomeAssistantSensor(
+                      basicProperties = basicProperties,
+                      name = device.name,
+                      stateTopic = homieStateTopic,
+                      deviceClass = HomeAssistantSensor.DeviceClass.NONE
+                )
+              )
+            }
+            else -> {
+              listOf(
+                HomeAssistantBinarySensor(
+                      basicProperties,
+                      device.name,
+                      homieStateTopic,
+                      SwitchButtonDevice.PRESSED_STATE_VALUE,
+                      SwitchButtonDevice.RELEASED_STATE_VALUE,
+                      HomeAssistantBinarySensor.DeviceClass.NONE
+                )
+              )
+            }
+          }
         }
         DeviceType.REED_SWITCH -> {
           listOf(
             HomeAssistantBinarySensor(
               basicProperties,
+              device.name,
               homieStateTopic(gateway, device, DevicePropertyType.STATE),
               ReedSwitchDevice.OPEN_STATE_VALUE,
               ReedSwitchDevice.CLOSED_STATE_VALUE,
@@ -90,6 +125,7 @@ class HomeAssistantConverter {
           listOf(
             HomeAssistantBinarySensor(
               basicProperties,
+              device.name,
               homieStateTopic(gateway, device, DevicePropertyType.STATE),
               MotionSensorDevice.MOVE_START_STATE_VALUE,
               MotionSensorDevice.MOVE_STOP_STATE_VALUE,
@@ -103,6 +139,7 @@ class HomeAssistantConverter {
           listOf(
             HomeAssistantSwitch(
               basicProperties,
+              device.name,
               stateTopic,
               commandTopic,
               false,
@@ -116,7 +153,8 @@ class HomeAssistantConverter {
 
           listOf(
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_TEMPERATURE"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_TEMPERATURE"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -125,7 +163,8 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.TEMPERATURE).unit.value
             ),
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_HUMIDITY"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_HUMIDITY"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -134,7 +173,8 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.HUMIDITY).unit.value
             ),
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_PRESSURE"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_PRESSURE"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -143,7 +183,8 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.PRESSURE).unit.value
             ),
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LAST_PING"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LAST_PING"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -157,7 +198,8 @@ class HomeAssistantConverter {
           val availabilityTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           listOf(
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_TEMPERATURE"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_TEMPERATURE"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -166,7 +208,8 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.TEMPERATURE).unit.value
             ),
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_HUMIDITY"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_HUMIDITY"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -175,7 +218,8 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.HUMIDITY).unit.value
             ),
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LAST_PING"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LAST_PING"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -189,7 +233,8 @@ class HomeAssistantConverter {
           val availabilityTopic = homieStateTopic(gateway, device, DevicePropertyType.STATE)
           listOf(
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_POWER"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_POWER"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -198,7 +243,8 @@ class HomeAssistantConverter {
               device.type.property(DevicePropertyType.POWER).unit.value
             ),
             HomeAssistantSensor(
-              HomeAssistantComponentBasicProperties(device.name, gateway.name, "${device.id}_LAST_PING"),
+              HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LAST_PING"),
+              device.name,
               availabilityTopic,
               PeriodicSerialInputDevice.AVAILABILITY_ONLINE_STATE,
               PeriodicSerialInputDevice.AVAILABILITY_OFFLINE_STATE,
@@ -211,6 +257,7 @@ class HomeAssistantConverter {
         DeviceType.SHUTTER -> listOf(
           HomeAssistantCover(
             basicProperties,
+            device.name,
             homieStateTopic(gateway, device, DevicePropertyType.STATE),
             homieCommandTopic(gateway, device, DevicePropertyType.STATE),
             homieStateTopic(gateway, device, DevicePropertyType.POSITION),
