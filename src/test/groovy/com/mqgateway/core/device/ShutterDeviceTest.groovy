@@ -79,6 +79,24 @@ class ShutterDeviceTest extends Specification {
 		upDownPin.state == PinState.HIGH
 	}
 
+	def "should stop immediately when STOP command is sent"() {
+		given:
+		shutterDevice.clockForTests = clock
+		shutterDevice.addListener(listenerStub)
+		shutterDevice.initProperty(POSITION.toString(), "10")
+		shutterDevice.init()
+		shutterDevice.change(POSITION.toString(), "90")
+
+		when:
+		clock.plus(Duration.ofMillis((FULL_OPEN_MS * 0.1).toLong()))
+		shutterDevice.change(STATE.toString(), "STOP")
+
+		then:
+		stopPin.state == PinState.HIGH
+		listenerStub.updatesByPropertyId(POSITION.toString()).last().newValue == "20"
+		listenerStub.updatesByPropertyId(STATE.toString()).last().newValue == "OPEN"
+	}
+
 	def "should notify about new position when move has finished"() {
 		given:
 		shutterDevice.addListener(listenerStub)

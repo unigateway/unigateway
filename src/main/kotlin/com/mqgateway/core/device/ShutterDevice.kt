@@ -29,7 +29,9 @@ class ShutterDevice(
   private var currentPosition: Int? = null
     private set(value) {
       field = value
-      value?.let { notify(POSITION, it) }
+      value?.let {
+        notify(POSITION, it)
+      }
     }
   private var moveStartTime: Instant? = null
   private var state: State = State.UNKNOWN
@@ -48,11 +50,7 @@ class ShutterDevice(
       return
     }
     currentPosition = value.toInt()
-    state = if (currentPosition == POSITION_CLOSED) {
-      State.CLOSED
-    } else {
-      State.OPEN
-    }
+    state = currentState(currentPosition!!)
   }
 
   override fun initDevice() {
@@ -68,9 +66,7 @@ class ShutterDevice(
   private fun initializeCurrentPositionToClosed() {
     goDown()
     stoppingTimer.schedule(fullCloseTimeMs) {
-      stop()
-      currentPosition = 0
-      state = State.CLOSED
+      stop(POSITION_CLOSED)
     }
   }
 
@@ -96,28 +92,21 @@ class ShutterDevice(
     }
 
     val requiredMove = calculateRequiredMove(currentPosition!!, targetPosition)
-    LOGGER.info { "Calculated move for shutter $id: $requiredMove" }
+    LOGGER.info { "Calculated move for shutter $id to position $targetPosition ($requiredMove)" }
 
     scheduledStopTimerTask?.cancel()
     if (requiredMove.direction == Direction.UP) {
-      LOGGER.info { "Command received to move shutter $id UP to position $targetPosition (${requiredMove}ms)" }
       goUp()
     } else if (requiredMove.direction == Direction.DOWN) {
-      LOGGER.info { "Command received to move shutter $id DOWN to position $targetPosition (${requiredMove}ms)" }
       goDown()
     } else {
+      stop(targetPosition)
       return
     }
 
     scheduledStopTimerTask = stoppingTimer.schedule(requiredMove.time.toMillis()) {
       LOGGER.info { "Stopping shutter $id after move" }
-      stop()
-      currentPosition = targetPosition
-      state = if (currentPosition == POSITION_CLOSED) {
-        State.CLOSED
-      } else {
-        State.OPEN
-      }
+      stop(targetPosition)
     }
   }
 
@@ -195,10 +184,20 @@ class ShutterDevice(
     state = State.OPENING
   }
 
-  private fun stop() {
+  private fun stop(newPosition: Int) {
     stopRelay.changeState(OPEN)
     upDownRelay.changeState(OPEN)
     moveStartTime = null
+    currentPosition = newPosition
+    state = currentState(currentPosition!!)
+  }
+
+  private fun currentState(currentPosition: Int): State {
+    return if (currentPosition == POSITION_CLOSED) {
+      State.CLOSED
+    } else {
+      State.OPEN
+    }
   }
 
   fun setStoppingTimerForTests(timer: Timer) {
