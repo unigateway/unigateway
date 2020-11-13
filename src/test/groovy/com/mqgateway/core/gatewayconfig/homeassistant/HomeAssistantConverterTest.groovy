@@ -1,12 +1,15 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.MEMORY
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POWER
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
@@ -33,7 +36,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -57,7 +60,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -81,7 +84,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 4
@@ -115,7 +118,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -137,7 +140,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -161,7 +164,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [reedSwitchDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -184,7 +187,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [motionDetectorDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -207,7 +210,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [emulatedSwitchDeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -231,7 +234,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [bme280DeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 4
@@ -275,7 +278,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [dht22DeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 3
@@ -314,7 +317,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 2, [sct013DeviceConfig])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 2
@@ -353,7 +356,7 @@ class HomeAssistantConverterTest extends Specification {
 		Gateway gateway = gateway([room([point("point name", 3, [shutterDevice])])])
 
 		when:
-		def components = converter.convert(gateway)
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
 
 		then:
 		components.size() == 1
@@ -377,6 +380,54 @@ class HomeAssistantConverterTest extends Specification {
 		assertHomeAssistantDevice(cover, gateway, shutterDevice)
 	}
 
+	def "should convert MqGateway device to 6 HA sensors"() {
+		given:
+		Gateway gateway = gateway([])
+
+		when:
+		def components = converter.convert(gateway)
+
+		then:
+		components.size() == 4
+		HomeAssistantSensor temperature = components.find {it.properties.objectId.endsWith("TEMPERATURE") } as HomeAssistantSensor
+		HomeAssistantSensor freeMemory = components.find {it.properties.objectId.endsWith("MEMORY_FREE") } as HomeAssistantSensor
+		HomeAssistantSensor uptime = components.find {it.properties.objectId.endsWith("UPTIME") } as HomeAssistantSensor
+		HomeAssistantSensor ipAddress = components.find {it.properties.objectId.endsWith("IP_ADDRESS") } as HomeAssistantSensor
+
+		components.each {component ->
+			HomeAssistantSensor sensorComponent = component as HomeAssistantSensor
+			assert sensorComponent.properties.device.firmwareVersion == firmwareVersion
+			assert sensorComponent.properties.device.identifiers == [gateway.name]
+			assert sensorComponent.properties.device.manufacturer == "Aetas"
+			assert sensorComponent.properties.device.model == "MqGateway"
+			assert sensorComponent.properties.device.viaDevice == null
+			assert sensorComponent.properties.device.name == gateway.name
+			assert sensorComponent.componentType == HomeAssistantComponentType.SENSOR
+			assert sensorComponent.name == gateway.name
+			assert sensorComponent.properties.nodeId == gateway.name
+			assert sensorComponent.availabilityTopic == "homie/${gateway.name}/\$state"
+			assert sensorComponent.payloadAvailable == "ready"
+			assert sensorComponent.payloadNotAvailable == "lost"
+		}
+
+		temperature.stateTopic == expectedStateTopic(gateway.name, gateway.name, TEMPERATURE.toString())
+		temperature.unitOfMeasurement == DataUnit.CELSIUS.value
+		temperature.properties.objectId == gateway.name + "_CPU_TEMPERATURE"
+		temperature.uniqueId == gateway.name + "_" + gateway.name + "_CPU_TEMPERATURE"
+		freeMemory.stateTopic == expectedStateTopic(gateway.name, gateway.name, MEMORY.toString())
+		freeMemory.unitOfMeasurement == DataUnit.NONE.value
+		freeMemory.properties.objectId == gateway.name + "_MEMORY_FREE"
+		freeMemory.uniqueId == gateway.name + "_" + gateway.name + "_MEMORY_FREE"
+		uptime.stateTopic == expectedStateTopic(gateway.name, gateway.name, UPTIME.toString())
+		uptime.unitOfMeasurement == DataUnit.SECOND.value
+		uptime.properties.objectId == gateway.name + "_UPTIME"
+		uptime.uniqueId == gateway.name + "_" + gateway.name + "_UPTIME"
+		ipAddress.stateTopic == expectedStateTopic(gateway.name, gateway.name, IP_ADDRESS.toString())
+		ipAddress.unitOfMeasurement == DataUnit.NONE.value
+		ipAddress.properties.objectId == gateway.name + "_IP_ADDRESS"
+		ipAddress.uniqueId == gateway.name + "_" + gateway.name + "_IP_ADDRESS"
+	}
+
 	private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, Gateway gateway, DeviceConfig deviceConfig) {
 		assert haComponent.properties.device.firmwareVersion == firmwareVersion
 		assert haComponent.properties.device.identifiers == [gateway.name + "_" + deviceConfig.id]
@@ -392,5 +443,9 @@ class HomeAssistantConverterTest extends Specification {
 
 	static String expectedCommandTopic(String gatewayName, String deviceId, String propertyType) {
 		return "homie/${gatewayName}/${deviceId}/${propertyType}/set"
+	}
+
+	static boolean isNotFromMqGatewayCore(HomeAssistantComponent component, Gateway gateway) {
+		!component.properties.objectId.startsWith(gateway.name)
 	}
 }

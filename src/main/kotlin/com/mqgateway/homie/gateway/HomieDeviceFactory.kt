@@ -23,12 +23,14 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
   }
 
   fun toHomieDevice(gateway: Gateway, networkAdapter: String): HomieDevice {
+    val mqGatewayAsNode = HomieNode(gateway.name, gateway.name, "MqGateway ${gateway.name}", DeviceType.MQGATEWAY.name.toLowerCase(),
+      getHomiePropertiesFor(gateway.name, gateway.name, DeviceType.MQGATEWAY))
 
     val homieNodes: Map<String, HomieNode> = gateway.rooms
         .flatMap { it.points }
         .flatMap { it.devices }
         .map { it.id to toHomieNode(gateway.name, it) }
-        .toMap()
+        .toMap() + (gateway.name to mqGatewayAsNode)
 
     val networkInterface = NetworkInterface.getByName(networkAdapter)
     return HomieDevice(

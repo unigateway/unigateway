@@ -11,17 +11,20 @@ import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.mcpexpander.ExpanderPinProvider
 import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import java.time.Duration
 
 class DeviceFactory(
   private val pinProvider: ExpanderPinProvider,
   private val timersScheduler: TimersScheduler,
-  private val serialConnection: SerialConnection?
+  private val serialConnection: SerialConnection?,
+  private val systemInfoProvider: SystemInfoProvider
 ) {
 
   fun createAll(gateway: Gateway): Set<Device> {
-    return gateway.rooms
+    val gatewayDevice = MqGatewayDevice(gateway.name, Duration.ofSeconds(30), systemInfoProvider)
+    return setOf(gatewayDevice) + gateway.rooms
         .flatMap { it.points }
         .flatMap { point ->
           val portNumber = point.portNumber
@@ -110,6 +113,7 @@ class DeviceFactory(
           deviceConfig.config.getValue("fullOpenTimeMs").toLong(), deviceConfig.config.getValue("fullCloseTimeMs").toLong()
         )
       }
+      DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should never be specified as a separate device in configuration")
       DeviceType.SCT013 -> TODO()
     }
   }

@@ -56,7 +56,14 @@ class HomieDeviceFactoryTest extends Specification {
 		homieDevice.name == "gtwName"
 		homieDevice.nodes == [
 			device1: new HomieNode("gtwName", "device1", "device1 name", "relay",
-													   [state: new HomieProperty("gtwName", "device1", "state", "state", ENUM, "ON,OFF", true, true, NONE)])
+													   [state: new HomieProperty("gtwName", "device1", "state", "state", ENUM, "ON,OFF", true, true, NONE)]),
+			gtwName: new HomieNode("gtwName", "gtwName", "MqGateway gtwName", "mqgateway",
+								   [
+									   temperature: new HomieProperty("gtwName", "gtwName", "temperature", "temperature", FLOAT, null, false, true, CELSIUS),
+									   memory: new HomieProperty("gtwName", "gtwName", "memory", "memory", INTEGER, null, false, true, NONE),
+									   uptime: new HomieProperty("gtwName", "gtwName", "uptime", "uptime", INTEGER, null, false, true, NONE),
+									   ip_address: new HomieProperty("gtwName", "gtwName", "ip_address", "ip_address", STRING, null, false, true, NONE)
+								   ])
 		]
 	}
 

@@ -4,12 +4,15 @@ import com.mqgateway.core.gatewayconfig.DataType.DATETIME
 import com.mqgateway.core.gatewayconfig.DataType.ENUM
 import com.mqgateway.core.gatewayconfig.DataType.FLOAT
 import com.mqgateway.core.gatewayconfig.DataType.INTEGER
+import com.mqgateway.core.gatewayconfig.DataType.STRING
 import com.mqgateway.core.gatewayconfig.DataUnit.CELSIUS
 import com.mqgateway.core.gatewayconfig.DataUnit.PASCAL
 import com.mqgateway.core.gatewayconfig.DataUnit.PERCENT
 import com.mqgateway.core.gatewayconfig.DataUnit.SECOND
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.MEMORY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.POWER
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
@@ -44,6 +47,12 @@ data class DeviceProperty(
 }
 
 enum class DeviceType(vararg val properties: Property) {
+  MQGATEWAY(
+    Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
+    Property(MEMORY, INTEGER, null, retained = true),
+    Property(UPTIME, INTEGER, null, retained = true, unit = SECOND),
+    Property(IP_ADDRESS, STRING, null, retained = true)
+  ),
   RELAY(
     Property(STATE, ENUM, "ON,OFF", settable = true, retained = true)
   ),
@@ -98,7 +107,7 @@ enum class DeviceType(vararg val properties: Property) {
 }
 
 enum class DevicePropertyType {
-  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION;
+  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION, MEMORY, IP_ADDRESS;
 
   override fun toString(): String = this.name.toLowerCase()
 }

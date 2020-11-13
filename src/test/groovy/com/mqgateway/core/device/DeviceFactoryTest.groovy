@@ -6,6 +6,7 @@ import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
 import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
+import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.SerialStub
@@ -26,7 +27,8 @@ class DeviceFactoryTest extends Specification {
 	ExpanderPinProvider pinProvider = Mock()
 
 	@Subject
-	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new SerialConnection(new SerialStub(), 5000))
+	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new SerialConnection(new SerialStub(), 5000),
+													new FakeSystemInfoProvider())
 
 	def "should create relay"() {
 		given:
@@ -38,7 +40,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof RelayDevice
 		device.id == "myRelay"
 		device.type == DeviceType.RELAY
@@ -55,7 +57,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof SwitchButtonDevice
 		device.id == "mySwitchButton"
 		device.type == DeviceType.SWITCH_BUTTON
@@ -71,7 +73,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof ReedSwitchDevice
 		device.id == "myReedSwitch"
 		device.type == DeviceType.REED_SWITCH
@@ -87,7 +89,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof MotionSensorDevice
 		device.id == "myMotionDetector"
 		device.type == DeviceType.MOTION_DETECTOR
@@ -105,7 +107,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof BME280PeriodicSerialInputDevice
 		device.id == "myBME280"
 		device.type == DeviceType.BME280
@@ -113,7 +115,7 @@ class DeviceFactoryTest extends Specification {
 
 	def "should omit creation of serial device (e.g. bme280) when serial connection is not passed to factory"() {
 		given:
-		DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), null)
+		DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), null, new FakeSystemInfoProvider())
 		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
 											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"], [:])
 		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
@@ -124,7 +126,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		devices.isEmpty()
+		devices.findAll{ it.type == DeviceType.BME280 }.isEmpty()
 	}
 
 	def "should create DHT22"() {
@@ -139,7 +141,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof DHT22PeriodicSerialInputDevice
 		device.id == "myDHT22"
 		device.type == DeviceType.DHT22
@@ -155,7 +157,7 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof TimerSwitchRelayDevice
 		device.id == "myTimerSwitch"
 		device.type == DeviceType.TIMER_SWITCH
@@ -177,9 +179,23 @@ class DeviceFactoryTest extends Specification {
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
-		def device = devices.first()
+		def device = devices.last()
 		device instanceof ShutterDevice
 		device.id == "myShutter"
 		device.type == DeviceType.SHUTTER
+	}
+
+	def "should create MqGateway as a device"() {
+		given:
+		Gateway gateway = gateway([])
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		def device = devices.first()
+		device instanceof MqGatewayDevice
+		device.id == "gtwName"
+		device.type == DeviceType.MQGATEWAY
 	}
 }
