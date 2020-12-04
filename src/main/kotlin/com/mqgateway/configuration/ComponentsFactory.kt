@@ -91,12 +91,13 @@ internal class ComponentsFactory {
   @Singleton
   fun homieDevice(
     mqttClientFactory: MqttClientFactory,
+    homieReceiver: GatewayHomieReceiver,
     gatewayApplicationProperties: GatewayApplicationProperties,
     gatewaySystemProperties: GatewaySystemProperties,
     gateway: Gateway
   ): HomieDevice {
 
-    return HomieDeviceFactory(mqttClientFactory, gatewayApplicationProperties.appVersion)
+    return HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)
       .toHomieDevice(gateway, gatewaySystemProperties.networkAdapter)
   }
 

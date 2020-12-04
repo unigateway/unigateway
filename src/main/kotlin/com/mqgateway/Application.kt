@@ -6,7 +6,6 @@ import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantConfigurer
 import com.mqgateway.homie.HomieDevice
-import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
 import io.micronaut.runtime.Micronaut.build
 import mu.KotlinLogging
@@ -34,7 +33,6 @@ fun main(args: Array<String>) {
 class MqGateway(
   private val deviceRegistry: DeviceRegistry,
   private val homieDevice: HomieDevice,
-  private val homieReceiver: GatewayHomieReceiver,
   private val gateway: Gateway,
   private val gatewayConfigLoader: ConfigLoader,
   private val homeAssistantProperties: HomeAssistantProperties
@@ -50,14 +48,18 @@ class MqGateway(
       LOGGER.error(exception) { "Uncaught exception in thread '${thread.name}'." }
     }
 
-    homieDevice.connect(homieReceiver)
+    homieDevice.addMqttConnectedListener { sendHomeAssistantConfiguration() }
+    homieDevice.connect()
+
     deviceRegistry.addUpdateListener(GatewayHomieUpdateListener(homieDevice))
     deviceRegistry.initializeDevices()
 
+    LOGGER.info { "Initialization finished successfully. Running normally." }
+  }
+
+  private fun sendHomeAssistantConfiguration() {
     if (homeAssistantProperties.enabled && gatewayConfigLoader.configReloaded) {
       homeAssistantConfigurer.sendHomeAssistantConfiguration(gateway)
     }
-
-    LOGGER.info { "Initialization finished successfully. Running normally." }
   }
 }

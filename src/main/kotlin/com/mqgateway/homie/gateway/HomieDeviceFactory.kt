@@ -8,13 +8,18 @@ import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.HomieNode
 import com.mqgateway.homie.HomieProperty
+import com.mqgateway.homie.HomieReceiver
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import mu.KotlinLogging
 import java.net.NetworkInterface
 
 private val LOGGER = KotlinLogging.logger {}
 
-class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, private val firmwareVersion: String) {
+class HomieDeviceFactory(
+  private val mqttClientFactory: MqttClientFactory,
+  private val homieReceiver: HomieReceiver,
+  private val firmwareVersion: String
+) {
 
   companion object {
     private const val HOMIE_VERSION = "4.0.0"
@@ -35,6 +40,7 @@ class HomieDeviceFactory(private val mqttClientFactory: MqttClientFactory, priva
     val networkInterface = NetworkInterface.getByName(networkAdapter)
     return HomieDevice(
         mqttClientFactory,
+        homieReceiver,
         gateway.name,
         homieNodes,
         HOMIE_VERSION,

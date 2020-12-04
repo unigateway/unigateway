@@ -12,29 +12,38 @@ private val LOGGER = KotlinLogging.logger {}
 const val HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS = 1
 
 class HomieDevice(
-  mqttClientFactory: MqttClientFactory,
+  private val mqttClientFactory: MqttClientFactory,
+  private val homieReceiver: HomieReceiver,
   val id: String,
   val nodes: Map<String, HomieNode>,
   val homie: String,
   val name: String,
-  val extensions: List<String> = emptyList(),
-  val implementation: String? = null,
-  val firmwareName: String?,
-  val firmwareVersion: String?,
-  val ip: String? = null,
-  val mac: String? = null
+  private val extensions: List<String> = emptyList(),
+  private val implementation: String? = null,
+  private val firmwareName: String?,
+  private val firmwareVersion: String?,
+  private val ip: String? = null,
+  private val mac: String? = null
 ) {
 
   private val baseTopic = "$HOMIE_PREFIX/$id"
-  private var mqttClient: MqttClient = mqttClientFactory.create(
-      id,
-      { LOGGER.info { "MQTT connection established" }; this.changeState(State.READY) },
-      { LOGGER.error { "MQTT connection lost" } }
-  )
+  private var mqttClient: MqttClient? = null
+  private val mqttConnectedListeners: MutableList<() -> Unit> = mutableListOf()
 
-  fun connect(homieReceiver: HomieReceiver) {
+  fun addMqttConnectedListener(listener: () -> Unit) {
+    mqttConnectedListeners.add(listener)
+  }
+
+  fun connect() {
+    val mqttClient = mqttClientFactory.create(id, { onConnected(); mqttConnectedListeners.forEach { it() } }, { onDisconnected() })
+    this.mqttClient = mqttClient
     LOGGER.info { "Connecting to MQTT" }
     mqttClient.connect(MqttMessage("$baseTopic/\$state", State.LOST.value, 1, true), false)
+  }
+
+  private fun onConnected() {
+    LOGGER.info { "MQTT connection established" }
+    val mqttClient = this.mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first.")
 
     LOGGER.debug { "Publishing Homie configuration to MQTT" }
     changeState(State.INIT)
@@ -62,8 +71,13 @@ class HomieDevice(
     LOGGER.debug { "Homie configuration published" }
   }
 
+  private fun onDisconnected() {
+    LOGGER.error { "MQTT connection lost" }
+  }
+
   private fun changeState(newState: State) {
-    mqttClient.publishAsync(MqttMessage("$baseTopic/\$state", newState.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first."))
+      .publishAsync(MqttMessage("$baseTopic/\$state", newState.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
   }
 
   enum class State(val value: String) {

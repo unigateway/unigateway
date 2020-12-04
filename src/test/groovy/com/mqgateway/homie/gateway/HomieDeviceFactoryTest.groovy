@@ -27,6 +27,8 @@ import com.mqgateway.core.gatewayconfig.Room
 import com.mqgateway.core.gatewayconfig.WireColor
 import com.mqgateway.homie.HomieNode
 import com.mqgateway.homie.HomieProperty
+import com.mqgateway.homie.HomieReceiver
+import com.mqgateway.homie.HomieReceiverStub
 import com.mqgateway.utils.MqttClientFactoryStub
 import spock.lang.Specification
 import spock.lang.Subject
@@ -34,9 +36,10 @@ import spock.lang.Subject
 class HomieDeviceFactoryTest extends Specification {
 
 	MqttClientFactoryStub mqttClientFactoryStub = new MqttClientFactoryStub()
+	HomieReceiver homieReceiver = new HomieReceiverStub()
 
 	@Subject
-	HomieDeviceFactory homieDeviceFactory = new HomieDeviceFactory(mqttClientFactoryStub, "test-version")
+	HomieDeviceFactory homieDeviceFactory = new HomieDeviceFactory(mqttClientFactoryStub, homieReceiver, "test-version")
 
 	def "should create HomieDevice with nodes and properties based on gateway configuration"() {
 		given:

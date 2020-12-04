@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull
 
 class MqttClientStub implements MqttClient {
 
+	MqttClientStub(List<TestMqttConnectionListener> connectionListeners = []) {
+		this.connectionListeners = connectionListeners
+	}
 	boolean connected = false
 	MqttMessage willMessage
 	boolean cleanSession
@@ -19,6 +22,8 @@ class MqttClientStub implements MqttClient {
 	List<MqttMessage> publishedMessages = []
 	Map<String, Function1<? super MqttMessage, Unit>> subscriptions = [:]
 
+	List<TestMqttConnectionListener> connectionListeners
+
 
 	@Override
 	void connect(@NotNull MqttMessage willMessage, boolean cleanSession) {
@@ -26,6 +31,7 @@ class MqttClientStub implements MqttClient {
 		this.willMessage = willMessage
 		this.cleanSession = cleanSession
 		this.connectionTime = Instant.now()
+		connectionListeners.forEach { it.onConnected() }
 	}
 
 	@Override
@@ -50,10 +56,16 @@ class MqttClientStub implements MqttClient {
 	void disconnect() {
 		connected = false
 		disconnectionTime = Instant.now()
+		connectionListeners.forEach { it.onDisconnected() }
 	}
 
 	@Override
 	String read(@NotNull String topic) {
 		return publishedMessages.find {it.retain && it.topic == topic}?.payload
 	}
+}
+
+interface TestMqttConnectionListener {
+	def onConnected()
+	def onDisconnected()
 }

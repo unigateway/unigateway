@@ -7,12 +7,8 @@ import static com.mqgateway.homie.HomieProperty.DataType.STRING
 import static com.mqgateway.homie.HomieProperty.Unit.CELSIUS
 import static com.mqgateway.homie.HomieProperty.Unit.NONE
 
-import com.mqgateway.core.device.DeviceRegistry
-import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.mqtt.MqttMessage
-import com.mqgateway.utils.DeviceStub
 import com.mqgateway.utils.MqttClientFactoryStub
-import com.mqgateway.utils.MqttClientStub
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -20,12 +16,14 @@ class HomieDeviceTest extends Specification {
 
 	@Subject
 	MqttClientFactoryStub mqttClientFactory = new MqttClientFactoryStub()
-	MqttClientStub mqttClient = mqttClientFactory.mqttClient
+	HomieReceiver homieReceiver = new HomieReceiverStub()
 
 	def "should send homie device configuration after connection to mqtt"() {
 		given:
 		HomieDevice homieDevice = new HomieDevice(
-			mqttClientFactory, "deviceId1",
+			mqttClientFactory,
+			homieReceiver,
+			"deviceId1",
 			[
 				nodeId1: new HomieNode(
 					"deviceId1", "nodeId1", "node1 name", "TestType",
@@ -43,7 +41,7 @@ class HomieDeviceTest extends Specification {
 			"homieVal", "device 1", ["ext1", "ext2"], "test implementation", "fw name", "fw version", "10.0.0.1", "45:12:4c:cf:2a:4e")
 
 		when:
-		homieDevice.connect(new GatewayHomieReceiver(new DeviceRegistry([new DeviceStub("nodeId1"), new DeviceStub("nodeId2")].toSet())))
+		homieDevice.connect()
 
 		then:
 		def baseTopic = "homie/deviceId1"
@@ -92,14 +90,16 @@ class HomieDeviceTest extends Specification {
 			new MqttMessage("$baseTopic/\$state", "ready", qos, true)
 
 		].toSet()
-		mqttClient.publishedMessages.minus(expectedMessages).isEmpty()
-		expectedMessages.minus(mqttClient.publishedMessages).isEmpty()
+		mqttClientFactory.mqttClient.publishedMessages.minus(expectedMessages).isEmpty()
+		expectedMessages.minus(mqttClientFactory.mqttClient.publishedMessages).isEmpty()
 	}
 
 	def "should subscribe to MQTT topic for settable properties"() {
 		given:
 		HomieDevice homieDevice = new HomieDevice(
-			mqttClientFactory, "deviceId1",
+			mqttClientFactory,
+			homieReceiver,
+			"deviceId1",
 			[
 				nodeId1: new HomieNode(
 					"deviceId1", "nodeId1", "node1 name", "TestType",
@@ -117,10 +117,10 @@ class HomieDeviceTest extends Specification {
 			"homieVal", "device 1", ["ext1", "ext2"], "test implementation", "fw name", "fw version", "10.0.0.1", "45:12:4c:cf:2a:4e")
 
 		when:
-		homieDevice.connect(new GatewayHomieReceiver(new DeviceRegistry([new DeviceStub("nodeId1"), new DeviceStub("nodeId2")].toSet())))
+		homieDevice.connect()
 
 		then:
-		mqttClient.subscriptions.keySet() == ["homie/deviceId1/nodeId1/prop1/set", "homie/deviceId1/nodeId2/prop1/set"].toSet()
+		mqttClientFactory.mqttClient.subscriptions.keySet() == ["homie/deviceId1/nodeId1/prop1/set", "homie/deviceId1/nodeId2/prop1/set"].toSet()
 	}
 }
 

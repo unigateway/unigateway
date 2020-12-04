@@ -71,7 +71,7 @@ dependencies {
     implementation 'com.pi4j:pi4j-device:1.2'
 
     // MQTT
-    implementation 'com.hivemq:hivemq-mqtt-client:1.1.4'
+    implementation 'com.hivemq:hivemq-mqtt-client:1.2.1'
     compileOnly 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2'
 
     // Tests

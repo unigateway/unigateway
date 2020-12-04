@@ -7,27 +7,27 @@ import static com.mqgateway.homie.HomieProperty.DataType.STRING
 import static com.mqgateway.homie.HomieProperty.Unit.CELSIUS
 import static com.mqgateway.homie.HomieProperty.Unit.NONE
 
-import com.mqgateway.core.device.Device
-import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.HomieNode
 import com.mqgateway.homie.HomieProperty
+import com.mqgateway.homie.HomieReceiver
+import com.mqgateway.homie.HomieReceiverStub
 import com.mqgateway.homie.mqtt.MqttMessage
 import com.mqgateway.utils.MqttClientFactoryStub
-import com.mqgateway.utils.MqttClientStub
 import spock.lang.Specification
 
 class GatewayHomieUpdateListenerTest extends Specification {
 
 	MqttClientFactoryStub mqttClientFactory = new MqttClientFactoryStub()
-	MqttClientStub mqttClient = mqttClientFactory.mqttClient
-
+	HomieReceiver homieReceiver = new HomieReceiverStub()
 
 
 	def "should notify homie property to publish MQTT message when value has been updated"() {
 		given:
 		HomieDevice homieDevice = new HomieDevice(
-			mqttClientFactory, "deviceId1",
+			mqttClientFactory,
+			homieReceiver,
+			"deviceId1",
 			[
 				nodeId1: new HomieNode(
 					"deviceId1", "nodeId1", "node1 name", "TestType",
@@ -44,19 +44,21 @@ class GatewayHomieUpdateListenerTest extends Specification {
 			],
 			"homieVal", "device 1", ["ext1", "ext2"], "test implementation", "fw name", "fw version", "10.0.0.1", "45:12:4c:cf:2a:4e")
 		GatewayHomieUpdateListener updateListener = new GatewayHomieUpdateListener(homieDevice)
-		homieDevice.connect(new GatewayHomieReceiver(new DeviceRegistry([].<Device>toSet())))
+		homieDevice.connect()
 
 		when:
 		updateListener.valueUpdated("nodeId2", "prop3", "new value 123")
 
 		then:
-		mqttClient.publishedMessages.contains(new MqttMessage("homie/deviceId1/nodeId2/prop3", "new value 123", 0, true))
+		mqttClientFactory.mqttClient.publishedMessages.contains(new MqttMessage("homie/deviceId1/nodeId2/prop3", "new value 123", 0, true))
 	}
 
 	def "should throw when value of unknown property has been updated"() {
 		given:
 		HomieDevice homieDevice = new HomieDevice(
-			mqttClientFactory, "deviceId1",
+			mqttClientFactory,
+			homieReceiver,
+			"deviceId1",
 			[
 				nodeId1: new HomieNode(
 					"deviceId1", "nodeId1", "node1 name", "TestType",
@@ -66,7 +68,7 @@ class GatewayHomieUpdateListenerTest extends Specification {
 			],
 			"homieVal", "device 1", ["ext1", "ext2"], "test implementation", "fw name", "fw version", "10.0.0.1", "45:12:4c:cf:2a:4e")
 		GatewayHomieUpdateListener updateListener = new GatewayHomieUpdateListener(homieDevice)
-		homieDevice.connect(new GatewayHomieReceiver(new DeviceRegistry([].<Device>toSet())))
+		homieDevice.connect()
 
 		when:
 		updateListener.valueUpdated("nodeId1", "prop2", "new value")
