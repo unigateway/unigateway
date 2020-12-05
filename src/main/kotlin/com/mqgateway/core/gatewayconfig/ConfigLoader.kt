@@ -20,10 +20,7 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
     private const val CONFIGURATION_FILE_QUICK_PATH = ".previousConfig.cbor"
   }
 
-  var configReloaded = false
-
   fun load(gatewayConfigPath: String): Gateway {
-    configReloaded = false
     val gatewayConfigBytes = File(gatewayConfigPath).readBytes()
     val currentConfigurationFileHash = calculateHash(gatewayConfigBytes)
     val storedConfigurationFileHash = loadStoredConfigurationFileHash()
@@ -43,8 +40,6 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
 
       val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
       File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
-
-      configReloaded = true
 
       return gateway
     }

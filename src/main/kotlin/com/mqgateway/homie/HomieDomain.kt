@@ -35,36 +35,33 @@ class HomieDevice(
   }
 
   fun connect() {
-    val mqttClient = mqttClientFactory.create(id, { onConnected(); mqttConnectedListeners.forEach { it() } }, { onDisconnected() })
+    val mqttClient = mqttClientFactory.create(id, { mqttConnectedListeners.forEach { it() } }, { onDisconnected() })
     this.mqttClient = mqttClient
     LOGGER.info { "Connecting to MQTT" }
-    mqttClient.connect(MqttMessage("$baseTopic/\$state", State.LOST.value, 1, true), false)
-  }
+    mqttClient.connect(MqttMessage("$baseTopic/\$state", State.LOST.value, 1, true), true)
 
-  private fun onConnected() {
     LOGGER.info { "MQTT connection established" }
-    val mqttClient = this.mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first.")
 
     LOGGER.debug { "Publishing Homie configuration to MQTT" }
     changeState(State.INIT)
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$homie", homie, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$extensions", extensions.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$nodes", nodes.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$homie", homie, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$extensions", extensions.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$nodes", nodes.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     if (implementation != null) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$implementation", implementation, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$implementation", implementation, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     if (firmwareName != null) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$fw/name", firmwareName, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$fw/name", firmwareName, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     if (firmwareVersion != null) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$fw/version", firmwareVersion, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$fw/version", firmwareVersion, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     if (ip != null) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$localip", ip, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$localip", ip, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     if (mac != null) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$mac", mac, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$mac", mac, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     nodes.values.forEach { it.setup(mqttClient, homieReceiver) }
     changeState(State.READY)
@@ -96,9 +93,9 @@ data class HomieNode(
   private val baseTopic = "$HOMIE_PREFIX/$deviceId/$id"
 
   internal fun setup(mqttClient: MqttClient, homieReceiver: HomieReceiver) {
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$type", type, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$properties", properties.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$type", type, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$properties", properties.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
 
     properties.values.forEach { it.setup(mqttClient, homieReceiver) }
   }
@@ -123,17 +120,18 @@ data class HomieProperty(
 
     this.mqttClient = mqttClient
 
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$settable", settable.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$retained", retained.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishSync(MqttMessage("$baseTopic/\$datatype", datatype.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$settable", settable.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$retained", retained.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(MqttMessage("$baseTopic/\$datatype", datatype.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     if (format != null) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$format", format.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$format", format.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     if (unit != Unit.NONE) {
-      mqttClient.publishSync(MqttMessage("$baseTopic/\$unit", unit.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(MqttMessage("$baseTopic/\$unit", unit.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
     if (retained) {
+      LOGGER.debug { "Trying to read current status of ${this.nodeId}.${this.id} from MQTT" }
       mqttClient.read(baseTopic)?.let {
         homieReceiver.initProperty(nodeId, id, it)
       }
