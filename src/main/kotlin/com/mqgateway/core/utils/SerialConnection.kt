@@ -4,9 +4,9 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.serial.Serial
 import com.pi4j.io.serial.SerialDataEvent
 import com.pi4j.io.serial.SerialDataEventListener
-import io.micronaut.scheduling.annotation.Scheduled
 import mu.KotlinLogging
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -16,7 +16,7 @@ class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Lo
 
   private var deferredUntilMessageReceived = CompletableFuture<String>()
 
-  private val listeners: MutableList<SerialDataListener> = mutableListOf()
+  private val listeners: ConcurrentLinkedQueue<SerialDataListener> = ConcurrentLinkedQueue()
   private var initialized: Boolean = false
 
   fun init() {
@@ -33,17 +33,15 @@ class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Lo
     if (!initialized) {
       throw SerialConnectionNotInitializedException()
     }
-    listeners.add(listener)
+    listeners.offer(listener)
   }
 
-  @Scheduled(fixedDelay = "30s")
   fun getDataForAllListeners() {
-    val listenersCopy = listeners.toMutableList()
-    for (listener in listenersCopy) {
+    while (listeners.peek() != null) {
+      val listener = listeners.poll()
       val message = askForData(listener.id(), listener.askForDataPin())
       listener.onDataReceived(message)
     }
-    listeners.removeAll(listenersCopy)
   }
 
   private fun askForData(id: String, askForDataPin: GpioPinDigitalOutput): String? {
