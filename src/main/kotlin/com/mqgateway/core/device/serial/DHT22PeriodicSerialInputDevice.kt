@@ -5,6 +5,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import mu.KotlinLogging
@@ -18,8 +19,18 @@ class DHT22PeriodicSerialInputDevice(
   fromDevicePin: GpioPinDigitalInput,
   serialConnection: SerialConnection,
   periodBetweenAskingForData: Duration = Duration.ofSeconds(CONFIG_PERIOD_BETWEEN_ASK_DEFAULT),
-  acceptablePingPeriod: Duration = Duration.ofSeconds(CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
-) : PeriodicSerialInputDevice(id, DeviceType.DHT22, toDevicePin, fromDevicePin, serialConnection, periodBetweenAskingForData, acceptablePingPeriod) {
+  acceptablePingPeriod: Duration = Duration.ofSeconds(CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT),
+  scheduler: TimersScheduler
+) : PeriodicSerialInputDevice(
+  id,
+  DeviceType.DHT22,
+  toDevicePin,
+  fromDevicePin,
+  serialConnection,
+  periodBetweenAskingForData,
+  acceptablePingPeriod,
+  scheduler
+) {
 
   /**
    * Raw message format is "uptime_in_sec;temp_in_C;humidity;pressure"

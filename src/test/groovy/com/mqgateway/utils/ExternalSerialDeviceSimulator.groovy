@@ -1,6 +1,5 @@
 package com.mqgateway.utils
 
-import com.mqgateway.utils.SerialStub
 import com.pi4j.io.gpio.PinState
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
 import com.pi4j.io.gpio.event.GpioPinListenerDigital

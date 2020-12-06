@@ -75,7 +75,8 @@ class DeviceFactory(
           fromDevicePin,
           serialConnection,
           periodBetweenAskingForData,
-          acceptablePingPeriod
+          acceptablePingPeriod,
+          timersScheduler
         )
       }
       DeviceType.EMULATED_SWITCH -> {
@@ -98,7 +99,8 @@ class DeviceFactory(
           fromDevicePin,
           serialConnection,
           periodBetweenAskingForData,
-          acceptablePingPeriod
+          acceptablePingPeriod,
+          timersScheduler
         )
       }
       DeviceType.TIMER_SWITCH -> {

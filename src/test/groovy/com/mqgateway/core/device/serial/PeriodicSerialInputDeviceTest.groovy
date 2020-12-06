@@ -1,9 +1,9 @@
 package com.mqgateway.core.device.serial
 
-
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.utils.ExternalSerialDeviceSimulator
 import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.utils.ExternalSerialDeviceSimulator
 import com.mqgateway.utils.SerialStub
 import com.mqgateway.utils.UpdateListenerStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
@@ -27,13 +27,14 @@ class PeriodicSerialInputDeviceTest extends Specification {
 	def inputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin1Impl)
 	def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
 
+	TimersScheduler scheduler = new TimersScheduler()
 	SerialStub serialStub = new SerialStub()
 	SerialConnection serialConnection = new SerialConnection(serialStub, 5000L)
 	UpdateListenerStub updateListenerStub = new UpdateListenerStub()
 
 	@Subject
 	PeriodicSerialInputDevice device = new SomePeriodicSerialInputDevice("someDevice", DeviceType.BME280, outputPin, inputPin, serialConnection,
-																		 Duration.ofHours(1), Duration.ofSeconds(10))
+																		 Duration.ofHours(1), Duration.ofSeconds(10), scheduler)
 
 	PollingConditions conditions = new PollingConditions(timeout: 5)
 
@@ -71,6 +72,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		device.askForSerialDataNow()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		device.message == "Some test message 123456"
@@ -85,6 +87,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		device.askForSerialDataNow()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		device.message == null
@@ -95,7 +98,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		outputPin.low()
 		SerialConnection serialConnection = new SerialConnection(serialStub, 50)
 		PeriodicSerialInputDevice device = new SomePeriodicSerialInputDevice("someDevice", DeviceType.BME280, outputPin, inputPin, serialConnection,
-																			 Duration.ofHours(1), Duration.ofSeconds(10))
+																			 Duration.ofHours(1), Duration.ofSeconds(10), scheduler)
 		device.addListener(updateListenerStub)
 		device.init()
 		serialConnection.init()
@@ -103,15 +106,15 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		fakeSerialDevice.ping()
 		conditions.eventually {
 			def update = updateListenerStub.receivedUpdates.find {it.propertyId == "last_ping"}
-			update.newValue != null
+			assert update.newValue != null
 		}
 
 		when:
 		device.askForSerialDataNow()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		notThrown()
-
 	}
 
 	def "should queue devices asking for data when multiple of them ask for data at the same time"() {
@@ -128,7 +131,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		}
 
 		conditions.eventually {
-			devicesElements.collect {it.device.id }.every {deviceId ->
+			assert devicesElements.collect {it.device.id }.every {deviceId ->
 				def update = updateListenerStub.receivedUpdates.find {it.deviceId == deviceId && it.propertyId == "last_ping" }
 				update.newValue != null
 			}
@@ -141,6 +144,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 			}
 		}
 		devicesThreads.each {it.join() }
+		serialConnection.getDataForAllListeners()
 
 		then:
 		devicesElements.every {
@@ -162,6 +166,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		device.askForSerialDataNow()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		device.message == null
@@ -176,6 +181,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		device.askForSerialDataNow()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		conditions.eventually {
@@ -198,6 +204,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		device.askForSerialDataNow()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		conditions.eventually {
@@ -212,7 +219,7 @@ class PeriodicSerialInputDeviceTest extends Specification {
 		def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
 
 		def device = new SomePeriodicSerialInputDevice(name, DeviceType.BME280, outputPin, inputPin, serialConnection,
-														Duration.ofHours(1), Duration.ofSeconds(10))
+														Duration.ofHours(1), Duration.ofSeconds(10), scheduler)
 		device.addListener(updateListenerStub)
 		device.init()
 
@@ -238,8 +245,9 @@ class SomePeriodicSerialInputDevice extends PeriodicSerialInputDevice {
 	String message
 
 	SomePeriodicSerialInputDevice(String id, DeviceType type, GpioPinDigitalOutput toDevicePin, GpioPinDigitalInput fromDevicePin,
-								  SerialConnection serialConnection, Duration periodBetweenAskingForData, Duration acceptablePingPeriod) {
-		super(id, type, toDevicePin, fromDevicePin, serialConnection, periodBetweenAskingForData, acceptablePingPeriod)
+								  SerialConnection serialConnection, Duration periodBetweenAskingForData, Duration acceptablePingPeriod,
+								  TimersScheduler scheduler) {
+		super(id, type, toDevicePin, fromDevicePin, serialConnection, periodBetweenAskingForData, acceptablePingPeriod, scheduler)
 	}
 
 	@Override

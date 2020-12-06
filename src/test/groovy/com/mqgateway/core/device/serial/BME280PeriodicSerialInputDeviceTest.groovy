@@ -1,5 +1,6 @@
 package com.mqgateway.core.device.serial
 
+import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.ExternalSerialDeviceSimulator
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.utils.SerialStub
@@ -23,13 +24,14 @@ class BME280PeriodicSerialInputDeviceTest extends Specification {
 	def inputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin1Impl)
 	def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
 
+	TimersScheduler scheduler = new TimersScheduler()
 	SerialStub serialStub = new SerialStub()
 	SerialConnection serialConnection = new SerialConnection(serialStub, 5000L)
 	UpdateListenerStub updateListenerStub = new UpdateListenerStub()
 
 	@Subject
 	BME280PeriodicSerialInputDevice bme280 = new BME280PeriodicSerialInputDevice("bmeDevice1", outputPin, inputPin, serialConnection,
-																				 Duration.ofHours(1), Duration.ofSeconds(30))
+																				 Duration.ofHours(1), Duration.ofSeconds(30), scheduler)
 
 	PollingConditions conditions = new PollingConditions(timeout: 5)
 
@@ -51,6 +53,7 @@ class BME280PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		bme280.askForSerialDataIfDeviceIsAvailable()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		def uptime = updateListenerStub.receivedUpdates.find {it.propertyId == "uptime"}.newValue

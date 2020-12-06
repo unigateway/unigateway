@@ -1,6 +1,7 @@
 package com.mqgateway.core.device.serial
 
 import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.ExternalSerialDeviceSimulator
 import com.mqgateway.utils.SerialStub
 import com.mqgateway.utils.UpdateListenerStub
@@ -23,13 +24,14 @@ class DHT22PeriodicSerialInputDeviceTest extends Specification {
 	def inputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin1Impl)
 	def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
 
+	TimersScheduler scheduler = new TimersScheduler()
 	SerialStub serialStub = new SerialStub()
 	SerialConnection serialConnection = new SerialConnection(serialStub, 5000L)
 	UpdateListenerStub updateListenerStub = new UpdateListenerStub()
 
 	@Subject
 	DHT22PeriodicSerialInputDevice dht22 = new DHT22PeriodicSerialInputDevice("dht22Device1", outputPin, inputPin, serialConnection,
-																				 Duration.ofHours(1), Duration.ofSeconds(30))
+																				 Duration.ofHours(1), Duration.ofSeconds(30), scheduler)
 
 	PollingConditions conditions = new PollingConditions(timeout: 5)
 
@@ -51,6 +53,7 @@ class DHT22PeriodicSerialInputDeviceTest extends Specification {
 
 		when:
 		dht22.askForSerialDataIfDeviceIsAvailable()
+		serialConnection.getDataForAllListeners()
 
 		then:
 		def uptime = updateListenerStub.receivedUpdates.find {it.propertyId == "uptime"}.newValue
