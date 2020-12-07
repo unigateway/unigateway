@@ -37,7 +37,7 @@ class JsonSchemaValidationTest extends Specification {
       config:
         fullCloseTimeMs: 14000
         fullOpenTimeMs: 17000
-		""".stripIndent().stripLeading()
+		""".stripIndent()
     println device
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
@@ -56,7 +56,7 @@ class JsonSchemaValidationTest extends Specification {
        name: Bedroom shutter
        type: SHUTTER
        wires: ["BLUE"]
-		 """.stripIndent().stripLeading()
+		 """.stripIndent()
     println device
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
@@ -79,7 +79,7 @@ class JsonSchemaValidationTest extends Specification {
     JsonSchema schema = factory.getSchema(ConfigValidator.getClassLoader().getResourceAsStream("config.schema.json"))
 
     JsonNode jsonNode = objectMapper.readTree(yaml)
-    return schema.validate(jsonNode);
+    return schema.validate(jsonNode)
   }
 
   private static String configWithDevice(String device, String configVersion = DEFAULT_CONFIG_VERSION) {
