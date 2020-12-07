@@ -55,7 +55,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.0-M1-1.4.0-rc"
 
     // YAML parsing
-    implementation 'com.networknt:json-schema-validator:1.0.43'
+    implementation 'com.networknt:json-schema-validator:1.0.45'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
@@ -79,6 +79,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-inject-groovy")
     testImplementation('org.codehaus.groovy:groovy:3.0.7')
     testImplementation('org.codehaus.groovy:groovy-json:3.0.7')
+    testImplementation('org.codehaus.groovy:groovy-yaml:3.0.7')
     testImplementation(platform("org.spockframework:spock-bom:2.0-M4-groovy-3.0"))
     testImplementation("org.spockframework:spock-core") {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
