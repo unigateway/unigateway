@@ -93,7 +93,7 @@ class JsonSchemaValidationTest extends Specification {
           - name: "Test Point"
             portNumber: 1
             devices:
-${device.lines().collect {"              $it" }.join(System.lineSeparator())}
+${device.readLines().collect {"              $it" }.join(System.lineSeparator())}
 		""".stripIndent()
 
     println config
