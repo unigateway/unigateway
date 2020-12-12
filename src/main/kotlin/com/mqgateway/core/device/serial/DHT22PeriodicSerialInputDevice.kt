@@ -4,10 +4,10 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.hardware.MqGpioPinDigitalInput
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.TimersScheduler
-import com.pi4j.io.gpio.GpioPinDigitalInput
-import com.pi4j.io.gpio.GpioPinDigitalOutput
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -15,8 +15,8 @@ private val LOGGER = KotlinLogging.logger {}
 
 class DHT22PeriodicSerialInputDevice(
   id: String,
-  toDevicePin: GpioPinDigitalOutput,
-  fromDevicePin: GpioPinDigitalInput,
+  toDevicePin: MqGpioPinDigitalOutput,
+  fromDevicePin: MqGpioPinDigitalInput,
   serialConnection: SerialConnection,
   periodBetweenAskingForData: Duration = Duration.ofSeconds(CONFIG_PERIOD_BETWEEN_ASK_DEFAULT),
   acceptablePingPeriod: Duration = Duration.ofSeconds(CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT),
@@ -63,9 +63,7 @@ class DHT22PeriodicSerialInputDevice(
   data class DHT22Message(val uptimeInSec: Int, val temperatureInCelsius: Float, val humidity: Float)
 
   companion object {
-    const val CONFIG_PERIOD_BETWEEN_ASK_KEY = "periodBetweenAskingForDataInSec"
     const val CONFIG_PERIOD_BETWEEN_ASK_DEFAULT = 60L * 3
-    const val CONFIG_ACCEPTABLE_PING_PERIOD_KEY = "acceptablePingPeriodInSec"
     const val CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT = 60L
   }
 }

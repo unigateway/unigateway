@@ -3,13 +3,9 @@ package com.mqgateway.core.device
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinMode
 import com.pi4j.io.gpio.PinState
-import com.pi4j.io.gpio.SimulatedGpioProvider
-import com.pi4j.io.gpio.impl.GpioControllerImpl
-import com.pi4j.io.gpio.impl.GpioPinImpl
-import com.pi4j.io.gpio.impl.PinImpl
 import java.time.Duration
 import spock.lang.Specification
 import spock.lang.Subject
@@ -17,14 +13,10 @@ import spock.util.time.MutableClock
 
 class ShutterDeviceTest extends Specification {
 
-	def gpioProvider = new SimulatedGpioProvider()
-
-	def stopPinImpl = new PinImpl("com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", 1, "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
-	def stopPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, stopPinImpl)
+	def stopPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 	RelayDevice stopRelay = new RelayDevice("stopRelay", stopPin)
 
-	def upDownPinImpl = new PinImpl("com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", 2, "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
-	def upDownPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, upDownPinImpl)
+	def upDownPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 	RelayDevice upDownRelay = new RelayDevice("upDownRelay", upDownPin)
 
 	static int FULL_OPEN_MS = 2000
@@ -38,8 +30,6 @@ class ShutterDeviceTest extends Specification {
 	MutableClock clock = new MutableClock()
 
 	void setup() {
-		gpioProvider.setMode(stopPinImpl, PinMode.DIGITAL_OUTPUT)
-		gpioProvider.setMode(upDownPinImpl, PinMode.DIGITAL_OUTPUT)
 		shutterDevice.setStoppingTimerForTests(stoppingTimer)
 	}
 
@@ -144,7 +134,7 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.init()
 
 		then:
-		stoppingTimer.lastScheduledDelay == FULL_CLOSE_MS
+		stoppingTimer.lastScheduledDelay == FULL_CLOSE_MS.toLong()
 		listenerStub.updatesByPropertyId("state").size() == 1
 		listenerStub.updatesByPropertyId("state")[0].newValue == "CLOSING"
 		stoppingTimer.runNow()

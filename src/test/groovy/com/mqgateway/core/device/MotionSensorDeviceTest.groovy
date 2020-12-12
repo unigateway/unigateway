@@ -1,29 +1,30 @@
 package com.mqgateway.core.device
 
-
-import com.pi4j.io.gpio.PinMode
-import com.pi4j.io.gpio.PinState
-import com.pi4j.io.gpio.SimulatedGpioProvider
-import com.pi4j.io.gpio.impl.GpioControllerImpl
-import com.pi4j.io.gpio.impl.GpioPinImpl
-import com.pi4j.io.gpio.impl.PinImpl
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
 import com.mqgateway.utils.UpdateListenerStub
+import com.pi4j.io.gpio.PinPullResistance
+import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
-import spock.util.concurrent.PollingConditions
 
 class MotionSensorDeviceTest extends Specification {
 
-	def pinImpl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
-	def gpioProvider = new SimulatedGpioProvider()
-	def pin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pinImpl)
+	def pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
 
 	@Subject
-	MotionSensorDevice device = new MotionSensorDevice("device1", pin, 300)
+	MotionSensorDevice device = new MotionSensorDevice("device1", pin, 0)
 
-	def "should set debounce on pin during initialization"() {
-		when:
-		device.init()
+  void setup() {
+    // when sensor will be connected it will keep LOW state when no motion
+    pin.setState(PinState.LOW)
+  }
+
+  def "should set debounce on pin during initialization"() {
+    given:
+    MotionSensorDevice deviceWithDebounce = new MotionSensorDevice("device1", pin, 300)
+
+    when:
+		deviceWithDebounce.init()
 
 		then:
 		pin.getDebounce(PinState.HIGH) == 300
@@ -34,30 +35,25 @@ class MotionSensorDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		def conditions = new PollingConditions()
 
 		when:
 		pin.setState(PinState.HIGH)
 
 		then:
-		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "ON")
-		}
+    listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "ON")
 	}
 
-	def "should notify listeners on motion stopped started (LOW state)"() {
+	def "should notify listeners on motion stopped (LOW state)"() {
 		given:
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		def conditions = new PollingConditions()
+    pin.setState(PinState.HIGH)
 
 		when:
 		pin.setState(PinState.LOW)
 
 		then:
-		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "OFF")
-		}
+    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "OFF")
 	}
 }

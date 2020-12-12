@@ -1,26 +1,27 @@
 package com.mqgateway.utils
 
+import com.mqgateway.core.hardware.MqGpioPinDigitalStateChangeEvent
+import com.mqgateway.core.hardware.MqGpioPinListenerDigital
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedSerial
 import com.pi4j.io.gpio.PinState
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
-import com.pi4j.io.gpio.event.GpioPinListenerDigital
-import com.pi4j.io.gpio.impl.GpioPinImpl
+import org.jetbrains.annotations.NotNull
 
 class ExternalSerialDeviceSimulator {
 
-	private GpioPinImpl askForDataPin
-	private GpioPinImpl pingPin
-	private SerialStub serial
+	private SimulatedGpioPinDigitalOutput askForDataPin
+	private SimulatedGpioPinDigitalInput pingPin
+	private SimulatedSerial serial
 
 	private Closure onBeforeSendingMessage = {}
 
 	private String messageToSend
 
-
-	ExternalSerialDeviceSimulator(GpioPinImpl askForDataPin, GpioPinImpl pingPin, SerialStub serial) {
+  ExternalSerialDeviceSimulator(SimulatedGpioPinDigitalOutput askForDataPin, SimulatedGpioPinDigitalInput pingPin, SimulatedSerial serial) {
 		this.askForDataPin = askForDataPin
 		this.pingPin = pingPin
 		this.serial = serial
-
 	}
 
 	void ping() {
@@ -32,16 +33,16 @@ class ExternalSerialDeviceSimulator {
 		onBeforeSendingMessage = closure
 	}
 
-	void setMessageToSend(String messageToSend) {
-		this.messageToSend = messageToSend
-		askForDataPin.addListener(new GpioPinListenerDigital() {
-			@Override
-			void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				if (event.getState() == PinState.LOW) {
-					onBeforeSendingMessage.call()
-					serial.sendFakeMessage(messageToSend)
-				}
-			}
-		})
-	}
+  void setMessageToSend(String messageToSend) {
+    this.messageToSend = messageToSend
+    askForDataPin.addListener(new MqGpioPinListenerDigital() {
+      @Override
+      void handleGpioPinDigitalStateChangeEvent(@NotNull MqGpioPinDigitalStateChangeEvent event) {
+        if (event.getState() == PinState.LOW) {
+          onBeforeSendingMessage.call()
+          serial.sendFakeMessage(messageToSend)
+        }
+      }
+    })
+  }
 }

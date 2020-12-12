@@ -1,16 +1,14 @@
 package com.mqgateway.core.device.serial
 
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedSerial
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.ExternalSerialDeviceSimulator
-import com.mqgateway.utils.SerialStub
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.GpioProvider
-import com.pi4j.io.gpio.PinMode
-import com.pi4j.io.gpio.SimulatedGpioProvider
-import com.pi4j.io.gpio.impl.GpioControllerImpl
-import com.pi4j.io.gpio.impl.GpioPinImpl
-import com.pi4j.io.gpio.impl.PinImpl
+import com.pi4j.io.gpio.PinPullResistance
+import com.pi4j.io.gpio.PinState
 import java.time.Duration
 import spock.lang.Specification
 import spock.lang.Subject
@@ -18,14 +16,11 @@ import spock.util.concurrent.PollingConditions
 
 class DHT22PeriodicSerialInputDeviceTest extends Specification {
 
-	GpioProvider gpioProvider = new SimulatedGpioProvider()
-	def pin1Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
-	def pin2Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
-	def inputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin1Impl)
-	def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
+	def inputPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
+	def outputPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 
 	TimersScheduler scheduler = new TimersScheduler()
-	SerialStub serialStub = new SerialStub()
+  SimulatedSerial serialStub = new SimulatedSerial()
 	SerialConnection serialConnection = new SerialConnection(serialStub, 5000L)
 	UpdateListenerStub updateListenerStub = new UpdateListenerStub()
 

@@ -1,6 +1,6 @@
 package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.pi4j.io.gpio.GpioPinDigitalOutput
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 
-abstract class DigitalOutputDevice(id: String, type: DeviceType, protected val pin: GpioPinDigitalOutput) : Device(id, type)
+abstract class DigitalOutputDevice(id: String, type: DeviceType, protected val pin: MqGpioPinDigitalOutput) : Device(id, type)

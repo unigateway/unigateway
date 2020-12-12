@@ -2,7 +2,7 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.pi4j.io.gpio.GpioPinDigitalInput
+import com.mqgateway.core.hardware.MqGpioPinDigitalInput
 import mu.KotlinLogging
 import java.time.Instant
 import java.util.Timer
@@ -13,7 +13,7 @@ private val LOGGER = KotlinLogging.logger {}
 
 class SwitchButtonDevice(
   id: String,
-  private val pin: GpioPinDigitalInput,
+  private val pin: MqGpioPinDigitalInput,
   debounceMs: Int = CONFIG_DEBOUNCE_DEFAULT,
   private val longPressTimeMs: Long = CONFIG_LONG_PRESS_TIME_MS_DEFAULT
 ) : DigitalInputDevice(id, DeviceType.SWITCH_BUTTON, pin, debounceMs) {

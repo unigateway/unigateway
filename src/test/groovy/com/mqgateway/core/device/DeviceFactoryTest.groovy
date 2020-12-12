@@ -6,35 +6,36 @@ import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
 import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
-import com.mqgateway.core.utils.FakeSystemInfoProvider
-import com.mqgateway.core.utils.SerialConnection
-import com.mqgateway.core.utils.TimersScheduler
-import com.mqgateway.utils.SerialStub
-import com.pi4j.io.gpio.GpioPinDigitalInput
-import com.pi4j.io.gpio.GpioPinDigitalOutput
-import com.pi4j.io.gpio.PinPullResistance
-import com.pi4j.io.gpio.PinState
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.WireColor
-import com.mqgateway.core.mcpexpander.ExpanderPinProvider
+import com.mqgateway.core.hardware.simulated.SimulatedExpanderPinProvider
+import com.mqgateway.core.hardware.simulated.SimulatedGpioController
+import com.mqgateway.core.hardware.simulated.SimulatedMcpExpanders
+import com.mqgateway.core.hardware.simulated.SimulatedSerial
+import com.mqgateway.core.utils.FakeSystemInfoProvider
+import com.mqgateway.core.utils.SerialConnection
+import com.mqgateway.core.utils.TimersScheduler
+import com.pi4j.io.gpio.GpioPinDigitalInput
+import com.pi4j.io.gpio.GpioPinDigitalOutput
+import com.pi4j.io.gpio.PinPullResistance
+import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 
 class DeviceFactoryTest extends Specification {
 
-	ExpanderPinProvider pinProvider = Mock()
+	SimulatedExpanderPinProvider pinProvider = new SimulatedExpanderPinProvider(new SimulatedGpioController(), new SimulatedMcpExpanders([]))
 
 	@Subject
-	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new SerialConnection(new SerialStub(), 5000),
-													new FakeSystemInfoProvider())
+	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new SerialConnection(new SimulatedSerial(), 5000),
+                                                  new FakeSystemInfoProvider())
 
 	def "should create relay"() {
 		given:
 		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
-		pinProvider.pinDigitalOutput(2, WireColor.BLUE, "myRelay_pin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
 
 		when:
 		def devices = deviceFactory.createAll(gateway)

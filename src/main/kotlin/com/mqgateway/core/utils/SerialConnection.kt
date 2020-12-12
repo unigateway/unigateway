@@ -1,9 +1,8 @@
 package com.mqgateway.core.utils
 
-import com.pi4j.io.gpio.GpioPinDigitalOutput
-import com.pi4j.io.serial.Serial
-import com.pi4j.io.serial.SerialDataEvent
-import com.pi4j.io.serial.SerialDataEventListener
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
+import com.mqgateway.core.hardware.MqSerial
+import com.mqgateway.core.hardware.MqSerialDataEvent
 import mu.KotlinLogging
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -12,7 +11,7 @@ import java.util.concurrent.TimeoutException
 
 private val LOGGER = KotlinLogging.logger {}
 
-class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Long = 5000L) {
+class SerialConnection(private val serial: MqSerial, private val maxWaitTimeMs: Long = 5000L) {
 
   private var deferredUntilMessageReceived = CompletableFuture<String>()
 
@@ -21,11 +20,11 @@ class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Lo
 
   fun init() {
     if (initialized) throw SerialConnectionAlreadyInitializedException()
-    serial.addListener(SerialDataEventListener { event: SerialDataEvent? ->
-      val message = event!!.asciiString
+    serial.addListener { event: MqSerialDataEvent ->
+      val message = event.getAsciiString()
       LOGGER.info { "Received Serial event with message: $message" }
       deferredUntilMessageReceived.complete(message)
-    })
+    }
     initialized = true
   }
 
@@ -44,7 +43,7 @@ class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Lo
     }
   }
 
-  private fun askForData(id: String, askForDataPin: GpioPinDigitalOutput): String? {
+  private fun askForData(id: String, askForDataPin: MqGpioPinDigitalOutput): String? {
     LOGGER.debug { "Device $id is asking for Serial data" }
 
     deferredUntilMessageReceived = CompletableFuture()
@@ -66,7 +65,7 @@ class SerialConnection(private val serial: Serial, private val maxWaitTimeMs: Lo
 
 interface SerialDataListener {
   fun id(): String
-  fun askForDataPin(): GpioPinDigitalOutput
+  fun askForDataPin(): MqGpioPinDigitalOutput
   fun onDataReceived(message: String?)
 }
 

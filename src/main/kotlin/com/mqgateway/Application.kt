@@ -19,6 +19,10 @@ fun main(args: Array<String>) {
     .packages("com.mqgateway")
     .start()
 
+  Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
+    LOGGER.error(exception) { "Uncaught exception in thread '${thread.name}'." }
+  }
+
   try {
     val mqGateway = context.getBean(MqGateway::class.java)
     mqGateway.initialize()
@@ -41,10 +45,6 @@ class MqGateway(
 
   fun initialize() {
     LOGGER.info { "MqGateway started. Initialization..." }
-
-    Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
-      LOGGER.error(exception) { "Uncaught exception in thread '${thread.name}'." }
-    }
 
     homieDevice.addMqttConnectedListener { sendHomeAssistantConfiguration() }
     homieDevice.connect()

@@ -4,13 +4,12 @@ import com.mqgateway.core.device.Device
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.hardware.MqGpioPinDigitalInput
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.SerialDataListener
 import com.mqgateway.core.utils.TimersScheduler
-import com.pi4j.io.gpio.GpioPinDigitalInput
-import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinState
-import com.pi4j.io.gpio.event.GpioPinListenerDigital
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.LocalDateTime
@@ -20,8 +19,8 @@ private val LOGGER = KotlinLogging.logger {}
 abstract class PeriodicSerialInputDevice(
   id: String,
   type: DeviceType,
-  private val toDevicePin: GpioPinDigitalOutput,
-  private val fromDevicePin: GpioPinDigitalInput,
+  private val toDevicePin: MqGpioPinDigitalOutput,
+  private val fromDevicePin: MqGpioPinDigitalInput,
   private val serialConnection: SerialConnection,
   private val periodBetweenAskingForData: Duration,
   private val acceptablePingPeriod: Duration,
@@ -33,11 +32,11 @@ abstract class PeriodicSerialInputDevice(
 
   override fun initDevice() {
     super.initDevice()
-    toDevicePin.state = PinState.HIGH
+    toDevicePin.setState(PinState.HIGH)
 
-    fromDevicePin.addListener(GpioPinListenerDigital { event ->
-      if (event.state == PinState.LOW) { pingReceived() }
-    })
+    fromDevicePin.addListener { event ->
+      if (event.getState() == PinState.LOW) { pingReceived() }
+    }
 
     scheduler.registerTimer(this)
   }
@@ -87,5 +86,7 @@ abstract class PeriodicSerialInputDevice(
   companion object {
     const val AVAILABILITY_ONLINE_STATE = "ONLINE"
     const val AVAILABILITY_OFFLINE_STATE = "OFFLINE"
+    const val CONFIG_PERIOD_BETWEEN_ASK_KEY = "periodBetweenAskingForDataInSec"
+    const val CONFIG_ACCEPTABLE_PING_PERIOD_KEY = "acceptablePingPeriodInSec"
   }
 }

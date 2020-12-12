@@ -1,12 +1,9 @@
 package com.mqgateway.core.device
 
-import com.pi4j.io.gpio.PinMode
-import com.pi4j.io.gpio.PinState
-import com.pi4j.io.gpio.SimulatedGpioProvider
-import com.pi4j.io.gpio.impl.GpioControllerImpl
-import com.pi4j.io.gpio.impl.GpioPinImpl
-import com.pi4j.io.gpio.impl.PinImpl
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
 import com.mqgateway.utils.UpdateListenerStub
+import com.pi4j.io.gpio.PinPullResistance
+import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.util.concurrent.PollingConditions
@@ -14,22 +11,19 @@ import spock.util.concurrent.PollingConditions
 class SwitchButtonDeviceTest extends Specification {
 
 	public static final int LONG_PRESS_MS = 100
-	def pinImpl = new PinImpl("com.pi4j.gpio.extension.mcp.MCP23017GpioProvider", 150, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
-	def gpioProvider = new SimulatedGpioProvider()
-	def pin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pinImpl)
+	def pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
 
 	def conditions = new PollingConditions(initialDelay: 0.1, timeout: 1)
 
 	@Subject
-	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
-
-	void setup() {
-		pin.setMode(PinMode.DIGITAL_INPUT)
-	}
+	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 0, LONG_PRESS_MS)
 
 	def "should set debounce on pin during initialization"() {
+    given:
+    SwitchButtonDevice deviceWithDebounce = new SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
+
 		when:
-		device.init()
+    deviceWithDebounce.init()
 
 		then:
 		pin.getDebounce(PinState.HIGH) == 200
@@ -45,9 +39,7 @@ class SwitchButtonDeviceTest extends Specification {
 		pin.setState(PinState.LOW)
 
 		then:
-		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "PRESSED")
-		}
+    listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "PRESSED")
 	}
 
 	def "should notify listeners on switch button released (HIGH state)"() {
@@ -55,14 +47,13 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
+    pin.setState(PinState.LOW)
 
 		when:
 		pin.setState(PinState.HIGH)
 
 		then:
-		conditions.eventually {
-			assert listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "RELEASED")
-		}
+    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("button1", "state", "RELEASED")
 	}
 
 	def "should notify listeners on switch button long pressed"() {

@@ -61,10 +61,7 @@ dependencies {
 
     // Logging
     implementation 'io.github.microutils:kotlin-logging:1.7.8'
-    implementation 'org.slf4j:slf4j-api:1.7.25'
-    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.12.1'
-    runtimeOnly 'org.apache.logging.log4j:log4j-api:2.12.1'
-    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j-impl:2.12.1'
+    runtimeOnly 'ch.qos.logback:logback-classic'
 
     // Pi4J
     implementation 'com.pi4j:pi4j-core:1.2'
@@ -167,3 +164,10 @@ processResources {
 }
 
 processResources.outputs.upToDateWhen { false }
+
+// temporary - I need to upgrade KtLint to support new syntax in Kotlin, but this will require more formatting changes
+ktlint {
+    filter {
+        exclude({it.file.absolutePath.endsWith("MqPin.kt") || it.file.absolutePath.endsWith("MqSerial.kt")})
+    }
+}

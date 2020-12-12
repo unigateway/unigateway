@@ -1,7 +1,12 @@
 package com.mqgateway.core.utils
 
-import com.mqgateway.utils.SerialStub
-import com.pi4j.io.gpio.GpioPinDigitalOutput
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
+import com.mqgateway.core.hardware.MqGpioPinDigitalStateChangeEvent
+import com.mqgateway.core.hardware.MqGpioPinListenerDigital
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedSerial
+import com.pi4j.io.gpio.PinState
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import spock.lang.Specification
 import spock.lang.Subject
@@ -9,7 +14,7 @@ import spock.util.concurrent.PollingConditions
 
 class SerialConnectionTest extends Specification {
 
-	SerialStub serialStub = new SerialStub()
+  SimulatedSerial serialStub = new SimulatedSerial()
 
 	@Subject
 	SerialConnection serialConnection = new SerialConnection(serialStub, 50)
@@ -36,18 +41,23 @@ class SerialConnectionTest extends Specification {
 	}
 
 	private TestSerialDataListener prepareListener(String id, String messageToBeReceived) {
-		GpioPinDigitalOutput askForDataPin = Mock(GpioPinDigitalOutput)
+		SimulatedGpioPinDigitalOutput askForDataPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 		TestSerialDataListener listener = new TestSerialDataListener(id, askForDataPin)
-		askForDataPin.low() >> {
-			serialStub.sendFakeMessage(messageToBeReceived)
-		}
+		askForDataPin.addListener(new MqGpioPinListenerDigital() {
+      @Override
+      void handleGpioPinDigitalStateChangeEvent(@NotNull MqGpioPinDigitalStateChangeEvent event) {
+        if (event.state == PinState.LOW) {
+          serialStub.sendFakeMessage(messageToBeReceived)
+        }
+      }
+    })
 		return listener
 	}
 
 	def "should throw exception if asked for data but not initialized before"() {
 		given:
 		SerialConnection serialConnection = new SerialConnection(serialStub, 500)
-		TestSerialDataListener listener = new TestSerialDataListener("testId", Mock(GpioPinDigitalOutput))
+		TestSerialDataListener listener = new TestSerialDataListener("testId", new SimulatedGpioPinDigitalOutput(PinState.HIGH))
 
 		when:
 		serialConnection.askForData(listener)
@@ -66,11 +76,14 @@ class SerialConnectionTest extends Specification {
 
 	def "should return null as message when it could not have been received within the specified time"() {
 		given:
-		GpioPinDigitalOutput askForDataPin = Mock(GpioPinDigitalOutput)
+		SimulatedGpioPinDigitalOutput askForDataPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 		TestSerialDataListener listener = new TestSerialDataListener("testId1", askForDataPin)
-		askForDataPin.low() >> {
-			// do nothing
-		}
+		askForDataPin.addListener(new MqGpioPinListenerDigital() {
+      @Override
+      void handleGpioPinDigitalStateChangeEvent(@NotNull MqGpioPinDigitalStateChangeEvent event) {
+        // do nothing
+      }
+    })
 
 		when:
 		serialConnection.askForData(listener)
@@ -98,23 +111,21 @@ class SerialConnectionTest extends Specification {
 
 	def "should put askForData pin back in HIGH state after message hes been received"() {
 		given:
-		def pinState = "NOT_SET"
-		GpioPinDigitalOutput askForDataPin = Mock(GpioPinDigitalOutput)
+		SimulatedGpioPinDigitalOutput askForDataPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 		TestSerialDataListener listener = new TestSerialDataListener("testId1", askForDataPin)
-		askForDataPin.low() >> {
-			pinState = "LOW"
-			serialStub.sendFakeMessage("foobar")
-		}
-		askForDataPin.high() >> {
-			pinState = "HIGH"
-		}
+    askForDataPin.addListener(new MqGpioPinListenerDigital() {
+      @Override
+      void handleGpioPinDigitalStateChangeEvent(@NotNull MqGpioPinDigitalStateChangeEvent event) {
+        serialStub.sendFakeMessage("foobar")
+      }
+    })
 
 		when:
 		serialConnection.askForData(listener)
 		serialConnection.getDataForAllListeners()
 
 		then:
-		pinState == "HIGH"
+		askForDataPin.state == PinState.HIGH
 	}
 }
 
@@ -124,9 +135,9 @@ class TestSerialDataListener implements SerialDataListener {
 	List<String> receivedMessages = []
 	boolean dataReceived = false
 
-	private GpioPinDigitalOutput askForDataPin
+	private SimulatedGpioPinDigitalOutput askForDataPin
 
-	TestSerialDataListener(String id, GpioPinDigitalOutput askForDataPin) {
+	TestSerialDataListener(String id, SimulatedGpioPinDigitalOutput askForDataPin) {
 		this.id = id
 		this.askForDataPin = askForDataPin
 	}
@@ -137,7 +148,7 @@ class TestSerialDataListener implements SerialDataListener {
 	}
 
 	@Override
-	GpioPinDigitalOutput askForDataPin() {
+  MqGpioPinDigitalOutput askForDataPin() {
 		return askForDataPin
 	}
 

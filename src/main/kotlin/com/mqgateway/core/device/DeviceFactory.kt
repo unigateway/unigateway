@@ -2,21 +2,21 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
 import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_DEFAULT
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
 import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
+import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
+import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
-import com.mqgateway.core.mcpexpander.ExpanderPinProvider
+import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import java.time.Duration
 
 class DeviceFactory(
-  private val pinProvider: ExpanderPinProvider,
+  private val pinProvider: MqExpanderPinProvider,
   private val timersScheduler: TimersScheduler,
   private val serialConnection: SerialConnection?,
   private val systemInfoProvider: SystemInfoProvider

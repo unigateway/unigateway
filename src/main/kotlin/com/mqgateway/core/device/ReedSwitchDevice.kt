@@ -2,11 +2,11 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.pi4j.io.gpio.GpioPinDigitalInput
+import com.mqgateway.core.hardware.MqGpioPinDigitalInput
 
 class ReedSwitchDevice(
   id: String,
-  private val pin: GpioPinDigitalInput,
+  private val pin: MqGpioPinDigitalInput,
   debounceMs: Int = CONFIG_DEBOUNCE_DEFAULT
 ) : DigitalInputDevice(id, DeviceType.REED_SWITCH, pin, debounceMs) {
 

@@ -2,18 +2,18 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.pi4j.io.gpio.GpioPinDigitalOutput
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.pi4j.io.gpio.PinState
 import mu.KotlinLogging
 import kotlin.concurrent.thread
 
 private val LOGGER = KotlinLogging.logger {}
 
-class EmulatedSwitchButtonDevice(id: String, pin: GpioPinDigitalOutput) : DigitalOutputDevice(id, DeviceType.EMULATED_SWITCH, pin) {
+class EmulatedSwitchButtonDevice(id: String, pin: MqGpioPinDigitalOutput) : DigitalOutputDevice(id, DeviceType.EMULATED_SWITCH, pin) {
 
   private fun changeState(newState: EmulatedSwitchState) {
     val newPinState = if (newState == EmulatedSwitchState.PRESSED) PRESSED_STATE else RELEASED_STATE
-    pin.state = newPinState
+    pin.setState(newPinState)
   }
 
   override fun change(propertyId: String, newValue: String) {

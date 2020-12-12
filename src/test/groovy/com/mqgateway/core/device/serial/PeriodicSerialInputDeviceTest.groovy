@@ -1,19 +1,15 @@
 package com.mqgateway.core.device.serial
 
 import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
+import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedSerial
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.ExternalSerialDeviceSimulator
-import com.mqgateway.utils.SerialStub
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.GpioPinDigitalInput
-import com.pi4j.io.gpio.GpioPinDigitalOutput
-import com.pi4j.io.gpio.GpioProvider
-import com.pi4j.io.gpio.PinMode
-import com.pi4j.io.gpio.SimulatedGpioProvider
-import com.pi4j.io.gpio.impl.GpioControllerImpl
-import com.pi4j.io.gpio.impl.GpioPinImpl
-import com.pi4j.io.gpio.impl.PinImpl
+import com.pi4j.io.gpio.PinPullResistance
+import com.pi4j.io.gpio.PinState
 import java.time.Duration
 import spock.lang.Specification
 import spock.lang.Subject
@@ -21,14 +17,11 @@ import spock.util.concurrent.PollingConditions
 
 class PeriodicSerialInputDeviceTest extends Specification {
 
-	GpioProvider gpioProvider = new SimulatedGpioProvider()
-	def pin1Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
-	def pin2Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
-	def inputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin1Impl)
-	def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
+	def inputPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
+	def outputPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 
 	TimersScheduler scheduler = new TimersScheduler()
-	SerialStub serialStub = new SerialStub()
+  SimulatedSerial serialStub = new SimulatedSerial()
 	SerialConnection serialConnection = new SerialConnection(serialStub, 5000L)
 	UpdateListenerStub updateListenerStub = new UpdateListenerStub()
 
@@ -213,10 +206,8 @@ class PeriodicSerialInputDeviceTest extends Specification {
 	}
 
 	DeviceElements prepareSerialDevice(String name) {
-		def pin1Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_INPUT))
-		def pin2Impl = new PinImpl("", 0, "", EnumSet<PinMode>.of(PinMode.DIGITAL_OUTPUT))
-		def inputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin1Impl)
-		def outputPin = new GpioPinImpl(new GpioControllerImpl(gpioProvider), gpioProvider, pin2Impl)
+		def inputPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
+		def outputPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 
 		def device = new SomePeriodicSerialInputDevice(name, DeviceType.BME280, outputPin, inputPin, serialConnection,
 														Duration.ofHours(1), Duration.ofSeconds(10), scheduler)
@@ -228,10 +219,10 @@ class PeriodicSerialInputDeviceTest extends Specification {
 
 	class DeviceElements {
 		SomePeriodicSerialInputDevice device
-		GpioPinImpl outputPin
-		GpioPinImpl inputPin
+    SimulatedGpioPinDigitalOutput outputPin
+    SimulatedGpioPinDigitalInput inputPin
 
-		DeviceElements(SomePeriodicSerialInputDevice device, GpioPinImpl outputPin, GpioPinImpl inputPin) {
+		DeviceElements(SomePeriodicSerialInputDevice device, SimulatedGpioPinDigitalOutput outputPin, SimulatedGpioPinDigitalInput inputPin) {
 			this.device = device
 			this.outputPin = outputPin
 			this.inputPin = inputPin
@@ -244,7 +235,7 @@ class SomePeriodicSerialInputDevice extends PeriodicSerialInputDevice {
 
 	String message
 
-	SomePeriodicSerialInputDevice(String id, DeviceType type, GpioPinDigitalOutput toDevicePin, GpioPinDigitalInput fromDevicePin,
+	SomePeriodicSerialInputDevice(String id, DeviceType type, SimulatedGpioPinDigitalOutput toDevicePin, SimulatedGpioPinDigitalInput fromDevicePin,
 								  SerialConnection serialConnection, Duration periodBetweenAskingForData, Duration acceptablePingPeriod,
 								  TimersScheduler scheduler) {
 		super(id, type, toDevicePin, fromDevicePin, serialConnection, periodBetweenAskingForData, acceptablePingPeriod, scheduler)

@@ -5,8 +5,8 @@ import com.mqgateway.core.device.TimerSwitchRelayDevice.TimerSwitchRelayState.OP
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.mqgateway.core.utils.TimersScheduler
-import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinState
 import mu.KotlinLogging
 import java.time.LocalDateTime
@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit
 
 private val LOGGER = KotlinLogging.logger {}
 
-class TimerSwitchRelayDevice(id: String, pin: GpioPinDigitalOutput, private val scheduler: TimersScheduler) :
+class TimerSwitchRelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val scheduler: TimersScheduler) :
   DigitalOutputDevice(id, DeviceType.TIMER_SWITCH, pin),
   TimersScheduler.SchedulableTimer {
 
@@ -22,10 +22,10 @@ class TimerSwitchRelayDevice(id: String, pin: GpioPinDigitalOutput, private val 
 
   private fun changeRelayState(newState: TimerSwitchRelayState) {
     if (newState == CLOSED) {
-      pin.state = RELAY_CLOSED_STATE
+      pin.setState(RELAY_CLOSED_STATE)
       notify(STATE, STATE_ON)
     } else {
-      pin.state = RELAY_OPEN_STATE
+      pin.setState(RELAY_OPEN_STATE)
       notify(STATE, STATE_OFF)
     }
   }

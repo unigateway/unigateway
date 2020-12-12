@@ -1,7 +1,7 @@
 package com.mqgateway.core.gatewayconfig.validation
 
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
+import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
+import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway

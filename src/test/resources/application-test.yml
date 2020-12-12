@@ -1,12 +1,16 @@
 gateway:
-  app-version: SNAPSHOT
+  app-version: TEST
   config-path: "src/test/resources/example.gateway.yaml"
   system:
     network-adapter: enp0s25
-    platform: simulated
+    platform: SIMULATED
     components:
       mcp23017:
-        ports: ["20","21","22","23"]
+        ports: [ "20","21","22","23" ]
       serial:
         enabled: true
         device: "/dev/tty1"
+
+homeassistant:
+  enabled: true
+  root-topic: "homeassistant"
