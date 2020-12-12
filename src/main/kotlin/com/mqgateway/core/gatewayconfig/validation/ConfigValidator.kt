@@ -35,7 +35,7 @@ class ConfigValidator(private val yamlObjectMapper: ObjectMapper, private val va
     val schemaValidationReport = schemaValidator.validate(gatewayJsonNode)
 
     for (validationMessage in schemaValidationReport) {
-        LOGGER.error { "Processing message ${validationMessage.message}" }
+      LOGGER.error { "Processing message ${validationMessage.message}" }
     }
 
     return schemaValidationReport.isEmpty()

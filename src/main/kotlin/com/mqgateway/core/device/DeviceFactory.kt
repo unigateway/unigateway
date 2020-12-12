@@ -25,13 +25,13 @@ class DeviceFactory(
   fun createAll(gateway: Gateway): Set<Device> {
     val gatewayDevice = MqGatewayDevice(gateway.name, Duration.ofSeconds(30), systemInfoProvider)
     return setOf(gatewayDevice) + gateway.rooms
-        .flatMap { it.points }
-        .flatMap { point ->
-          val portNumber = point.portNumber
-          point.devices
-            .filter { serialConnection != null || !it.type.isSerialDevice() }
-            .map { create(portNumber, it) }
-        }.toSet()
+      .flatMap { it.points }
+      .flatMap { point ->
+        val portNumber = point.portNumber
+        point.devices
+          .filter { serialConnection != null || !it.type.isSerialDevice() }
+          .map { create(portNumber, it) }
+      }.toSet()
   }
 
   private fun create(portNumber: Int, deviceConfig: DeviceConfig): Device {
@@ -111,8 +111,11 @@ class DeviceFactory(
         val stopRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("stopRelay")) as RelayDevice
         val upDownRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("upDownRelay")) as RelayDevice
         ShutterDevice(
-          deviceConfig.id, stopRelayDevice, upDownRelayDevice,
-          deviceConfig.config.getValue("fullOpenTimeMs").toLong(), deviceConfig.config.getValue("fullCloseTimeMs").toLong()
+          deviceConfig.id,
+          stopRelayDevice,
+          upDownRelayDevice,
+          deviceConfig.config.getValue("fullOpenTimeMs").toLong(),
+          deviceConfig.config.getValue("fullCloseTimeMs").toLong()
         )
       }
       DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should never be specified as a separate device in configuration")

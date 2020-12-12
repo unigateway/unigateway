@@ -58,54 +58,54 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
             device.config[DEVICE_CONFIG_HA_COMPONENT].equals(HomeAssistantComponentType.TRIGGER.value, true) -> {
               listOf(
                 HomeAssistantTrigger(
-                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_PRESS"),
-                      homieStateTopic,
-                      SwitchButtonDevice.PRESSED_STATE_VALUE,
-                      BUTTON_SHORT_PRESS,
-                      "button"
+                  HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_PRESS"),
+                  homieStateTopic,
+                  SwitchButtonDevice.PRESSED_STATE_VALUE,
+                  BUTTON_SHORT_PRESS,
+                  "button"
                 ),
                 HomeAssistantTrigger(
-                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_RELEASE"),
-                      homieStateTopic,
-                      SwitchButtonDevice.RELEASED_STATE_VALUE,
-                      BUTTON_SHORT_RELEASE,
-                      "button"
+                  HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_RELEASE"),
+                  homieStateTopic,
+                  SwitchButtonDevice.RELEASED_STATE_VALUE,
+                  BUTTON_SHORT_RELEASE,
+                  "button"
                 ),
                 HomeAssistantTrigger(
-                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LONG_PRESS"),
-                      homieStateTopic,
-                      SwitchButtonDevice.LONG_PRESSED_STATE_VALUE,
-                      BUTTON_LONG_PRESS,
-                      "button"
+                  HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LONG_PRESS"),
+                  homieStateTopic,
+                  SwitchButtonDevice.LONG_PRESSED_STATE_VALUE,
+                  BUTTON_LONG_PRESS,
+                  "button"
                 ),
                 HomeAssistantTrigger(
-                      HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LONG_RELEASE"),
-                      homieStateTopic,
-                      SwitchButtonDevice.LONG_RELEASED_STATE_VALUE,
-                      BUTTON_LONG_RELEASE,
-                      "button"
+                  HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LONG_RELEASE"),
+                  homieStateTopic,
+                  SwitchButtonDevice.LONG_RELEASED_STATE_VALUE,
+                  BUTTON_LONG_RELEASE,
+                  "button"
                 )
               )
             }
             device.config[DEVICE_CONFIG_HA_COMPONENT].equals(HomeAssistantComponentType.SENSOR.value, true) -> {
               listOf(
                 HomeAssistantSensor(
-                      basicProperties = basicProperties,
-                      name = device.name,
-                      stateTopic = homieStateTopic,
-                      deviceClass = HomeAssistantSensor.DeviceClass.NONE
+                  basicProperties = basicProperties,
+                  name = device.name,
+                  stateTopic = homieStateTopic,
+                  deviceClass = HomeAssistantSensor.DeviceClass.NONE
                 )
               )
             }
             else -> {
               listOf(
                 HomeAssistantBinarySensor(
-                      basicProperties,
-                      device.name,
-                      homieStateTopic,
-                      SwitchButtonDevice.PRESSED_STATE_VALUE,
-                      SwitchButtonDevice.RELEASED_STATE_VALUE,
-                      HomeAssistantBinarySensor.DeviceClass.NONE
+                  basicProperties,
+                  device.name,
+                  homieStateTopic,
+                  SwitchButtonDevice.PRESSED_STATE_VALUE,
+                  SwitchButtonDevice.RELEASED_STATE_VALUE,
+                  HomeAssistantBinarySensor.DeviceClass.NONE
                 )
               )
             }

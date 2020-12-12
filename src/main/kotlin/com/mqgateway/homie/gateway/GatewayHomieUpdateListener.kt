@@ -17,4 +17,4 @@ class GatewayHomieUpdateListener(private val homieDevice: HomieDevice) : UpdateL
 }
 
 class UnknownHomiePropertyException(deviceId: String, propertyId: String) :
-    Exception("deviceId($deviceId), propertyId($propertyId)")
+  Exception("deviceId($deviceId), propertyId($propertyId)")

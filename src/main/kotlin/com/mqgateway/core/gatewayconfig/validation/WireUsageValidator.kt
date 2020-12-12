@@ -10,17 +10,17 @@ class WireUsageValidator : GatewayValidator {
     val deviceConfigs: List<List<DeviceConfig>> = gateway.rooms.flatMap { room -> room.points }.map { it.devices }
 
     return deviceConfigs
-        .map { devices ->
-          devices.filter { device ->
-            val otherDevices = devices.filterNot { otherDevice -> otherDevice.id == device.id }
-            val otherDevicesWires = otherDevices.flatMap { otherDevice -> otherDevice.wires }
-            device.wires.intersect(otherDevicesWires).isNotEmpty()
-          }
+      .map { devices ->
+        devices.filter { device ->
+          val otherDevices = devices.filterNot { otherDevice -> otherDevice.id == device.id }
+          val otherDevicesWires = otherDevices.flatMap { otherDevice -> otherDevice.wires }
+          device.wires.intersect(otherDevicesWires).isNotEmpty()
         }
-        .filter { it.isNotEmpty() }
-        .map {
-          SameWireUsedInManyDevices(it)
-        }
+      }
+      .filter { it.isNotEmpty() }
+      .map {
+        SameWireUsedInManyDevices(it)
+      }
   }
 
   class SameWireUsedInManyDevices(val devices: List<DeviceConfig>) : ValidationFailureReason() {

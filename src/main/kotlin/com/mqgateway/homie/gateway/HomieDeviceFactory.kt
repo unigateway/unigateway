@@ -28,29 +28,34 @@ class HomieDeviceFactory(
   }
 
   fun toHomieDevice(gateway: Gateway, networkAdapter: String): HomieDevice {
-    val mqGatewayAsNode = HomieNode(gateway.name, gateway.name, "MqGateway ${gateway.name}", DeviceType.MQGATEWAY.name.toLowerCase(),
-      getHomiePropertiesFor(gateway.name, gateway.name, DeviceType.MQGATEWAY))
+    val mqGatewayAsNode = HomieNode(
+      gateway.name,
+      gateway.name,
+      "MqGateway ${gateway.name}",
+      DeviceType.MQGATEWAY.name.toLowerCase(),
+      getHomiePropertiesFor(gateway.name, gateway.name, DeviceType.MQGATEWAY)
+    )
 
     val homieNodes: Map<String, HomieNode> = gateway.rooms
-        .flatMap { it.points }
-        .flatMap { it.devices }
-        .map { it.id to toHomieNode(gateway.name, it) }
-        .toMap() + (gateway.name to mqGatewayAsNode)
+      .flatMap { it.points }
+      .flatMap { it.devices }
+      .map { it.id to toHomieNode(gateway.name, it) }
+      .toMap() + (gateway.name to mqGatewayAsNode)
 
     val networkInterface = NetworkInterface.getByName(networkAdapter)
     return HomieDevice(
-        mqttClientFactory,
-        homieReceiver,
-        gateway.name,
-        homieNodes,
-        HOMIE_VERSION,
-        gateway.name,
-        listOf("org.homie.legacy-firmware"),
-        HOMIE_IMPLEMENTATION,
-        FIRMWARE_NAME,
-        firmwareVersion,
-        networkInterface?.inetAddresses?.asSequence()?.map { it.hostAddress }?.joinToString(),
-        getMacAddress(networkInterface)
+      mqttClientFactory,
+      homieReceiver,
+      gateway.name,
+      homieNodes,
+      HOMIE_VERSION,
+      gateway.name,
+      listOf("org.homie.legacy-firmware"),
+      HOMIE_IMPLEMENTATION,
+      FIRMWARE_NAME,
+      firmwareVersion,
+      networkInterface?.inetAddresses?.asSequence()?.map { it.hostAddress }?.joinToString(),
+      getMacAddress(networkInterface)
     )
   }
 
@@ -68,8 +73,13 @@ class HomieDeviceFactory(
   }
 
   private fun toHomieNode(gatewayName: String, deviceConfig: DeviceConfig) =
-      HomieNode(gatewayName, deviceConfig.id, deviceConfig.name, deviceConfig.type.name.toLowerCase(),
-        getHomiePropertiesFor(gatewayName, deviceConfig.id, deviceConfig.type))
+    HomieNode(
+      gatewayName,
+      deviceConfig.id,
+      deviceConfig.name,
+      deviceConfig.type.name.toLowerCase(),
+      getHomiePropertiesFor(gatewayName, deviceConfig.id, deviceConfig.type)
+    )
 
   private fun getHomiePropertiesFor(deviceName: String, nodeId: String, type: DeviceType): Map<String, HomieProperty> {
     return type.properties.map { property ->

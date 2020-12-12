@@ -8,12 +8,12 @@ class HiveMqttClientFactory(private val mqttServerHost: String) : MqttClientFact
 
   override fun create(clientId: String, connectedListener: () -> Unit, disconnectedListener: () -> Unit): MqttClient {
     val hiveClient: Mqtt3BlockingClient = Mqtt3Client.builder()
-        .automaticReconnect().initialDelay(100, TimeUnit.MILLISECONDS).maxDelay(1, TimeUnit.SECONDS).applyAutomaticReconnect()
-        .identifier(clientId)
-        .addDisconnectedListener { disconnectedListener() }
-        .addConnectedListener { connectedListener() }
-        .serverHost(mqttServerHost)
-        .buildBlocking()
+      .automaticReconnect().initialDelay(100, TimeUnit.MILLISECONDS).maxDelay(1, TimeUnit.SECONDS).applyAutomaticReconnect()
+      .identifier(clientId)
+      .addDisconnectedListener { disconnectedListener() }
+      .addConnectedListener { connectedListener() }
+      .serverHost(mqttServerHost)
+      .buildBlocking()
 
     return HiveMqttClient(hiveClient)
   }

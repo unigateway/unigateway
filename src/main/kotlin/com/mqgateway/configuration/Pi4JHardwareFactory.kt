@@ -36,7 +36,7 @@ internal class Pi4JHardwareFactory {
 
   @Singleton
   fun systemInfoProvider(): SystemInfoProvider {
-      return Pi4JSystemInfoProvider()
+    return Pi4JSystemInfoProvider()
   }
 
   @Singleton

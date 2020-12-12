@@ -8,9 +8,9 @@ import com.pi4j.io.gpio.PinState
 
 class SimulatedGpioController : MqGpioController {
   override fun provisionDigitalOutputPin(provider: MqGpioProvider, pin: MqPin, name: String, defaultState: PinState):
-      SimulatedGpioPinDigitalOutput {
-    return SimulatedGpioPinDigitalOutput(defaultState)
-  }
+    SimulatedGpioPinDigitalOutput {
+      return SimulatedGpioPinDigitalOutput(defaultState)
+    }
 
   override fun provisionDigitalInputPin(
     provider: MqGpioProvider,

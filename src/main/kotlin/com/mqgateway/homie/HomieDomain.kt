@@ -144,7 +144,7 @@ data class HomieProperty(
   fun onChange(newValue: String) {
     LOGGER.debug { "$deviceId.$nodeId.$id changed to $newValue" }
     (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first."))
-        .publishSync(MqttMessage(baseTopic, newValue, 0, retained))
+      .publishSync(MqttMessage(baseTopic, newValue, 0, retained))
   }
 
   enum class DataType {

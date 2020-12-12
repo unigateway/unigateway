@@ -24,8 +24,10 @@ class Pi4JSerial(private val serial: Serial) : MqSerial {
   }
 
   override fun addListener(serialDataEventListener: MqSerialDataEventListener) {
-    serial.addListener(SerialDataEventListener { event ->
-      serialDataEventListener.dataReceived(Pi4JSerialDataEvent(event))
-    })
+    serial.addListener(
+      SerialDataEventListener { event ->
+        serialDataEventListener.dataReceived(Pi4JSerialDataEvent(event))
+      }
+    )
   }
 }

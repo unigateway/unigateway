@@ -31,7 +31,8 @@ class Pi4JGpioPinDigitalInput(private val gpioPinDigitalInput: GpioPinDigitalInp
     gpioPinDigitalInput.addListener(
       GpioPinListenerDigital { event ->
         listener.handleGpioPinDigitalStateChangeEvent(Pi4JGpioPinDigitalStateChangeEvent(event))
-      })
+      }
+    )
   }
 
   override fun setDebounce(debounce: Int) {

@@ -74,7 +74,7 @@ class ShutterDevice(
     if (currentPosition == null) {
       LOGGER.warn {
         "Current position in device $id is unknown. It is currently in state '$state'. " +
-            "It is assumed that initialization is running, so this command will be ignored."
+          "It is assumed that initialization is running, so this command will be ignored."
       }
       return
     }
