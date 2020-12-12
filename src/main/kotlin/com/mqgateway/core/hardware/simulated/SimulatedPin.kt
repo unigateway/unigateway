@@ -24,8 +24,13 @@ abstract class SimulatedGpioPinDigital(initialState: PinState? = null, pullResis
   protected var pinState: PinState? = initialState
   private val listeners: MutableList<MqGpioPinListenerDigital> = mutableListOf()
   private var pullResistance: PinPullResistance = PinPullResistance.OFF
+  var clock: Clock = Clock.systemDefaultZone()
+    set(value) {
+      field = value
+    }
 
   init {
+    this.clock = Clock.systemDefaultZone()
     setPullResistance(pullResistance)
   }
 
@@ -45,7 +50,7 @@ abstract class SimulatedGpioPinDigital(initialState: PinState? = null, pullResis
     }
   }
 
-  open fun shouldNotify(from: PinState?, to: PinState): Boolean = true
+  protected open fun shouldNotify(from: PinState?, to: PinState): Boolean = true
 
   fun high() {
     setState(PinState.HIGH)
@@ -70,11 +75,7 @@ abstract class SimulatedGpioPinDigital(initialState: PinState? = null, pullResis
 class SimulatedGpioPinDigitalInput(resistance: PinPullResistance) : MqGpioPinDigitalInput, SimulatedGpioPinDigital(null, resistance) {
 
   private val debounce: MutableMap<PinState, Int> = mutableMapOf()
-  var clock: Clock = Clock.systemDefaultZone()
-    set(value) {
-      field = value
-    }
-  var lastStateChangeTime: Instant? = null
+  private var lastStateChangeTime: Instant? = null
 
   override fun setDebounce(debounce: Int) {
     this.debounce[PinState.LOW] = debounce
@@ -87,7 +88,7 @@ class SimulatedGpioPinDigitalInput(resistance: PinPullResistance) : MqGpioPinDig
     val previousState = this.pinState
     super.setState(newState)
     if (previousState != newState) {
-      lastStateChangeTime = Instant.now()
+      lastStateChangeTime = Instant.now(clock)
     }
   }
 
@@ -95,7 +96,7 @@ class SimulatedGpioPinDigitalInput(resistance: PinPullResistance) : MqGpioPinDig
     if (lastStateChangeTime == null) {
       return true
     }
-    return lastStateChangeTime!!.plusMillis(debounce.getOrDefault(to, 0).toLong()).isBefore(Instant.now())
+    return !Instant.now(clock).isBefore(lastStateChangeTime!!.plusMillis(debounce.getOrDefault(to, 0).toLong()))
   }
 }
 

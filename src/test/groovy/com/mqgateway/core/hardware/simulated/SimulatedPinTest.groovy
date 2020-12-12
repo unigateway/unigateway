@@ -4,6 +4,7 @@ import com.mqgateway.core.hardware.MqGpioPinDigitalStateChangeEvent
 import com.pi4j.io.gpio.PinPullResistance
 import com.pi4j.io.gpio.PinState
 import java.time.Duration
+import java.time.Instant
 import spock.lang.Specification
 import spock.util.time.MutableClock
 
@@ -69,11 +70,11 @@ class SimulatedPinTest extends Specification {
     given:
     def stateUpdated = false
     SimulatedGpioPinDigitalInput pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
-    def clock = new MutableClock()
+    def clock = new MutableClock(Instant.now().plusMillis(10000))
     pin.clock = clock
     int debounceMs = 1000
     pin.setDebounce(debounceMs)
-    pin.addListener {stateUpdated = true}
+    pin.addListener {if (it.state == PinState.HIGH) stateUpdated = true }
 
     when:
     pin.setState(PinState.LOW)
@@ -82,5 +83,24 @@ class SimulatedPinTest extends Specification {
 
     then:
     !stateUpdated
+  }
+
+  def "should notify listener about state change if change was longer than debounce"() {
+    given:
+    def stateUpdated = false
+    SimulatedGpioPinDigitalInput pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
+    def clock = new MutableClock(Instant.now().plusMillis(10000))
+    pin.clock = clock
+    int debounceMs = 1000
+    pin.setDebounce(debounceMs)
+    pin.addListener {if (it.state == PinState.HIGH) stateUpdated = true }
+
+    when:
+    pin.setState(PinState.LOW)
+    clock.plus(Duration.ofMillis(1000))
+    pin.setState(PinState.HIGH)
+
+    then:
+    stateUpdated
   }
 }
