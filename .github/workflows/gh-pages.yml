@@ -1,0 +1,26 @@
+name: Publish docs via GitHub Pages
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '/docs/**'
+
+jobs:
+  build:
+    name: Deploy docs
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v1
+      - name: Build mkdocs Docker image
+        run: |
+          cd docs/docker
+          docker build -t mkdocs .
+      - name: Deploy docs to GitHub
+        run: |
+          cd $GITHUB_WORKSPACE
+          docker run --rm --name mkdocs \
+            -v $PWD:/doc \
+            mkdocs gh-deploy -f docs/mkdocs.yml
+

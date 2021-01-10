@@ -1,0 +1,27 @@
+site_name: MqGateway
+repo_name: "GitHub"
+repo_url: https://github.com/aetas/mqgateway/
+theme:
+  name: "material"
+nav:
+  - Start: 'index.md'
+  - User Guide:
+      - 'Introduction': 'user-guide/introduction.md'
+      - 'Quick Start': 'user-guide/quick-start.md'
+      - 'Integration': 'user-guide/integration.md'
+      - 'Naming convention': 'user-guide/naming-convention.md'
+      - 'Supported devices': 'user-guide/supported-devices.md'
+      - 'Configuration': 'user-guide/configuration.md'
+      - 'Communication': 'user-guide/communication.md'
+      - 'Logging': 'user-guide/logging.md'
+      - 'Troubleshooting': 'user-guide/troubleshooting.md'
+  - Hardware:
+      - 'Board layout': 'hardware/board-layout.md'
+      - 'Components': 'hardware/components.md'
+  - Advanced topics:
+      - 'Raw configuration': 'advanced/configuration-raw.md'
+markdown_extensions:
+  - admonition
+  - attr_list
+  - codehilite
+  - pymdownx.superfences
