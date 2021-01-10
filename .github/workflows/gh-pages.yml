@@ -20,6 +20,7 @@ jobs:
       - name: Deploy docs to GitHub
         run: |
           cd $GITHUB_WORKSPACE
+          git remote set-url origin https://$GITHUB_TOKEN@github.com/aetas/MqGateway.git
           docker run --rm --name mkdocs \
             -v $PWD:/doc \
             mkdocs gh-deploy -f docs/mkdocs.yml
