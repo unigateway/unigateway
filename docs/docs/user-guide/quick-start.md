@@ -19,7 +19,7 @@ Quick start guide shows how to connect a relay module and configure MqGateway to
 !!! warning 
     Make sure MqGateway is never connected to power supply and micro USB port at the same time. This will destroy the device and may damage your computer.
 
-// TODO some simple installation script to configure Armbian to enable I2C + serial and install MqGateway application on NanoPi Neo is needed
+// TODO some simple installation script to configure Armbian to enable I2C + serial and install MqGateway application on NanoPi Neo is needed 
 
 1. Connect to NanoPi NEO with SSH and run MqGateway installation script
    ```shell
