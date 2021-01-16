@@ -3,6 +3,16 @@ This is a list of devices currently supported by MqGateway. That means you can c
 
 All supported devices need to be compatible with 5V power supply.
 
+!!! danger
+    Electricity can be very harmful!    
+    Please do not connect anything to electricity yourself if you don't have enough knowledge, 
+    and you are not completely sure what you are doing.   
+    
+!!! warning
+    Information below has been provided as a pointer. I've tried to prepare it as accurately as I was able to. However, it may contain errors.
+    Always check the device manual and do not connect electrical wires if you are not absolutely sure you know what you're doing.
+    
+
 
 ### Digital devices
 
@@ -33,13 +43,23 @@ rooms:
 ```
 </details>
 
+??? example "Wiring"
+    Both solid-state (SSR) relay and electromechanical (EMR) relay module working with 5V power can be used. Relay should be controlled with LOW signal.  
+    Any digital wire can be used for communication: blue, blue-white, green, green-white.
+    
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | IN        |
+
 
 #### Switch button
 Switch button or push button.
 
 - configuration type: `SWITCH_BUTTON`
 - additional configuration:
-    - `debounceMs` [default: 0] - number of milliseconds for debounce (helps to avoid flickering)
+    - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
     - `longPressTimeMs` [default: 1000] - if switch button is pressed for longer then this value (in milliseconds) then "long press" event is sent from MqGateway 
     - `haComponent` [one of: **binary_sensor**, trigger, sensor] - type of the entity for Home Assistant MQTT discovery
 
@@ -60,14 +80,19 @@ rooms:
           type: SWITCH_BUTTON
           config:
             longPressTimeMs: 800
-            debounceMs: 50
+            debounceMs: 80
             haComponent: "sensor"
 ```
 </details>
 
+??? example "Wiring"
+    Any regular switch/push button can be used for that.  
+    Orange-white wire (GND) and one of the digital wires (blue, blue-white, green, green-white) should be used.
+
 
 #### Emulated switch
-Emulates switch button press with changing digital output from HIGH to LOW for 500ms and back to HIGH state. It is useful for controlling devices which has possibility to connect switch button (e.g. garage gate opener).
+Emulates switch button press with changing digital output from HIGH to LOW for 500ms and back to HIGH state. It is useful for controlling devices 
+which has possibility to connect switch button (e.g. garage gate opener).
 
 - configuration type: `EMULATED_SWITCH`
 - additional configuration: NONE
@@ -90,12 +115,28 @@ rooms:
 ```
 </details>
 
+??? example "Wiring"
+    Emulated switch is realized using electromechanical relay (EMR - the most common type). 
+    
+    Between MqGateway and the relay:
+    
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | IN        |
+    
+    
+    Between the relay and gate opener, use COM and NO on the relay. On the gate opener side - connect wires according to your gate opener manual 
+    for connecting wall switch button.
+
+
 #### Motion detector
 PIR Motion Sensor/Detector.
 
 - configuration type: `MOTION_DETECTOR`
 - additional configuration:
-    - `debounceMs` [default: 0] - number of milliseconds for debounce (helps to avoid flickering)
+    - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
 
 <details>
 <summary>Example configuration</summary>
@@ -117,6 +158,12 @@ rooms:
 ```
 </details>
 
+??? example "Wiring"
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | OUT       |
 
 #### Reed switch
 
@@ -124,7 +171,7 @@ A magnetic sensor which might be used to check if door or window is open/closed.
 
 - configuration type: `REED_SWITCH`
 - additional configuration:
-  - `debounceMs` [default: 0] - number of milliseconds for debounce (helps to avoid flickering)
+  - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
 
 <details>
 <summary>Example configuration</summary>
@@ -145,6 +192,11 @@ rooms:
               debounceMs: 100
 ```
 </details>
+
+??? example "Wiring"
+    Any reed switch can be used for that.  
+    Orange-white wire (GND) and one of the digital wires (blue, blue-white, green, green-white) should be used.
+
 
 #### Timer switch
 
@@ -171,9 +223,20 @@ rooms:
 ```
 </details>
 
+??? example "Wiring"
+    Both solid-state (SSR) relay and electromechanical (EMR) relay module working with 5V power can be used. Relay should be controlled with LOW signal.  
+    Any digital wire can be used for communication: blue, blue-white, green, green-white.
+    
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | IN        |
+
 #### Window shutter
 
-Window shutter/roller blind control. Replaces switch button control with 2-channels relay module. 
+Window shutter/roller blind control. Replaces the regular switch button control with 2-channels relay module. 
+Allows to fully open/close shutters and partial opening with percentage (e.g. 30% open). 
 
 - configuration type: `SHUTTER`
 - additional configuration:
@@ -210,18 +273,75 @@ rooms:
 ```
 </details>
 
+??? example "Wiring"
+    Window roller shutters are realized using 2-channel electromechanical (EMR) relay module (one relay for going up/down and 
+    another one relay for the stop/start). Relays should be controlled with LOW signal.
+    
+    Between MqGateway and the 2-channel relay module:
+    
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | IN1       |
+    | [any-digital](../hardware/wiring.md) | IN2       |
+    
+    Connect neutral wire and earth directly to the roller shutter wires.
+    Between relay module and roller shutter control:
+    
+    | RELAY 1 CONNECTOR    |                        |
+    |----------------------|------------------------|
+    | COM                  | Live wire (from grid)  |
+    | NO                   | Wire to Relay 2 COM    |
+    | NC                   | nothing                |    
+    
+    | RELAY 2 CONNECTOR    |                           |
+    |----------------------|---------------------------|
+    | COM                  | Wire from Relay 1 NO      |
+    | NO                   | Go up wire from shutter   |
+    | NC                   | Go down wire from shutter |
+
 
 ### Complex devices with RS485/UART Controller
 
-This group of devices requires RS485/UART controller on the side of the device for communication with MqGateway. This controller might be any microcontroller which is able to communicate through RS485 or UART with 5V.
+This group of devices requires RS485/UART controller on the side of the device for communication with MqGateway. This controller might be 
+any microcontroller which is able to communicate through RS485 or UART with 5V. Common choice is the Arduino Pro Mini board. 
+
+More about how to connect and use complex devices with RS485/UART controller can be used in [complex devices page](../hardware/complex-devices.md)  
+
+??? example "Wiring"
+    Wiring between MqGateway and RS485/UART controller is the same for all devices below, but depends on the type of connection.
+    For UART connection (without MAX485 on both sides)
+    
+    | WIRE COLOR               | CONTROLLER PIN | 
+    |--------------------------|----------------|
+    | orange-white (GND)       | GND            |
+    | orange (5V)              | VCC            |
+    | green-white (ask wire)   | GPIO 2         |
+    | green (ping wire)        | GPIO 7         |
+    | brown-white              | TX             |
+    | brown                    | RX             |
+    
+    
+    For RS485 connection (with MAX485 module on both sides):
+    
+    | WIRE COLOR               | CONTROLLER PIN | 
+    |--------------------------|----------------|
+    | orange-white (GND)       | GND            |
+    | orange (5V)              | VCC            |
+    | green-white (ask wire)   | GPIO 2         |
+    | green (ping wire)        | GPIO 7         |
+    | brown-white              | A              |
+    | brown                    | B              |
+
 
 #### BME280
 Temperature, humidity and barometric pressure sensor. Requires RS485/UART controller.
 
 - configuration type: `BME280`
 - wires: 
-  - to controller wire - used to ask controller for data
-  - from controller wire - used to send a ping from controller
+    - to controller wire - used to ask controller for data
+    - from controller wire - used to send a ping from controller
 - additional configuration:
     - `periodBetweenAskingForDataInSec` [default: 180] - time in seconds between asking controller to send another measurements
     - `acceptablePingPeriodInSec` [default: 60] - maximum time in seconds, between ping calls from the controller, after which sensor will be considered unavailable
@@ -252,8 +372,8 @@ Temperature and humidity sensor. Requires RS485/UART controller.
 
 - configuration type: `DHT22`
 - wires:
-  - to controller wire - used to ask controller for data
-  - from controller wire - used to send a ping from controller
+    - to controller wire - used to ask controller for data
+    - from controller wire - used to send a ping from controller
 - additional configuration:
   - `periodBetweenAskingForDataInSec` [default: 180] - time in seconds between asking controller to send another measurements
   - `acceptablePingPeriodInSec` [default: 60] - maximum time in seconds, between ping calls from the controller, after which sensor will be considered unavailable

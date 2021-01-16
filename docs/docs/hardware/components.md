@@ -1,6 +1,12 @@
 # Bill of materials
 
-// TODO complete descriptions ???
+This page lists all elements required to build MqGateway device on the PCB.
+PCB is prepared to work with one of the SOC:
+
+  - [Nano PI NEO](https://www.friendlyarm.com/index.php?route=product/product&product_id=132),
+  - Raspberry Pi 3 or 4.
+
+Theoretically software should work on both, with simple configuration change, but it has not been tested on Raspberry Pi. That is why currently it is advised to use NanoPi NEO.    
 
 ## Basic elements
 | NAME                                          | AMOUNT |
@@ -17,14 +23,14 @@
 | IDC10 Male Pin PCB Socket                     |   1    |
 | LD1117V33 Linear Voltage Regulator 3.3V       |   1    |
 | MAX485 module                                 |   1    |
-| LED for power???                              |   1    |
-| LED resistor    ???                           |   1    |
-| RGB LED for status ???                        |   1    |
-| LED resistor      ???                         |   1    |
-| LED resistor      ???                         |   1    |
-| LED resistor      ???                         |   1    |
-| Power switch button ???                       |   1    |
-| Case switch button  ???                       |   1    |
+| LED for power (resistance depends on used LED)|   1    |
+| LED resistor (resistance depends on used LED) |   1    |
+| 2-color LED for status                        |   1    |
+| LED resistor (resistance depends on used LED) |   1    |
+| LED resistor (resistance depends on used LED) |   1    |
+| LED resistor (resistance depends on used LED) |   1    |
+| Power switch button                           |   1    |
+| Case switch button                            |   1    |
 
 
 
@@ -39,7 +45,7 @@
 | Screw M2.5 30mm with nut                      |   4    |
 
 
-## Version with Raspberry Pi 3/4 (additional)
+## Version with Raspberry Pi 3/4 (not fully supported yet)
 
 | NAME                                          | AMOUNT |
 |-----------------------------------------------|:------:|

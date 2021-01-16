@@ -18,6 +18,11 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+function createDirectories {
+  echo "[MqGateway Installer] Prepare directories for MqGateway..."
+  [ ! -d "$MQGATEWAY_DIR" ] && mkdir -p $MQGATEWAY_DIR/logs && touch $LOGS_FILE
+}
+
 function configureNanoPiNeo {
   echo "[MqGateway Installer] Configuring hardware of NanoPi NEO..." |& tee -a "$LOGS_FILE"
   sed -i 's/overlays=.*/overlays=i2c0 uart1 usbhost1 usbhost2/' $ARMBIAN_CONFIG_FILE
@@ -35,11 +40,6 @@ function prepareWiringNP {
   ./build >> $LOGS_FILE 2>&1
   cd /opt || exit
   echo "[MqGateway Installer] WiringNP built finished" |& tee -a "$LOGS_FILE"
-}
-
-function createDirectories {
-  echo "[MqGateway Installer] Prepare directories for MqGateway..."  |& tee -a "$LOGS_FILE"
-  [ ! -d "$MQGATEWAY_DIR" ] && mkdir -p $MQGATEWAY_DIR/logs
 }
 
 function prepareBasicConfig {
@@ -75,9 +75,9 @@ function prepareService {
 
 echo "[MqGateway Installer] Installing MqGateway $MQGATEWAY_VERSION..."
 
+createDirectories
 configureNanoPiNeo
 prepareWiringNP
-createDirectories
 prepareBasicConfig
 installJava
 downloadMqGateway

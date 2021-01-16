@@ -10,8 +10,10 @@ There are two types of the configuration for MqGateway:
 ## Devices configuration
 
 Configures what and how smart devices are connected to MqGateway and MQTT broker connection.
-There is a [JSON schema file](https://raw.githubusercontent.com/aetas/mqgateway/master/src/main/resources/config.schema.json) for this configuration. 
-Use it with your favourite YAML editor (e.g. IntelliJ or VSCode) for autocompletion and instant validation.
+
+!!! hint
+    There is a [JSON schema file](https://raw.githubusercontent.com/aetas/mqgateway/master/src/main/resources/config.schema.json) for this configuration. 
+    Use it with your favourite YAML editor (e.g. IntelliJ or VSCode) for autocompletion and instant validation.
 
 
 ### Structure
@@ -48,10 +50,13 @@ You can change the path by specifying other path in environment variable `GATEWA
 export GATEWAY_CONFIGPATH="/opt/gateway-configuration.yaml"
 ```
 
-Remember to add this command to `~/.bashrc` if you want it to survive MqGateweay reboot.
+Remember to add this command to `~/.bashrc` if you want it to survive MqGateway reboot.
 
 
 ## System configuration
+
+Rarely needs adjustments. Configures stuff related to underlying hardware and features availability.
+
 
 | NAME                                     | DEFAULT               | DESCRIPTION                                                         |
 |------------------------------------------|-----------------------|---------------------------------------------------------------------|

@@ -16,13 +16,12 @@ Basic MqGateway allows you to connect:
 - up to 64 digital input/output devices (like relays or switch buttons) and
 - up to 16 complex devices using RS485 or UART communication.
 
-Connecting more devices is possible by using [MqGateway IO Expander board](io-expander-board.md).
-// TODO add page about IO Expander board
+Connecting more devices is possible by using [MqGateway I/O Expander board](../hardware/io-expander-board.md).
 
 List of supported devices can be found on [supported devices](supported-devices.md) page.
 
 MqGateway supports cheap modules which work with Arduino microcontrollers, including relay modules, buttons and temperature sensors. MqGateway works with wired sensors and controllers to avoid the problem with batteries and radio noise.
-Additionally, if you want to connect devices to MqGateway - you are not expected to know anything about programming. All you need to prepare is a [YAML configuration file](configuration.md#mqgateway-configuration-file).
+Additionally, if you want to connect devices to MqGateway - you are not expected to know anything about programming. All you need to prepare is a [YAML configuration file](configuration.md#devices-configuration).
 
 MqGateway is for you if you:
 
@@ -61,4 +60,5 @@ When wiring is ready then you need to [prepare configuration](configuration.md) 
 
 ## What's next?
 
+- [Hardware](../hardware/board-layout.md)
 - [Quick start](quick-start.md)

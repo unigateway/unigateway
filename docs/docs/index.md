@@ -14,10 +14,11 @@ Both MqGateway hardware and software are freely available under Open Source Lice
 
 Typical use case for MqGateway is a house with sensors and controllers distributed all around with wired connections. It is possible to plug in simple and inexpensive devices, like relay modules, PIR motion sensors or just plain wall switches into MqGateway to make fully capable home automation system.
 
-// TODO add a diagram with MqGateway, sensors MQTT broker and HA/OpenHab 
+![MqGateway diagram](user-guide/images/mqgateway-diagram.png)
 
 ## What's next?
 
 - [Introduction](user-guide/introduction.md)
 - [Quick start](user-guide/quick-start.md)
+- [Installation](user-guide/installation.md)
 - [Hardware](hardware/board-layout.md)

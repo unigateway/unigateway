@@ -1,0 +1,2 @@
+### Switch button doesn't work properly - sometimes it sends message multiple times even when pressed once
+Debounce value is too low. See [Switch button in supported devices section](supported-devices.md#switch-button) for details.
