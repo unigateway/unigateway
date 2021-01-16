@@ -1,0 +1,13 @@
+configVersion: "1.1"
+name: "TestGateway"
+mqttHostname: "192.168.1.52"
+rooms:
+  - name: "workshop"
+    points:
+      - name: "point with test relay"
+        portNumber: 1
+        devices:
+          - name: "test relay"
+            id: "my-relay"
+            wires: ["BLUE"]
+            type: RELAY

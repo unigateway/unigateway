@@ -1,0 +1,14 @@
+[Unit]
+Description=Aetas MqGateway Smart Home Solution
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /opt/mqgateway/start_gateway.sh
+WorkingDirectory=/opt/mqgateway
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Alias=mqgateway.service 
