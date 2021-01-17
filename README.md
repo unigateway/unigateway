@@ -24,7 +24,7 @@ Read more in [documentation](https://mqgateway.com).
 
 ## Installation
 
-See installation instructions in [the MqGateway documentation](https://mqgateway.com/user-guide/installation.md).
+See installation instructions in [the MqGateway documentation](https://mqgateway.com/user-guide/installation).
 
 ## Development
 
