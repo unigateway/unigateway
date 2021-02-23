@@ -6,7 +6,7 @@ MqGateway is gateway device for multiple wired electronic sensors and controller
 
 MqGateway has been created to support multi-device, fully wired solution. MqGateway supports MQTT Homie convention and provides easy integration with home automation software like OpenHab and Home Assistant.
 
-![MqGateway with IO/Expander](user-guide/images/cased-mqgateway-with-io-expander.jpg)
+![MqGateway with IO/Expander](user-guide/images/cased-mqgateway-with-io-expander-small.jpg)
 
 Both MqGateway hardware and software are freely available under Open Source Licenses.
 
