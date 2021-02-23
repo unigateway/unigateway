@@ -49,7 +49,7 @@ Look at [wiring](../hardware/wiring.md) in hardware section if you want to know 
 ## Wiring examples
 
 As mentioned earlier, common home automation system consists of multiple sensors distributed around the house. You need to connect those to home automation application which is running on a computer connected to home network.  
-A simple relay or temperature sensor modules (e.g. DTH22) do not have Wi-Fi or Ethernet port. Instead, they can be controller (or send information) with single digital wire. MqGateway will work as a proxy between those sensors and home automation application. For the communication layer it uses MQTT broker which is supported by most of the open home automation applications (including OpenHab and Home Assistant).
+A simple relay or temperature sensor modules (e.g. DTH22) do not have Wi-Fi or Ethernet port. Instead, they can be controlled (or send information) with single digital wire. MqGateway will work as a proxy between those sensors and home automation application. For the communication layer it uses MQTT broker which is supported by most of the open home automation applications (including OpenHab and Home Assistant).
 
 One example usage is when you have module of 4 relays controlling lights in your house. Then you need to use single RJ45 port of MqGateway. Orange and white-orange wires will power your relay module with 5V. Use blue, white-blue, green and white-green wires to control relay states.
 
