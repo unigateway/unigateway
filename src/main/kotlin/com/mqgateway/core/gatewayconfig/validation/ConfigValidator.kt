@@ -11,6 +11,8 @@ private val LOGGER = KotlinLogging.logger {}
 
 class ConfigValidator(private val yamlObjectMapper: ObjectMapper, private val validators: List<GatewayValidator>) {
 
+  // TODO add validation to port <= 16 when expander is disabled
+  // TODO add documentation about system configuration for enabling expander and GATEWAY_SYSTEM_COMPONENTS_MCP23017_PORTS default based on expander
   fun validateGateway(gateway: Gateway): ValidationResult {
 
     val validationFailureReasons = validators.flatMap { it.validate(gateway) }

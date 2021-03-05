@@ -20,10 +20,6 @@
       "description": "Unique name of Gateway",
       "type": "string"
     },
-    "destinationIpAddress": {
-      "description": "Address IP of Gateway to send configuration to (alternatively can be passed as parameter to run command) ",
-      "type": "string"
-    },
     "mqttHostname": {
       "description": "Address IP or hostname of MQTT server",
       "type": "string"
@@ -71,7 +67,7 @@
           "description": "Number of port in Gateway to which point is connected (1-16)",
           "type": "integer",
           "minimum": 1,
-          "maximum": 16
+          "maximum": 32
         },
         "devices": {
           "description": "List of devices connected to single point/cable",

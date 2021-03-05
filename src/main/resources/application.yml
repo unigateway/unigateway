@@ -14,9 +14,9 @@ gateway:
   system:
     network-adapter: eth0
     platform: NANOPI
+    expander:
+      enabled: false
     components:
-      mcp23017:
-        ports: ["20","21","22","23"]
       serial:
         enabled: true
         device: "/dev/ttyS1"
