@@ -29,9 +29,14 @@ import javax.inject.Singleton
 internal class ComponentsFactory {
 
   @Singleton
-  fun gatewayConfigLoader(@Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper, gatewayValidators: List<GatewayValidator>): ConfigLoader {
+  fun gatewayConfigLoader(
+    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
+    gatewaySystemProperties: GatewaySystemProperties,
+    gatewayValidators: List<GatewayValidator>
+  ): ConfigLoader {
+
     val yamlParser = YamlParser(yamlObjectMapper)
-    val configValidator = ConfigValidator(yamlObjectMapper, gatewayValidators)
+    val configValidator = ConfigValidator(yamlObjectMapper, gatewaySystemProperties, gatewayValidators)
     return ConfigLoader(yamlParser, configValidator)
   }
 

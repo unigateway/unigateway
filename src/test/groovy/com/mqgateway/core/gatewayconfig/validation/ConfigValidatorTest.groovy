@@ -1,6 +1,11 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mqgateway.configuration.GatewaySystemProperties
+import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration
+import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration
+import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Serial
+import com.mqgateway.configuration.GatewaySystemProperties.ExpanderConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
@@ -18,11 +23,14 @@ class ConfigValidatorTest extends Specification {
 		new WireUsageValidator(),
 		new SerialDeviceWiresValidator(),
 		new SerialDeviceAdditionalConfigValidator(),
-		new ShutterAdditionalConfigValidator()
+		new ShutterAdditionalConfigValidator(),
+    new PortNumbersRangeValidator(),
 	]
 
+  GatewaySystemProperties systemProperties = prepareSystemProperties()
+
 	@Subject
-	ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), validators)
+	ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
 	int nextPortNumber = 1
 
 	def "should validation failed when there are more than one device with the same id"() {
@@ -214,6 +222,54 @@ class ConfigValidatorTest extends Specification {
 		reasons*.device.id == ["withWrongInternalDevice"]
 	}
 
+  def "should fail validation of device when using port number higher than 16 and I/O expander is disabled"() {
+    given:
+    GatewaySystemProperties systemProperties = prepareSystemProperties(new ExpanderConfiguration(false))
+    ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
+    def gateway = gatewayWith(
+      roomWith(
+        pointWith([someDevice()].toArray() as DeviceConfig[], 17, "Point with too high port number 1"),
+        pointWith([someDevice()].toArray() as DeviceConfig[], 16, "Point with proper port number"),
+        pointWith([someDevice()].toArray() as DeviceConfig[], 18, "Point with too high port number 2")
+      )
+    )
+
+    when:
+    def result = configValidator.validateGateway(gateway)
+
+    then:
+    !result.succeeded
+    result.failureReasons*.class.every {  it == PortNumbersRangeValidator.PortNumberOutOfRange }
+
+    List<PortNumbersRangeValidator.PortNumberOutOfRange> reasons =
+      result.failureReasons.findAll { it instanceof PortNumbersRangeValidator.PortNumberOutOfRange }
+    reasons*.point.name.toSet() == ["Point with too high port number 1", "Point with too high port number 2"].toSet()
+  }
+
+  def "should fail validation of device when using port number higher than 32 and I/O expander is enabled"() {
+    given:
+    GatewaySystemProperties systemProperties = prepareSystemProperties(new ExpanderConfiguration(true))
+    ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
+    def gateway = gatewayWith(
+      roomWith(
+        pointWith([someDevice()].toArray() as DeviceConfig[], 16, "Point with proper port number 1"),
+        pointWith([someDevice()].toArray() as DeviceConfig[], 32, "Point with proper port number 2"),
+        pointWith([someDevice()].toArray() as DeviceConfig[], 33, "Point with too high port number")
+      )
+    )
+
+    when:
+    def result = configValidator.validateGateway(gateway)
+
+    then:
+    !result.succeeded
+    result.failureReasons*.class.every {  it == PortNumbersRangeValidator.PortNumberOutOfRange }
+
+    List<PortNumbersRangeValidator.PortNumberOutOfRange> reasons =
+      result.failureReasons.findAll { it instanceof PortNumbersRangeValidator.PortNumberOutOfRange }
+    reasons*.point.name == ["Point with too high port number"]
+  }
+
 	static Gateway gatewayWith(Room[] rooms) {
 		new Gateway("1.0", "some gateway", "192.168.1.123", rooms.toList())
 	}
@@ -237,4 +293,20 @@ class ConfigValidatorTest extends Specification {
 
 		new DeviceConfig(id, name, type, wires, config, internalDevices)
 	}
+
+  static GatewaySystemProperties prepareSystemProperties(ExpanderConfiguration expanderConfiguration = null,
+                                                         Mcp23017Configuration mcp23017Configuration = null,
+                                                         Serial serialConfiguration = null) {
+
+    def defaultExpanderConfiguration = new ExpanderConfiguration(false)
+    def defaultMcp23017Configuration = new Mcp23017Configuration(expanderConfiguration ?: defaultExpanderConfiguration, null)
+    def defaultSerialConfiguration = new Serial(true, "/dev/serial", 9600)
+
+    def componentsConfiguration = new ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration,
+                                                              serialConfiguration ?: defaultSerialConfiguration)
+    return new GatewaySystemProperties("eth0",
+                                       GatewaySystemProperties.SystemPlatform.SIMULATED,
+                                       expanderConfiguration ?: defaultExpanderConfiguration,
+                                       componentsConfiguration)
+  }
 }

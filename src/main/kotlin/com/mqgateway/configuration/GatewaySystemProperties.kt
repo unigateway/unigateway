@@ -33,7 +33,6 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
   @ConfigurationProperties("components")
   data class ComponentsConfiguration @ConfigurationInject constructor(
     @NotNull val mcp23017: Mcp23017Configuration,
-    @NotNull val expander: ExpanderConfiguration,
     @NotNull val serial: Serial
   ) {
 
@@ -45,9 +44,6 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
 
       fun getPorts(): List<String> = ports ?: expander.getMcp23017DefaultPorts()
     }
-
-
-
 
     @ConfigurationProperties("serial")
     data class Serial @ConfigurationInject constructor(
