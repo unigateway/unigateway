@@ -2,6 +2,7 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
@@ -9,11 +10,15 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class ConfigValidator(private val yamlObjectMapper: ObjectMapper, private val validators: List<GatewayValidator>) {
+class ConfigValidator(
+  private val yamlObjectMapper: ObjectMapper,
+  private val gatewaySystemProperties: GatewaySystemProperties,
+  private val validators: List<GatewayValidator>
+) {
 
   fun validateGateway(gateway: Gateway): ValidationResult {
 
-    val validationFailureReasons = validators.flatMap { it.validate(gateway) }
+    val validationFailureReasons = validators.flatMap { it.validate(gateway, gatewaySystemProperties) }
 
     return if (validationFailureReasons.isEmpty()) {
       ValidationResult(true)

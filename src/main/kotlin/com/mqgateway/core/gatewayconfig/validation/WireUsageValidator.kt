@@ -1,12 +1,13 @@
 package com.mqgateway.core.gatewayconfig.validation
 
+import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.Gateway
 import javax.inject.Singleton
 
 @Singleton
 class WireUsageValidator : GatewayValidator {
-  override fun validate(gateway: Gateway): List<ValidationFailureReason> {
+  override fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
     val deviceConfigs: List<List<DeviceConfig>> = gateway.rooms.flatMap { room -> room.points }.map { it.devices }
 
     return deviceConfigs

@@ -23,7 +23,7 @@ internal class Pi4JHardwareFactory {
 
   @Singleton
   fun mcpExpanders(gatewaySystemProperties: GatewaySystemProperties): MqMcpExpanders {
-    val mcpPorts: List<Int> = gatewaySystemProperties.components.mcp23017.ports.map { it.toInt(16) }
+    val mcpPorts: List<Int> = gatewaySystemProperties.components.mcp23017.getPorts().map { it.toInt(16) }
     return Pi4JMcpExpanders(I2CBus.BUS_0, mcpPorts)
   }
 

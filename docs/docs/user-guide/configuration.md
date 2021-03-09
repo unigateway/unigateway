@@ -62,8 +62,9 @@ Rarely needs adjustments. Configures stuff related to underlying hardware and fe
 |------------------------------------------|-----------------------|---------------------------------------------------------------------|
 | GATEWAY_CONFIGPATH                       | gateway.yaml          | path to the devices configuration file                              |
 | GATEWAY_SYSTEM_NETWORKADAPTER            | eth0                  | name of the ethernet interface used to connect to MQTT              |
-| GATEWAY_SYSTEM_PLATFORM                  | NANOPI                | name of the controller used on MqGateway (currently on only NANOPI) |
-| GATEWAY_SYSTEM_COMPONENTS_MCP23017_PORTS | ["20","21","22","23"] | I2C addresses of MCP23017 expanders                                 |
+| GATEWAY_SYSTEM_PLATFORM                  | NANOPI                | name of the controller used on MqGateway (currently only NANOPI)    |
+| GATEWAY_SYSTEM_EXPANDER_ENABLED          | false                 | should be "true" if you have _I/O Expander board_ connected         |
+| GATEWAY_SYSTEM_COMPONENTS_MCP23017_PORTS | (depends on I/O expander enablement) | I2C addresses of MCP23017 expanders                  |
 | GATEWAY_SYSTEM_SERIAL_ENABLED            | true                  | serial communication enabled/disabled                               |
 | GATEWAY_SYSTEM_SERIAL_DEVICE             | /dev/ttyS1            | path to device used for serial communication                        |
 | GATEWAY_SYSTEM_SERIAL_BAUD               | 9600                  | baud used for serial communication                                  |

@@ -1,5 +1,6 @@
 package com.mqgateway.core.gatewayconfig.validation
 
+import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
 import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
 import com.mqgateway.core.gatewayconfig.DeviceConfig
@@ -9,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SerialDeviceAdditionalConfigValidator : GatewayValidator {
-  override fun validate(gateway: Gateway): List<ValidationFailureReason> {
+  override fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
     val devices: List<DeviceConfig> = gateway.rooms
       .flatMap { room -> room.points }
       .flatMap { point -> point.devices }
