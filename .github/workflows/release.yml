@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run Docker with Mosquitto for tests
-        run: docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto
+        run: docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:1.6.13
       - name: Read version from tag
         id: version_tag_name
         run: |
