@@ -28,6 +28,50 @@ See installation instructions in [the MqGateway documentation](https://mqgateway
 
 ## Development
 
+### Environment
+
+- JDK 1.8
+- MQTT broker (e.g. Mosquitto 1.6.13)
+
+You can run Mosquitto as Docker with command:
+```shell
+docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:1.6.13
+```
+
+### Code style
+
+Production code is written in Kotlin.
+Code style and rules are guarded by [Ktlint](https://github.com/pinterest/ktlint).
+
+There is [.editorconfig](.editorconfig) file prepared with the formatting rules for [IntelliJ](https://www.jetbrains.com/idea/) 
+which is the recommended IDE for the project.
+
+### Running tests
+
+Remember to have Mosquitto running.
+
+```shell
+./gradlew check
+```
+
+Tests use [Spock Framework](https://spockframework.org/) and are written in Groovy. 
+
+### Running locally
+
+It is possible to run the MqGateway on x86/x64 (non-ARM) machine with simulated I/O.
+To do that, set environment variables and run with Gradle:
+```shell
+export GATEWAY_SYSTEM_PLATFORM=SIMULATED
+export GATEWAY_CONFIG_PATH=src/test/resources/example.gateway.yaml # optional - will use example gateway configuration from tests
+
+./gradlew run  
+```
+
+Example configuration expects the MQTT broker to be running locally. You can run it with Docker:
+```shell
+docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:1.6.13
+```
+
 ### Releasing
 
 Create Git tag starting with "v" to release a new version (e.g. "v2.3.0").
