@@ -21,6 +21,7 @@ nav:
       - 'Wiring': 'hardware/wiring.md'
       - 'I/O Expander Board': 'hardware/io-expander-board.md'
       - 'Complex devices': 'hardware/complex-devices.md'
+      - 'Case': 'hardware/case.md'
 markdown_extensions:
   - admonition
   - attr_list
