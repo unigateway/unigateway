@@ -28,3 +28,6 @@ markdown_extensions:
   - codehilite
   - pymdownx.superfences
   - pymdownx.details
+google_analytics:
+  - UA-155443535-3
+  - auto
