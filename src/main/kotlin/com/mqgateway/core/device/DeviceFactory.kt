@@ -118,11 +118,52 @@ class DeviceFactory(
           deviceConfig.config.getValue("fullCloseTimeMs").toLong()
         )
       }
+      DeviceType.GATE -> {
+        if (listOf("stopButton", "openButton", "closeButton").all { deviceConfig.internalDevices.containsKey(it) } ) {
+          createThreeButtonGateDevice(portNumber, deviceConfig)
+        } else if (deviceConfig.internalDevices.containsKey("actionButton")) {
+          createSingleButtonGateDevice(portNumber, deviceConfig)
+        } else {
+          throw UnexpectedConfigurationException(deviceConfig.id,
+            "Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)")
+        }
+      }
       DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should never be specified as a separate device in configuration")
       DeviceType.SCT013 -> TODO()
     }
   }
 
+  private fun createThreeButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig): ThreeButtonsGateDevice {
+    val stopButton = create(portNumber, deviceConfig.internalDevices.getValue("stopButton")) as EmulatedSwitchButtonDevice
+    val openButton = create(portNumber, deviceConfig.internalDevices.getValue("openButton")) as EmulatedSwitchButtonDevice
+    val closeButton = create(portNumber, deviceConfig.internalDevices.getValue("closeButton")) as EmulatedSwitchButtonDevice
+    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
+    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
+    return ThreeButtonsGateDevice(
+      deviceConfig.id,
+      stopButton,
+      openButton,
+      closeButton,
+      openReedSwitch,
+      closedReedSwitch
+    )
+  }
+
+  private fun createSingleButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig): SingleButtonsGateDevice {
+    val actionButton = create(portNumber, deviceConfig.internalDevices.getValue("actionButton")) as EmulatedSwitchButtonDevice
+    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
+    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
+    return SingleButtonsGateDevice(
+      deviceConfig.id,
+      actionButton,
+      openReedSwitch,
+      closedReedSwitch
+    )
+  }
+
   class SerialDisabledException(deviceId: String) :
     RuntimeException("Serial-related device '$deviceId' creation has been started, but serial is disabled in configuration")
+
+  class UnexpectedConfigurationException(deviceId: String, message: String) :
+    RuntimeException("Unexpected configuration found for device '$deviceId': $message")
 }

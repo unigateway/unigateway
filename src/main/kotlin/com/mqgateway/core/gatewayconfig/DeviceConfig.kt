@@ -95,6 +95,9 @@ enum class DeviceType(vararg val properties: Property) {
   SHUTTER(
     Property(POSITION, INTEGER, "0:100", settable = true, retained = true, unit = PERCENT),
     Property(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
+  ),
+  GATE(
+    Property(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
   );
 
   fun isSerialDevice() = this in SERIAL_BASED_DEVICES

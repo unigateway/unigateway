@@ -380,6 +380,40 @@ class HomeAssistantConverterTest extends Specification {
 		assertHomeAssistantDevice(cover, gateway, shutterDevice)
 	}
 
+	def "should convert MqGateway GATE to HA cover"() {
+		given:
+		def gateDevice = new DeviceConfig("myGate", "Test gate device", DeviceType.GATE, [], [:],
+											 [
+												 stopButton  : new DeviceConfig("stopButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
+												 openButton  : new DeviceConfig("openButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:]),
+												 closeButton  : new DeviceConfig("closeButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE], [:], [:]),
+												 closedReedSwitch: new DeviceConfig("closedReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+											 ])
+		Gateway gateway = gateway([room([point("point name", 3, [gateDevice])])])
+
+		when:
+		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
+
+		then:
+		components.size() == 1
+		HomeAssistantCover cover = components.first() as HomeAssistantCover
+		cover.componentType == HomeAssistantComponentType.COVER
+		cover.deviceClass == HomeAssistantCover.DeviceClass.GATE
+		cover.name == "Test gate device"
+		cover.properties.nodeId == "gtwName"
+		cover.properties.objectId == "myGate"
+		cover.stateTopic == expectedStateTopic(gateway.name, gateDevice.id, STATE.toString())
+		cover.commandTopic == expectedCommandTopic(gateway.name, gateDevice.id, STATE.toString())
+		cover.retain == false
+		cover.payloadClose == "CLOSE"
+		cover.payloadOpen == "OPEN"
+		cover.payloadStop == "STOP"
+		cover.stateOpen == "OPEN"
+		cover.stateClosed == "CLOSED"
+		cover.uniqueId == gateway.name + "_" + gateDevice.id
+		assertHomeAssistantDevice(cover, gateway, gateDevice)
+	}
+
 	def "should convert MqGateway device to 6 HA sensors"() {
 		given:
 		Gateway gateway = gateway([])

@@ -15,7 +15,17 @@ abstract class Device(val id: String, val type: DeviceType) {
   private var initialized: Boolean = false
 
   /**
-   * Add listeners before calling this method
+   * Set device property to the specific value on the initialization
+   * This should be done before initDevice()
+   */
+  open fun initProperty(propertyId: String, value: String) {
+    LOGGER.info { "Initializing of property '$id.$propertyId' not implemented." }
+    // To be implemented by devices extending this class if needed
+  }
+
+  /**
+   * Starts device specific initialization by calling initDevice()
+   * WARNING: Add listeners before calling this method
    */
   @JvmOverloads
   fun init(listenersExpected: Boolean = true) {
@@ -28,6 +38,10 @@ abstract class Device(val id: String, val type: DeviceType) {
     LOGGER.trace { "Initializing device(id=$id) finished" }
   }
 
+  /**
+   * Device specific initialization
+   * This initialization should happen after initProperty()
+   */
   protected open fun initDevice() {
     // To be implemented by devices extending this class if needed
   }
@@ -49,11 +63,6 @@ abstract class Device(val id: String, val type: DeviceType) {
 
   open fun change(propertyId: String, newValue: String) {
     throw UnsupportedStateChangeException(id, propertyId)
-  }
-
-  open fun initProperty(propertyId: String, value: String) {
-    LOGGER.info { "Initializing of property '$id.$propertyId' not implemented." }
-    // To be implemented by devices extending this class if needed
   }
 }
 

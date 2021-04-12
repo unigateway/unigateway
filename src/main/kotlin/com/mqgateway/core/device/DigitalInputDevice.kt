@@ -15,13 +15,20 @@ abstract class DigitalInputDevice(
   protected val debounceMs: Int
 ) : Device(id, type) {
 
-  override fun initDevice() {
-    super.initDevice()
-    digitalInputPin.addListener { event ->
-      val newState = if (event.getState() == PinState.HIGH) { highStateValue() } else { lowStateValue() }
+  protected var state: PinState = digitalInputPin.getState()
+    private set(value) {
+      field = value
+      val newState = if (value == PinState.HIGH) { highStateValue() } else { lowStateValue() }
       LOGGER.info { "Device($id) state changed to $newState" }
       notify(updatableProperty(), newState)
       additionalOnStateChanged(newState)
+    }
+
+  override fun initDevice() {
+    super.initDevice()
+    state = digitalInputPin.getState()
+    digitalInputPin.addListener { event ->
+      state = event.getState()
     }
   }
 

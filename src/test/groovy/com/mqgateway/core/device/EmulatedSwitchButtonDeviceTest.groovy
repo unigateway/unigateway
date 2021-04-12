@@ -12,7 +12,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 	def pin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 
 	@Subject
-	EmulatedSwitchButtonDevice emulatedSwitch = new EmulatedSwitchButtonDevice("emulatedSwitch1", pin)
+	EmulatedSwitchButtonDevice emulatedSwitch = new EmulatedSwitchButtonDevice("emulatedSwitch1", pin, 10)
 
 	@Unroll
 	def "should change pin state to LOW when requested to be PRESSED"() {

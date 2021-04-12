@@ -5,6 +5,7 @@ import com.mqgateway.core.device.MotionSensorDevice
 import com.mqgateway.core.device.ReedSwitchDevice
 import com.mqgateway.core.device.RelayDevice
 import com.mqgateway.core.device.ShutterDevice
+import com.mqgateway.core.device.SingleButtonsGateDevice
 import com.mqgateway.core.device.SwitchButtonDevice
 import com.mqgateway.core.device.serial.PeriodicSerialInputDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfig
@@ -12,6 +13,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.LIGHT
+import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantCover.DeviceClass
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_LONG_PRESS
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_LONG_RELEASE
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_SHORT_PRESS
@@ -264,7 +266,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
             homieCommandTopic(gateway, device, DevicePropertyType.STATE),
             homieStateTopic(gateway, device.id, DevicePropertyType.POSITION),
             homieCommandTopic(gateway, device, DevicePropertyType.POSITION),
-            HomeAssistantCover.DeviceClass.SHUTTER,
+            DeviceClass.SHUTTER,
             ShutterDevice.Command.OPEN.name,
             ShutterDevice.Command.CLOSE.name,
             ShutterDevice.Command.STOP.name,
@@ -276,6 +278,25 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           )
         )
         DeviceType.TIMER_SWITCH -> listOf()
+        DeviceType.GATE -> listOf(
+          HomeAssistantCover(
+            basicProperties,
+            device.name,
+            homieStateTopic(gateway, device.id, DevicePropertyType.STATE),
+            homieCommandTopic(gateway, device, DevicePropertyType.STATE),
+            null,
+            null,
+            if (device.config[DEVICE_CONFIG_HA_DEVICE_CLASS].equals(DeviceClass.GATE.name, true)) DeviceClass.GATE else DeviceClass.GARAGE,
+            SingleButtonsGateDevice.Command.OPEN.name,
+            SingleButtonsGateDevice.Command.CLOSE.name,
+            SingleButtonsGateDevice.Command.STOP.name,
+            null,
+            null,
+            SingleButtonsGateDevice.State.OPEN.name,
+            SingleButtonsGateDevice.State.CLOSED.name,
+            false
+          )
+        )
         DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should not be configured as a device")
       }
 
@@ -350,5 +371,6 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
 
   companion object {
     const val DEVICE_CONFIG_HA_COMPONENT: String = "haComponent"
+    const val DEVICE_CONFIG_HA_DEVICE_CLASS: String = "haDeviceClass"
   }
 }

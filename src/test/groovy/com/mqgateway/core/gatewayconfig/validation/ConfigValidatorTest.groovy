@@ -18,12 +18,13 @@ import spock.lang.Subject
 class ConfigValidatorTest extends Specification {
 
 	def validators = [
-	    new UniqueDeviceIdsValidator(),
+    new UniqueDeviceIdsValidator(),
 		new UniquePortNumbersForPointsValidator(),
 		new WireUsageValidator(),
 		new SerialDeviceWiresValidator(),
 		new SerialDeviceAdditionalConfigValidator(),
 		new ShutterAdditionalConfigValidator(),
+		new GateAdditionalConfigValidator(),
     new PortNumbersRangeValidator(),
 	]
 
@@ -219,6 +220,57 @@ class ConfigValidatorTest extends Specification {
 
 		List<ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice> reasons =
 			result.failureReasons.findAll { it instanceof ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
+		reasons*.device.id == ["withWrongInternalDevice"]
+	}
+
+	def "should fail validation of gate device when button internal device is not of type EMULATED_BUTTON"() {
+		given:
+		def devices = [
+			someDevice("withWrongInternalDevice", "gate1", DeviceType.GATE, [],
+					   [:],
+					   [
+						   stopButton: someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
+						   closeButton: someDevice("1", "closeRelay", DeviceType.RELAY, [WireColor.BLUE]),
+						   openButton: someDevice("1", "openEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE]),
+					   ]),
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+
+		List<GateAdditionalConfigValidator.UnexpectedGateInternalDevice> reasons =
+			result.failureReasons.findAll { it instanceof GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+		reasons*.device.id == ["withWrongInternalDevice"]
+	}
+
+	def "should fail validation of gate device when reed switch internal device is not of type REED_SWITCH"() {
+		given:
+		def devices = [
+			someDevice("withWrongInternalDevice", "gate1", DeviceType.GATE, [],
+					   [:],
+					   [
+						   stopButton: someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
+						   closeButton: someDevice("1", "closeEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
+						   openButton: someDevice("1", "openEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE]),
+               closedReedSwitch: someDevice("1", "emulatedSwitchInsteadOfReedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.GREEN]),
+					   ]),
+		]
+		def gateway = gatewayWith(roomWith(pointWith(*devices)))
+
+		when:
+		def result = configValidator.validateGateway(gateway)
+
+		then:
+		!result.succeeded
+		result.failureReasons*.class.every {  it == GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+
+		List<GateAdditionalConfigValidator.UnexpectedGateInternalDevice> reasons =
+			result.failureReasons.findAll { it instanceof GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
 		reasons*.device.id == ["withWrongInternalDevice"]
 	}
 

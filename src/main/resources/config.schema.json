@@ -138,26 +138,51 @@
             "MOTION_DETECTOR",
             "EMULATED_SWITCH",
             "TIMER_SWITCH",
-            "SHUTTER"
+            "SHUTTER",
+            "GATE"
           ]
         }
       },
-      "if": {
-        "properties": {
-          "type": {"const": "SHUTTER"}
-        }
-      },
-      "then": {
-        "required": ["internalDevices", "config"],
-        "properties": {
-          "internalDevices": {
-            "$ref": "#/definitions/shutterInternalDevices"
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "SHUTTER"}
+            },
+            "required": ["type"]
           },
-          "config": {
-            "$ref": "#/definitions/shutterConfig"
+          "then": {
+            "required": ["internalDevices", "config"],
+            "properties": {
+              "internalDevices": {
+                "$ref": "#/definitions/shutterInternalDevices"
+              },
+              "config": {
+                "$ref": "#/definitions/shutterConfig"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "GATE"}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["internalDevices"],
+            "properties": {
+              "internalDevices": {
+                "$ref": "#/definitions/gateInternalDevices"
+              },
+              "config": {
+                "$ref": "#/definitions/gateConfig"
+              }
+            }
           }
         }
-      }
+      ]
     },
     "shutterInternalDevices": {
       "description": "Relays configuration for SHUTTER device",
@@ -184,6 +209,55 @@
         "fullCloseTimeMs": {
           "type": "integer",
           "exclusiveMinimum": 0
+        }
+      }
+    },
+    "gateInternalDevices": {
+      "description": "Internal devices configuration for GATE device",
+      "type": "object",
+      "oneOf": [{
+        "required": ["stopButton", "openButton", "closeButton"],
+        "properties": {
+          "stopButton": {
+            "$ref": "#/definitions/device"
+          },
+          "openButton": {
+            "$ref": "#/definitions/device"
+          },
+          "closeButton": {
+            "$ref": "#/definitions/device"
+          },
+          "openReedSwitch": {
+            "$ref": "#/definitions/device"
+          },
+          "closedReedSwitch": {
+            "$ref": "#/definitions/device"
+          }
+        }
+      },
+      {
+        "required": ["actionButton"],
+        "properties": {
+          "actionButton": {
+            "$ref": "#/definitions/device"
+          },
+          "openReedSwitch": {
+            "$ref": "#/definitions/device"
+          },
+          "closedReedSwitch": {
+            "$ref": "#/definitions/device"
+          }
+        }
+      }]
+    },
+    "gateConfig": {
+      "description": "Additional configuration for GATE device",
+      "type": "object",
+      "properties": {
+        "haDeviceClass": {
+          "description": "Home Assistant device class for cover device - 'gate' and 'garage' are supported. Defaults to 'garage'.",
+          "type": "string",
+          "enum": ["gate", "garage"]
         }
       }
     }
