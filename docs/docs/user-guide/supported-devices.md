@@ -239,6 +239,9 @@ Window shutter/roller blind control. Replaces the regular switch button control 
 Allows to fully open/close shutters and partial opening with percentage (e.g. 30% open). 
 
 - configuration type: `SHUTTER`
+- internal devices:
+    - `stopRelay` ([relay](#relay-module)) [required]
+    - `upDownRelay` ([relay](#relay-module)) [required]
 - additional configuration:
     - `fullCloseTimeMs` [required] - time in milliseconds for the shutter from being fully open to fully closed
     - `fullOpenTimeMs` [required] - time in milliseconds for the shutter from being fully closed to fully open
@@ -300,6 +303,132 @@ rooms:
     | COM                  | Wire from Relay 1 NO      |
     | NO                   | Go up wire from shutter   |
     | NC                   | Go down wire from shutter |
+
+
+#### Gate / garage door
+
+Garage door or gate (fence) control. Use connection in the gate opener usually used to connect control buttons. It may be eiter single
+button (_actionButton_) or three separate buttons (_openButton, closeButton and stopButton_).
+It is possible to add open and closed reed switches for better control and position information (_openReedSwitch and closedReedSwitch_).
+Emulated switches are realized with relay modules.
+
+- configuration type: `GATE`
+- internal devices:
+    - `actionButton` ([emulated switch](#emulated-switch)) - either this one or `stopButton`, `openButton` and `closeButton` are required
+    - `stopButton` ([emulated switch](#emulated-switch)) - either this one or `actionButton` is required
+    - `openButton` ([emulated switch](#emulated-switch)) - either this one or `actionButton` is required
+    - `closeButton` ([emulated switch](#emulated-switch)) - either this one or `actionButton` is required
+    - `openReedSwitch` ([reed switch](#reed-switch))
+    - `closedReedSwitch` ([reed switch](#reed-switch))
+- additional configuration:
+    - `haDeviceClass` [one of: **garage**, gate]  - [device class of cover](https://www.home-assistant.io/integrations/cover/#device-class) for Home Assistant MQTT discovery
+
+<details>
+<summary>Example configuration</summary>
+
+```yaml
+rooms:
+  - name: "garage"
+    points:
+      - name: "garage door"
+        portNumber: 4
+        devices:
+          - name: "Right garage door"  # single button device example
+            id: "right_garage_door"
+            type: GATE
+            internalDevices:
+              actionButton:
+                name: "Right garage door action button"
+                id: "right_garage_door_action_button"
+                wires: ["BLUE_WHITE"]
+                type: EMULATED_SWITCH
+              openReedSwitch: # optional
+                name: "Right garage door open reed switch"
+                id: "right_garage_door_open_reed"
+                wires: [ "GREEN" ]
+                type: REED_SWITCH
+                config:
+                  debounceMs: 50
+              closedReedSwitch: # optional
+                name: "Right garage door closed reed switch"
+                id: "right_garage_door_closed_reed"
+                wires: [ "GREEN_WHITE" ]
+                type: REED_SWITCH
+                config:
+                  debounceMs: 50
+  - name: outdoor
+    points:
+      - name: "Entrance gate"
+        portNumber: 20
+        devices:
+          - name: "Entrance gate" # three buttons device example
+            id: "entrance_gate"
+            type: GATE
+            internalDevices:
+              openButton:
+                name: "Open - entrance gate"
+                id: "entrance_gate_open"
+                wires: [ "BLUE_WHITE" ]
+                type: EMULATED_SWITCH
+              closeButton:
+                name: "Close - entrance gate"
+                id: "entrance_gate_close"
+                wires: [ "BLUE" ]
+                type: EMULATED_SWITCH
+              stopButton:
+                name: "Stop - entrance gate"
+                id: "entrance_gate_stop"
+                wires: [ "GREEN" ]
+                type: EMULATED_SWITCH
+              closedReedSwitch: # optional, can be also replaced with openReedSwitch
+                name: "Closed gate reed switch"
+                id: "entrance_gate_closed_reed_switch"
+                wires: ["GREEN_WHITE"]
+                type: REED_SWITCH
+```
+</details>
+
+??? example "Wiring"
+Single button gate (garage door) is realized using electromechanical (EMR) relay module to emulate push button.
+Relay should be controlled with LOW signal.
+
+    Between MqGateway and the relay module:
+    
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | IN        |
+
+    Relay module should be connected with COM and NO to the gate (garage door) opener in the place for connecting push button.  
+    
+    | RELAY CONNECTOR      |                        |
+    |----------------------|------------------------|
+    | COM                  | button connection wire |
+    | NO                   | button connection wire |
+    | NC                   | nothing                |
+
+    Three buttons gate (garage door) is realized using 3-channel electromechanical (EMR) relay module to emulate push button for each function. 
+    Relay module should be controlled with LOW signal.
+    
+    Between MqGateway and the 3-channel relay module:
+    
+    | WIRE COLOR                           | RELAY PIN |
+    |--------------------------------------|-----------|
+    | orange (5V)                          | VCC / D+  |
+    | orange-white (GND)                   | GND / D-  |
+    | [any-digital](../hardware/wiring.md) | IN1       |
+    | [any-digital](../hardware/wiring.md) | IN2       |
+    | [any-digital](../hardware/wiring.md) | IN3       |
+
+    Each relay module should be connected with COM and NO to the gate (garage door) opener in the place for connecting push button.
+    This connection needs to be repeated for each relay - button.
+    
+    | RELAY 1,2,3 CONNECTOR |                        |
+    |-----------------------|------------------------|
+    | COM                   | button connection wire |
+    | NO                    | button connection wire |
+    | NC                    | nothing                |
 
 
 ### Complex devices with RS485/UART Controller
