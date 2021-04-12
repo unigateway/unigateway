@@ -40,7 +40,7 @@ class ReedSwitchDeviceTest extends Specification {
 		pin.setState(PinState.HIGH)
 
 		then:
-		listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("reed1", "state", "OPEN")
+		listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("reed1", "state", "OPEN")
 	}
 
 	def "should notify listeners on reed switch closed (LOW state)"() {

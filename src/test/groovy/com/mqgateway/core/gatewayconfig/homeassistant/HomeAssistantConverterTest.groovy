@@ -398,7 +398,7 @@ class HomeAssistantConverterTest extends Specification {
 		components.size() == 1
 		HomeAssistantCover cover = components.first() as HomeAssistantCover
 		cover.componentType == HomeAssistantComponentType.COVER
-		cover.deviceClass == HomeAssistantCover.DeviceClass.GATE
+		cover.deviceClass == HomeAssistantCover.DeviceClass.GARAGE
 		cover.name == "Test gate device"
 		cover.properties.nodeId == "gtwName"
 		cover.properties.objectId == "myGate"

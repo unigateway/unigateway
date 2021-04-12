@@ -40,7 +40,7 @@ class MotionSensorDeviceTest extends Specification {
 		pin.setState(PinState.HIGH)
 
 		then:
-    listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("device1", "state", "ON")
+    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "ON")
 	}
 
 	def "should notify listeners on motion stopped (LOW state)"() {

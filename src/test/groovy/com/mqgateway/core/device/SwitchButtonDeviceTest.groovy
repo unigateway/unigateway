@@ -39,7 +39,7 @@ class SwitchButtonDeviceTest extends Specification {
 		pin.setState(PinState.LOW)
 
 		then:
-    listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("button1", "state", "PRESSED")
+    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("button1", "state", "PRESSED")
 	}
 
 	def "should notify listeners on switch button released (HIGH state)"() {

@@ -119,13 +119,15 @@ class DeviceFactory(
         )
       }
       DeviceType.GATE -> {
-        if (listOf("stopButton", "openButton", "closeButton").all { deviceConfig.internalDevices.containsKey(it) } ) {
+        if (listOf("stopButton", "openButton", "closeButton").all { deviceConfig.internalDevices.containsKey(it) }) {
           createThreeButtonGateDevice(portNumber, deviceConfig)
         } else if (deviceConfig.internalDevices.containsKey("actionButton")) {
           createSingleButtonGateDevice(portNumber, deviceConfig)
         } else {
-          throw UnexpectedConfigurationException(deviceConfig.id,
-            "Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)")
+          throw UnexpectedConfigurationException(
+            deviceConfig.id,
+            "Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)"
+          )
         }
       }
       DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should never be specified as a separate device in configuration")

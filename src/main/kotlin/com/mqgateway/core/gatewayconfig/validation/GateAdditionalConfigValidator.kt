@@ -16,7 +16,7 @@ class GateAdditionalConfigValidator : GatewayValidator {
 
     return gates.flatMap { gate ->
       internalDeviceWithUnexpectedType(gate, BUTTON_NAMES, DeviceType.EMULATED_SWITCH) +
-          internalDeviceWithUnexpectedType(gate, REED_SWITCHES_NAMES, DeviceType.REED_SWITCH)
+        internalDeviceWithUnexpectedType(gate, REED_SWITCHES_NAMES, DeviceType.REED_SWITCH)
     }
   }
 
