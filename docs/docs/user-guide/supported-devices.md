@@ -385,12 +385,14 @@ rooms:
                 id: "entrance_gate_closed_reed_switch"
                 wires: ["GREEN_WHITE"]
                 type: REED_SWITCH
+        config:
+          haDeviceClass: gate # "garage" by default
 ```
 </details>
 
 ??? example "Wiring"
-Single button gate (garage door) is realized using electromechanical (EMR) relay module to emulate push button.
-Relay should be controlled with LOW signal.
+    Single button gate (garage door) is realized using electromechanical (EMR) relay module to emulate push button.
+    Relay should be controlled with LOW signal.
 
     Between MqGateway and the relay module:
     
