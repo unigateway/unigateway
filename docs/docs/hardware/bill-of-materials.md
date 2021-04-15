@@ -8,7 +8,12 @@ PCB is prepared to work with one of the SOC:
 
 Theoretically software should work on both, with simple configuration change, but it has not been tested on Raspberry Pi. That is why currently it is advised to use NanoPi NEO.    
 
-## Basic elements
+## Mainboard
+
+Components for [MqGateway Mainboard](board-layout.md).
+
+
+### Basic elements
 | NAME                                          | AMOUNT |
 |-----------------------------------------------|:------:|
 | DC Power Jack Plug Socket 2.1/5.5             |   1    |
@@ -23,7 +28,7 @@ Theoretically software should work on both, with simple configuration change, bu
 | IDC10 Male Pin PCB Socket                     |   1    |
 | LD1117V33 Linear Voltage Regulator 3.3V       |   1    |
 | MAX485 module                                 |   1    |
-| LED for power (resistance depends on used LED)|   1    |
+| LED for power                                 |   1    |
 | LED resistor (resistance depends on used LED) |   1    |
 | 2-color LED for status                        |   1    |
 | LED resistor (resistance depends on used LED) |   1    |
@@ -34,7 +39,7 @@ Theoretically software should work on both, with simple configuration change, bu
 
 
 
-## Version with Nano Pi Neo (additional)
+### Version with Nano Pi Neo (additional)
 
 | NAME                                          | AMOUNT |
 |-----------------------------------------------|:------:|
@@ -45,7 +50,7 @@ Theoretically software should work on both, with simple configuration change, bu
 | Screw M2.5 30mm with nut                      |   4    |
 
 
-## Version with Raspberry Pi 3/4 (not fully supported yet)
+### Version with Raspberry Pi 3/4 (not fully supported yet)
 
 | NAME                                          | AMOUNT |
 |-----------------------------------------------|:------:|
@@ -56,3 +61,25 @@ Theoretically software should work on both, with simple configuration change, bu
 | Screw with nut ????                           |   4    |
 
 
+## I/O Expander Board
+
+Components for [MqGateway I/O Expander Board](io-expander-board.md).
+
+
+| NAME                                          | AMOUNT |
+|-----------------------------------------------|:------:|
+| DC Power Jack Plug Socket 2.1/5.5             |   1    |
+| MCP23017                                      |   4    |
+| DIP28 Socket                                  |   4    |
+| Screw Terminal 2-pin                          |   4    |
+| RJ45 Ethernet Socket 2x8 Ports                |   1    |
+| Pin header 2x2                                |   1    |
+| Pin jumper                                    |   1    |
+| IDC10 Male Pin PCB Socket                     |   2    |
+| Terminal Block connector 4-pin (pitch 3.5mm)  |   1    |
+| LED for power                                 |   1    |
+| LED resistor (resistance depends on used LED) |   1    |
+| LED for CHECK                                 |   1    |
+| LED resistor (resistance depends on used LED) |   1    |
+| Slide switch (pitch 3mm)                      |   3    |
+| LM2596 DC-DC Step down converter              |   1    | 

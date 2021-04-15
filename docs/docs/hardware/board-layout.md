@@ -34,6 +34,6 @@ An additional board which adds more input/output ports and make possible to use 
 
 ## What's next?
 
-- [See used components](components.md)
+- [See used components](bill-of-materials.md)
 - [Quick start](../user-guide/quick-start.md)
 - [Software installation](../user-guide/installation.md)
