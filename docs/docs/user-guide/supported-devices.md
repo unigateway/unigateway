@@ -17,10 +17,11 @@ All supported devices need to be compatible with 5V power supply.
 ### Digital devices
 
 #### Relay module
-Relay module which allows turning on/off electrical devices and lights. Controlled with LOW signal.
+Relay module which allows turning on/off electrical devices and lights. Controlled with LOW signal by default.
 
 - configuration type: `RELAY`
 - additional configuration:
+    - `triggerLevel` [one of: **LOW**, HIGH] - The signal LEVEL which triggers the relay and closes the circuit
     - `haComponent` [one of: **switch**, light] - type of the entity for Home Assistant MQTT discovery
   
 <details>
@@ -39,6 +40,7 @@ rooms:
       wires: ["BLUE"]
       type: RELAY
       config:
+        triggerLevel: "HIGH"
         haComponent: "light"
 ```
 </details>
@@ -137,6 +139,7 @@ PIR Motion Sensor/Detector.
 - configuration type: `MOTION_DETECTOR`
 - additional configuration:
     - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
+    - `motionSignalLevel` [one of: **HIGH**, LOW] - The signal LEVEL which means that motion has been detected
 
 <details>
 <summary>Example configuration</summary>
@@ -155,6 +158,7 @@ rooms:
             type: MOTION_DETECTOR
             config:
               debounceMs: 100
+              motionSignalLevel: LOW
 ```
 </details>
 

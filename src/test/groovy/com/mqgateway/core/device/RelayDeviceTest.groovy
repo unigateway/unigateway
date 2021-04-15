@@ -12,7 +12,7 @@ class RelayDeviceTest extends Specification {
 	def pin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
 
 	@Subject
-	RelayDevice relay = new RelayDevice("relay1", pin)
+	RelayDevice relay = new RelayDevice("relay1", pin, PinState.LOW)
 
 	@Unroll
 	def "should change pin state when requested to #newState"(String newState, PinState pinState) {
@@ -53,4 +53,19 @@ class RelayDeviceTest extends Specification {
 		then:
     listenerStub.receivedUpdates.first() == new UpdateListenerStub.Update("relay1", "state", "OFF")
 	}
+
+  @Unroll
+  def "should change pin state when requested to #newState when trigger level is set to LOW"(String newState, PinState pinState) {
+    when:
+    RelayDevice relayHigh = new RelayDevice("relay1", pin, PinState.HIGH)
+    relayHigh.change("state", newState)
+
+    then:
+    pin.getState() == pinState
+
+    where:
+    newState || pinState
+    "OFF"    || PinState.LOW
+    "ON"     || PinState.HIGH
+  }
 }

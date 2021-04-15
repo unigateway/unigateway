@@ -12,7 +12,7 @@ class MotionSensorDeviceTest extends Specification {
 	def pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
 
 	@Subject
-	MotionSensorDevice device = new MotionSensorDevice("device1", pin, 0)
+	MotionSensorDevice device = new MotionSensorDevice("device1", pin, 0, PinState.HIGH)
 
   void setup() {
     // when sensor will be connected it will keep LOW state when no motion
@@ -21,7 +21,7 @@ class MotionSensorDeviceTest extends Specification {
 
   def "should set debounce on pin during initialization"() {
     given:
-    MotionSensorDevice deviceWithDebounce = new MotionSensorDevice("device1", pin, 300)
+    MotionSensorDevice deviceWithDebounce = new MotionSensorDevice("device1", pin, 300, PinState.HIGH)
 
     when:
 		deviceWithDebounce.init()
@@ -56,4 +56,18 @@ class MotionSensorDeviceTest extends Specification {
 		then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "OFF")
 	}
+
+  def "should notify about motion when state is LOW when motionSignalLevel is set to LOW"() {
+    given:
+    MotionSensorDevice motionSensorWithLowOnMotion = new MotionSensorDevice("deviceLow", pin, 0, PinState.LOW)
+    def listenerStub = new UpdateListenerStub()
+    motionSensorWithLowOnMotion.addListener(listenerStub)
+    motionSensorWithLowOnMotion.init()
+
+    when:
+    pin.setState(PinState.LOW)
+
+    then:
+    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("deviceLow", "state", "ON")
+  }
 }

@@ -14,10 +14,10 @@ import spock.util.time.MutableClock
 class ShutterDeviceTest extends Specification {
 
 	def stopPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
-	RelayDevice stopRelay = new RelayDevice("stopRelay", stopPin)
+	RelayDevice stopRelay = new RelayDevice("stopRelay", stopPin, PinState.LOW)
 
 	def upDownPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
-	RelayDevice upDownRelay = new RelayDevice("upDownRelay", upDownPin)
+	RelayDevice upDownRelay = new RelayDevice("upDownRelay", upDownPin, PinState.LOW)
 
 	static int FULL_OPEN_MS = 2000
 	static int FULL_CLOSE_MS = 1000

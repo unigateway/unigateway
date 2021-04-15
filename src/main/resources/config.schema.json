@@ -147,6 +147,36 @@
         {
           "if": {
             "properties": {
+              "type": {"const": "RELAY"}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "config": {
+                "$ref": "#/definitions/relayConfig"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "MOTION_DETECTOR"}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "config": {
+                "$ref": "#/definitions/motionDetectorConfig"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
               "type": {"const": "SHUTTER"}
             },
             "required": ["type"]
@@ -258,6 +288,36 @@
           "description": "Home Assistant device class for cover device - 'gate' and 'garage' are supported. Defaults to 'garage'.",
           "type": "string",
           "enum": ["gate", "garage"]
+        }
+      }
+    },
+    "motionDetectorConfig": {
+      "description": "Additional configuration for MOTION_DETECTOR device",
+      "type": "object",
+      "properties": {
+        "motionSignalLevel": {
+          "description": "The signal LEVEL which means that motion has been detected (default HIGH)",
+          "type": "string",
+          "enum": ["HIGH", "LOW"],
+          "default": "HIGH"
+        },
+        "debounceMs": {
+          "description": "Debounce time in milliseconds to filter flickering (default: 50)",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        }
+      }
+    },
+    "relayConfig": {
+      "description": "Additional configuration for RELAY device",
+      "type": "object",
+      "properties": {
+        "triggerLevel": {
+          "description": "The signal LEVEL which triggers the relay (default LOW)",
+          "type": "string",
+          "enum": ["HIGH", "LOW"],
+          "default": "LOW"
         }
       }
     }

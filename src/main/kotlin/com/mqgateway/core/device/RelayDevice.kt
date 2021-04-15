@@ -10,14 +10,14 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class RelayDevice(id: String, pin: MqGpioPinDigitalOutput) : DigitalOutputDevice(id, DeviceType.RELAY, pin) {
+class RelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val triggerLevel: PinState) : DigitalOutputDevice(id, DeviceType.RELAY, pin) {
 
   fun changeState(newState: RelayState) {
     if (newState == CLOSED) {
-      pin.setState(RELAY_CLOSED_STATE)
+      pin.setState(closedState())
       notify(STATE, STATE_ON)
     } else {
-      pin.setState(RELAY_OPEN_STATE)
+      pin.setState(openState())
       notify(STATE, STATE_OFF)
     }
   }
@@ -31,13 +31,17 @@ class RelayDevice(id: String, pin: MqGpioPinDigitalOutput) : DigitalOutputDevice
     }
   }
 
+  private fun closedState(): PinState = triggerLevel
+  private fun openState(): PinState = PinState.getInverseState(closedState())!!
+
   enum class RelayState {
     OPEN, CLOSED
   }
 
   companion object {
-    val RELAY_CLOSED_STATE = PinState.LOW
-    val RELAY_OPEN_STATE = PinState.getInverseState(RELAY_CLOSED_STATE)!!
+    const val CONFIG_TRIGGER_LEVEL_KEY = "triggerLevel"
+    val CONFIG_TRIGGER_LEVEL_DEFAULT = PinState.LOW
+
     const val STATE_ON = "ON"
     const val STATE_OFF = "OFF"
   }

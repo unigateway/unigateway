@@ -13,6 +13,7 @@ import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import com.pi4j.io.gpio.PinState
 import java.time.Duration
 
 class DeviceFactory(
@@ -38,8 +39,10 @@ class DeviceFactory(
 
     return when (deviceConfig.type) {
       DeviceType.RELAY -> {
+        val triggerLevel =
+          deviceConfig.config[RelayDevice.CONFIG_TRIGGER_LEVEL_KEY]?.let { PinState.valueOf(it) } ?: RelayDevice.CONFIG_TRIGGER_LEVEL_DEFAULT
         val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        RelayDevice(deviceConfig.id, pin)
+        RelayDevice(deviceConfig.id, pin, triggerLevel)
       }
       DeviceType.SWITCH_BUTTON -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
@@ -56,7 +59,9 @@ class DeviceFactory(
       DeviceType.MOTION_DETECTOR -> {
         val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
         val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
-        MotionSensorDevice(deviceConfig.id, pin, debounceMs)
+        val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
+        val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
+        MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
       }
       DeviceType.BME280 -> {
 
