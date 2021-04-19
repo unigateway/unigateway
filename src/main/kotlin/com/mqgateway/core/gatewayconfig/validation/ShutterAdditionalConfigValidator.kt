@@ -12,12 +12,14 @@ class ShutterAdditionalConfigValidator : GatewayValidator {
     val shutters: List<DeviceConfig> = gateway.rooms
       .flatMap { room -> room.points }
       .flatMap { point -> point.devices }
-      .filter { device -> device.type in listOf(DeviceType.SHUTTER) }
+      .filter { device -> device.type == DeviceType.SHUTTER }
 
     return shutters.filter { shutter ->
-      shutter.internalDevices.values.any { internalDevice ->
-        internalDevice.type != DeviceType.RELAY
-      }
+      shutter.internalDevices.values
+        .map { it.dereferenceIfNeeded(gateway) }
+        .any { internalDevice ->
+          internalDevice.type != DeviceType.RELAY
+        }
     }.map { NonRelayShutterInternalDevice(it) }
   }
 

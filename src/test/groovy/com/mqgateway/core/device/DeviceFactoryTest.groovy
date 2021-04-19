@@ -225,6 +225,40 @@ class DeviceFactoryTest extends Specification {
 		device.type == DeviceType.GATE
 	}
 
+	def "should create device with internal devices referencing to other devices"() {
+		given:
+    def reedSwitchConfig = new DeviceConfig("closedReedSwitch", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+    def deviceConfig = new DeviceConfig("gateWithReferencedReedSwitch", "Test gate device", DeviceType.GATE, [], [:],
+                    [
+                      actionButton    : new DeviceConfig("actionButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
+                      closedReedSwitch: new DeviceConfig("closedReedSwitchReference", "reedSwitchReference", DeviceType.REFERENCE, [], [:], [:], "closedReedSwitch")
+                    ])
+		Gateway gateway = gateway([room([point("point name", 15, [deviceConfig]), point("another point", 12, [reedSwitchConfig])])])
+
+		when:
+		def devices = deviceFactory.createAll(gateway)
+
+		then:
+		def device = devices.find {it instanceof SingleButtonsGateDevice}
+		device.id == "gateWithReferencedReedSwitch"
+		device.type == DeviceType.GATE
+	}
+
+    def "should create each device only once when it is referenced"() {
+    def reedSwitchConfig = new DeviceConfig("closedReedSwitch", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+    def referenceDeviceConfig = new DeviceConfig("referenceDevice", "Reference device", DeviceType.REFERENCE, [], [:], [:], "closedReedSwitch")
+    Gateway gateway = gateway([room([point("point name", 15, [referenceDeviceConfig]), point("another point", 12, [reedSwitchConfig])])])
+
+    when:
+    def createdDevices = deviceFactory.createAll(gateway)
+
+    then:
+    def devices = createdDevices.findAll {it.type != DeviceType.MQGATEWAY }
+    devices.size() == 1
+    devices[0].type == DeviceType.REED_SWITCH
+    devices[0].id == "closedReedSwitch"
+  }
+
 	def "should create MqGateway as a device"() {
 		given:
 		Gateway gateway = gateway([])

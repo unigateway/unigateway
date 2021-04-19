@@ -462,6 +462,46 @@ class HomeAssistantConverterTest extends Specification {
 		ipAddress.uniqueId == gateway.name + "_" + gateway.name + "_IP_ADDRESS"
 	}
 
+  def "should convert MqGateway REFERENCE device to HA device"() {
+    given:
+    def reedSwitchDevice = new DeviceConfig("reedSwitch1", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE])
+    def referenceDevice = new DeviceConfig("referenceToReedSwitch", "reference to reed switch", DeviceType.REFERENCE, [], [:], [:], "reedSwitch1")
+
+    Gateway gateway = gateway([room([point("point name", 3, [referenceDevice]), point("point 2", 2, [reedSwitchDevice])])])
+
+    when:
+    def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 2
+    def reedSwitchComponent = components.find { it.uniqueId() == gateway.name + "_" + reedSwitchDevice.id } as HomeAssistantBinarySensor
+
+    reedSwitchComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
+    reedSwitchComponent.name == "Referenced reed switch"
+    reedSwitchComponent.properties.nodeId == "gtwName"
+    reedSwitchComponent.properties.objectId == "reedSwitch1"
+    reedSwitchComponent.stateTopic == expectedStateTopic(gateway.name, reedSwitchDevice.id, STATE.toString())
+    reedSwitchComponent.payloadOn == "OPEN"
+    reedSwitchComponent.payloadOff == "CLOSED"
+    reedSwitchComponent.deviceClass == HomeAssistantBinarySensor.DeviceClass.OPENING
+    reedSwitchComponent.uniqueId == gateway.name + "_" + reedSwitchDevice.id
+    assertHomeAssistantDevice(reedSwitchComponent, gateway, reedSwitchDevice)
+
+    def referenceComponent = components.find { it.uniqueId() == gateway.name + "_" + referenceDevice.id } as HomeAssistantBinarySensor
+    referenceComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
+    referenceComponent.name == "Referenced reed switch"
+    referenceComponent.properties.nodeId == "gtwName"
+    referenceComponent.properties.objectId == "referenceToReedSwitch"
+    referenceComponent.stateTopic == expectedStateTopic(gateway.name, reedSwitchDevice.id, STATE.toString())
+    referenceComponent.payloadOn == "OPEN"
+    referenceComponent.payloadOff == "CLOSED"
+    referenceComponent.deviceClass == HomeAssistantBinarySensor.DeviceClass.OPENING
+    referenceComponent.uniqueId == gateway.name + "_" + referenceDevice.id
+    assertHomeAssistantDevice(referenceComponent, gateway, referenceDevice)
+
+
+  }
+
 	private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, Gateway gateway, DeviceConfig deviceConfig) {
 		assert haComponent.properties.device.firmwareVersion == firmwareVersion
 		assert haComponent.properties.device.identifiers == [gateway.name + "_" + deviceConfig.id]

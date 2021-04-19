@@ -24,14 +24,30 @@ import kotlinx.serialization.Serializable
 import com.mqgateway.core.gatewayconfig.DeviceProperty as Property
 
 @Serializable
-data class DeviceConfig(
+data class DeviceConfig
+@JvmOverloads constructor(
   val id: String,
   val name: String,
   val type: DeviceType,
   val wires: List<WireColor> = emptyList(),
   val config: Map<String, String> = emptyMap(),
-  val internalDevices: Map<String, DeviceConfig> = emptyMap()
-)
+  val internalDevices: Map<String, DeviceConfig> = emptyMap(),
+  val referencedDeviceId: String? = null,
+) {
+
+  fun dereferenceIfNeeded(gateway: Gateway): DeviceConfig {
+    if (type != DeviceType.REFERENCE) {
+      return this
+    }
+    if (referencedDeviceId == null) {
+      throw UnexpectedDeviceConfigurationException(id, "Missing 'referenceDeviceId' configuration")
+    }
+    return gateway.deviceById(referencedDeviceId).dereferenceIfNeeded(gateway)
+  }
+
+  class UnexpectedDeviceConfigurationException(deviceId: String, message: String) :
+    RuntimeException("Unexpected configuration found for device '$deviceId': $message")
+}
 
 data class DeviceProperty(
   val type: DevicePropertyType,
@@ -53,6 +69,7 @@ enum class DeviceType(vararg val properties: Property) {
     Property(UPTIME, INTEGER, null, retained = true, unit = SECOND),
     Property(IP_ADDRESS, STRING, null, retained = true)
   ),
+  REFERENCE,
   RELAY(
     Property(STATE, ENUM, "ON,OFF", settable = true, retained = true)
   ),

@@ -97,19 +97,23 @@
             "internalDevices",
             "type"
           ]
+        },
+        {
+          "required": [
+            "name",
+            "id",
+            "referencedDeviceId",
+            "type"
+          ]
         }
       ],
       "properties": {
         "name": {
-          "description": "Name of the device",
-          "type": "string",
-          "maxLength": 64
+          "$ref": "#/definitions/deviceName"
         },
         "id": {
           "description": "Unique identifier for the device across all devices on this Gateway",
-          "type": "string",
-          "pattern": "^[^\\s]*$",
-          "maxLength": 32
+          "$ref": "#/definitions/deviceId"
         },
         "wires": {
           "description": "List of wires to which device is connected",
@@ -127,23 +131,38 @@
           }
         },
         "type": {
-          "description": "Type of device",
-          "enum": [
-            "RELAY",
-            "SWITCH_BUTTON",
-            "REED_SWITCH",
-            "BME280",
-            "SCT013",
-            "DHT22",
-            "MOTION_DETECTOR",
-            "EMULATED_SWITCH",
-            "TIMER_SWITCH",
-            "SHUTTER",
-            "GATE"
-          ]
+          "$ref": "#/definitions/deviceType"
         }
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "REFERENCE"}
+            },
+            "required": ["name","id","type"]
+          },
+          "then": {
+            "additionalProperties": false,
+            "required": ["referencedDeviceId"],
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/deviceName"
+              },
+              "id": {
+                "description": "Unique identifier for the device across all devices on this Gateway",
+                "$ref": "#/definitions/deviceId"
+              },
+              "type": {
+                "$ref": "#/definitions/deviceType"
+              },
+              "referencedDeviceId": {
+                "$ref": "#/definitions/deviceId",
+                "description": "Identifier of the referenced device on this Gateway"
+              }
+            }
+          }
+        },
         {
           "if": {
             "properties": {
@@ -320,6 +339,33 @@
           "default": "LOW"
         }
       }
+    },
+    "deviceId": {
+      "type": "string",
+      "pattern": "^[^\\s]*$",
+      "maxLength": 32
+    },
+    "deviceName": {
+      "description": "Name of the device",
+      "type": "string",
+      "maxLength": 64
+    },
+    "deviceType": {
+      "description": "Type of device",
+      "enum": [
+        "REFERENCE",
+        "RELAY",
+        "SWITCH_BUTTON",
+        "REED_SWITCH",
+        "BME280",
+        "SCT013",
+        "DHT22",
+        "MOTION_DETECTOR",
+        "EMULATED_SWITCH",
+        "TIMER_SWITCH",
+        "SHUTTER",
+        "GATE"
+      ]
     }
   }
 }

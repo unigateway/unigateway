@@ -14,7 +14,7 @@ class SerialDeviceAdditionalConfigValidator : GatewayValidator {
     val devices: List<DeviceConfig> = gateway.rooms
       .flatMap { room -> room.points }
       .flatMap { point -> point.devices }
-      .filter { device -> device.type in listOf(DeviceType.BME280) }
+      .filter { device -> device.type in listOf(DeviceType.BME280, DeviceType.DHT22) }
 
     val incorrectPeriodBetweenAskingForData = devices.filter { device ->
       val periodBetweenAsk = device.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong()

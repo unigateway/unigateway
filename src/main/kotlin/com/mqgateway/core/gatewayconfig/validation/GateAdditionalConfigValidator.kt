@@ -15,22 +15,26 @@ class GateAdditionalConfigValidator : GatewayValidator {
       .filter { device -> device.type in listOf(DeviceType.GATE) }
 
     return gates.flatMap { gate ->
-      internalDeviceWithUnexpectedType(gate, BUTTON_NAMES, DeviceType.EMULATED_SWITCH) +
-        internalDeviceWithUnexpectedType(gate, REED_SWITCHES_NAMES, DeviceType.REED_SWITCH)
+      internalDeviceWithUnexpectedType(gate, BUTTON_NAMES, DeviceType.EMULATED_SWITCH, gateway) +
+        internalDeviceWithUnexpectedType(gate, REED_SWITCHES_NAMES, DeviceType.REED_SWITCH, gateway)
     }
   }
 
   private fun internalDeviceWithUnexpectedType(
     gateDevice: DeviceConfig,
     internalDevicesNamesToCheck: List<String>,
-    expectedType: DeviceType
+    expectedType: DeviceType,
+    gateway: Gateway
   ): List<UnexpectedGateInternalDevice> {
 
-    return gateDevice.internalDevices.filter { internalDevice ->
-      internalDevice.key in internalDevicesNamesToCheck && internalDevice.value.type != expectedType
-    }.map { internalDevice ->
-      UnexpectedGateInternalDevice(gateDevice, internalDevice.key, expectedType)
-    }
+    return gateDevice.internalDevices
+      .mapValues { deviceConfig ->
+        deviceConfig.value.dereferenceIfNeeded(gateway)
+      }.filter { internalDevice ->
+        internalDevice.key in internalDevicesNamesToCheck && internalDevice.value.type != expectedType
+      }.map { internalDevice ->
+        UnexpectedGateInternalDevice(gateDevice, internalDevice.key, expectedType)
+      }
   }
 
   class UnexpectedGateInternalDevice(

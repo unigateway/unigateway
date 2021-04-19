@@ -230,6 +230,70 @@ class JsonSchemaValidationTest extends Specification {
     validationMessages[0].type == "enum"
   }
 
+  def "should accept 'referencedDeviceId' when device is of type REFERENCE"() {
+    given:
+    def device = """
+    - id: "someReference"
+      name: "Some reference"
+      type: REFERENCE
+      referencedDeviceId: "otherDevice"
+		""".stripIndent()
+    println device
+    def configWithDevice = configWithDevice(device)
+    checkYamlCorrectness(configWithDevice)
+
+    when:
+    Set<ValidationMessage> validationMessages = validateAgainstJsonSchema(configWithDevice)
+
+    then:
+    validationMessages.isEmpty()
+  }
+
+  def "should fail validation when config specifies device REFERENCE but it is missing 'referencedDeviceId' field"() {
+    given:
+    def device = """
+    - id: "someReference"
+      name: "Some reference"
+      type: REFERENCE
+		""".stripIndent()
+    println device
+    def configWithDevice = configWithDevice(device)
+    checkYamlCorrectness(configWithDevice)
+
+    when:
+    Set<ValidationMessage> validationMessages = validateAgainstJsonSchema(configWithDevice)
+
+    then:
+    validationMessages.any {
+      it.path == "\$.rooms[0].points[0].devices[0]" &&
+        it.arguments[0] == "referencedDeviceId" &&
+        it.type == "required"
+    }
+  }
+
+  def "should fail validation when device REFERENCE has 'config' field"() {
+    given:
+    def device = """
+    - id: "someReference"
+      name: "Some reference"
+      type: REFERENCE
+      referencedDeviceId: "some-dev-1"
+      config:
+        debounceMs: 500
+		""".stripIndent()
+    println device
+    def configWithDevice = configWithDevice(device)
+    checkYamlCorrectness(configWithDevice)
+
+    when:
+    Set<ValidationMessage> validationMessages = validateAgainstJsonSchema(configWithDevice)
+
+    then:
+    validationMessages[0].path == "\$.rooms[0].points[0].devices[0]"
+    validationMessages[0].arguments[0] == "config"
+    validationMessages[0].type == "additionalProperties"
+  }
+
   Set<ValidationMessage> validateAgainstJsonSchema(String yaml) {
     JsonSchemaFactory factory = JsonSchemaFactory.builder(JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)).objectMapper(objectMapper).build()
     JsonSchema schema = factory.getSchema(ConfigValidator.getClassLoader().getResourceAsStream("config.schema.json"))

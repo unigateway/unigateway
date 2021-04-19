@@ -62,3 +62,29 @@ rooms:
             config:
               fullCloseTimeMs: 14000
               fullOpenTimeMs: 17000
+  - name: "garage"
+    points:
+      - name: "Garage doors relay modules"
+        portNumber: 5
+        devices:
+          - name: "Right garage door"
+            id: "right_garage_door"
+            type: GATE
+            internalDevices:
+              actionButton:
+                name: "Right garage door action button"
+                id: "right_garage_door_action_button"
+                wires: [ "BLUE_WHITE" ]
+                type: EMULATED_SWITCH
+              closedReedSwitch:
+                name: "Right garage door closed reed switch reference"
+                id: "right_garage_door_closed_ref"
+                type: REFERENCE
+                referencedDeviceId: "right_garage_door_closed_reed"
+      - name: "Garage doors reed switches"
+        portNumber: 6
+        devices:
+          - name: "Right garage door"
+            id: "right_garage_door_closed_reed"
+            wires: ["GREEN_WHITE"]
+            type: REED_SWITCH

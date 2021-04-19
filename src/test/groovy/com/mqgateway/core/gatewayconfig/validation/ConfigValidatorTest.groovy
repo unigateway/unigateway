@@ -26,6 +26,7 @@ class ConfigValidatorTest extends Specification {
 		new ShutterAdditionalConfigValidator(),
 		new GateAdditionalConfigValidator(),
     new PortNumbersRangeValidator(),
+    new ReferenceDeviceValidator()
 	]
 
   GatewaySystemProperties systemProperties = prepareSystemProperties()
@@ -320,6 +321,22 @@ class ConfigValidatorTest extends Specification {
     List<PortNumbersRangeValidator.PortNumberOutOfRange> reasons =
       result.failureReasons.findAll { it instanceof PortNumbersRangeValidator.PortNumberOutOfRange }
     reasons*.point.name == ["Point with too high port number"]
+  }
+
+  def "should fail validation when REFERENCE device references non-existing device"() {
+    given:
+    DeviceConfig referencingDeviceConfig = new DeviceConfig("referencing_device_id", "test name", DeviceType.REFERENCE, [], [:], [:], "non-existing-id")
+    Gateway gateway = gatewayWith(roomWith(pointWith(referencingDeviceConfig)))
+
+    when:
+    def result = configValidator.validateGateway(gateway)
+
+    then:
+    !result.succeeded
+    result.failureReasons*.class.every {  it == ReferenceDeviceValidator.IncorrectReferencedDevice }
+    List<ReferenceDeviceValidator.IncorrectReferencedDevice> reasons = result.failureReasons
+    reasons*.referencingDevice.id == ["referencing_device_id"]
+    reasons*.referencedDeviceId == ["non-existing-id"]
   }
 
 	static Gateway gatewayWith(Room[] rooms) {

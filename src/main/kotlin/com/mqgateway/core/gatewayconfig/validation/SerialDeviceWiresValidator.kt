@@ -12,7 +12,7 @@ class SerialDeviceWiresValidator : GatewayValidator {
     val devices: List<DeviceConfig> = gateway.rooms
       .flatMap { room -> room.points }
       .flatMap { point -> point.devices }
-      .filter { device -> device.type in listOf(DeviceType.BME280) }
+      .filter { device -> device.type in listOf(DeviceType.BME280, DeviceType.DHT22) }
 
     return devices
       .filter { device -> device.wires.size != 2 || device.wires[0] == device.wires[1] }

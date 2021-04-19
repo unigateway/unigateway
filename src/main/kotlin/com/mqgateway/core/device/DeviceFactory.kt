@@ -7,6 +7,7 @@ import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
 import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
 import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
 import com.mqgateway.core.gatewayconfig.DeviceConfig
+import com.mqgateway.core.gatewayconfig.DeviceConfig.UnexpectedDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.hardware.MqExpanderPinProvider
@@ -23,6 +24,8 @@ class DeviceFactory(
   private val systemInfoProvider: SystemInfoProvider
 ) {
 
+  private val createdDevices: MutableMap<String, Device> = mutableMapOf()
+
   fun createAll(gateway: Gateway): Set<Device> {
     val gatewayDevice = MqGatewayDevice(gateway.name, Duration.ofSeconds(30), systemInfoProvider)
     return setOf(gatewayDevice) + gateway.rooms
@@ -31,121 +34,127 @@ class DeviceFactory(
         val portNumber = point.portNumber
         point.devices
           .filter { serialConnection != null || !it.type.isSerialDevice() }
-          .map { create(portNumber, it) }
+          .map { create(portNumber, it, gateway) }
       }.toSet()
   }
 
-  private fun create(portNumber: Int, deviceConfig: DeviceConfig): Device {
+  private fun create(portNumber: Int, deviceConfig: DeviceConfig, gateway: Gateway): Device {
+    return createdDevices.getOrPut(deviceConfig.id) {
+      when (deviceConfig.type) {
+        DeviceType.REFERENCE -> {
+          val referencedDeviceConfig = deviceConfig.dereferenceIfNeeded(gateway)
+          val referencedPortNumber = gateway.portNumberByDeviceId(referencedDeviceConfig.id)
+          create(referencedPortNumber, referencedDeviceConfig, gateway)
+        }
+        DeviceType.RELAY -> {
+          val triggerLevel =
+            deviceConfig.config[RelayDevice.CONFIG_TRIGGER_LEVEL_KEY]?.let { PinState.valueOf(it) } ?: RelayDevice.CONFIG_TRIGGER_LEVEL_DEFAULT
+          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+          RelayDevice(deviceConfig.id, pin, triggerLevel)
+        }
+        DeviceType.SWITCH_BUTTON -> {
+          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
+          val longPressTimeMs =
+            deviceConfig.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
+          SwitchButtonDevice(deviceConfig.id, pin, debounceMs, longPressTimeMs)
+        }
+        DeviceType.REED_SWITCH -> {
+          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
+          ReedSwitchDevice(deviceConfig.id, pin, debounceMs)
+        }
+        DeviceType.MOTION_DETECTOR -> {
+          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
+          val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
+          val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
+          MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
+        }
+        DeviceType.BME280 -> {
 
-    return when (deviceConfig.type) {
-      DeviceType.RELAY -> {
-        val triggerLevel =
-          deviceConfig.config[RelayDevice.CONFIG_TRIGGER_LEVEL_KEY]?.let { PinState.valueOf(it) } ?: RelayDevice.CONFIG_TRIGGER_LEVEL_DEFAULT
-        val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        RelayDevice(deviceConfig.id, pin, triggerLevel)
-      }
-      DeviceType.SWITCH_BUTTON -> {
-        val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
-        val longPressTimeMs =
-          deviceConfig.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
-        SwitchButtonDevice(deviceConfig.id, pin, debounceMs, longPressTimeMs)
-      }
-      DeviceType.REED_SWITCH -> {
-        val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
-        ReedSwitchDevice(deviceConfig.id, pin, debounceMs)
-      }
-      DeviceType.MOTION_DETECTOR -> {
-        val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
-        val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
-        val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
-        MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
-      }
-      DeviceType.BME280 -> {
+          serialConnection ?: throw SerialDisabledException(deviceConfig.id)
 
-        serialConnection ?: throw SerialDisabledException(deviceConfig.id)
+          val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
+          val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
+          val periodBetweenAskingForData =
+            Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
+          val acceptablePingPeriod =
+            Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
 
-        val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
-        val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
-        val periodBetweenAskingForData =
-          Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
-        val acceptablePingPeriod =
-          Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
-
-        BME280PeriodicSerialInputDevice(
-          deviceConfig.id,
-          toDevicePin,
-          fromDevicePin,
-          serialConnection,
-          periodBetweenAskingForData,
-          acceptablePingPeriod,
-          timersScheduler
-        )
-      }
-      DeviceType.EMULATED_SWITCH -> {
-        val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        EmulatedSwitchButtonDevice(deviceConfig.id, pin)
-      }
-      DeviceType.DHT22 -> {
-        serialConnection ?: throw SerialDisabledException(deviceConfig.id)
-
-        val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
-        val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
-        val periodBetweenAskingForData =
-          Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
-        val acceptablePingPeriod =
-          Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
-
-        DHT22PeriodicSerialInputDevice(
-          deviceConfig.id,
-          toDevicePin,
-          fromDevicePin,
-          serialConnection,
-          periodBetweenAskingForData,
-          acceptablePingPeriod,
-          timersScheduler
-        )
-      }
-      DeviceType.TIMER_SWITCH -> {
-        val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-        TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
-      }
-      DeviceType.SHUTTER -> {
-        val stopRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("stopRelay")) as RelayDevice
-        val upDownRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("upDownRelay")) as RelayDevice
-        ShutterDevice(
-          deviceConfig.id,
-          stopRelayDevice,
-          upDownRelayDevice,
-          deviceConfig.config.getValue("fullOpenTimeMs").toLong(),
-          deviceConfig.config.getValue("fullCloseTimeMs").toLong()
-        )
-      }
-      DeviceType.GATE -> {
-        if (listOf("stopButton", "openButton", "closeButton").all { deviceConfig.internalDevices.containsKey(it) }) {
-          createThreeButtonGateDevice(portNumber, deviceConfig)
-        } else if (deviceConfig.internalDevices.containsKey("actionButton")) {
-          createSingleButtonGateDevice(portNumber, deviceConfig)
-        } else {
-          throw UnexpectedConfigurationException(
+          BME280PeriodicSerialInputDevice(
             deviceConfig.id,
-            "Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)"
+            toDevicePin,
+            fromDevicePin,
+            serialConnection,
+            periodBetweenAskingForData,
+            acceptablePingPeriod,
+            timersScheduler
           )
         }
+        DeviceType.EMULATED_SWITCH -> {
+          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+          EmulatedSwitchButtonDevice(deviceConfig.id, pin)
+        }
+        DeviceType.DHT22 -> {
+          serialConnection ?: throw SerialDisabledException(deviceConfig.id)
+
+          val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
+          val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
+          val periodBetweenAskingForData =
+            Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
+          val acceptablePingPeriod =
+            Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
+
+          DHT22PeriodicSerialInputDevice(
+            deviceConfig.id,
+            toDevicePin,
+            fromDevicePin,
+            serialConnection,
+            periodBetweenAskingForData,
+            acceptablePingPeriod,
+            timersScheduler
+          )
+        }
+        DeviceType.TIMER_SWITCH -> {
+          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+          TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
+        }
+        DeviceType.SHUTTER -> {
+          val stopRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("stopRelay"), gateway) as RelayDevice
+          val upDownRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("upDownRelay"), gateway) as RelayDevice
+          ShutterDevice(
+            deviceConfig.id,
+            stopRelayDevice,
+            upDownRelayDevice,
+            deviceConfig.config.getValue("fullOpenTimeMs").toLong(),
+            deviceConfig.config.getValue("fullCloseTimeMs").toLong()
+          )
+        }
+        DeviceType.GATE -> {
+          if (listOf("stopButton", "openButton", "closeButton").all { deviceConfig.internalDevices.containsKey(it) }) {
+            createThreeButtonGateDevice(portNumber, deviceConfig, gateway)
+          } else if (deviceConfig.internalDevices.containsKey("actionButton")) {
+            createSingleButtonGateDevice(portNumber, deviceConfig, gateway)
+          } else {
+            throw UnexpectedDeviceConfigurationException(
+              deviceConfig.id,
+              "Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)"
+            )
+          }
+        }
+        DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should never be specified as a separate device in configuration")
+        DeviceType.SCT013 -> TODO()
       }
-      DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should never be specified as a separate device in configuration")
-      DeviceType.SCT013 -> TODO()
     }
   }
 
-  private fun createThreeButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig): ThreeButtonsGateDevice {
-    val stopButton = create(portNumber, deviceConfig.internalDevices.getValue("stopButton")) as EmulatedSwitchButtonDevice
-    val openButton = create(portNumber, deviceConfig.internalDevices.getValue("openButton")) as EmulatedSwitchButtonDevice
-    val closeButton = create(portNumber, deviceConfig.internalDevices.getValue("closeButton")) as EmulatedSwitchButtonDevice
-    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
-    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
+  private fun createThreeButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig, gateway: Gateway): ThreeButtonsGateDevice {
+    val stopButton = create(portNumber, deviceConfig.internalDevices.getValue("stopButton"), gateway) as EmulatedSwitchButtonDevice
+    val openButton = create(portNumber, deviceConfig.internalDevices.getValue("openButton"), gateway) as EmulatedSwitchButtonDevice
+    val closeButton = create(portNumber, deviceConfig.internalDevices.getValue("closeButton"), gateway) as EmulatedSwitchButtonDevice
+    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
+    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
     return ThreeButtonsGateDevice(
       deviceConfig.id,
       stopButton,
@@ -156,10 +165,10 @@ class DeviceFactory(
     )
   }
 
-  private fun createSingleButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig): SingleButtonsGateDevice {
-    val actionButton = create(portNumber, deviceConfig.internalDevices.getValue("actionButton")) as EmulatedSwitchButtonDevice
-    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
-    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it) } as ReedSwitchDevice?
+  private fun createSingleButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig, gateway: Gateway): SingleButtonsGateDevice {
+    val actionButton = create(portNumber, deviceConfig.internalDevices.getValue("actionButton"), gateway) as EmulatedSwitchButtonDevice
+    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
+    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
     return SingleButtonsGateDevice(
       deviceConfig.id,
       actionButton,
@@ -170,7 +179,4 @@ class DeviceFactory(
 
   class SerialDisabledException(deviceId: String) :
     RuntimeException("Serial-related device '$deviceId' creation has been started, but serial is disabled in configuration")
-
-  class UnexpectedConfigurationException(deviceId: String, message: String) :
-    RuntimeException("Unexpected configuration found for device '$deviceId': $message")
 }
