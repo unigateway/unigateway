@@ -52,6 +52,51 @@ export GATEWAY_CONFIGPATH="/opt/gateway-configuration.yaml"
 
 Remember to add this command to `~/.bashrc` if you want it to survive MqGateway reboot.
 
+### Internal device reference
+
+In the case when you need to configure some device with "internalDevices" and this 
+internal device is connected in another _point_ (to a different MqGateway port) you need 
+to use REFERENCE device type to configure it.  
+
+See the example below which configures garage door (GATE device) with reed switch 
+configured as REFERENCE device, because it is connected to different port than 
+the garage door opener.
+
+??? Example
+    ```yaml
+    configVersion: "1.1"
+    name: "MainGateway"
+    mqttHostname: "192.168.1.100"
+    rooms:
+      - name: "garage"
+        points:
+          - name: "Garage door opener"
+            portNumber: 1
+            devices:
+              - name: "Right garage door"
+                id: "right_garage_door"
+                type: GATE
+                internalDevices:
+                  actionButton:
+                    name: "Right garage door action button"
+                    id: "right_garage_door_action_button"
+                    wires: [ "BLUE_WHITE" ]
+                    type: EMULATED_SWITCH
+                  closedReedSwitch:
+                    name: "Right garage door closed reed switch reference"
+                    id: "right_garage_door_closed_ref"
+                    type: REFERENCE
+                    referencedDeviceId: "right_garage_door_closed_reed" # <-- it references to the device below on point with portNumber 2
+          - name: "Garage door reed switch"
+            portNumber: 2
+            devices:
+              - name: "Right garage door"
+                id: "right_garage_door_closed_reed"
+                wires: ["GREEN_WHITE"]
+                type: REED_SWITCH
+    
+    ```
+
 
 ## System configuration
 
