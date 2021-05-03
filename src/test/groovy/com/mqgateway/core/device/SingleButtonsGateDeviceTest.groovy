@@ -96,6 +96,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   }
 
   def "should trigger action button on state change OPEN when there is no reed switch for open state and even though gate is in OPEN state"() {
+    given:
     SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, null, closedReedSwitch)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
@@ -118,6 +119,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   }
 
   def "should trigger action button on state change CLOSE when there is no reed switch for closed state and even though gate is in CLOSED state"() {
+    given:
     SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, openReedSwitch, null)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
@@ -168,6 +170,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   }
 
   def "should trigger action button on state change STOP only if gate state is not closed when there is only closedReedSwitch available"() {
+    given:
     SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton,
                                                                      hasOpenReedSwitch ? openReedSwitch : null,
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
@@ -219,6 +222,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   }
 
   def "should gate state change from #initialState to #expectedUpdates when sent state change '#action' and #whenDescription"() {
+    given:
     SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton,
                                                                      hasOpenReedSwitch ? openReedSwitch : null,
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
@@ -294,5 +298,45 @@ class SingleButtonsGateDeviceTest extends Specification {
     "CLOSED"     | "CLOSE" | ["CLOSED"]          | false               | false             | "none reed switch is available"
     "CLOSED"     | "OPEN"  | ["OPEN"]            | false               | false             | "none reed switch is available"
     "CLOSED"     | "STOP"  | ["OPEN"]            | false               | false             | "none reed switch is available"
+  }
+
+  @Unroll
+  def "should change gate state when reed switch reports #whenDescription"() {
+    given:
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton,
+                                                                     hasOpenReedSwitch ? openReedSwitch : null,
+                                                                     hasClosedReedSwitch ? closedReedSwitch : null)
+    gateDevice.addListener(listenerStub)
+    if (initialState == 'OPEN') {
+      closedReedSwitchPin.state = PinState.HIGH
+      openReedSwitchPin.state = PinState.LOW // Gate open
+      if (hasOpenReedSwitch) {
+        expectedUpdates.add(0, "OPEN")
+      }
+    } else if (initialState == 'CLOSED') {
+      closedReedSwitchPin.state = PinState.LOW // Gate closed
+      openReedSwitchPin.state = PinState.HIGH
+      if (hasClosedReedSwitch) {
+        expectedUpdates.add(0, "CLOSED")
+      }
+    }
+    gateDevice.init()
+
+    when:
+    if (reedSwitchChange == "opening") {
+      closedReedSwitchPin.state = PinState.HIGH
+    } else if (reedSwitchChange == "closing") {
+      openReedSwitchPin.state = PinState.HIGH
+    }
+
+    then:
+    listenerStub.receivedUpdates*.newValue == expectedUpdates
+
+    where:
+    initialState | expectedUpdates     | hasClosedReedSwitch | hasOpenReedSwitch | reedSwitchChange | whenDescription
+    "CLOSED"     | ["OPENING"]         | true                | true              | "opening" | "opening without action (both reed switches)"
+    "CLOSED"     | ["OPEN"]            | true                | false             | "opening" | "opening without action (closed reed switch only)"
+    "OPEN"       | ["CLOSING"]         | true                | true              | "closing" | "closing without action (both reed switches)"
+    "OPEN"       | ["CLOSED"]          | false               | true              | "closing" | "closing without action (open reed switch only)"
   }
 }
