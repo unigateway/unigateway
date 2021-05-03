@@ -286,7 +286,10 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           ShutterDevice.Command.STOP.name,
           ShutterDevice.POSITION_OPEN,
           ShutterDevice.POSITION_CLOSED,
-          null,
+          ShutterDevice.State.OPEN.name,
+          ShutterDevice.State.CLOSED.name,
+          ShutterDevice.State.OPENING.name,
+          ShutterDevice.State.CLOSING.name,
           null,
           false
         )
@@ -308,6 +311,9 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           null,
           SingleButtonsGateDevice.State.OPEN.name,
           SingleButtonsGateDevice.State.CLOSED.name,
+          SingleButtonsGateDevice.State.OPENING.name,
+          SingleButtonsGateDevice.State.CLOSING.name,
+          null,
           false
         )
       )

@@ -377,6 +377,11 @@ class HomeAssistantConverterTest extends Specification {
 		cover.positionTopic == expectedStateTopic(gateway.name, shutterDevice.id, POSITION.toString())
 		cover.setPositionTopic == expectedCommandTopic(gateway.name, shutterDevice.id, POSITION.toString())
 		cover.uniqueId == gateway.name + "_" + shutterDevice.id
+    cover.stateOpen == "OPEN"
+    cover.stateClosed == "CLOSED"
+    cover.stateOpening == "OPENING"
+    cover.stateClosing == "CLOSING"
+    cover.stateStopped == null
 		assertHomeAssistantDevice(cover, gateway, shutterDevice)
 	}
 
@@ -410,6 +415,9 @@ class HomeAssistantConverterTest extends Specification {
 		cover.payloadStop == "STOP"
 		cover.stateOpen == "OPEN"
 		cover.stateClosed == "CLOSED"
+    cover.stateOpening == "OPENING"
+    cover.stateClosing == "CLOSING"
+    cover.stateStopped == null
 		cover.uniqueId == gateway.name + "_" + gateDevice.id
 		assertHomeAssistantDevice(cover, gateway, gateDevice)
 	}
