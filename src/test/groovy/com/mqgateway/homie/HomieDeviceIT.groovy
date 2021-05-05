@@ -5,11 +5,13 @@ import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
+import com.mqgateway.utils.MqttSpecification
 import groovy.yaml.YamlSlurper
-import spock.lang.Specification
+import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
 
-class HomieDeviceIT extends Specification {
+@Timeout(30)
+class HomieDeviceIT extends MqttSpecification {
 
   static Set<MqttMessage> receivedMessages = []
   YamlSlurper slurper = new YamlSlurper()
@@ -17,7 +19,7 @@ class HomieDeviceIT extends Specification {
   static BlockingVariable<Boolean> mqGatewayIsReady = new BlockingVariable<>()
 
   void setupSpec() {
-    MqttClientFactory mqttClientFactory = new HiveMqttClientFactory("localhost")
+    MqttClientFactory mqttClientFactory = new HiveMqttClientFactory("localhost", mosquittoPort())
 
     MqttClient mqttClient = mqttClientFactory.create("testClient") {} {}
     mqttClient.connect(new MqttMessage("test", "disconnected", 0, false), true)

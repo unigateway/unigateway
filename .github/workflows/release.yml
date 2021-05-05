@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Run Docker with Mosquitto for tests
-        run: docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:1.6.13
       - name: Read version from tag
         id: version_tag_name
         run: |
@@ -27,8 +25,6 @@ jobs:
           SimulatedPlatform: "com.pi4j.gpio.extension.mcp.MCP23017GpioProvider"
           VERSION_TAG: ${{ steps.version_tag_name.outputs.VERSION_TAG }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Stop Docker with Mosquitto for tests
-        run: docker rm -f mosquitto
       - name: Store tests results as artifact
         uses: actions/upload-artifact@v2-preview
         if: failure()

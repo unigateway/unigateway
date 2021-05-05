@@ -80,7 +80,8 @@ dependencies {
     testImplementation("io.micronaut.test:micronaut-test-spock")
     testImplementation("net.bytebuddy:byte-buddy:1.11.0")
     testImplementation("org.objenesis:objenesis:3.2")
-    testImplementation(platform("org.testcontainers:testcontainers-bom:1.15.2"))
+    testImplementation(platform("org.testcontainers:testcontainers-bom:1.15.3"))
+    testImplementation("org.testcontainers:spock")
 }
 
 test.classpath += configurations.developmentOnly

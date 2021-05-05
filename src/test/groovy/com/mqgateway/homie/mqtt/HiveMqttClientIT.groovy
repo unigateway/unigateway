@@ -1,21 +1,23 @@
 package com.mqgateway.homie.mqtt
 
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client
+import com.mqgateway.utils.MqttSpecification
 import java.util.concurrent.TimeUnit
-import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Timeout
 
-class HiveMqttClientIT extends Specification {
+@Timeout(30)
+class HiveMqttClientIT extends MqttSpecification {
 
 	@Subject
 	HiveMqttClient mqttClient
 
 	void setup() {
-		def hiveClient = Mqtt3Client.builder()
+    def hiveClient = Mqtt3Client.builder()
 			.automaticReconnect().initialDelay(100, TimeUnit.MILLISECONDS).maxDelay(1, TimeUnit.SECONDS).applyAutomaticReconnect()
 			.identifier("testMqttClient")
 			.serverHost("localhost")
-			.serverPort(1883)
+			.serverPort(mosquittoPort())
 			.buildBlocking()
 		hiveClient.connectWith().cleanSession(true).send()
 		mqttClient = new HiveMqttClient(hiveClient)

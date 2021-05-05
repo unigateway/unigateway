@@ -48,8 +48,6 @@ which is the recommended IDE for the project.
 
 ### Running tests
 
-Remember to have Mosquitto running.
-
 ```shell
 ./gradlew check
 ```
