@@ -1,5 +1,6 @@
 package com.mqgateway.configuration
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -8,6 +9,7 @@ import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
+import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.hardware.MqExpanderPinProvider
@@ -29,14 +31,20 @@ import javax.inject.Singleton
 internal class ComponentsFactory {
 
   @Singleton
-  fun gatewayConfigLoader(
+  fun configValidator(
     @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
     gatewaySystemProperties: GatewaySystemProperties,
     gatewayValidators: List<GatewayValidator>
-  ): ConfigLoader {
+  ): ConfigValidator {
+    return ConfigValidator(yamlObjectMapper, gatewaySystemProperties, gatewayValidators)
+  }
 
+  @Singleton
+  fun gatewayConfigLoader(
+    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
+    configValidator: ConfigValidator
+  ): ConfigLoader {
     val yamlParser = YamlParser(yamlObjectMapper)
-    val configValidator = ConfigValidator(yamlObjectMapper, gatewaySystemProperties, gatewayValidators)
     return ConfigLoader(yamlParser, configValidator)
   }
 
@@ -45,6 +53,8 @@ internal class ComponentsFactory {
   fun yamlObjectMapper(): ObjectMapper {
     val mapper = ObjectMapper(YAMLFactory())
     mapper.registerModule(KotlinModule())
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+
     return mapper
   }
 
@@ -54,6 +64,15 @@ internal class ComponentsFactory {
     gatewayConfigLoader: ConfigLoader
   ): Gateway {
     return gatewayConfigLoader.load(gatewayApplicationProperties.configPath)
+  }
+
+  @Singleton
+  fun gatewayConfigurationService(
+    configValidator: ConfigValidator,
+    gatewayApplicationProperties: GatewayApplicationProperties,
+    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper
+  ): GatewayConfigurationService {
+    return GatewayConfigurationService(configValidator, gatewayApplicationProperties.configPath, yamlObjectMapper)
   }
 
   @Singleton
