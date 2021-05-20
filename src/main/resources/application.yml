@@ -7,6 +7,9 @@ micronaut:
     name: mqgateway
   metrics:
     enabled: true
+  server:
+    cors:
+      enabled: true
 
 gateway:
   app-version: <%=version%>

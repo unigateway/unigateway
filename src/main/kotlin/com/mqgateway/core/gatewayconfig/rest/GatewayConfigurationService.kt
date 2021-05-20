@@ -21,6 +21,8 @@ class GatewayConfigurationService(
   private val yamlObjectMapper: ObjectMapper
 ) {
 
+  fun readConfigurationFromFile(): String = File(gatewayConfigPath).readText()
+
   fun replaceConfiguration(newConfigurationString: String): GatewayConfigurationReplacementResult {
 
     val newConfigurationJsonNode: JsonNode = yamlObjectMapper.readTree(newConfigurationString)

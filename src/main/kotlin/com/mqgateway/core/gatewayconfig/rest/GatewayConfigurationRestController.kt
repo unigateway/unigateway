@@ -1,18 +1,19 @@
 package com.mqgateway.core.gatewayconfig.rest
 
-import com.mqgateway.core.gatewayconfig.Gateway
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Produces
 import io.micronaut.http.annotation.Put
 
-@Controller("/configuration/gateway", consumes = [MediaType.APPLICATION_YAML, MediaType.APPLICATION_JSON])
-class GatewayConfigurationRestController(private val configurationService: GatewayConfigurationService, private val gatewayConfiguration: Gateway) {
+@Controller("/configuration/gateway", consumes = [MediaType.APPLICATION_YAML])
+class GatewayConfigurationRestController(private val configurationService: GatewayConfigurationService) {
 
+  @Produces(MediaType.TEXT_PLAIN)
   @Get
-  fun currentConfiguration() = gatewayConfiguration
+  fun currentConfiguration() = configurationService.readConfigurationFromFile()
 
   @Put
   fun replaceConfiguration(@Body newConfigurationPayload: String): HttpResponse<GatewayConfigurationReplacementResult> {
