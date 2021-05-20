@@ -11,6 +11,17 @@ class HomeAssistantPublisher(
   private val objectMapper: ObjectMapper
 ) {
 
+  fun cleanPublishedConfigurations(mqttClient: MqttClient, rootTopic: String, commonNodeId: String) {
+    HomeAssistantComponentType.values()
+      .map { it.value }
+      .flatMap { haComponentType ->
+        mqttClient.findAllSubtopicsWithRetainedMessages("$rootTopic/$haComponentType/$commonNodeId")
+      }.forEach { topic ->
+        LOGGER.debug { "Removing HomeAssistant config from topic: $topic" }
+        mqttClient.publishSync(MqttMessage(topic, ""))
+      }
+  }
+
   fun publish(mqttClient: MqttClient, rootTopic: String, components: List<HomeAssistantComponent>) {
     components.map { component ->
       val topic = "$rootTopic/${component.componentType.value}/${component.properties.nodeId}/${component.properties.objectId}/config"

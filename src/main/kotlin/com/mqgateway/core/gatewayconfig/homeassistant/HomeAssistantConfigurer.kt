@@ -26,6 +26,7 @@ class HomeAssistantConfigurer(
     mqttClient.connect(MqttMessage("${properties.rootTopic}/state", "disconnected", 0, false), true)
 
     val components = converter.convert(gateway)
+    publisher.cleanPublishedConfigurations(mqttClient, properties.rootTopic, gateway.name)
     publisher.publish(mqttClient, properties.rootTopic, components)
 
     mqttClient.disconnect()

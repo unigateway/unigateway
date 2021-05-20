@@ -63,4 +63,17 @@ class HiveMqttClientIT extends MqttSpecification {
 		then:
 		readMessage == null
 	}
+
+  def "should read all topics with retained messages under given root topic"() {
+    given:
+    mqttClient.publishSync(new MqttMessage("someRoot/second", "test", 1, true))
+    mqttClient.publishSync(new MqttMessage("someRoot/second/third", "test", 1, true))
+    mqttClient.publishSync(new MqttMessage("someRoot/second/third/fourth", "test", 1, true))
+
+    when:
+    Set<String> topics = mqttClient.findAllSubtopicsWithRetainedMessages("someRoot")
+
+    then:
+    topics == ["someRoot/second", "someRoot/second/third", "someRoot/second/third/fourth"].toSet()
+  }
 }

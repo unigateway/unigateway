@@ -9,23 +9,31 @@ import com.mqgateway.homie.mqtt.MqttClientFactory
 
 class MqttClientFactoryStub implements MqttClientFactory {
 
-	MqttClientStub mqttClient
+  MqttClientStub mqttClient
 
-	@Override
-	MqttClient create(@NotNull String clientId, @NotNull Function0<Unit> connectedListener, @NotNull Function0<Unit> disconnectedListener) {
-		def listener = new TestMqttConnectionListener() {
+  private final boolean sameClient
 
-			@Override
-			def onConnected() {
-				connectedListener.invoke()
-			}
+  MqttClientFactoryStub(boolean sameClient = false) {
+    this.sameClient = sameClient
+  }
 
-			@Override
-			def onDisconnected() {
-				disconnectedListener.invoke()
-			}
-		}
-		this.mqttClient = new MqttClientStub([listener])
-		return mqttClient
-	}
+  @Override
+  MqttClient create(@NotNull String clientId = "client", @NotNull Function0<Unit> connectedListener = {}, @NotNull Function0<Unit> disconnectedListener = {}) {
+    def listener = new TestMqttConnectionListener() {
+
+      @Override
+      def onConnected() {
+        connectedListener.invoke()
+      }
+
+      @Override
+      def onDisconnected() {
+        disconnectedListener.invoke()
+      }
+    }
+    if (!sameClient || !this.mqttClient) {
+      this.mqttClient = new MqttClientStub([listener])
+    }
+    return mqttClient
+  }
 }

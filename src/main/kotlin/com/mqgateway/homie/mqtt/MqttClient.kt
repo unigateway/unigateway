@@ -6,6 +6,7 @@ interface MqttClient {
   fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit)
   fun publishAsync(mqttMessage: MqttMessage)
   fun read(topic: String): String?
+  fun findAllSubtopicsWithRetainedMessages(startTopic: String): Set<String>
   fun disconnect()
 }
 

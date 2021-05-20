@@ -44,6 +44,14 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
     return result
   }
 
+  override fun findAllSubtopicsWithRetainedMessages(startTopic: String): Set<String> {
+    val topics = mutableSetOf<String>()
+    subscribeAsync("$startTopic/#") { topics.add(it.topic) }
+    Thread.sleep(READING_WAIT_TIME_MS)
+    mqttClient.unsubscribeWith().topicFilter("$startTopic/#").send()
+    return topics
+  }
+
   override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
     mqttClient.toAsync()
       .subscribeWith().topicFilter(topicFilter)

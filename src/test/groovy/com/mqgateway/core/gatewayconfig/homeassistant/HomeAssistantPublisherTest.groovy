@@ -56,4 +56,21 @@ class HomeAssistantPublisherTest extends Specification {
 		assert light.properties.device.manufacturer == jsonLight.device.manufacturer
 		assert light.properties.device.viaDevice == jsonLight.device.via_device
 	}
+
+  def "should remove all HA configurations for the given root and node id"() {
+    given:
+    List<String> haComponentTypes = HomeAssistantComponentType.values().collect { it.value }
+    haComponentTypes.forEach {haComponentType ->
+      mqttClientStub.publishSync(new MqttMessage("testRoot/$haComponentType/gatewayId/someDevice/config", "something", 1, true))
+    }
+
+    when:
+    publisher.cleanPublishedConfigurations(mqttClientStub, "testRoot", "gatewayId")
+
+    then:
+    List<MqttMessage> expectedCleanMessages = haComponentTypes.collect {type ->
+      new MqttMessage("testRoot/$type/gatewayId/someDevice/config", "", 0, false)
+    }
+    mqttClientStub.publishedMessages.containsAll(expectedCleanMessages)
+  }
 }

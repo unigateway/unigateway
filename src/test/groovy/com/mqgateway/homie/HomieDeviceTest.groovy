@@ -122,6 +122,32 @@ class HomieDeviceTest extends Specification {
 		then:
 		mqttClientFactory.mqttClient.subscriptions.keySet() == ["homie/deviceId1/nodeId1/prop1/set", "homie/deviceId1/nodeId2/prop1/set"].toSet()
 	}
+
+  def "should remove old devices configuration after connecting to MQTT"() {
+    MqttClientFactoryStub mqttClientFactory = new MqttClientFactoryStub(true)
+    mqttClientFactory.create()
+    mqttClientFactory.mqttClient.connect(new MqttMessage("", "", 0, false), false)
+    mqttClientFactory.mqttClient.publishSync(new MqttMessage('homie/deviceId1/nodeId1/$name', "someName", 1, true))
+    HomieDevice homieDevice = new HomieDevice(
+      mqttClientFactory,
+      homieReceiver,
+      "deviceId1",
+      [
+        nodeId1: new HomieNode(
+          "deviceId1", "nodeId1", "node1 name", "TestType",
+          [
+            prop1: new HomieProperty("deviceId1", "nodeId1", "prop1", "property 1", INTEGER, "1:100", true, true, NONE)
+          ]),
+      ],
+      "homieVal", "device 1", ["ext1", "ext2"], "test implementation", "fw name", "fw version", "10.0.0.1", "45:12:4c:cf:2a:4e")
+
+    when:
+    homieDevice.connect()
+
+    then:
+    mqttClientFactory.mqttClient.publishedMessages.contains(new MqttMessage('homie/deviceId1/nodeId1/$name', "", 0, false))
+  }
+
 }
 
 

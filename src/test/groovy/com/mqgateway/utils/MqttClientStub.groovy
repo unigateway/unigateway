@@ -63,6 +63,11 @@ class MqttClientStub implements MqttClient {
 	String read(@NotNull String topic) {
 		return publishedMessages.find {it.retain && it.topic == topic}?.payload
 	}
+
+  @Override
+  Set<String> findAllSubtopicsWithRetainedMessages(@NotNull String startTopic) {
+    return publishedMessages.findAll{ it.retain }.collect {it.topic }
+  }
 }
 
 interface TestMqttConnectionListener {

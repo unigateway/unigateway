@@ -25,9 +25,11 @@ class HomieDeviceIT extends MqttSpecification {
     mqttClient.connect(new MqttMessage("test", "disconnected", 0, false), true)
     mqttClient.subscribeAsync("homie/TestGw1/#") { receivedMessages.add(it) }
     mqttClient.subscribeAsync('homie/TestGw1/$state') { if (it.payload == "ready") mqGatewayIsReady.set(true) }
+
+    mqttClient.publishSync(new MqttMessage("homie/TestGw1/nonExistingDevice1", "something", 1, true))
   }
 
-  def "should publish all devices on MQTT when application is starting"() {
+  def "should publish all devices on MQTT and remove old devices when application is starting"() {
     given:
     def gatewayConfiguration = slurper.parse(HomieDeviceIT.getClassLoader().getResourceAsStream('example.gateway.yaml'))
 
@@ -37,8 +39,9 @@ class HomieDeviceIT extends MqttSpecification {
     then:
     mqGatewayIsReady.get()
     !receivedMessages.isEmpty()
-    gatewayConfiguration.rooms*.points*.devices.flatten().forEach{ Map device ->
+    gatewayConfiguration.rooms*.points*.devices.flatten().forEach { Map device ->
       assert receivedMessages.find {it.topic == "homie/TestGw1/${device.id}/\$name" }.payload == device.name
     }
+    receivedMessages.contains(new MqttMessage("homie/TestGw1/nonExistingDevice1", "", 0, false))
   }
 }

@@ -41,6 +41,14 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
     return result
   }
 
+  override fun findAllSubtopicsWithRetainedMessages(startTopic: String): Set<String> {
+    val topics = mutableSetOf<String>()
+    subscribeAsync("$startTopic/#") { topics.add(it.topic) }
+    Thread.sleep(PahoMqttCallback.READING_WAIT_TIME_MS)
+    mqttClient.unsubscribe("$startTopic/#")
+    return topics
+  }
+
   override fun disconnect() {
     mqttClient.disconnect()
   }

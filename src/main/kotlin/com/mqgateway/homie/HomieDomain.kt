@@ -42,6 +42,13 @@ class HomieDevice(
 
     LOGGER.info { "MQTT connection established" }
 
+    LOGGER.debug { "Cleaning Homie configuration from MQTT" }
+    val topicsToClean = mqttClient.findAllSubtopicsWithRetainedMessages(baseTopic)
+    topicsToClean.forEach { topic ->
+      LOGGER.debug { "Removing Homie configuration from topic: $topic" }
+      mqttClient.publishSync(MqttMessage(topic, ""))
+    }
+
     LOGGER.debug { "Publishing Homie configuration to MQTT" }
     changeState(State.INIT)
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$homie", homie, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
