@@ -45,8 +45,25 @@ class ThreeButtonsGateDevice(
       LOGGER.warn { "Closing gate because its state is UNKNOWN during initialization" }
       close()
     }
-    openReedSwitch?.addListener { _, _, newValue -> if (newValue == ReedSwitchDevice.CLOSED_STATE_VALUE) state = State.OPEN }
-    closedReedSwitch?.addListener { _, _, newValue -> if (newValue == ReedSwitchDevice.CLOSED_STATE_VALUE) state = State.CLOSED }
+    openReedSwitch?.addListener { _, _, newValue ->
+      if (newValue == ReedSwitchDevice.CLOSED_STATE_VALUE) {
+        state = State.OPEN
+      } else if (hasClosedReedSwitch()) {
+        state = State.CLOSING
+      } else {
+        state = State.CLOSED
+      }
+    }
+
+    closedReedSwitch?.addListener { _, _, newValue ->
+      if (newValue == ReedSwitchDevice.CLOSED_STATE_VALUE) {
+        state = State.CLOSED
+      } else if (hasOpenReedSwitch()) {
+        state = State.OPENING
+      } else {
+        state = State.OPEN
+      }
+    }
   }
 
   override fun change(propertyId: String, newValue: String) {

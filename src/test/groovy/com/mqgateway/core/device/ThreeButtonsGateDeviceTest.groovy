@@ -15,6 +15,7 @@ import com.pi4j.io.gpio.PinPullResistance
 import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
 class ThreeButtonsGateDeviceTest extends Specification {
@@ -298,4 +299,45 @@ class ThreeButtonsGateDeviceTest extends Specification {
       ]
     }
   }
+
+  @Unroll
+  def "should change gate state when reed switch reports #whenDescription"() {
+    given:
+    ThreeButtonsGateDevice gateDevice = new ThreeButtonsGateDevice("testGate", stopButton, openButton, closeButton,
+                                                                   hasOpenReedSwitch ? openReedSwitch : null,
+                                                                   hasClosedReedSwitch ? closedReedSwitch : null)
+    gateDevice.addListener(listenerStub)
+    if (initialState == 'OPEN') {
+      closedReedSwitchPin.state = PinState.HIGH
+      openReedSwitchPin.state = PinState.LOW // Gate open
+      if (hasOpenReedSwitch) {
+        expectedUpdates.add(0, "OPEN")
+      }
+    } else if (initialState == 'CLOSED') {
+      closedReedSwitchPin.state = PinState.LOW // Gate closed
+      openReedSwitchPin.state = PinState.HIGH
+      if (hasClosedReedSwitch) {
+        expectedUpdates.add(0, "CLOSED")
+      }
+    }
+    gateDevice.init()
+
+    when:
+    if (reedSwitchChange == "opening") {
+      closedReedSwitchPin.state = PinState.HIGH
+    } else if (reedSwitchChange == "closing") {
+      openReedSwitchPin.state = PinState.HIGH
+    }
+
+    then:
+    listenerStub.receivedUpdates*.newValue == expectedUpdates
+
+    where:
+    initialState | expectedUpdates     | hasClosedReedSwitch | hasOpenReedSwitch | reedSwitchChange | whenDescription
+    "CLOSED"     | ["OPENING"]         | true                | true              | "opening" | "opening without action (both reed switches)"
+    "CLOSED"     | ["OPEN"]            | true                | false             | "opening" | "opening without action (closed reed switch only)"
+    "OPEN"       | ["CLOSING"]         | true                | true              | "closing" | "closing without action (both reed switches)"
+    "OPEN"       | ["CLOSED"]          | false               | true              | "closing" | "closing without action (open reed switch only)"
+  }
+
 }
