@@ -1,26 +1,29 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_DEFAULT
-import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
-import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_ACCEPTABLE_PING_PERIOD_KEY
-import com.mqgateway.core.device.serial.PeriodicSerialInputDevice.Companion.CONFIG_PERIOD_BETWEEN_ASK_KEY
+import com.mqgateway.core.device.mysensors.Bme280MySensorsInputDevice
+import com.mqgateway.core.device.mysensors.Dht22MySensorsInputDevice
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_DEBUG_CHILD_SENSOR_ID
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_HUMIDITY_CHILD_SENSOR_ID
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_MY_SENSORS_NODE_ID
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_PRESSURE_CHILD_SENSOR_ID
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_TEMPERATURE_CHILD_SENSOR_ID
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceConfig.UnexpectedDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.hardware.MqExpanderPinProvider
-import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.mysensors.MySensorsSerialConnection
 import com.pi4j.io.gpio.PinState
 import java.time.Duration
+import com.mqgateway.core.device.mysensors.Bme280MySensorsInputDevice.Companion as Bme280
+import com.mqgateway.core.device.mysensors.Dht22MySensorsInputDevice.Companion as Dht22
 
 class DeviceFactory(
   private val pinProvider: MqExpanderPinProvider,
   private val timersScheduler: TimersScheduler,
-  private val serialConnection: SerialConnection?,
+  private val mySensorsSerialConnection: MySensorsSerialConnection?,
   private val systemInfoProvider: SystemInfoProvider
 ) {
 
@@ -32,9 +35,7 @@ class DeviceFactory(
       .flatMap { it.points }
       .flatMap { point ->
         val portNumber = point.portNumber
-        point.devices
-          .filter { serialConnection != null || !it.type.isSerialDevice() }
-          .map { create(portNumber, it, gateway) }
+        point.devices.map { create(portNumber, it, gateway) }
       }.toSet()
   }
 
@@ -72,24 +73,21 @@ class DeviceFactory(
           MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
         }
         DeviceType.BME280 -> {
-
-          serialConnection ?: throw SerialDisabledException(deviceConfig.id)
-
-          val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
-          val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
-          val periodBetweenAskingForData =
-            Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
-          val acceptablePingPeriod =
-            Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
-
-          BME280PeriodicSerialInputDevice(
+          mySensorsSerialConnection ?: throw MySensorsSerialDisabledException(deviceConfig.id)
+          val nodeId = deviceConfig.config[CONFIG_MY_SENSORS_NODE_ID]?.toInt()
+            ?: throw IllegalStateException("Missing configuration: $CONFIG_MY_SENSORS_NODE_ID for device ${deviceConfig.id}")
+          val humidityChildSensorId = deviceConfig.config[CONFIG_HUMIDITY_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_HUMIDITY_CHILD_SENSOR_ID
+          val tempChildSensorId = deviceConfig.config[CONFIG_TEMPERATURE_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_TEMPERATURE_CHILD_SENSOR_ID
+          val pressureChildSensorId = deviceConfig.config[CONFIG_PRESSURE_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_PRESSURE_CHILD_SENSOR_ID
+          val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_DEBUG_CHILD_SENSOR_ID
+          Bme280MySensorsInputDevice(
             deviceConfig.id,
-            toDevicePin,
-            fromDevicePin,
-            serialConnection,
-            periodBetweenAskingForData,
-            acceptablePingPeriod,
-            timersScheduler
+            nodeId,
+            mySensorsSerialConnection,
+            humidityChildSensorId,
+            tempChildSensorId,
+            pressureChildSensorId,
+            debugChildSensorId
           )
         }
         DeviceType.EMULATED_SWITCH -> {
@@ -97,23 +95,19 @@ class DeviceFactory(
           EmulatedSwitchButtonDevice(deviceConfig.id, pin)
         }
         DeviceType.DHT22 -> {
-          serialConnection ?: throw SerialDisabledException(deviceConfig.id)
-
-          val toDevicePin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires[0], deviceConfig.id + "_toDevicePin")
-          val fromDevicePin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires[1], deviceConfig.id + "_fromDevicePin")
-          val periodBetweenAskingForData =
-            Duration.ofSeconds(deviceConfig.config[CONFIG_PERIOD_BETWEEN_ASK_KEY]?.toLong() ?: CONFIG_PERIOD_BETWEEN_ASK_DEFAULT)
-          val acceptablePingPeriod =
-            Duration.ofSeconds(deviceConfig.config[CONFIG_ACCEPTABLE_PING_PERIOD_KEY]?.toLong() ?: CONFIG_ACCEPTABLE_PING_PERIOD_DEFAULT)
-
-          DHT22PeriodicSerialInputDevice(
+          mySensorsSerialConnection ?: throw MySensorsSerialDisabledException(deviceConfig.id)
+          val nodeId = deviceConfig.config[CONFIG_MY_SENSORS_NODE_ID]?.toInt()
+            ?: throw IllegalStateException("Missing configuration: $CONFIG_MY_SENSORS_NODE_ID for device ${deviceConfig.id}")
+          val humidityChildSensorId = deviceConfig.config[CONFIG_HUMIDITY_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_HUMIDITY_CHILD_SENSOR_ID
+          val tempChildSensorId = deviceConfig.config[CONFIG_TEMPERATURE_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_TEMPERATURE_CHILD_SENSOR_ID
+          val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_DEBUG_CHILD_SENSOR_ID
+          Dht22MySensorsInputDevice(
             deviceConfig.id,
-            toDevicePin,
-            fromDevicePin,
-            serialConnection,
-            periodBetweenAskingForData,
-            acceptablePingPeriod,
-            timersScheduler
+            nodeId,
+            mySensorsSerialConnection,
+            humidityChildSensorId,
+            tempChildSensorId,
+            debugChildSensorId
           )
         }
         DeviceType.TIMER_SWITCH -> {
@@ -177,6 +171,6 @@ class DeviceFactory(
     )
   }
 
-  class SerialDisabledException(deviceId: String) :
-    RuntimeException("Serial-related device '$deviceId' creation has been started, but serial is disabled in configuration")
+  class MySensorsSerialDisabledException(deviceId: String) :
+    RuntimeException("MySensors device '$deviceId' creation has been started, but MySensors serial is not configured properly")
 }

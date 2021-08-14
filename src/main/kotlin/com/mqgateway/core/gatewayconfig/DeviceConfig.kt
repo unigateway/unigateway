@@ -83,7 +83,6 @@ enum class DeviceType(vararg val properties: Property) {
     Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
     Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
     Property(PRESSURE, INTEGER, null, retained = true, unit = PASCAL),
-    Property(UPTIME, INTEGER, null, retained = false, unit = SECOND),
     Property(LAST_PING, DATETIME, null, retained = true),
     Property(STATE, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
@@ -117,13 +116,7 @@ enum class DeviceType(vararg val properties: Property) {
     Property(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
   );
 
-  fun isSerialDevice() = this in SERIAL_BASED_DEVICES
-
   fun property(type: DevicePropertyType): Property = this.properties.find { it.type == type }!!
-
-  companion object {
-    val SERIAL_BASED_DEVICES = listOf(BME280, DHT22, SCT013)
-  }
 }
 
 enum class DevicePropertyType {

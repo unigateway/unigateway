@@ -7,9 +7,9 @@ gateway:
     expander:
       enabled: true
     components:
-      serial:
+      mysensors:
         enabled: true
-        device: "/dev/tty1"
+        serial-device: "build/tmp/test-serial"
 
 homeassistant:
   enabled: true

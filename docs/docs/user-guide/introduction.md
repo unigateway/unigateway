@@ -14,7 +14,7 @@ Problems described above are the ones MqGateway is trying to solve.
 Basic MqGateway allows you to connect:
 
 - up to 64 digital input/output devices (like relays or switch buttons) and
-- up to 16 complex devices using RS485 or UART communication.
+- up to 16 complex devices using RS485 communication (with [MySensors](https://www.mysensors.org/)).
 
 Connecting more devices is possible by using [MqGateway I/O Expander board](../hardware/io-expander-board.md).
 

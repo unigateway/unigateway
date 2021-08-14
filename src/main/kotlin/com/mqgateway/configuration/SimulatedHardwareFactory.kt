@@ -12,6 +12,7 @@ import com.mqgateway.core.utils.SystemInfoProvider
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import javax.inject.Singleton
+import kotlin.io.path.ExperimentalPathApi
 
 @Factory
 @Requires(property = "gateway.system.platform", value = "SIMULATED")
@@ -33,11 +34,12 @@ class SimulatedHardwareFactory {
     return SimulatedSystemInfoProvider()
   }
 
+  @ExperimentalPathApi
   @Singleton
-  @Requires(property = "gateway.system.components.serial.enabled", value = "true")
-  fun serial(gatewaySystemProperties: GatewaySystemProperties): MqSerial {
+  @Requires(property = "gateway.system.components.mysensors.enabled", value = "true")
+  fun mySensorsSerial(gatewaySystemProperties: GatewaySystemProperties): MqSerial {
     val serial = SimulatedSerial()
-    serial.open(gatewaySystemProperties.components.serial.device, gatewaySystemProperties.components.serial.baud)
+    serial.open(gatewaySystemProperties.components.mySensors.serialDevice, 115200)
     return serial
   }
 }

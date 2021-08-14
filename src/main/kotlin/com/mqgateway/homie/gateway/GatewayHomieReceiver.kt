@@ -27,4 +27,4 @@ class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : 
   }
 }
 
-class DeviceNotFoundException(deviceId: String) : Exception("Device with $deviceId not found in device registry")
+class DeviceNotFoundException(deviceId: String) : Exception("Device with id '$deviceId' not found in device registry")

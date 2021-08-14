@@ -15,7 +15,13 @@ import com.pi4j.io.i2c.I2CBus
 import com.pi4j.io.serial.SerialFactory
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
+import mu.KotlinLogging
+import java.nio.file.Paths
 import javax.inject.Singleton
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.notExists
+
+private val LOGGER = KotlinLogging.logger {}
 
 @Factory
 @Requires(property = "gateway.system.platform", notEquals = "SIMULATED")
@@ -39,11 +45,24 @@ internal class Pi4JHardwareFactory {
     return Pi4JSystemInfoProvider()
   }
 
+  @ExperimentalPathApi
   @Singleton
-  @Requires(property = "gateway.system.components.serial.enabled", value = "true")
-  fun serial(gatewaySystemProperties: GatewaySystemProperties): MqSerial {
+  @Requires(property = "gateway.system.components.mysensors.enabled", value = "true")
+  fun mySensorsSerial(gatewaySystemProperties: GatewaySystemProperties): MqSerial {
+    val serialDevice: String = gatewaySystemProperties.components.mySensors.serialDevice
+    while (Paths.get(serialDevice).notExists()) {
+      LOGGER.warn {
+        """
+          Serial device '$serialDevice' has not been found. MySensors Gateway has probably not been started yet or it's misconfigured.
+            You can disable MySensors by setting environment variable GATEWAY_SYSTEM_COMPONENTS_MYSENSORS_ENABLED=false.
+            Waiting until MySensors create PTY on '$serialDevice'..."
+        """.trimIndent().trim()
+      }
+      Thread.sleep(5000)
+    }
+
     val serial = Pi4JSerial(SerialFactory.createInstance())
-    serial.open(gatewaySystemProperties.components.serial.device, gatewaySystemProperties.components.serial.baud)
+    serial.open(serialDevice, 115200)
     return serial
   }
 }

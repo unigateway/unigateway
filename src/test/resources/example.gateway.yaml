@@ -22,11 +22,10 @@ rooms:
         devices:
           - name: "bme280 device"
             id: "bme280_workshop"
-            wires: ["GREEN", "GREEN_WHITE"]
+            wires: ["BROWN_WHITE", "BROWN"]
             type: BME280
             config:
-              periodBetweenAskingForDataInSec: 30
-              acceptablePingPeriodInSec: 20
+              mySensorsNodeId: 12
   - name: "bedroom"
     points:
       - name: "bedroom light switch box"

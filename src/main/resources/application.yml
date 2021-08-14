@@ -20,10 +20,9 @@ gateway:
     expander:
       enabled: false
     components:
-      serial:
-        enabled: true
-        device: "/dev/ttyS1"
-        baud: 9600
+      mysensors:
+        enabled: false
+        serial-device: "/myserial"
 
 homeassistant:
   enabled: true

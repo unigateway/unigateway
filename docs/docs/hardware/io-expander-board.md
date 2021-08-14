@@ -26,7 +26,7 @@ MCP23017 are connected by I<sup>2</sup>C from the main board.
 
 UART/RS485 port pins are also provided from the main board.  
 However, if the main board has MAX485 module installed, it is also possible to disable standard UART/RS485 ports in the RJ45 ports (using jumpers)
-and enable RS485 communication bus.
+and enable separate RS485 communication bus.
 
 Important (but optional) component of the board, is the step down converter from 12V to 5V. It makes possible to power the board with 12V and power 
 the devices on the RS485 bus with 12V instead of 5V.   

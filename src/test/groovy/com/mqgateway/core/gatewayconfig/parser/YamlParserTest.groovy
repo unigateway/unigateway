@@ -56,9 +56,8 @@ class YamlParserTest extends Specification {
 		def workshopBme280Device = workshopPoint2.devices.find { it.name == "bme280 device" }
 		workshopBme280Device.id == "bme280_workshop"
 		workshopBme280Device.type == DeviceType.BME280
-		workshopBme280Device.wires == [WireColor.GREEN, WireColor.GREEN_WHITE]
-		workshopBme280Device.config.get("periodBetweenAskingForDataInSec") == "30"
-		workshopBme280Device.config.get("acceptablePingPeriodInSec") == "20"
+		workshopBme280Device.wires == [WireColor.BROWN_WHITE, WireColor.BROWN]
+		workshopBme280Device.config.get("mySensorsNodeId") == "12"
 	}
 
 	def "should parse shutter device from YAML Gateway configuration file"() {

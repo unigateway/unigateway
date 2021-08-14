@@ -30,4 +30,8 @@ class Pi4JSerial(private val serial: Serial) : MqSerial {
       }
     )
   }
+
+  override fun write(message: String) {
+    serial.write(message)
+  }
 }

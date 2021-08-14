@@ -1,5 +1,5 @@
 
-This is a list of devices currently supported by MqGateway. That means you can connect a device either with digital wires or through RS485/UART controller to MqGateway.
+This is a list of devices currently supported by MqGateway. That means you can connect a device either with digital wires or through MySensors RS485 node to MqGateway.
 
 All supported devices need to be compatible with 5V power supply.
 
@@ -437,27 +437,15 @@ rooms:
     | NC                    | nothing                |
 
 
-### Complex devices with RS485/UART Controller
+### MySensors devices/nodes with RS485 Controller
 
-This group of devices requires RS485/UART controller on the side of the device for communication with MqGateway. This controller might be 
-any microcontroller which is able to communicate through RS485 or UART with 5V. Common choice is the Arduino Pro Mini board. 
+This group of devices requires RS485 MySensors node on the side of the device for communication with MqGateway. This controller might be 
+any microcontroller which is able to communicate through RS485 with 5V. Common choice is the Arduino Pro Mini board. 
 
-More about how to connect and use complex devices with RS485/UART controller can be used in [complex devices page](../hardware/complex-devices.md)  
+More about how to connect and use MySensors devices with RS485 node can be found in [MySensors node page](../hardware/mysensors-node.md)  
 
 ??? example "Wiring"
-    Wiring between MqGateway and RS485/UART controller is the same for all devices below, but depends on the type of connection.
-    For UART connection (without MAX485 on both sides)
-    
-    | WIRE COLOR               | CONTROLLER PIN | 
-    |--------------------------|----------------|
-    | orange-white (GND)       | GND            |
-    | orange (5V)              | VCC            |
-    | green-white (ask wire)   | GPIO 2         |
-    | green (ping wire)        | GPIO 7         |
-    | brown-white              | TX             |
-    | brown                    | RX             |
-    
-    
+    Wiring between MqGateway and MySensor node is the same for all devices below.
     For RS485 connection (with MAX485 module on both sides):
     
     | WIRE COLOR               | CONTROLLER PIN | 
@@ -466,20 +454,20 @@ More about how to connect and use complex devices with RS485/UART controller can
     | orange (5V)              | VCC            |
     | green-white (ask wire)   | GPIO 2         |
     | green (ping wire)        | GPIO 7         |
-    | brown-white              | A              |
-    | brown                    | B              |
-
+    | brown-white              | A (RS485)      |
+    | brown                    | B (RS485)      |
 
 #### BME280
-Temperature, humidity and barometric pressure sensor. Requires RS485/UART controller.
+Temperature, humidity and barometric pressure sensor. Requires MySensors node.
 
 - configuration type: `BME280`
-- wires: 
-    - to controller wire - used to ask controller for data
-    - from controller wire - used to send a ping from controller
+- wires: always needs to be set to `["BROWN_WHITE", "BROWN"]` 
 - additional configuration:
-    - `periodBetweenAskingForDataInSec` [default: 180] - time in seconds between asking controller to send another measurements
-    - `acceptablePingPeriodInSec` [default: 60] - maximum time in seconds, between ping calls from the controller, after which sensor will be considered unavailable
+    - **`mySensorsNodeId`** [required] - MySensors node identifier
+    - `humidityChildSensorId` [default: 0] - MySensors child sensor identifier for humidity
+    - `temperatureChildSensorId"` [default: 1] - MySensors child sensor identifier for temperature
+    - `pressureChildSensorId"` [default: 2] - MySensors child sensor identifier for pressure
+    - `debugChildSensorId"` [default: 3] - MySensors child sensor identifier for debug data from node
 
 <details>
 <summary>Example configuration</summary>
@@ -494,24 +482,27 @@ rooms:
         devices:
           - name: "Kids room box"
             id: "bme280_kids_room"
-            wires: ["GREEN_WHITE", "GREEN"]
+            wires: ["BROWN_WHITE", "BROWN"]
             type: BME280
             config:
-              periodBetweenAskingForDataInSec: 30
-              acceptablePingPeriodInSec: 120
+              mySensorsNodeId: 2
+              humidityChildSensorId: 0
+              temperatureChildSensorId: 1
+              pressureChildSensorId: 2
+              debugChildSensorId: 3
 ```
 </details>
 
 #### DHT22
-Temperature and humidity sensor. Requires RS485/UART controller.
+Temperature and humidity sensor. Requires MySensors node.
 
 - configuration type: `DHT22`
-- wires:
-    - to controller wire - used to ask controller for data
-    - from controller wire - used to send a ping from controller
+- wires: always needs to be set to `["BROWN_WHITE", "BROWN"]`
 - additional configuration:
-  - `periodBetweenAskingForDataInSec` [default: 180] - time in seconds between asking controller to send another measurements
-  - `acceptablePingPeriodInSec` [default: 60] - maximum time in seconds, between ping calls from the controller, after which sensor will be considered unavailable
+    - **`mySensorsNodeId`** [required] - MySensors node identifier
+    - `humidityChildSensorId` [default: 0] - MySensors child sensor identifier for humidity
+    - `temperatureChildSensorId"` [default: 1] - MySensors child sensor identifier for temperature
+    - `debugChildSensorId"` [default: 2] - MySensors child sensor identifier for debug data from node
 
 <details>
 <summary>Example configuration</summary>
@@ -526,10 +517,12 @@ rooms:
         devices:
           - name: "Kids room box"
             id: "bme280_kids_room"
-            wires: ["GREEN_WHITE", "GREEN"]
+            wires: ["BROWN_WHITE", "BROWN"]
             type: DHT22
             config:
-              periodBetweenAskingForDataInSec: 30
-              acceptablePingPeriodInSec: 120
+              mySensorsNodeId: 13
+              humidityChildSensorId: 0
+              temperatureChildSensorId: 1
+              debugChildSensorId: 2
 ```
 </details>

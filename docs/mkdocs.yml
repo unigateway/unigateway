@@ -20,7 +20,7 @@ nav:
       - 'I/O Expander Board': 'hardware/io-expander-board.md'
       - 'Bill of materials': 'hardware/bill-of-materials.md'
       - 'Wiring': 'hardware/wiring.md'
-      - 'Complex devices': 'hardware/complex-devices.md'
+      - 'MySensor node': 'hardware/mysensors-node.md'
       - 'Case': 'hardware/case.md'
 markdown_extensions:
   - admonition

@@ -1,0 +1,3 @@
+[comment]: <> (TODO describe how to connect MySensor nodes to MqGateway and how to program them)
+
+Work in progress...

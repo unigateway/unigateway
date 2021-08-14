@@ -11,6 +11,7 @@ class SimulatedSerial : MqSerial {
 
   private var opened = false
   private val eventListeners: MutableList<MqSerialDataEventListener> = mutableListOf()
+  private val writtenMessages: MutableList<String> = mutableListOf()
 
   override fun open(devicePath: String, baudRate: Int) {
     LOGGER.debug { "Serial opened with devicePath: $devicePath and baudRate: $baudRate" }
@@ -22,10 +23,19 @@ class SimulatedSerial : MqSerial {
     eventListeners.add(serialDataEventListener)
   }
 
+  override fun write(message: String) {
+    LOGGER.debug { "Serial message sent: $message" }
+    writtenMessages.add(message)
+  }
+
   fun sendFakeMessage(message: String) {
     eventListeners.forEach {
       it.dataReceived(SimulatedSerialDataEvent(message))
     }
+  }
+
+  fun getMessagesWrittenToSerial(): List<String> {
+    return writtenMessages
   }
 }
 

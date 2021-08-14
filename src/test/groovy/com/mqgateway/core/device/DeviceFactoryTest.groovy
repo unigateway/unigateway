@@ -1,11 +1,14 @@
 package com.mqgateway.core.device
 
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
-import com.mqgateway.core.device.serial.BME280PeriodicSerialInputDevice
-import com.mqgateway.core.device.serial.DHT22PeriodicSerialInputDevice
+import com.mqgateway.core.device.mysensors.Bme280MySensorsInputDevice
+import com.mqgateway.core.device.mysensors.Dht22MySensorsInputDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
@@ -15,8 +18,10 @@ import com.mqgateway.core.hardware.simulated.SimulatedGpioController
 import com.mqgateway.core.hardware.simulated.SimulatedMcpExpanders
 import com.mqgateway.core.hardware.simulated.SimulatedSerial
 import com.mqgateway.core.utils.FakeSystemInfoProvider
-import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.mysensors.MySensorMessageParser
+import com.mqgateway.mysensors.MySensorsSerialConnection
+import com.mqgateway.utils.UpdateListenerStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinPullResistance
@@ -28,11 +33,13 @@ class DeviceFactoryTest extends Specification {
 
 	SimulatedExpanderPinProvider pinProvider = new SimulatedExpanderPinProvider(new SimulatedGpioController(), new SimulatedMcpExpanders([]))
 
-	@Subject
-	DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new SerialConnection(new SimulatedSerial(), 5000),
-                                                  new FakeSystemInfoProvider())
+  SimulatedSerial simulatedSerial = new SimulatedSerial()
+  MySensorsSerialConnection mySensorsSerialConnection = new MySensorsSerialConnection(simulatedSerial, new MySensorMessageParser())
 
-	def "should create relay"() {
+  @Subject
+  DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), mySensorsSerialConnection, new FakeSystemInfoProvider())
+
+  def "should create relay"() {
 		given:
 		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
 		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
@@ -98,55 +105,96 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create BME280"() {
 		given:
-		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
-											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"], [:])
+		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.BROWN, WireColor.BROWN_WHITE],
+                                        [mySensorsNodeId: "11"], [:])
 		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
-		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_toDevicePin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
-		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myBME280_fromDevicePin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
 
 		when:
 		def devices = deviceFactory.createAll(gateway)
 
 		then:
 		def device = devices.last()
-		device instanceof BME280PeriodicSerialInputDevice
+		device instanceof Bme280MySensorsInputDevice
 		device.id == "myBME280"
 		device.type == DeviceType.BME280
 	}
 
-	def "should omit creation of serial device (e.g. bme280) when serial connection is not passed to factory"() {
-		given:
-		DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), null, new FakeSystemInfoProvider())
-		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE],
-											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"], [:])
-		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
-		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_toDevicePin", PinState.LOW) >> Mock(GpioPinDigitalOutput)
-		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myBME280_fromDevicePin", PinPullResistance.PULL_DOWN) >> Mock(GpioPinDigitalInput)
+  def "should create BME280 with custom childSensorIds"() {
+    given:
+    def listenerStub = new UpdateListenerStub()
+    def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.BROWN, WireColor.BROWN_WHITE],
+                                        [
+                                          mySensorsNodeId: "11",
+                                          humidityChildSensorId: '7',
+                                          temperatureChildSensorId: '8',
+                                          pressureChildSensorId: '9',
+                                          debugChildSensorId: '10'
+                                        ])
+    Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
+    mySensorsSerialConnection.init()
 
-		when:
-		def devices = deviceFactory.createAll(gateway)
+    when:
+    def devices = deviceFactory.createAll(gateway)
+    def bme280Device = devices.last()
+    bme280Device.addListener(listenerStub)
+    bme280Device.init(true)
+    simulatedSerial.sendFakeMessage("11;7;1;0;1;65.4\n")
+    simulatedSerial.sendFakeMessage("11;8;1;0;0;36.63\n")
+    simulatedSerial.sendFakeMessage("11;9;1;0;4;123456\n")
+    simulatedSerial.sendFakeMessage("11;10;3;0;28;debug message\n")
 
-		then:
-		devices.findAll{ it.type == DeviceType.BME280 }.isEmpty()
-	}
+    then:
+    listenerStub.receivedUpdates.containsAll([
+      new UpdateListenerStub.Update("myBME280", HUMIDITY.toString(), "65.4"),
+      new UpdateListenerStub.Update("myBME280", TEMPERATURE.toString(), "36.63"),
+      new UpdateListenerStub.Update("myBME280", PRESSURE.toString(), "123456")
+    ])
+  }
 
-	def "should create DHT22"() {
-		given:
-		def deviceConfig = new DeviceConfig("myDHT22", "Test DHT22 device", DeviceType.DHT22, [WireColor.GREEN, WireColor.GREEN_WHITE],
-											[periodBetweenAskingForDataInSec: "30", acceptablePingPeriodInSec: "20"], [:])
-		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
-		pinProvider.pinDigitalOutput(10, WireColor.GREEN, "myDHT22_toDevicePin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
-		pinProvider.pinDigitalInput(10, WireColor.GREEN_WHITE, "myDHT22_fromDevicePin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
+  def "should create DHT22"() {
+    given:
+    def deviceConfig = new DeviceConfig("myDHT22", "Test DHT22 device", DeviceType.DHT22, [WireColor.BROWN, WireColor.BROWN_WHITE],
+                                        [mySensorsNodeId: "2"], [:])
+    Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
 
-		when:
-		def devices = deviceFactory.createAll(gateway)
+    when:
+    def devices = deviceFactory.createAll(gateway)
 
 		then:
 		def device = devices.last()
-		device instanceof DHT22PeriodicSerialInputDevice
+		device instanceof Dht22MySensorsInputDevice
 		device.id == "myDHT22"
 		device.type == DeviceType.DHT22
 	}
+
+  def "should create DTH22 with custom childSensorIds"() {
+    given:
+    def listenerStub = new UpdateListenerStub()
+    def deviceConfig = new DeviceConfig("myDHT22", "Test DHT22 device", DeviceType.DHT22, [WireColor.BROWN, WireColor.BROWN_WHITE],
+                                        [
+                                          mySensorsNodeId: "2",
+                                          humidityChildSensorId: '12',
+                                          temperatureChildSensorId: '13',
+                                          debugChildSensorId: '99'
+                                        ])
+    Gateway gateway = gateway([room([point("point name", 7, [deviceConfig])])])
+    mySensorsSerialConnection.init()
+
+    when:
+    def devices = deviceFactory.createAll(gateway)
+    def dht22Device = devices.last()
+    dht22Device.addListener(listenerStub)
+    dht22Device.init(true)
+    simulatedSerial.sendFakeMessage("2;12;1;0;1;45.4\n")
+    simulatedSerial.sendFakeMessage("2;13;1;0;0;19.41\n")
+    simulatedSerial.sendFakeMessage("2;99;3;0;28;debug message\n")
+
+    then:
+    listenerStub.receivedUpdates.containsAll([
+      new UpdateListenerStub.Update("myDHT22", HUMIDITY.toString(), "45.4"),
+      new UpdateListenerStub.Update("myDHT22", TEMPERATURE.toString(), "19.41"),
+    ])
+  }
 
 	def "should create timer switch"() {
 		given:

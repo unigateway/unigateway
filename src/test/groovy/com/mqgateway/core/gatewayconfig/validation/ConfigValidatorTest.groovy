@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration
 import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration
-import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Serial
+import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.MySensors
 import com.mqgateway.configuration.GatewaySystemProperties.ExpanderConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
@@ -17,17 +17,17 @@ import spock.lang.Subject
 
 class ConfigValidatorTest extends Specification {
 
-	def validators = [
+  def validators = [
     new UniqueDeviceIdsValidator(),
-		new UniquePortNumbersForPointsValidator(),
-		new WireUsageValidator(),
-		new SerialDeviceWiresValidator(),
-		new SerialDeviceAdditionalConfigValidator(),
-		new ShutterAdditionalConfigValidator(),
-		new GateAdditionalConfigValidator(),
+    new UniquePortNumbersForPointsValidator(),
+    new WireUsageValidator(),
+    new MySensorsDeviceWiresValidator(),
+    new MySensorsDeviceAdditionalConfigValidator(),
+    new ShutterAdditionalConfigValidator(),
+    new GateAdditionalConfigValidator(),
     new PortNumbersRangeValidator(),
     new ReferenceDeviceValidator()
-	]
+  ]
 
   GatewaySystemProperties systemProperties = prepareSystemProperties()
 
@@ -110,11 +110,13 @@ class ConfigValidatorTest extends Specification {
 		reason.devices*.id.toSet() == ["dev-on-blue-1", "dev-on-blue-2"].toSet()
 	}
 
-	def "should fail validation of serial device when periodBetweenAskingForDataInSec #description"() {
+	def "should fail validation of MySensors device when wires are not exactly BROWN and BROWN_WHITE"() {
 		given:
 		def devices = [
-			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE], ["periodBetweenAskingForDataInSec": wrongValue.toString()]),
-			someDevice("correctConfig", "device2", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE], ["periodBetweenAskingForDataInSec": correctValue.toString()]),
+			someDevice("withWrongConfig1", "device1", DeviceType.BME280, [], [mySensorsNodeId: "3"]),
+			someDevice("withWrongConfig2", "device2", DeviceType.BME280, [WireColor.GREEN], [mySensorsNodeId: "4"]),
+			someDevice("withWrongConfig3", "device3", DeviceType.BME280, [WireColor.BROWN, WireColor.BLUE], [mySensorsNodeId: "5"]),
+			someDevice("withWrongConfig4", "device4", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE, WireColor.GREEN_WHITE], [mySensorsNodeId: "6"])
 		]
 		def gateway = gatewayWith(roomWith(pointWith(*devices)))
 
@@ -123,23 +125,17 @@ class ConfigValidatorTest extends Specification {
 
 		then:
 		!result.succeeded
-		result.failureReasons*.class.every {  it == SerialDeviceAdditionalConfigValidator.IncorrectPeriodBetweenAskingForData }
+		result.failureReasons*.class.every {  it == MySensorsDeviceWiresValidator.WrongWiresConfigurationForMySensorsDevice }
 
-		List<SerialDeviceAdditionalConfigValidator.IncorrectPeriodBetweenAskingForData> reasons =
-			result.failureReasons.findAll { it instanceof SerialDeviceAdditionalConfigValidator.IncorrectPeriodBetweenAskingForData }
-		reasons*.device.id == ["withWrongConfig"]
-
-		where:
-		description            | wrongValue            | correctValue
-		"is less than 10"      | 9                     | 10
-		"is more then MAX_INT" | Integer.MAX_VALUE + 1 | Integer.MAX_VALUE
+		List<MySensorsDeviceWiresValidator.WrongWiresConfigurationForMySensorsDevice> reasons =
+			result.failureReasons.findAll { it instanceof MySensorsDeviceWiresValidator.WrongWiresConfigurationForMySensorsDevice }
+		reasons*.device.id.toSet() == ["withWrongConfig1", "withWrongConfig2", "withWrongConfig3", "withWrongConfig4"].toSet()
 	}
 
-	def "should fail validation of serial device when acceptablePingPeriodInSec #description"() {
+	def "should fail validation of MySensors-only device when mySensorsNodeId configuration is missing"() {
 		given:
 		def devices = [
-			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN_WHITE], ["acceptablePingPeriodInSec": wrongValue.toString()]),
-			someDevice("correctConfig", "device2", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE], ["acceptablePingPeriodInSec": correctValue.toString()]),
+			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.BROWN, WireColor.BROWN_WHITE])
 		]
 		def gateway = gatewayWith(roomWith(pointWith(*devices)))
 
@@ -148,55 +144,10 @@ class ConfigValidatorTest extends Specification {
 
 		then:
 		!result.succeeded
-		result.failureReasons*.class.every {  it == SerialDeviceAdditionalConfigValidator.IncorrectAcceptablePingPeriod }
+		result.failureReasons*.class.every {  it == MySensorsDeviceAdditionalConfigValidator.MissingNodeId }
 
-		List<SerialDeviceAdditionalConfigValidator.IncorrectAcceptablePingPeriod> reasons =
-			result.failureReasons.findAll { it instanceof SerialDeviceAdditionalConfigValidator.IncorrectAcceptablePingPeriod }
-		reasons*.device.id == ["withWrongConfig"]
-
-		where:
-		description            | wrongValue            | correctValue
-		"is less than 10"      | 9                     | 10
-		"is more then MAX_INT" | Integer.MAX_VALUE + 1 | Integer.MAX_VALUE
-	}
-
-	def "should fail validation of serial device when number of configured wires is not 2"() {
-		given:
-		def devices = [
-			someDevice("withWrongConfig1", "device1", DeviceType.BME280, []),
-			someDevice("withWrongConfig2", "device2", DeviceType.BME280, [WireColor.GREEN]),
-			someDevice("withWrongConfig3", "device3", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE, WireColor.GREEN_WHITE])
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
-
-		List<SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice> reasons =
-			result.failureReasons.findAll { it instanceof SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
-		reasons*.device.id.toSet() == ["withWrongConfig1", "withWrongConfig2", "withWrongConfig3"].toSet()
-	}
-
-	def "should fail validation of serial device when it has set same wire twice"() {
-		given:
-		def devices = [
-			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.GREEN, WireColor.GREEN]),
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
-
-		List<SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice> reasons =
-			result.failureReasons.findAll { it instanceof SerialDeviceWiresValidator.WrongWiresConfigurationForSerialDevice }
+		List<MySensorsDeviceAdditionalConfigValidator.MissingNodeId> reasons =
+			result.failureReasons.findAll { it instanceof MySensorsDeviceAdditionalConfigValidator.MissingNodeId }
 		reasons*.device.id == ["withWrongConfig"]
 	}
 
@@ -365,14 +316,14 @@ class ConfigValidatorTest extends Specification {
 
   static GatewaySystemProperties prepareSystemProperties(ExpanderConfiguration expanderConfiguration = null,
                                                          Mcp23017Configuration mcp23017Configuration = null,
-                                                         Serial serialConfiguration = null) {
+                                                         MySensors mySensors = null) {
 
     def defaultExpanderConfiguration = new ExpanderConfiguration(false)
     def defaultMcp23017Configuration = new Mcp23017Configuration(expanderConfiguration ?: defaultExpanderConfiguration, null)
-    def defaultSerialConfiguration = new Serial(true, "/dev/serial", 9600)
+    def mySensorsDefaultConfiguration = new MySensors(true, "/dev/myserial")
 
     def componentsConfiguration = new ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration,
-                                                              serialConfiguration ?: defaultSerialConfiguration)
+                                                              mySensors ?: mySensorsDefaultConfiguration)
     return new GatewaySystemProperties("eth0",
                                        GatewaySystemProperties.SystemPlatform.SIMULATED,
                                        expanderConfiguration ?: defaultExpanderConfiguration,

@@ -14,7 +14,6 @@ import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.hardware.MqSerial
-import com.mqgateway.core.utils.SerialConnection
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.homie.HomieDevice
@@ -22,6 +21,8 @@ import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.HomieDeviceFactory
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClientFactory
+import com.mqgateway.mysensors.MySensorMessageParser
+import com.mqgateway.mysensors.MySensorsSerialConnection
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import javax.inject.Named
@@ -81,9 +82,9 @@ internal class ComponentsFactory {
     expanderPinProvider: MqExpanderPinProvider,
     gateway: Gateway,
     timersScheduler: TimersScheduler,
-    serialConnection: SerialConnection?
+    mySensorsSerialConnection: MySensorsSerialConnection?
   ): DeviceRegistry {
-    val deviceFactory = DeviceFactory(expanderPinProvider, timersScheduler, serialConnection, systemInfoProvider)
+    val deviceFactory = DeviceFactory(expanderPinProvider, timersScheduler, mySensorsSerialConnection, systemInfoProvider)
     return DeviceRegistry(deviceFactory.createAll(gateway))
   }
 
@@ -107,10 +108,10 @@ internal class ComponentsFactory {
   fun homieReceiver(deviceRegistry: DeviceRegistry) = GatewayHomieReceiver(deviceRegistry)
 
   @Singleton
-  @Requires(property = "gateway.system.components.serial.enabled", value = "true")
-  fun serialConnection(serial: MqSerial): SerialConnection {
-    val serialConnection = SerialConnection(serial)
-    serialConnection.init()
-    return serialConnection
+  @Requires(property = "gateway.system.components.mysensors.enabled", value = "true")
+  fun mySensorsSerialConnection(serial: MqSerial): MySensorsSerialConnection {
+    val mySensorsSerialConnection = MySensorsSerialConnection(serial, MySensorMessageParser())
+    mySensorsSerialConnection.init()
+    return mySensorsSerialConnection
   }
 }

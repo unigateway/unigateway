@@ -6,10 +6,10 @@ This case fits MqGateway and I/O Expander. It is based on standard 1U rack 19" s
 
 ![MqGateway case project](https://github.com/aetas/mqgateway-case/raw/main/images/mqgateway-front.png)
 
-CAD project describes cutting front of the case.
-It has also fixed the position of the hole for USB and Ethernet (on the left) visible on the photo above.
+CAD project describes cutting front of the case.  
+It has corrected position of the hole for USB and Ethernet (on the left) comparing to the photo above.
 
-#### Download:
+#### Download
 - [FreeCad file](https://github.com/aetas/mqgateway-case/raw/main/CAD/mqgateway-front.FCStd)
 - [DXF file](https://github.com/aetas/mqgateway-case/raw/main/CAD/mqgateway-front.dxf)
 - [SVG File](https://github.com/aetas/mqgateway-case/raw/main/mqgateway-front.svg)

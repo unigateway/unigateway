@@ -7,6 +7,6 @@ gateway:
     components:
       mcp23017:
         ports: ["20","21","22","23"]
-      serial:
-        enabled: true
-        device: "/dev/tty1"
+      mysensors:
+        enabled: false
+        serial-device: "/myserial"
