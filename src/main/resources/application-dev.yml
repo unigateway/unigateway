@@ -8,5 +8,5 @@ gateway:
       mcp23017:
         ports: ["20","21","22","23"]
       mysensors:
-        enabled: false
+        enabled: true
         serial-device: "/myserial"

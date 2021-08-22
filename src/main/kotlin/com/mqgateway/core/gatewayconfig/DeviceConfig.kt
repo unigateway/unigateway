@@ -5,6 +5,7 @@ import com.mqgateway.core.gatewayconfig.DataType.ENUM
 import com.mqgateway.core.gatewayconfig.DataType.FLOAT
 import com.mqgateway.core.gatewayconfig.DataType.INTEGER
 import com.mqgateway.core.gatewayconfig.DataType.STRING
+import com.mqgateway.core.gatewayconfig.DataUnit.BYTES
 import com.mqgateway.core.gatewayconfig.DataUnit.CELSIUS
 import com.mqgateway.core.gatewayconfig.DataUnit.PASCAL
 import com.mqgateway.core.gatewayconfig.DataUnit.PERCENT
@@ -65,7 +66,7 @@ data class DeviceProperty(
 enum class DeviceType(vararg val properties: Property) {
   MQGATEWAY(
     Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
-    Property(MEMORY, INTEGER, null, retained = true),
+    Property(MEMORY, INTEGER, null, retained = true, unit = BYTES),
     Property(UPTIME, INTEGER, null, retained = true, unit = SECOND),
     Property(IP_ADDRESS, STRING, null, retained = true)
   ),
@@ -129,9 +130,9 @@ enum class DataType {
   INTEGER, FLOAT, BOOLEAN, STRING, ENUM, COLOR, DATETIME
 }
 
-enum class DataUnit(val value: String) {
+enum class DataUnit(val value: String?) {
   CELSIUS("°C"), FAHRENHEIT("°F"), DEGREE("°"), LITER("L"), GALON("gal"), VOLTS("V"), WATT("W"), AMPERE("A"), PERCENT("%"),
-  METER("m"), FEET("ft"), PASCAL("Pa"), PSI("psi"), COUNT("#"), NONE("_"), SECOND("s")
+  METER("m"), FEET("ft"), PASCAL("Pa"), PSI("psi"), COUNT("#"), SECOND("s"), BYTES("B"), NONE(null)
 }
 
 enum class WireColor(val number: Int) {

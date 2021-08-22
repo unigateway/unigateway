@@ -445,25 +445,28 @@ class HomeAssistantConverterTest extends Specification {
 			assert sensorComponent.properties.device.viaDevice == null
 			assert sensorComponent.properties.device.name == gateway.name
 			assert sensorComponent.componentType == HomeAssistantComponentType.SENSOR
-			assert sensorComponent.name == gateway.name
 			assert sensorComponent.properties.nodeId == gateway.name
 			assert sensorComponent.availabilityTopic == "homie/${gateway.name}/\$state"
 			assert sensorComponent.payloadAvailable == "ready"
 			assert sensorComponent.payloadNotAvailable == "lost"
 		}
 
+    temperature.name == "CPU temperature"
 		temperature.stateTopic == expectedStateTopic(gateway.name, gateway.name, TEMPERATURE.toString())
 		temperature.unitOfMeasurement == DataUnit.CELSIUS.value
 		temperature.properties.objectId == gateway.name + "_CPU_TEMPERATURE"
 		temperature.uniqueId == gateway.name + "_" + gateway.name + "_CPU_TEMPERATURE"
+    freeMemory.name == "Free memory"
 		freeMemory.stateTopic == expectedStateTopic(gateway.name, gateway.name, MEMORY.toString())
-		freeMemory.unitOfMeasurement == DataUnit.NONE.value
+		freeMemory.unitOfMeasurement == DataUnit.BYTES.value
 		freeMemory.properties.objectId == gateway.name + "_MEMORY_FREE"
 		freeMemory.uniqueId == gateway.name + "_" + gateway.name + "_MEMORY_FREE"
+    uptime.name == "Uptime"
 		uptime.stateTopic == expectedStateTopic(gateway.name, gateway.name, UPTIME.toString())
 		uptime.unitOfMeasurement == DataUnit.SECOND.value
 		uptime.properties.objectId == gateway.name + "_UPTIME"
 		uptime.uniqueId == gateway.name + "_" + gateway.name + "_UPTIME"
+    ipAddress.name == "IP address"
 		ipAddress.stateTopic == expectedStateTopic(gateway.name, gateway.name, IP_ADDRESS.toString())
 		ipAddress.unitOfMeasurement == DataUnit.NONE.value
 		ipAddress.properties.objectId == gateway.name + "_IP_ADDRESS"

@@ -340,7 +340,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
     return listOf(
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gateway.name, "${gateway.name}_CPU_TEMPERATURE"),
-        gateway.name,
+        "CPU temperature",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
@@ -350,7 +350,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gateway.name, "${gateway.name}_MEMORY_FREE"),
-        gateway.name,
+        "Free memory",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
@@ -360,7 +360,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gateway.name, "${gateway.name}_UPTIME"),
-        gateway.name,
+        "Uptime",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
@@ -370,7 +370,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gateway.name, "${gateway.name}_IP_ADDRESS"),
-        gateway.name,
+        "IP address",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
