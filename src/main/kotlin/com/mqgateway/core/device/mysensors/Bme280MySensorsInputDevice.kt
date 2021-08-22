@@ -1,6 +1,7 @@
 package com.mqgateway.core.device.mysensors
 
 import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.mqgateway.mysensors.MySensorsSerialConnection
 
 class Bme280MySensorsInputDevice @JvmOverloads constructor(
@@ -11,7 +12,8 @@ class Bme280MySensorsInputDevice @JvmOverloads constructor(
   temperatureChildSensorId: Int = DEFAULT_TEMPERATURE_CHILD_SENSOR_ID,
   pressureChildSensorId: Int = DEFAULT_PRESSURE_CHILD_SENSOR_ID,
   debugChildSensorId: Int = DEFAULT_DEBUG_CHILD_SENSOR_ID,
-) : MySensorsDevice(id, DeviceType.BME280, mySensorsNodeId, serialConnection) {
+  resetPin: MqGpioPinDigitalOutput? = null
+) : MySensorsDevice(id, DeviceType.BME280, mySensorsNodeId, serialConnection, resetPin) {
 
   private val sensorsTypes = mapOf(
     Pair(humidityChildSensorId, SensorType.HUMIDITY),

@@ -7,10 +7,12 @@ import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_HUMI
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_MY_SENSORS_NODE_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_PRESSURE_CHILD_SENSOR_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_TEMPERATURE_CHILD_SENSOR_ID
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_USE_RESET_PIN
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceConfig.UnexpectedDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.WireColor
 import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
@@ -80,6 +82,11 @@ class DeviceFactory(
           val tempChildSensorId = deviceConfig.config[CONFIG_TEMPERATURE_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_TEMPERATURE_CHILD_SENSOR_ID
           val pressureChildSensorId = deviceConfig.config[CONFIG_PRESSURE_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_PRESSURE_CHILD_SENSOR_ID
           val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_DEBUG_CHILD_SENSOR_ID
+          val resetPin = if (deviceConfig.config[CONFIG_USE_RESET_PIN]?.toBoolean() != false) {
+            pinProvider.pinDigitalOutput(portNumber, WireColor.GREEN, deviceConfig.id + "_resetPin")
+          } else {
+            null
+          }
           Bme280MySensorsInputDevice(
             deviceConfig.id,
             nodeId,
@@ -87,7 +94,8 @@ class DeviceFactory(
             humidityChildSensorId,
             tempChildSensorId,
             pressureChildSensorId,
-            debugChildSensorId
+            debugChildSensorId,
+            resetPin
           )
         }
         DeviceType.EMULATED_SWITCH -> {
@@ -101,13 +109,19 @@ class DeviceFactory(
           val humidityChildSensorId = deviceConfig.config[CONFIG_HUMIDITY_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_HUMIDITY_CHILD_SENSOR_ID
           val tempChildSensorId = deviceConfig.config[CONFIG_TEMPERATURE_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_TEMPERATURE_CHILD_SENSOR_ID
           val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_DEBUG_CHILD_SENSOR_ID
+          val resetPin = if (deviceConfig.config[CONFIG_USE_RESET_PIN]?.toBoolean() != false) {
+            pinProvider.pinDigitalOutput(portNumber, WireColor.GREEN, deviceConfig.id + "_resetPin")
+          } else {
+            null
+          }
           Dht22MySensorsInputDevice(
             deviceConfig.id,
             nodeId,
             mySensorsSerialConnection,
             humidityChildSensorId,
             tempChildSensorId,
-            debugChildSensorId
+            debugChildSensorId,
+            resetPin
           )
         }
         DeviceType.TIMER_SWITCH -> {

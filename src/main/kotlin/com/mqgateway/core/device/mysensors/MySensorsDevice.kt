@@ -3,9 +3,11 @@ package com.mqgateway.core.device.mysensors
 import com.mqgateway.core.device.Device
 import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.mqgateway.mysensors.Message
 import com.mqgateway.mysensors.MySensorsSerialConnection
 import com.mqgateway.mysensors.MySensorsSerialListener
+import com.pi4j.io.gpio.PinState
 import mu.KotlinLogging
 import java.time.LocalDateTime
 
@@ -15,12 +17,14 @@ abstract class MySensorsDevice(
   id: String,
   type: DeviceType,
   private val mySensorsNodeId: Int,
-  private val serialConnection: MySensorsSerialConnection
+  private val serialConnection: MySensorsSerialConnection,
+  private val resetPin: MqGpioPinDigitalOutput?
 ) : Device(id, type), MySensorsSerialListener {
 
   override fun initDevice() {
     super.initDevice()
     serialConnection.registerDeviceListener(mySensorsNodeId, this)
+    resetPin?.setState(PinState.HIGH)
   }
 
   protected abstract fun sensorsTypes(): Map<Int, SensorType>
@@ -55,5 +59,6 @@ abstract class MySensorsDevice(
     const val CONFIG_TEMPERATURE_CHILD_SENSOR_ID = "temperatureChildSensorId"
     const val CONFIG_PRESSURE_CHILD_SENSOR_ID = "pressureChildSensorId"
     const val CONFIG_DEBUG_CHILD_SENSOR_ID = "debugChildSensorId"
+    const val CONFIG_USE_RESET_PIN = "useResetPin"
   }
 }

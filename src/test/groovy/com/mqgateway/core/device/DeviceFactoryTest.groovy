@@ -13,6 +13,7 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.WireColor
+import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.hardware.simulated.SimulatedExpanderPinProvider
 import com.mqgateway.core.hardware.simulated.SimulatedGpioController
 import com.mqgateway.core.hardware.simulated.SimulatedMcpExpanders
@@ -119,6 +120,26 @@ class DeviceFactoryTest extends Specification {
 		device.type == DeviceType.BME280
 	}
 
+	def "should create BME280 without reset button only when it is specifically configured"() {
+		given:
+		def deviceConfig = new DeviceConfig("myBME280", "Test BME280 device", DeviceType.BME280, [WireColor.BROWN, WireColor.BROWN_WHITE],
+                                        configuration, [:])
+		Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
+    def mockPinProvider = Mock(MqExpanderPinProvider)
+    DeviceFactory deviceFactory = new DeviceFactory(mockPinProvider, new TimersScheduler(), mySensorsSerialConnection, new FakeSystemInfoProvider())
+
+		when:
+		deviceFactory.createAll(gateway)
+
+		then:
+		numberOfExpectedCallsToGetResetPin * mockPinProvider.pinDigitalOutput(10, WireColor.GREEN, "myBME280_resetPin", PinState.HIGH)
+
+    where:
+    configuration                                 | numberOfExpectedCallsToGetResetPin
+    [mySensorsNodeId: "11"]                       | 1
+    [mySensorsNodeId: "11", useResetPin: "false"] | 0
+	}
+
   def "should create BME280 with custom childSensorIds"() {
     given:
     def listenerStub = new UpdateListenerStub()
@@ -166,6 +187,26 @@ class DeviceFactoryTest extends Specification {
 		device.id == "myDHT22"
 		device.type == DeviceType.DHT22
 	}
+
+  def "should create DHT22 without reset button only when it is specifically configured"() {
+    given:
+    def deviceConfig = new DeviceConfig("myDHT22", "Test DHT22 device", DeviceType.DHT22, [WireColor.BROWN, WireColor.BROWN_WHITE],
+                                        configuration, [:])
+    Gateway gateway = gateway([room([point("point name", 10, [deviceConfig])])])
+    def mockPinProvider = Mock(MqExpanderPinProvider)
+    DeviceFactory deviceFactory = new DeviceFactory(mockPinProvider, new TimersScheduler(), mySensorsSerialConnection, new FakeSystemInfoProvider())
+
+    when:
+    deviceFactory.createAll(gateway)
+
+    then:
+    numberOfExpectedCallsToGetResetPin * mockPinProvider.pinDigitalOutput(10, WireColor.GREEN, "myDHT22_resetPin", PinState.HIGH)
+
+    where:
+    configuration                                 | numberOfExpectedCallsToGetResetPin
+    [mySensorsNodeId: "11"]                       | 1
+    [mySensorsNodeId: "11", useResetPin: "false"] | 0
+  }
 
   def "should create DTH22 with custom childSensorIds"() {
     given:
