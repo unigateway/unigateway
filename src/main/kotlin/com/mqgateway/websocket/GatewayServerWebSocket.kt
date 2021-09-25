@@ -46,7 +46,25 @@ class GatewayServerWebSocket(private val gatewayDeviceRegistry: DeviceRegistry, 
   class DeviceNotFoundError(deviceId: String) : MessageWrapper<String>(MessageType.REJECT, "Device with id '$deviceId' not found")
   class OkResponseMessage : MessageWrapper<String>(MessageType.ACKNOWLEDGE, "OK")
   class GeneralError(message: String) : MessageWrapper<String>(MessageType.ERROR, message)
-  open class MessageWrapper<T>(val type: MessageType, val message: T)
+  open class MessageWrapper<T>(val type: MessageType, val message: T) {
+    override fun equals(other: Any?): Boolean {
+      if (this === other) return true
+      if (javaClass != other?.javaClass) return false
+
+      other as MessageWrapper<*>
+
+      if (type != other.type) return false
+      if (message != other.message) return false
+
+      return true
+    }
+
+    override fun hashCode(): Int {
+      var result = type.hashCode()
+      result = 31 * result + (message?.hashCode() ?: 0)
+      return result
+    }
+  }
   enum class MessageType {
     INITIAL_STATE_LIST,
     ACKNOWLEDGE,

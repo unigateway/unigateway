@@ -44,4 +44,10 @@ class MqGateway(
 
     LOGGER.info { "Initialization finished successfully. Running normally." }
   }
+
+  fun close() {
+    LOGGER.info { "Closing MqGateway..." }
+    homieDevice.disconnect()
+    LOGGER.info { "MqGateway closed" }
+  }
 }

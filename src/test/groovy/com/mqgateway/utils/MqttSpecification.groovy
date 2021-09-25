@@ -18,4 +18,9 @@ class MqttSpecification extends Specification {
   static int mosquittoPort() {
     return mosquittoContainer.getMappedPort(MOSQUITTO_INTERNAL_PORT)
   }
+
+  static void cleanupMqtt() {
+    mosquittoContainer.stop()
+    mosquittoContainer.start()
+  }
 }

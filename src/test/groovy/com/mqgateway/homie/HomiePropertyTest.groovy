@@ -25,6 +25,7 @@ class HomiePropertyTest extends Specification {
 
 		when:
 		homieProperty.setup$mqgateway(mqttClientStub, homieReceiverStub)
+    homieProperty.initializeValue$mqgateway(homieReceiverStub)
 
 		then:
 		homieReceiverStub.initializedProperties["myUniqueProperty"] == "41"

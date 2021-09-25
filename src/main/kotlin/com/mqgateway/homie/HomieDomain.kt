@@ -29,12 +29,14 @@ class HomieDevice(
   private val baseTopic = "$HOMIE_PREFIX/$id"
   private var mqttClient: MqttClient? = null
   private val mqttConnectedListeners: MutableList<MqttConnectedListener> = mutableListOf()
+  private var disconnectionPlanned: Boolean = false
 
   fun addMqttConnectedListener(listener: MqttConnectedListener) {
     mqttConnectedListeners.add(listener)
   }
 
   fun connect() {
+    disconnectionPlanned = false
     val mqttClient = mqttClientFactory.create(id, { mqttConnectedListeners.forEach { it.accept() } }, { onDisconnected() })
     this.mqttClient = mqttClient
     LOGGER.info { "Connecting to MQTT" }
@@ -75,8 +77,17 @@ class HomieDevice(
     LOGGER.debug { "Homie configuration published" }
   }
 
+  fun disconnect() {
+    disconnectionPlanned = true
+    mqttClient?.disconnect()
+  }
+
   private fun onDisconnected() {
-    LOGGER.error { "MQTT connection lost" }
+    if (disconnectionPlanned) {
+      LOGGER.error { "MQTT connection finished" }
+    } else {
+      LOGGER.error { "MQTT connection lost" }
+    }
   }
 
   private fun changeState(newState: State) {

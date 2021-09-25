@@ -2,12 +2,11 @@ package com.mqgateway.websocket
 
 import static groovy.json.JsonOutput.toJson
 
-import com.mqgateway.ApplicationKt
 import com.mqgateway.MqGateway
+import com.mqgateway.utils.MqttSpecification
 import groovy.json.JsonSlurper
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.client.annotation.Client
-import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import io.micronaut.websocket.RxWebSocketClient
 import io.micronaut.websocket.WebSocketSession
@@ -17,14 +16,12 @@ import io.micronaut.websocket.annotation.OnOpen
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.inject.Inject
 import spock.lang.Shared
-import spock.lang.Specification
+import spock.lang.Timeout
 import spock.util.concurrent.PollingConditions
 
-@MicronautTest(application = ApplicationKt.class, packages = ["com.mqgateway"])
-class GatewayServerWebSocketTest extends Specification {
-
-  @Inject
-  EmbeddedServer embeddedServer
+@Timeout(30)
+@MicronautTest
+class GatewayServerWebSocketTest extends MqttSpecification {
 
   @Inject
   @Client("/")
@@ -40,6 +37,10 @@ class GatewayServerWebSocketTest extends Specification {
 
   void setupSpec() {
     mqGateway.initialize()
+  }
+
+  void cleanupSpec() {
+    mqGateway.close()
   }
 
   void setup() {
