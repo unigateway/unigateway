@@ -10,6 +10,12 @@ micronaut:
   server:
     cors:
       enabled: true
+  router:
+    static-resources:
+      default:
+        enabled: true
+        paths: ["classpath:webapp"]
+        mapping: "/ui/**"
 
 gateway:
   app-version: <%=version%>

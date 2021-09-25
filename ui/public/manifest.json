@@ -1,0 +1,20 @@
+{
+  "short_name": "MqGateway",
+  "name": "MqGateway Configuration Portal",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo229.png",
+      "type": "image/png",
+      "sizes": "229x229"
+    }
+  ],
+  "start_url": "/ui",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

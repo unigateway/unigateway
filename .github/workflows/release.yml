@@ -9,6 +9,8 @@ jobs:
   build:
     name: Create release
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -17,6 +19,8 @@ jobs:
         run: |
           echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/v}
           echo ::set-output name=SHA_7::${GITHUB_SHA::7}
+      - name: Run frontend tests
+        run: ./gradlew npmInstall npm_test
       - name: Run tests and release
         run: |
           echo "releasing version: $VERSION_TAG"
@@ -32,7 +36,7 @@ jobs:
           name: tests-results
           path: build/reports/tests/
       - name: Prepare application artifact
-        run: ./gradlew clean shadowJar
+        run: ./gradlew clean copyWebApp shadowJar
       - name: Store JAR file as artifact
         uses: actions/upload-artifact@v2-preview
         with:
