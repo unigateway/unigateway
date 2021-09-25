@@ -12,6 +12,14 @@ private val LOGGER = KotlinLogging.logger {}
 
 class RelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val triggerLevel: PinState) : DigitalOutputDevice(id, DeviceType.RELAY, pin) {
 
+  override fun initProperty(propertyId: String, value: String) {
+    if (propertyId != STATE.toString()) {
+      LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
+      return
+    }
+    change(STATE.toString(), value)
+  }
+
   fun changeState(newState: RelayState) {
     if (newState == CLOSED) {
       pin.setState(closedState())

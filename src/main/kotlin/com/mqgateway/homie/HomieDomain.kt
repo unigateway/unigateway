@@ -28,14 +28,14 @@ class HomieDevice(
 
   private val baseTopic = "$HOMIE_PREFIX/$id"
   private var mqttClient: MqttClient? = null
-  private val mqttConnectedListeners: MutableList<() -> Unit> = mutableListOf()
+  private val mqttConnectedListeners: MutableList<MqttConnectedListener> = mutableListOf()
 
-  fun addMqttConnectedListener(listener: () -> Unit) {
+  fun addMqttConnectedListener(listener: MqttConnectedListener) {
     mqttConnectedListeners.add(listener)
   }
 
   fun connect() {
-    val mqttClient = mqttClientFactory.create(id, { mqttConnectedListeners.forEach { it() } }, { onDisconnected() })
+    val mqttClient = mqttClientFactory.create(id, { mqttConnectedListeners.forEach { it.accept() } }, { onDisconnected() })
     this.mqttClient = mqttClient
     LOGGER.info { "Connecting to MQTT" }
     mqttClient.connect(MqttMessage("$baseTopic/\$state", State.LOST.value, 1, true), true)
@@ -87,6 +87,10 @@ class HomieDevice(
   enum class State(val value: String) {
     INIT("init"), READY("ready"), DISCONNECTED("disconnected"), SLEEPING("sleeping"), LOST("lost"), ALERT("alert")
   }
+
+  fun interface MqttConnectedListener {
+    fun accept()
+  }
 }
 
 data class HomieNode(
@@ -105,6 +109,7 @@ data class HomieNode(
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$properties", properties.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
 
     properties.values.forEach { it.setup(mqttClient, homieReceiver) }
+    properties.values.forEach { it.initializeValue(homieReceiver) }
   }
 }
 
@@ -137,14 +142,18 @@ data class HomieProperty(
     if (unit != Unit.NONE) {
       mqttClient.publishAsync(MqttMessage("$baseTopic/\$unit", unit.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     }
-    if (retained) {
-      LOGGER.debug { "Trying to read current status of ${this.nodeId}.${this.id} from MQTT" }
-      mqttClient.read(baseTopic)?.let {
-        homieReceiver.initProperty(nodeId, id, it)
-      }
-    }
     if (settable) {
       mqttClient.subscribeAsync("$baseTopic/set") { homieReceiver.propertySet(it.topic, it.payload) }
+    }
+  }
+
+  internal fun initializeValue(homieReceiver: HomieReceiver) {
+    if (retained) {
+      LOGGER.debug { "Trying to read current status of ${this.nodeId}.${this.id} from MQTT" }
+      (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call setup() first."))
+        .read(baseTopic)?.let {
+          homieReceiver.initProperty(nodeId, id, it)
+        }
     }
   }
 

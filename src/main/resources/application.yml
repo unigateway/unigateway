@@ -23,6 +23,8 @@ gateway:
       mysensors:
         enabled: false
         serial-device: "/myserial"
+  websocket:
+    enabled: true
 
 homeassistant:
   enabled: true

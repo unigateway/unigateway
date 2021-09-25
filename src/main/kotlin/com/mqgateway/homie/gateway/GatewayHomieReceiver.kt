@@ -13,7 +13,7 @@ class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : 
     LOGGER.debug { "Initializing property ($propertyId $value)" }
     val gatewayDevice = gatewayDeviceRegistry.getById(nodeId) ?: throw DeviceNotFoundException(nodeId)
     LOGGER.trace { "Device found in registry (${gatewayDevice.id})" }
-
+    LOGGER.info { "Initializing node '$nodeId' property '$propertyId' with '$value')" }
     gatewayDevice.initProperty(propertyId, value)
   }
 

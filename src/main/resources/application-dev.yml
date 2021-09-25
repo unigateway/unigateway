@@ -10,3 +10,5 @@ gateway:
       mysensors:
         enabled: true
         serial-device: "/myserial"
+  websocket:
+    enabled: true

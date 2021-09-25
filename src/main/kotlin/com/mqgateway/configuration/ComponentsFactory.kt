@@ -16,11 +16,6 @@ import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.hardware.MqSerial
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
-import com.mqgateway.homie.HomieDevice
-import com.mqgateway.homie.gateway.GatewayHomieReceiver
-import com.mqgateway.homie.gateway.HomieDeviceFactory
-import com.mqgateway.homie.mqtt.HiveMqttClientFactory
-import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.mysensors.MySensorMessageParser
 import com.mqgateway.mysensors.MySensorsSerialConnection
 import io.micronaut.context.annotation.Factory
@@ -77,35 +72,22 @@ internal class ComponentsFactory {
   }
 
   @Singleton
-  fun deviceRegistry(
-    systemInfoProvider: SystemInfoProvider,
+  fun deviceFactory(
     expanderPinProvider: MqExpanderPinProvider,
-    gateway: Gateway,
     timersScheduler: TimersScheduler,
+    systemInfoProvider: SystemInfoProvider,
     mySensorsSerialConnection: MySensorsSerialConnection?
+  ): DeviceFactory {
+    return DeviceFactory(expanderPinProvider, timersScheduler, mySensorsSerialConnection, systemInfoProvider)
+  }
+
+  @Singleton
+  fun deviceRegistry(
+    gateway: Gateway,
+    deviceFactory: DeviceFactory
   ): DeviceRegistry {
-    val deviceFactory = DeviceFactory(expanderPinProvider, timersScheduler, mySensorsSerialConnection, systemInfoProvider)
     return DeviceRegistry(deviceFactory.createAll(gateway))
   }
-
-  @Singleton
-  fun mqttClientFactory(gateway: Gateway): MqttClientFactory = HiveMqttClientFactory(gateway.mqttHostname)
-
-  @Singleton
-  fun homieDevice(
-    mqttClientFactory: MqttClientFactory,
-    homieReceiver: GatewayHomieReceiver,
-    gatewayApplicationProperties: GatewayApplicationProperties,
-    gatewaySystemProperties: GatewaySystemProperties,
-    gateway: Gateway
-  ): HomieDevice {
-
-    return HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)
-      .toHomieDevice(gateway, gatewaySystemProperties.networkAdapter)
-  }
-
-  @Singleton
-  fun homieReceiver(deviceRegistry: DeviceRegistry) = GatewayHomieReceiver(deviceRegistry)
 
   @Singleton
   @Requires(property = "gateway.system.components.mysensors.enabled", value = "true")
