@@ -38,7 +38,7 @@ class GatewayServerWebSocket(private val gatewayDeviceRegistry: DeviceRegistry, 
 
   @OnError
   fun onError(clientId: String, exception: Throwable, session: WebSocketSession): Publisher<GeneralError> {
-    LOGGER.error { "WebSocket client '${clientId}' exception: $exception" }
+    LOGGER.error { "WebSocket client '$clientId' exception: $exception" }
     return session.send(GeneralError(exception.message ?: "Unknown error, check logs for more information"))
   }
 
