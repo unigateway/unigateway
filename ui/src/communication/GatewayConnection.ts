@@ -2,6 +2,7 @@ import GatewayRest from "./GatewayRest";
 import {GatewayWS} from "./GatewayWS";
 import {GatewayConfiguration} from "../MqGatewayMutableTypes";
 import ConfigurationReplacementResult from "./ConfigurationReplacementResult";
+import OtherGateway from "./OtherGateway";
 
 
 export default class GatewayConnection {
@@ -28,5 +29,9 @@ export default class GatewayConnection {
 
   async sendNewConfig(newConfigurationYaml: string): Promise<ConfigurationReplacementResult> {
     return await this.rest.sendNewConfig(newConfigurationYaml)
+  }
+
+  async fetchOtherGateways(): Promise<OtherGateway[]> {
+    return await this.rest.fetchOtherGateways()
   }
 }

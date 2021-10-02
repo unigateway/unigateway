@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from '@material-ui/core/Link';
 import {makeStyles, Theme} from '@material-ui/core/styles';
-import Title from '../components/Title';
+import Title from './Title';
 
 const useStyles = makeStyles((theme: Theme) => ({
   seeMore: {
