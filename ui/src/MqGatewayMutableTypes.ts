@@ -49,6 +49,36 @@ class GatewayConfiguration {
     return this.rooms.find(it => it.name === roomName)!
   }
 
+  findRoomByUuid(uuid: string): Room | undefined {
+    return this.rooms.find(room => room.uuid === uuid)
+  }
+
+  addRoom(room: Room) {
+    if (this.getRoom(room.name)) {
+      throw new Error("Room with this name already exists")
+    }
+    this.rooms.push(room)
+  }
+
+  deleteRoom(roomUuid: string) {
+    const roomIndex = this.rooms.findIndex(it => it.uuid === roomUuid)
+    this.rooms.splice(roomIndex, 1)
+    this.isModified = true
+  }
+
+  findPointByUuid(uuid: string): Point | undefined {
+    return this.rooms.flatMap(room => room.points).find(point => point.uuid === uuid)
+  }
+
+  pointLocation(pointUuid: string): Room | null {
+    const room = this.rooms.find(room => room.points.find(point => point.uuid === pointUuid))
+    if (room) {
+      return room
+    } else {
+      return null
+    }
+  }
+
   findDevice(deviceId: string): Device | undefined {
     return this.rooms.flatMap(room => room.points).flatMap(point => point.devices).find(device => device.id === deviceId)
   }
@@ -86,7 +116,7 @@ class Room {
   name: string
   points: Point[]
 
-  constructor(name: string, points: Point[]) {
+  constructor(name: string, points: Point[], readonly uuid: string = uuidv4()) {
     this.name = name;
     this.points = points;
   }
@@ -97,6 +127,18 @@ class Room {
 
   getPoint(pointName: string) {
     return this.points.find(it => it.name === pointName)!
+  }
+
+  addPoint(point: Point) {
+    if (this.getPoint(point.name)) {
+      throw new Error("Point with this name already exists in this room")
+    }
+    this.points.push(point)
+  }
+
+  deletePoint(pointUuid: string) {
+    const pointIndex = this.points.findIndex(it => it.uuid === pointUuid)
+    this.points.splice(pointIndex, 1)
   }
 
   toDataObject(): RoomData {
@@ -110,7 +152,7 @@ class Point {
   devices: Device[]
   isModified: boolean = false
 
-  constructor(name: string, portNumber: number, devices: Device[]) {
+  constructor(name: string, portNumber: number, devices: Device[], readonly uuid: string = uuidv4()) {
     this.name = name;
     this.portNumber = portNumber;
     this.devices = devices;
