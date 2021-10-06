@@ -3,6 +3,7 @@ import {GatewayWS} from "./GatewayWS";
 import {GatewayConfiguration} from "../MqGatewayMutableTypes";
 import ConfigurationReplacementResult from "./ConfigurationReplacementResult";
 import OtherGateway from "./OtherGateway";
+import GatewayStatusResource from "./GatewayStatusResource";
 
 
 export default class GatewayConnection {
@@ -33,5 +34,9 @@ export default class GatewayConnection {
 
   async fetchOtherGateways(): Promise<OtherGateway[]> {
     return await this.rest.fetchOtherGateways()
+  }
+
+  async fetchStatus(): Promise<GatewayStatusResource> {
+    return await this.rest.fetchStatus()
   }
 }

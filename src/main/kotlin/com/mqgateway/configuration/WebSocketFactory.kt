@@ -1,7 +1,7 @@
 package com.mqgateway.configuration
 
-import com.mqgateway.websocket.GatewayDevicesStateHandler
-import com.mqgateway.websocket.GatewayWebSocketUpdateListener
+import com.mqgateway.webapi.GatewayDevicesStateHandler
+import com.mqgateway.webapi.GatewayWebSocketUpdateListener
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import io.micronaut.websocket.WebSocketBroadcaster

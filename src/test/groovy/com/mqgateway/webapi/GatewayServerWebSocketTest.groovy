@@ -1,4 +1,4 @@
-package com.mqgateway.websocket
+package com.mqgateway.webapi
 
 import static groovy.json.JsonOutput.toJson
 

@@ -1,4 +1,5 @@
-package com.mqgateway.websocket
+package com.mqgateway.webapi
+
 
 import io.micronaut.http.MediaType
 import io.micronaut.websocket.WebSocketBroadcaster

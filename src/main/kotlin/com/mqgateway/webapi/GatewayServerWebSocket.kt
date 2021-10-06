@@ -1,4 +1,4 @@
-package com.mqgateway.websocket
+package com.mqgateway.webapi
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.mqgateway.core.device.DeviceRegistry

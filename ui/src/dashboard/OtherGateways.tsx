@@ -42,6 +42,13 @@ export default function OtherGateways() {
       <Title>Other gateways</Title>
       <Container className={classes.listContainer}>
       <List dense={true} component="nav" disablePadding={true}>
+        {data.length === 0 && (
+          <ListItem>
+            <ListItemText
+              primary="No other gateways found"
+            />
+          </ListItem>
+        )}
         {data.map((gateway) =>
           (<ListItem button key={gateway.ipAddress} onClick={() => redirectToGateway(gateway)}>
             <ListItemText

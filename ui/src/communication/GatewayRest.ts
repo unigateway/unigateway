@@ -3,6 +3,7 @@ import ConfigurationReplacementResult from "./ConfigurationReplacementResult";
 import {GatewayConfiguration as GatewayConfigurationData} from "./MqgatewayTypes";
 import yaml from "js-yaml";
 import OtherGateway from "./OtherGateway";
+import GatewayStatusResource from "./GatewayStatusResource";
 
 export default class GatewayRest {
 
@@ -39,6 +40,11 @@ export default class GatewayRest {
 
   async fetchOtherGateways(): Promise<OtherGateway[]> {
     const result = await axios.get(`${ this.url }/discovery`)
+    return result.data
+  }
+
+  async fetchStatus(): Promise<GatewayStatusResource> {
+    const result = await axios.get(`${ this.url }/status`)
     return result.data
   }
 

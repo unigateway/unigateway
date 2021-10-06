@@ -53,7 +53,6 @@ export default function Topology() {
     handleCloseRoomDetailsDialog()
   }
 
-  // TODO correct console log errors
   const handleSaveRoomDetails = (roomForm: RoomForm) => {
     setGatewayConfiguration(previousGatewayConfiguration => {
       const existingRoom = previousGatewayConfiguration.findRoomByUuid(roomForm.uuid!)

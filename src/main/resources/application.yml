@@ -16,6 +16,9 @@ micronaut:
         enabled: true
         paths: ["classpath:webapp"]
         mapping: "/ui/**"
+  caches:
+    mq-gateway-latest-release:
+      expire-after-write: 5m
 
 gateway:
   app-version: <%=version%>
@@ -31,6 +34,9 @@ gateway:
         serial-device: "/myserial"
   websocket:
     enabled: true
+  update:
+    host: https://api.github.com
+    path: /repos/aetas/mqgateway/releases/latest
 
 homeassistant:
   enabled: true

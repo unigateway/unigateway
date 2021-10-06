@@ -1,4 +1,4 @@
-package com.mqgateway.websocket
+package com.mqgateway.webapi
 
 import spock.lang.Specification
 import spock.lang.Subject

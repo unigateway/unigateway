@@ -28,16 +28,16 @@ class HomieDevice(
 
   private val baseTopic = "$HOMIE_PREFIX/$id"
   private var mqttClient: MqttClient? = null
-  private val mqttConnectedListeners: MutableList<MqttConnectedListener> = mutableListOf()
+  private val mqttConnectionListeners: MutableList<MqttConnectionListener> = mutableListOf()
   private var disconnectionPlanned: Boolean = false
 
-  fun addMqttConnectedListener(listener: MqttConnectedListener) {
-    mqttConnectedListeners.add(listener)
+  fun addMqttConnectedListener(listener: MqttConnectionListener) {
+    mqttConnectionListeners.add(listener)
   }
 
   fun connect() {
     disconnectionPlanned = false
-    val mqttClient = mqttClientFactory.create(id, { mqttConnectedListeners.forEach { it.accept() } }, { onDisconnected() })
+    val mqttClient = mqttClientFactory.create(id, { mqttConnectionListeners.forEach { it.onConnected() } }, { onDisconnected() })
     this.mqttClient = mqttClient
     LOGGER.info { "Connecting to MQTT" }
     mqttClient.connect(MqttMessage("$baseTopic/\$state", State.LOST.value, 1, true), true)
@@ -99,8 +99,9 @@ class HomieDevice(
     INIT("init"), READY("ready"), DISCONNECTED("disconnected"), SLEEPING("sleeping"), LOST("lost"), ALERT("alert")
   }
 
-  fun interface MqttConnectedListener {
-    fun accept()
+  interface MqttConnectionListener {
+    fun onConnected()
+    fun onDisconnect()
   }
 }
 
