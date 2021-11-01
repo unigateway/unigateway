@@ -52,7 +52,7 @@ dependencies {
 
     // Logging
     implementation 'io.github.microutils:kotlin-logging-jvm:2.0.6'
-    runtimeOnly 'ch.qos.logback:logback-classic'
+    implementation 'ch.qos.logback:logback-classic'
 
     // Pi4J
     implementation 'com.pi4j:pi4j-core:1.2'
@@ -179,3 +179,4 @@ task copyWebApp(type: Copy) {
 
 npmBuild.dependsOn npmInstall
 copyWebApp.dependsOn npmBuild
+shadowJar.dependsOn copyWebApp

@@ -4,6 +4,7 @@ import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.device.UpdateListener
 import com.mqgateway.discovery.MulticastDnsServiceDiscovery
 import com.mqgateway.homie.HomieDevice
+import com.mqgateway.webapi.WebSocketLogAppender
 import io.micronaut.runtime.Micronaut.build
 import mu.KotlinLogging
 import javax.inject.Singleton
@@ -34,7 +35,8 @@ class MqGateway(
   private val deviceRegistry: DeviceRegistry,
   private val homieDevice: HomieDevice,
   private val updateListeners: List<UpdateListener>,
-  private val multiCastDnsServiceDiscovery: MulticastDnsServiceDiscovery
+  private val multiCastDnsServiceDiscovery: MulticastDnsServiceDiscovery,
+  private val webSocketLogAppender: WebSocketLogAppender
 ) {
 
   fun initialize() {
@@ -44,6 +46,7 @@ class MqGateway(
     homieDevice.connect()
     deviceRegistry.initializeDevices()
     multiCastDnsServiceDiscovery.init()
+    webSocketLogAppender.init()
 
     LOGGER.info { "Initialization finished successfully. Running normally." }
   }

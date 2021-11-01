@@ -93,7 +93,7 @@ class WebSocketBroadcasterStub implements WebSocketBroadcaster {
 
   @Override
   <T> void broadcastSync(T message, Predicate<WebSocketSession> filter) {
-    throw new NotImplementedError()
+    broadcastSync(message)
   }
 
   @Override

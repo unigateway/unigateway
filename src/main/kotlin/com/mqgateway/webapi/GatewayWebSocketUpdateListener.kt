@@ -11,7 +11,7 @@ class GatewayWebSocketUpdateListener(private val broadcaster: WebSocketBroadcast
         GatewayServerWebSocket.MessageType.STATE_UPDATE,
         UpdateMessage(deviceId, propertyId, newValue)
       )
-    )
+    ) { it.attributes.getValue("type") == "devices" }
   }
 
   data class UpdateMessage(val deviceId: String, val propertyId: String, val newValue: String)

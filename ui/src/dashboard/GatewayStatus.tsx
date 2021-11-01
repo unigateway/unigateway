@@ -52,7 +52,7 @@ export default function GatewayStatus() {
       })
     }, 10000)
     return () => clearInterval(interval)
-  }, [])
+  }, [gatewayConnection])
 
   const isUpgradeAvailable = (currentVersion: string, latestVersion: string) => {
     const cleanedVersion = currentVersion.substr(0, currentVersion.indexOf("-"))

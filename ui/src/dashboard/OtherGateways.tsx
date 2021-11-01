@@ -31,7 +31,7 @@ export default function OtherGateways() {
     }, 7000)
     return () => clearInterval(interval)
 
-  }, [])
+  }, [gatewayConnection])
 
   const redirectToGateway = (gateway: OtherGateway) => {
     window.location.replace(`http://${gateway.ipAddress}:${gateway.portNumber}/ui`)

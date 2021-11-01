@@ -19,6 +19,7 @@ class GatewayServerWebSocket(private val gatewayDeviceRegistry: DeviceRegistry, 
   @OnOpen
   fun onOpen(clientId: String, session: WebSocketSession): Publisher<MessageWrapper<List<DeviceState>>> {
     LOGGER.info { "Client $clientId connected" }
+    session.attributes.put("type", "devices")
     return session.send(MessageWrapper(MessageType.INITIAL_STATE_LIST, devicesStateHandler.devicesState()))
   }
 
@@ -70,6 +71,8 @@ class GatewayServerWebSocket(private val gatewayDeviceRegistry: DeviceRegistry, 
     ACKNOWLEDGE,
     REJECT,
     ERROR,
-    STATE_UPDATE
+    STATE_UPDATE,
+    INITIAL_LOGS,
+    LOG
   }
 }

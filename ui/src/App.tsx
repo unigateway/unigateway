@@ -158,6 +158,7 @@ const useStyles = makeStyles((theme) => ({
 
 const gatewayRest = new GatewayRest("")
 const gatewaySocket = new GatewayWS(`ws://${window.location.host}/devices/ui`);
+
 const gatewayConnection = new GatewayConnection(gatewayRest, gatewaySocket)
 
 type ConfigChanger = ((oldConfiguration: GatewayConfiguration) => GatewayConfiguration) | GatewayConfiguration

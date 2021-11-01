@@ -134,7 +134,7 @@ export default function DeviceDetailsDialog(props: DeviceDetailsDialogProps) {
     } else {
       setDeviceForm(new DeviceForm())
     }
-  }, [device])
+  }, [device, gatewayConfiguration])
 
   const handleOpenExtraMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
