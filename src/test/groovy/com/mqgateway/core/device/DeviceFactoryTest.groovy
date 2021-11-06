@@ -9,6 +9,7 @@ import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.mqgateway.core.device.mysensors.Bme280MySensorsInputDevice
 import com.mqgateway.core.device.mysensors.Dht22MySensorsInputDevice
+import com.mqgateway.core.device.mysensors.MotionSensorMySensorsInputDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
@@ -103,6 +104,22 @@ class DeviceFactoryTest extends Specification {
 		device.id == "myMotionDetector"
 		device.type == DeviceType.MOTION_DETECTOR
 	}
+
+  def "should create motion detector as MySensor device when mySensorNodeId is set in config"() {
+    given:
+    def deviceConfig = new DeviceConfig("myMotionDetector", "Test MotionDetector (MySensor)", DeviceType.MOTION_DETECTOR,
+                                        [WireColor.BROWN, WireColor.BROWN_WHITE], [mySensorsNodeId: "11"], [:])
+    Gateway gateway = gateway([room([point("point name", 12, [deviceConfig])])])
+
+    when:
+    def devices = deviceFactory.createAll(gateway)
+
+    then:
+    def device = devices.last()
+    device instanceof MotionSensorMySensorsInputDevice
+    device.id == "myMotionDetector"
+    device.type == DeviceType.MOTION_DETECTOR
+  }
 
 	def "should create BME280"() {
 		given:

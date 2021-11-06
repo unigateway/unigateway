@@ -10,6 +10,7 @@ import com.mqgateway.core.gatewayconfig.DataUnit.CELSIUS
 import com.mqgateway.core.gatewayconfig.DataUnit.PASCAL
 import com.mqgateway.core.gatewayconfig.DataUnit.PERCENT
 import com.mqgateway.core.gatewayconfig.DataUnit.SECOND
+import com.mqgateway.core.gatewayconfig.DevicePropertyType.AVAILABILITY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
@@ -85,22 +86,23 @@ enum class DeviceType(vararg val properties: Property) {
     Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
     Property(PRESSURE, INTEGER, null, retained = true, unit = PASCAL),
     Property(LAST_PING, DATETIME, null, retained = true),
-    Property(STATE, ENUM, "ONLINE,OFFLINE", retained = true)
+    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
   SCT013(
     Property(POWER, INTEGER, null, retained = true, unit = DataUnit.WATT),
     Property(LAST_PING, DATETIME, null, retained = true),
-    Property(STATE, ENUM, "ONLINE,OFFLINE", retained = true)
+    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
   DHT22(
     Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
     Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
     Property(UPTIME, INTEGER, null, retained = false, unit = SECOND),
     Property(LAST_PING, DATETIME, null, retained = true),
-    Property(STATE, ENUM, "ONLINE,OFFLINE", retained = true)
+    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
   MOTION_DETECTOR(
-    Property(STATE, ENUM, "ON,OFF", retained = true)
+    Property(STATE, ENUM, "ON,OFF", retained = true),
+    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
   ),
   EMULATED_SWITCH(
     Property(STATE, ENUM, "PRESSED,RELEASED", settable = true)
@@ -121,7 +123,7 @@ enum class DeviceType(vararg val properties: Property) {
 }
 
 enum class DevicePropertyType {
-  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION, MEMORY, IP_ADDRESS;
+  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION, MEMORY, IP_ADDRESS, AVAILABILITY;
 
   override fun toString(): String = this.name.toLowerCase()
 }

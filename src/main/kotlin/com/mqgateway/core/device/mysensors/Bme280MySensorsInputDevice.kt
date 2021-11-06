@@ -28,6 +28,5 @@ class Bme280MySensorsInputDevice @JvmOverloads constructor(
     const val DEFAULT_HUMIDITY_CHILD_SENSOR_ID = 0
     const val DEFAULT_TEMPERATURE_CHILD_SENSOR_ID = 1
     const val DEFAULT_PRESSURE_CHILD_SENSOR_ID = 2
-    const val DEFAULT_DEBUG_CHILD_SENSOR_ID = 3
   }
 }

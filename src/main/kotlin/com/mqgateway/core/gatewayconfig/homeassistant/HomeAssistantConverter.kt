@@ -167,8 +167,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         )
       }
       DeviceType.BME280 -> {
-        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.STATE)
-
+        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.AVAILABILITY)
         listOf(
           HomeAssistantSensor(
             HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_TEMPERATURE"),
@@ -213,7 +212,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         )
       }
       DeviceType.DHT22 -> {
-        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.STATE)
+        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.AVAILABILITY)
         listOf(
           HomeAssistantSensor(
             HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_TEMPERATURE"),

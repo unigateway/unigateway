@@ -1,5 +1,6 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
+import static com.mqgateway.core.gatewayconfig.DevicePropertyType.AVAILABILITY
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
@@ -249,7 +250,7 @@ class HomeAssistantConverterTest extends Specification {
 			assert sensorComponent.componentType == HomeAssistantComponentType.SENSOR
 			assert sensorComponent.name == "Test bme280"
 			assert sensorComponent.properties.nodeId == "gtwName"
-			assert sensorComponent.availabilityTopic == expectedStateTopic(gateway.name, bme280DeviceConfig.id, STATE.toString())
+			assert sensorComponent.availabilityTopic == expectedStateTopic(gateway.name, bme280DeviceConfig.id, AVAILABILITY.toString())
 			assert sensorComponent.payloadAvailable == "ONLINE"
 			assert sensorComponent.payloadNotAvailable == "OFFLINE"
 		}
@@ -292,7 +293,7 @@ class HomeAssistantConverterTest extends Specification {
 			assert sensorComponent.componentType == HomeAssistantComponentType.SENSOR
 			assert sensorComponent.name == "Test dht22"
 			assert sensorComponent.properties.nodeId == "gtwName"
-			assert sensorComponent.availabilityTopic == expectedStateTopic(gateway.name, dht22DeviceConfig.id, STATE.toString())
+			assert sensorComponent.availabilityTopic == expectedStateTopic(gateway.name, dht22DeviceConfig.id, AVAILABILITY.toString())
 			assert sensorComponent.payloadAvailable == "ONLINE"
 			assert sensorComponent.payloadNotAvailable == "OFFLINE"
 		}

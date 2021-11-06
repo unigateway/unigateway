@@ -2,12 +2,16 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.device.mysensors.Bme280MySensorsInputDevice
 import com.mqgateway.core.device.mysensors.Dht22MySensorsInputDevice
+import com.mqgateway.core.device.mysensors.MotionSensorMySensorsInputDevice
+import com.mqgateway.core.device.mysensors.MotionSensorMySensorsInputDevice.Companion.DEFAULT_MOTION_CHILD_SENSOR_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_DEBUG_CHILD_SENSOR_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_HUMIDITY_CHILD_SENSOR_ID
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_MOTION_CHILD_SENSOR_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_MY_SENSORS_NODE_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_PRESSURE_CHILD_SENSOR_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_TEMPERATURE_CHILD_SENSOR_ID
 import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.CONFIG_USE_RESET_PIN
+import com.mqgateway.core.device.mysensors.MySensorsDevice.Companion.DEFAULT_DEBUG_CHILD_SENSOR_ID
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceConfig.UnexpectedDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceType
@@ -68,11 +72,27 @@ class DeviceFactory(
           ReedSwitchDevice(deviceConfig.id, pin, debounceMs)
         }
         DeviceType.MOTION_DETECTOR -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
-          val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
-          val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
-          MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
+          if (deviceConfig.config.containsKey(CONFIG_MY_SENSORS_NODE_ID)) {
+            mySensorsSerialConnection ?: throw MySensorsSerialDisabledException(deviceConfig.id)
+            val nodeId = deviceConfig.config[CONFIG_MY_SENSORS_NODE_ID]!!.toInt()
+            val motionChildSensorId = deviceConfig.config[CONFIG_MOTION_CHILD_SENSOR_ID]?.toInt() ?: DEFAULT_MOTION_CHILD_SENSOR_ID
+            val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: DEFAULT_DEBUG_CHILD_SENSOR_ID
+            val resetPin = null
+            MotionSensorMySensorsInputDevice(
+              deviceConfig.id,
+              nodeId,
+              mySensorsSerialConnection,
+              motionChildSensorId,
+              debugChildSensorId,
+              resetPin
+            )
+          } else {
+            val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
+            val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
+            val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
+            val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
+            MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
+          }
         }
         DeviceType.BME280 -> {
           mySensorsSerialConnection ?: throw MySensorsSerialDisabledException(deviceConfig.id)
@@ -81,7 +101,7 @@ class DeviceFactory(
           val humidityChildSensorId = deviceConfig.config[CONFIG_HUMIDITY_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_HUMIDITY_CHILD_SENSOR_ID
           val tempChildSensorId = deviceConfig.config[CONFIG_TEMPERATURE_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_TEMPERATURE_CHILD_SENSOR_ID
           val pressureChildSensorId = deviceConfig.config[CONFIG_PRESSURE_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_PRESSURE_CHILD_SENSOR_ID
-          val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: Bme280.DEFAULT_DEBUG_CHILD_SENSOR_ID
+          val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: DEFAULT_DEBUG_CHILD_SENSOR_ID
           val resetPin = if (deviceConfig.config[CONFIG_USE_RESET_PIN]?.toBoolean() != false) {
             pinProvider.pinDigitalOutput(portNumber, WireColor.GREEN, deviceConfig.id + "_resetPin")
           } else {
@@ -108,7 +128,7 @@ class DeviceFactory(
             ?: throw IllegalStateException("Missing configuration: $CONFIG_MY_SENSORS_NODE_ID for device ${deviceConfig.id}")
           val humidityChildSensorId = deviceConfig.config[CONFIG_HUMIDITY_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_HUMIDITY_CHILD_SENSOR_ID
           val tempChildSensorId = deviceConfig.config[CONFIG_TEMPERATURE_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_TEMPERATURE_CHILD_SENSOR_ID
-          val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: Dht22.DEFAULT_DEBUG_CHILD_SENSOR_ID
+          val debugChildSensorId = deviceConfig.config[CONFIG_DEBUG_CHILD_SENSOR_ID]?.toInt() ?: DEFAULT_DEBUG_CHILD_SENSOR_ID
           val resetPin = if (deviceConfig.config[CONFIG_USE_RESET_PIN]?.toBoolean() != false) {
             pinProvider.pinDigitalOutput(portNumber, WireColor.GREEN, deviceConfig.id + "_resetPin")
           } else {

@@ -4,26 +4,23 @@ import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
 import com.mqgateway.mysensors.MySensorsSerialConnection
 
-class Dht22MySensorsInputDevice @JvmOverloads constructor(
+class MotionSensorMySensorsInputDevice @JvmOverloads constructor(
   id: String,
   mySensorsNodeId: Int,
   serialConnection: MySensorsSerialConnection,
-  humidityChildSensorId: Int = DEFAULT_HUMIDITY_CHILD_SENSOR_ID,
-  temperatureChildSensorId: Int = DEFAULT_TEMPERATURE_CHILD_SENSOR_ID,
+  motionSensorId: Int = DEFAULT_MOTION_CHILD_SENSOR_ID,
   debugChildSensorId: Int = DEFAULT_DEBUG_CHILD_SENSOR_ID,
   resetPin: MqGpioPinDigitalOutput? = null
-) : MySensorsDevice(id, DeviceType.DHT22, mySensorsNodeId, serialConnection, resetPin) {
+) : MySensorsDevice(id, DeviceType.MOTION_DETECTOR, mySensorsNodeId, serialConnection, resetPin) {
 
   private val sensorsTypes = mapOf(
-    Pair(humidityChildSensorId, SensorType.HUMIDITY),
-    Pair(temperatureChildSensorId, SensorType.TEMPERATURE),
+    Pair(motionSensorId, SensorType.MOTION),
     Pair(debugChildSensorId, SensorType.DEBUG)
   )
 
   override fun sensorsTypes() = sensorsTypes
 
   companion object {
-    const val DEFAULT_HUMIDITY_CHILD_SENSOR_ID = 0
-    const val DEFAULT_TEMPERATURE_CHILD_SENSOR_ID = 1
+    const val DEFAULT_MOTION_CHILD_SENSOR_ID = 3
   }
 }

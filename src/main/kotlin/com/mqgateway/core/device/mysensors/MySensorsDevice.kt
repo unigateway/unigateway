@@ -36,19 +36,20 @@ abstract class MySensorsDevice(
       SensorType.HUMIDITY -> notify(DevicePropertyType.HUMIDITY, message.payload)
       SensorType.TEMPERATURE -> notify(DevicePropertyType.TEMPERATURE, message.payload)
       SensorType.PRESSURE -> notify(DevicePropertyType.PRESSURE, message.payload)
+      SensorType.MOTION -> notify(DevicePropertyType.STATE, if (message.payload == "1") "ON" else "OFF")
       SensorType.DEBUG -> LOGGER.error { "Error message from device '$id': ${message.payload}" }
       null -> LOGGER.trace { "Message with unknown childSensorId: ${message.childSensorId}. Probably another device on the same node." }
     }
     if (sensorType == SensorType.DEBUG && message.payload.contains("error", true)) {
-      notify(DevicePropertyType.STATE, AVAILABILITY_OFFLINE_STATE)
+      notify(DevicePropertyType.AVAILABILITY, AVAILABILITY_OFFLINE_STATE)
     } else {
-      notify(DevicePropertyType.STATE, AVAILABILITY_ONLINE_STATE)
+      notify(DevicePropertyType.AVAILABILITY, AVAILABILITY_ONLINE_STATE)
     }
     notify(DevicePropertyType.LAST_PING, LocalDateTime.now().toString())
   }
 
   enum class SensorType {
-    HUMIDITY, TEMPERATURE, PRESSURE, DEBUG
+    HUMIDITY, TEMPERATURE, PRESSURE, MOTION, DEBUG
   }
 
   companion object {
@@ -58,7 +59,10 @@ abstract class MySensorsDevice(
     const val CONFIG_HUMIDITY_CHILD_SENSOR_ID = "humidityChildSensorId"
     const val CONFIG_TEMPERATURE_CHILD_SENSOR_ID = "temperatureChildSensorId"
     const val CONFIG_PRESSURE_CHILD_SENSOR_ID = "pressureChildSensorId"
+    const val CONFIG_MOTION_CHILD_SENSOR_ID = "motionChildSensorId"
     const val CONFIG_DEBUG_CHILD_SENSOR_ID = "debugChildSensorId"
     const val CONFIG_USE_RESET_PIN = "useResetPin"
+
+    const val DEFAULT_DEBUG_CHILD_SENSOR_ID = 32
   }
 }
