@@ -159,24 +159,3 @@ processResources {
 }
 
 processResources.outputs.upToDateWhen { false }
-
-node {
-    download = true
-    version = "16.9.1"
-    workDir = file("${project.buildDir}/nodejs")
-    npmWorkDir = file("${project.buildDir}/npm")
-    nodeProjectDir = file("${project.projectDir}/ui")
-}
-
-task npmBuild(type: NpmTask) {
-    args = ["run", "build"]
-}
-
-task copyWebApp(type: Copy) {
-    from "${project.projectDir}/ui/build"
-    into "${project.buildDir}/resources/main/webapp/."
-}
-
-npmBuild.dependsOn npmInstall
-copyWebApp.dependsOn npmBuild
-shadowJar.dependsOn copyWebApp

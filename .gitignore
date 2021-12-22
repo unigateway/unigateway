@@ -20,15 +20,6 @@ out/
 .previousConfig.MD5
 /logs
 
-### Node ###
-# node dependencies
-/ui/node_modules
-/ui/.pnp
-/ui.pnp.js
-
-# testing
-/ui/coverage
-
 # misc
 .DS_Store
 .env.local
