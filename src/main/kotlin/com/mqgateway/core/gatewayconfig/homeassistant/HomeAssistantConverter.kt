@@ -7,7 +7,6 @@ import com.mqgateway.core.device.RelayDevice
 import com.mqgateway.core.device.ShutterDevice
 import com.mqgateway.core.device.SingleButtonsGateDevice
 import com.mqgateway.core.device.SwitchButtonDevice
-import com.mqgateway.core.device.mysensors.MySensorsDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
@@ -163,111 +162,6 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
             false,
             EmulatedSwitchButtonDevice.PRESSED_STATE_VALUE,
             EmulatedSwitchButtonDevice.RELEASED_STATE_VALUE
-          )
-        )
-      }
-      DeviceType.BME280 -> {
-        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.AVAILABILITY)
-        listOf(
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_TEMPERATURE"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.TEMPERATURE,
-            homieStateTopic(gateway, device.id, DevicePropertyType.TEMPERATURE),
-            device.type.property(DevicePropertyType.TEMPERATURE).unit.value
-          ),
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_HUMIDITY"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.HUMIDITY,
-            homieStateTopic(gateway, device.id, DevicePropertyType.HUMIDITY),
-            device.type.property(DevicePropertyType.HUMIDITY).unit.value
-          ),
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_PRESSURE"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.PRESSURE,
-            homieStateTopic(gateway, device.id, DevicePropertyType.PRESSURE),
-            device.type.property(DevicePropertyType.PRESSURE).unit.value
-          ),
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LAST_PING"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.TIMESTAMP,
-            homieStateTopic(gateway, device.id, DevicePropertyType.LAST_PING),
-            device.type.property(DevicePropertyType.LAST_PING).unit.value
-          )
-        )
-      }
-      DeviceType.DHT22 -> {
-        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.AVAILABILITY)
-        listOf(
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_TEMPERATURE"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.TEMPERATURE,
-            homieStateTopic(gateway, device.id, DevicePropertyType.TEMPERATURE),
-            device.type.property(DevicePropertyType.TEMPERATURE).unit.value
-          ),
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_HUMIDITY"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.HUMIDITY,
-            homieStateTopic(gateway, device.id, DevicePropertyType.HUMIDITY),
-            device.type.property(DevicePropertyType.HUMIDITY).unit.value
-          ),
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LAST_PING"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.TIMESTAMP,
-            homieStateTopic(gateway, device.id, DevicePropertyType.LAST_PING),
-            device.type.property(DevicePropertyType.LAST_PING).unit.value
-          )
-        )
-      }
-      DeviceType.SCT013 -> {
-        val availabilityTopic = homieStateTopic(gateway, device.id, DevicePropertyType.STATE)
-        listOf(
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_POWER"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.POWER,
-            homieStateTopic(gateway, device.id, DevicePropertyType.POWER),
-            device.type.property(DevicePropertyType.POWER).unit.value
-          ),
-          HomeAssistantSensor(
-            HomeAssistantComponentBasicProperties(haDevice, gateway.name, "${device.id}_LAST_PING"),
-            device.name,
-            availabilityTopic,
-            MySensorsDevice.AVAILABILITY_ONLINE_STATE,
-            MySensorsDevice.AVAILABILITY_OFFLINE_STATE,
-            HomeAssistantSensor.DeviceClass.TIMESTAMP,
-            homieStateTopic(gateway, device.id, DevicePropertyType.LAST_PING),
-            device.type.property(DevicePropertyType.LAST_PING).unit.value
           )
         )
       }

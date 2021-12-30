@@ -13,13 +13,9 @@ import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.hardware.MqExpanderPinProvider
-import com.mqgateway.core.hardware.MqSerial
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
-import com.mqgateway.mysensors.MySensorMessageParser
-import com.mqgateway.mysensors.MySensorsSerialConnection
 import io.micronaut.context.annotation.Factory
-import io.micronaut.context.annotation.Requires
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -75,10 +71,9 @@ internal class ComponentsFactory {
   fun deviceFactory(
     expanderPinProvider: MqExpanderPinProvider,
     timersScheduler: TimersScheduler,
-    systemInfoProvider: SystemInfoProvider,
-    mySensorsSerialConnection: MySensorsSerialConnection?
+    systemInfoProvider: SystemInfoProvider
   ): DeviceFactory {
-    return DeviceFactory(expanderPinProvider, timersScheduler, mySensorsSerialConnection, systemInfoProvider)
+    return DeviceFactory(expanderPinProvider, timersScheduler, systemInfoProvider)
   }
 
   @Singleton
@@ -87,13 +82,5 @@ internal class ComponentsFactory {
     deviceFactory: DeviceFactory
   ): DeviceRegistry {
     return DeviceRegistry(deviceFactory.createAll(gateway))
-  }
-
-  @Singleton
-  @Requires(property = "gateway.system.components.mysensors.enabled", value = "true")
-  fun mySensorsSerialConnection(serial: MqSerial): MySensorsSerialConnection {
-    val mySensorsSerialConnection = MySensorsSerialConnection(serial, MySensorMessageParser())
-    mySensorsSerialConnection.init()
-    return mySensorsSerialConnection
   }
 }

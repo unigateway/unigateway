@@ -17,15 +17,6 @@ rooms:
             type: SWITCH_BUTTON # DIGITAL_INPUT
             config:
               debounceMs: 50
-      - name: "workshop multi-box"
-        portNumber: 3
-        devices:
-          - name: "bme280 device"
-            id: "bme280_workshop"
-            wires: ["BROWN_WHITE", "BROWN"]
-            type: BME280
-            config:
-              mySensorsNodeId: 12
   - name: "bedroom"
     points:
       - name: "bedroom light switch box"

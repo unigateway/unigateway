@@ -22,10 +22,6 @@ gateway:
     platform: NANOPI
     expander:
       enabled: false
-    components:
-      mysensors:
-        enabled: false
-        serial-device: "/myserial"
   websocket:
     enabled: true
   update:

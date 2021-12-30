@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration
 import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration
-import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.MySensors
 import com.mqgateway.configuration.GatewaySystemProperties.ExpanderConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
@@ -21,8 +20,6 @@ class ConfigValidatorTest extends Specification {
     new UniqueDeviceIdsValidator(),
     new UniquePortNumbersForPointsValidator(),
     new WireUsageValidator(),
-    new MySensorsDeviceWiresValidator(),
-    new MySensorsDeviceAdditionalConfigValidator(),
     new ShutterAdditionalConfigValidator(),
     new GateAdditionalConfigValidator(),
     new PortNumbersRangeValidator(),
@@ -108,47 +105,6 @@ class ConfigValidatorTest extends Specification {
 
 		def reason = result.failureReasons[0] as WireUsageValidator.SameWireUsedInManyDevices
 		reason.devices*.id.toSet() == ["dev-on-blue-1", "dev-on-blue-2"].toSet()
-	}
-
-	def "should fail validation of MySensors device when wires are not exactly BROWN and BROWN_WHITE"() {
-		given:
-		def devices = [
-			someDevice("withWrongConfig1", "device1", DeviceType.BME280, [], [mySensorsNodeId: "3"]),
-			someDevice("withWrongConfig2", "device2", DeviceType.BME280, [WireColor.GREEN], [mySensorsNodeId: "4"]),
-			someDevice("withWrongConfig3", "device3", DeviceType.BME280, [WireColor.BROWN, WireColor.BLUE], [mySensorsNodeId: "5"]),
-			someDevice("withWrongConfig4", "device4", DeviceType.BME280, [WireColor.BLUE, WireColor.BLUE_WHITE, WireColor.GREEN_WHITE], [mySensorsNodeId: "6"])
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == MySensorsDeviceWiresValidator.WrongWiresConfigurationForMySensorsDevice }
-
-		List<MySensorsDeviceWiresValidator.WrongWiresConfigurationForMySensorsDevice> reasons =
-			result.failureReasons.findAll { it instanceof MySensorsDeviceWiresValidator.WrongWiresConfigurationForMySensorsDevice }
-		reasons*.device.id.toSet() == ["withWrongConfig1", "withWrongConfig2", "withWrongConfig3", "withWrongConfig4"].toSet()
-	}
-
-	def "should fail validation of MySensors-only device when mySensorsNodeId configuration is missing"() {
-		given:
-		def devices = [
-			someDevice("withWrongConfig", "device1", DeviceType.BME280, [WireColor.BROWN, WireColor.BROWN_WHITE])
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == MySensorsDeviceAdditionalConfigValidator.MissingNodeId }
-
-		List<MySensorsDeviceAdditionalConfigValidator.MissingNodeId> reasons =
-			result.failureReasons.findAll { it instanceof MySensorsDeviceAdditionalConfigValidator.MissingNodeId }
-		reasons*.device.id == ["withWrongConfig"]
 	}
 
 	def "should fail validation of shutter device when any internal device is not of RELAY type"() {
@@ -315,15 +271,12 @@ class ConfigValidatorTest extends Specification {
 	}
 
   static GatewaySystemProperties prepareSystemProperties(ExpanderConfiguration expanderConfiguration = null,
-                                                         Mcp23017Configuration mcp23017Configuration = null,
-                                                         MySensors mySensors = null) {
+                                                         Mcp23017Configuration mcp23017Configuration = null) {
 
     def defaultExpanderConfiguration = new ExpanderConfiguration(false)
     def defaultMcp23017Configuration = new Mcp23017Configuration(expanderConfiguration ?: defaultExpanderConfiguration, null)
-    def mySensorsDefaultConfiguration = new MySensors(true, "/dev/myserial")
 
-    def componentsConfiguration = new ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration,
-                                                              mySensors ?: mySensorsDefaultConfiguration)
+    def componentsConfiguration = new ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration)
     return new GatewaySystemProperties("eth0",
                                        GatewaySystemProperties.SystemPlatform.SIMULATED,
                                        expanderConfiguration ?: defaultExpanderConfiguration,

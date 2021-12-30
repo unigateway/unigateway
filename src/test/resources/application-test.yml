@@ -6,10 +6,6 @@ gateway:
     platform: SIMULATED
     expander:
       enabled: true
-    components:
-      mysensors:
-        enabled: true
-        serial-device: "build/tmp/test-serial"
 
 homeassistant:
   enabled: true

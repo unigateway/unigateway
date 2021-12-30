@@ -37,20 +37,16 @@ class GatewayStatusControllerTest extends Specification {
     !status.expanderEnabled
     status.firmwareVersion == "0.543.0-some-test-version"
     status.mqttConnected
-    status.mySensorsEnabled
     status.mqGatewayLatestVersion == new ReleaseInfo("test release", "v0.544.0", "https://mqgateway.com/release/v0.544.0")
   }
 
   static GatewaySystemProperties prepareSystemProperties(GatewaySystemProperties.ExpanderConfiguration expanderConfiguration = null,
-                                                         GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration mcp23017Configuration = null,
-                                                         GatewaySystemProperties.ComponentsConfiguration.MySensors mySensors = null) {
+                                                         GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration mcp23017Configuration = null) {
 
     def defaultExpanderConfiguration = new GatewaySystemProperties.ExpanderConfiguration(false)
     def defaultMcp23017Configuration = new GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration(expanderConfiguration ?: defaultExpanderConfiguration, null)
-    def mySensorsDefaultConfiguration = new GatewaySystemProperties.ComponentsConfiguration.MySensors(true, "/dev/myserial")
 
-    def componentsConfiguration = new GatewaySystemProperties.ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration,
-                                                                                      mySensors ?: mySensorsDefaultConfiguration)
+    def componentsConfiguration = new GatewaySystemProperties.ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration)
     return new GatewaySystemProperties("eth0",
                                        GatewaySystemProperties.SystemPlatform.SIMULATED,
                                        expanderConfiguration ?: defaultExpanderConfiguration,
