@@ -1,8 +1,5 @@
 package com.mqgateway.core.device
 
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
@@ -11,14 +8,11 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.WireColor
-import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.hardware.simulated.SimulatedExpanderPinProvider
 import com.mqgateway.core.hardware.simulated.SimulatedGpioController
 import com.mqgateway.core.hardware.simulated.SimulatedMcpExpanders
-import com.mqgateway.core.hardware.simulated.SimulatedSerial
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
-import com.mqgateway.utils.UpdateListenerStub
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinPullResistance
@@ -29,8 +23,6 @@ import spock.lang.Subject
 class DeviceFactoryTest extends Specification {
 
 	SimulatedExpanderPinProvider pinProvider = new SimulatedExpanderPinProvider(new SimulatedGpioController(), new SimulatedMcpExpanders([]))
-
-  SimulatedSerial simulatedSerial = new SimulatedSerial()
 
   @Subject
   DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new FakeSystemInfoProvider())

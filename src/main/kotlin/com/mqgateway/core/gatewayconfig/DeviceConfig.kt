@@ -8,7 +8,6 @@ import com.mqgateway.core.gatewayconfig.DataUnit.BYTES
 import com.mqgateway.core.gatewayconfig.DataUnit.CELSIUS
 import com.mqgateway.core.gatewayconfig.DataUnit.PERCENT
 import com.mqgateway.core.gatewayconfig.DataUnit.SECOND
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.AVAILABILITY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.MEMORY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
@@ -76,8 +75,7 @@ enum class DeviceType(vararg val properties: Property) {
     Property(STATE, ENUM, "OPEN,CLOSED", retained = true)
   ),
   MOTION_DETECTOR(
-    Property(STATE, ENUM, "ON,OFF", retained = true),
-    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
+    Property(STATE, ENUM, "ON,OFF", retained = true)
   ),
   EMULATED_SWITCH(
     Property(STATE, ENUM, "PRESSED,RELEASED", settable = true)

@@ -95,9 +95,8 @@ class HomieDeviceFactoryTest extends Specification {
 
 		then:
 		def node = homieDevice.nodes["motiondetector_in_test"]
-		node.properties.keySet() == [STATE.toString(), AVAILABILITY.toString()].toSet()
+		node.properties.keySet() == [STATE.toString()].toSet()
 		node.properties[STATE.toString()] == new HomieProperty("gtwName", "motiondetector_in_test", "state", "state", ENUM, "ON,OFF", false, true, NONE)
-		node.properties[AVAILABILITY.toString()] == new HomieProperty("gtwName", "motiondetector_in_test", "availability", "availability", ENUM, "ONLINE,OFFLINE", false, true, NONE)
 	}
 
 	def "should create HomieProperties for SwitchButton"() {
