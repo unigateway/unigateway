@@ -10,12 +10,6 @@ micronaut:
   server:
     cors:
       enabled: true
-  router:
-    static-resources:
-      default:
-        enabled: true
-        paths: ["classpath:webapp"]
-        mapping: "/ui/**"
   caches:
     mq-gateway-latest-release:
       expire-after-write: 5m
@@ -28,10 +22,6 @@ gateway:
     platform: NANOPI
     expander:
       enabled: false
-    components:
-      mysensors:
-        enabled: false
-        serial-device: "/myserial"
   websocket:
     enabled: true
   update:

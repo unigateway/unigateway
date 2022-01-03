@@ -1,23 +1,16 @@
 package com.mqgateway.core.gatewayconfig
 
-import com.mqgateway.core.gatewayconfig.DataType.DATETIME
 import com.mqgateway.core.gatewayconfig.DataType.ENUM
 import com.mqgateway.core.gatewayconfig.DataType.FLOAT
 import com.mqgateway.core.gatewayconfig.DataType.INTEGER
 import com.mqgateway.core.gatewayconfig.DataType.STRING
 import com.mqgateway.core.gatewayconfig.DataUnit.BYTES
 import com.mqgateway.core.gatewayconfig.DataUnit.CELSIUS
-import com.mqgateway.core.gatewayconfig.DataUnit.PASCAL
 import com.mqgateway.core.gatewayconfig.DataUnit.PERCENT
 import com.mqgateway.core.gatewayconfig.DataUnit.SECOND
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.AVAILABILITY
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.MEMORY
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.POWER
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
@@ -81,28 +74,8 @@ enum class DeviceType(vararg val properties: Property) {
   REED_SWITCH(
     Property(STATE, ENUM, "OPEN,CLOSED", retained = true)
   ),
-  BME280(
-    Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
-    Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
-    Property(PRESSURE, INTEGER, null, retained = true, unit = PASCAL),
-    Property(LAST_PING, DATETIME, null, retained = true),
-    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
-  ),
-  SCT013(
-    Property(POWER, INTEGER, null, retained = true, unit = DataUnit.WATT),
-    Property(LAST_PING, DATETIME, null, retained = true),
-    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
-  ),
-  DHT22(
-    Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
-    Property(HUMIDITY, FLOAT, "0:100", retained = true, unit = PERCENT),
-    Property(UPTIME, INTEGER, null, retained = false, unit = SECOND),
-    Property(LAST_PING, DATETIME, null, retained = true),
-    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
-  ),
   MOTION_DETECTOR(
-    Property(STATE, ENUM, "ON,OFF", retained = true),
-    Property(AVAILABILITY, ENUM, "ONLINE,OFFLINE", retained = true)
+    Property(STATE, ENUM, "ON,OFF", retained = true)
   ),
   EMULATED_SWITCH(
     Property(STATE, ENUM, "PRESSED,RELEASED", settable = true)

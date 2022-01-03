@@ -25,7 +25,6 @@ open class GatewayStatusController(
       ipAddress = systemInfoProvider.getIPAddresses(),
       mqttConnected = mqttStatusIndicator.isConnected,
       firmwareVersion = gatewayApplicationProperties.appVersion,
-      mySensorsEnabled = systemProperties.components.mySensors.enabled,
       expanderEnabled = systemProperties.expander.enabled,
       mqGatewayLatestVersion = updateChecker.getLatestVersionInfo()
     )
@@ -39,7 +38,6 @@ data class GatewayStatusResource(
   val ipAddress: String,
   val mqttConnected: Boolean,
   val firmwareVersion: String,
-  val mySensorsEnabled: Boolean,
   val expanderEnabled: Boolean,
   val mqGatewayLatestVersion: ReleaseInfo
 )

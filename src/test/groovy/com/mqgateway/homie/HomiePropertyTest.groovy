@@ -24,8 +24,8 @@ class HomiePropertyTest extends Specification {
 		mqttClientStub.publishSync(new MqttMessage("homie/testDevId1/nodeId1/myUniqueProperty", "41", 1, true))
 
 		when:
-		homieProperty.setup$mqgateway(mqttClientStub, homieReceiverStub)
-    homieProperty.initializeValue$mqgateway(homieReceiverStub)
+		homieProperty.setup$unigateway(mqttClientStub, homieReceiverStub)
+    homieProperty.initializeValue$unigateway(homieReceiverStub)
 
 		then:
 		homieReceiverStub.initializedProperties["myUniqueProperty"] == "41"

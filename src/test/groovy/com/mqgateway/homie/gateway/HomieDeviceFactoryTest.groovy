@@ -95,9 +95,8 @@ class HomieDeviceFactoryTest extends Specification {
 
 		then:
 		def node = homieDevice.nodes["motiondetector_in_test"]
-		node.properties.keySet() == [STATE.toString(), AVAILABILITY.toString()].toSet()
+		node.properties.keySet() == [STATE.toString()].toSet()
 		node.properties[STATE.toString()] == new HomieProperty("gtwName", "motiondetector_in_test", "state", "state", ENUM, "ON,OFF", false, true, NONE)
-		node.properties[AVAILABILITY.toString()] == new HomieProperty("gtwName", "motiondetector_in_test", "availability", "availability", ENUM, "ONLINE,OFFLINE", false, true, NONE)
 	}
 
 	def "should create HomieProperties for SwitchButton"() {
@@ -126,42 +125,6 @@ class HomieDeviceFactoryTest extends Specification {
 		def node = homieDevice.nodes["reedSwitch_in_test"]
 		node.properties.keySet() == [STATE.toString()].toSet()
 		node.properties[STATE.toString()] == new HomieProperty("gtwName", "reedSwitch_in_test", "state", "state", ENUM, "OPEN,CLOSED", false, true, NONE)
-	}
-
-	def "should create HomieProperties for BME280"() {
-		given:
-		DeviceConfig device = new DeviceConfig("bme280_in_test", "Test BME280", DeviceType.BME280, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point([device])])])
-
-		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
-
-		then:
-		def node = homieDevice.nodes["bme280_in_test"]
-		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), PRESSURE.toString(), LAST_PING.toString(), AVAILABILITY.toString()].toSet()
-		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
-		node.properties[HUMIDITY.toString()] == new HomieProperty("gtwName", "bme280_in_test", "humidity", "humidity", FLOAT, "0:100", false, true, PERCENT)
-		node.properties[PRESSURE.toString()] == new HomieProperty("gtwName", "bme280_in_test", "pressure", "pressure", INTEGER, null, false, true, PASCAL)
-		node.properties[LAST_PING.toString()] == new HomieProperty("gtwName", "bme280_in_test", "last_ping", "last_ping", STRING, null, false, true, NONE)
-		node.properties[AVAILABILITY.toString()] == new HomieProperty("gtwName", "bme280_in_test", "availability", "availability", ENUM, "ONLINE,OFFLINE", false, true, NONE)
-	}
-
-	def "should create HomieProperties for DHT22"() {
-		given:
-		DeviceConfig device = new DeviceConfig("dht22_in_test", "Test DHT22", DeviceType.DHT22, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point([device])])])
-
-		when:
-		def homieDevice = homieDeviceFactory.toHomieDevice(gateway, "ethXXX")
-
-		then:
-		def node = homieDevice.nodes["dht22_in_test"]
-		node.properties.keySet() == [TEMPERATURE.toString(), HUMIDITY.toString(), UPTIME.toString(), LAST_PING.toString(), AVAILABILITY.toString()].toSet()
-		node.properties[TEMPERATURE.toString()] == new HomieProperty("gtwName", "dht22_in_test", "temperature", "temperature", FLOAT, null, false, true, CELSIUS)
-		node.properties[HUMIDITY.toString()] == new HomieProperty("gtwName", "dht22_in_test", "humidity", "humidity", FLOAT, "0:100", false, true, PERCENT)
-		node.properties[UPTIME.toString()] == new HomieProperty("gtwName", "dht22_in_test", "uptime", "uptime", INTEGER, null, false, false, NONE)
-		node.properties[LAST_PING.toString()] == new HomieProperty("gtwName", "dht22_in_test", "last_ping", "last_ping", STRING, null, false, true, NONE)
-		node.properties[AVAILABILITY.toString()] == new HomieProperty("gtwName", "dht22_in_test", "availability", "availability", ENUM, "ONLINE,OFFLINE", false, true, NONE)
 	}
 
 	def "should create HomieProperties for TimerSwitch"() {

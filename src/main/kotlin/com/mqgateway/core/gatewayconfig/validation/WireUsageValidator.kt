@@ -13,7 +13,6 @@ class WireUsageValidator : GatewayValidator {
     return deviceConfigs
       .map { devices ->
         devices
-          .filter { device -> !device.config.containsKey("mySensorsNodeId") }
           .filter { device ->
             val otherDevices = devices.filterNot { otherDevice -> otherDevice.id == device.id }
             val otherDevicesWires = otherDevices.flatMap { otherDevice -> otherDevice.wires }
