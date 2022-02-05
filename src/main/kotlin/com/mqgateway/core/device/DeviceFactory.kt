@@ -4,16 +4,19 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceConfig.UnexpectedDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
-import com.mqgateway.core.hardware.MqExpanderPinProvider
+import com.mqgateway.core.hardware.io.BinaryState
+import com.mqgateway.core.hardware.provider.InputOutputProvider
+import com.mqgateway.core.hardware.provider.Source
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.hwimpl.MqGatewayConnectorConfiguration
 import com.pi4j.io.gpio.PinState
 import java.time.Duration
 
 class DeviceFactory(
-  private val pinProvider: MqExpanderPinProvider,
   private val timersScheduler: TimersScheduler,
-  private val systemInfoProvider: SystemInfoProvider
+  private val systemInfoProvider: SystemInfoProvider,
+  private val ioProvider: InputOutputProvider
 ) {
 
   private val createdDevices: MutableMap<String, Device> = mutableMapOf()
@@ -37,37 +40,41 @@ class DeviceFactory(
           create(referencedPortNumber, referencedDeviceConfig, gateway)
         }
         DeviceType.RELAY -> {
-          val triggerLevel =
-            deviceConfig.config[RelayDevice.CONFIG_TRIGGER_LEVEL_KEY]?.let { PinState.valueOf(it) } ?: RelayDevice.CONFIG_TRIGGER_LEVEL_DEFAULT
-          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          RelayDevice(deviceConfig.id, pin, triggerLevel)
+          val closedState =
+            deviceConfig.config[RelayDevice.CONFIG_CLOSED_STATE_KEY]?.let { BinaryState.valueOf(it) } ?: RelayDevice.CONFIG_CLOSED_STATE_DEFAULT
+          val statusBinaryOutput = ioProvider.getBinaryOutput(Source.HARDWARE, MqGatewayConnectorConfiguration(portNumber, deviceConfig.wires[0]))
+          RelayDevice(deviceConfig.id, statusBinaryOutput, closedState)
         }
         DeviceType.SWITCH_BUTTON -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
           val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
+          val statusBinaryInput =
+            ioProvider.getBinaryInput(Source.HARDWARE, MqGatewayConnectorConfiguration(portNumber, deviceConfig.wires[0], debounceMs))
           val longPressTimeMs =
             deviceConfig.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
-          SwitchButtonDevice(deviceConfig.id, pin, debounceMs, longPressTimeMs)
+          SwitchButtonDevice(deviceConfig.id, statusBinaryInput, debounceMs, longPressTimeMs)
         }
         DeviceType.REED_SWITCH -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
           val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
-          ReedSwitchDevice(deviceConfig.id, pin, debounceMs)
+          val stateBinaryInput =
+            ioProvider.getBinaryInput(Source.HARDWARE, MqGatewayConnectorConfiguration(portNumber, deviceConfig.wires[0], debounceMs))
+          ReedSwitchDevice(deviceConfig.id, stateBinaryInput, debounceMs)
         }
         DeviceType.MOTION_DETECTOR -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
           val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
+          val stateBinaryInput =
+            ioProvider.getBinaryInput(Source.HARDWARE, MqGatewayConnectorConfiguration(portNumber, deviceConfig.wires[0], debounceMs))
           val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
           val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
-          MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
+          MotionSensorDevice(deviceConfig.id, stateBinaryInput, debounceMs, motionSignalLevel)
         }
         DeviceType.EMULATED_SWITCH -> {
-          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          EmulatedSwitchButtonDevice(deviceConfig.id, pin)
+          val stateBinaryOutput = ioProvider.getBinaryOutput(Source.HARDWARE, MqGatewayConnectorConfiguration(portNumber, deviceConfig.wires[0]))
+          // TODO is it OK that device knows that source is HARDWARE? shouldn't it be unaware of the underlying hardware completely? Should we put it somewhere in the config?
+          EmulatedSwitchButtonDevice(deviceConfig.id, stateBinaryOutput)
         }
         DeviceType.TIMER_SWITCH -> {
-          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
+          val stateBinaryOutput = ioProvider.getBinaryOutput(Source.HARDWARE, MqGatewayConnectorConfiguration(portNumber, deviceConfig.wires[0]))
+          TimerSwitchRelayDevice(deviceConfig.id, stateBinaryOutput, timersScheduler)
         }
         DeviceType.SHUTTER -> {
           val stopRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("stopRelay"), gateway) as RelayDevice

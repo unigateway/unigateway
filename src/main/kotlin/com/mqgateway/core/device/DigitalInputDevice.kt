@@ -2,8 +2,8 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalInput
-import com.pi4j.io.gpio.PinState
+import com.mqgateway.core.hardware.io.BinaryInput
+import com.mqgateway.core.hardware.io.BinaryState
 import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
@@ -11,14 +11,14 @@ private val LOGGER = KotlinLogging.logger {}
 abstract class DigitalInputDevice(
   id: String,
   type: DeviceType,
-  private val digitalInputPin: MqGpioPinDigitalInput,
+  private val binaryInput: BinaryInput,
   protected val debounceMs: Int
 ) : Device(id, type) {
 
-  protected var state: PinState = digitalInputPin.getState()
+  protected var state: BinaryState = binaryInput.getState()
     private set(value) {
       field = value
-      val newState = if (value == PinState.HIGH) { highStateValue() } else { lowStateValue() }
+      val newState = if (value == BinaryState.HIGH) { highStateValue() } else { lowStateValue() }
       LOGGER.info { "Device($id) state changed to $newState" }
       notify(updatableProperty(), newState)
       additionalOnStateChanged(newState)
@@ -26,8 +26,8 @@ abstract class DigitalInputDevice(
 
   override fun initDevice() {
     super.initDevice()
-    state = digitalInputPin.getState()
-    digitalInputPin.addListener { event ->
+    state = binaryInput.getState()
+    binaryInput.addListener { event ->
       state = event.getState()
     }
   }

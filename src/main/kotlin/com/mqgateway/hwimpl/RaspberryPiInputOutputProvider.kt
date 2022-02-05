@@ -32,7 +32,8 @@ class RaspberryPiInputOutputProvider : HardwareInputOutputProvider {
 }
 
 data class RaspberryPiConnectorConfiguration(
-  val pinNumber: Int
+  val pinNumber: Int,
+  val debounceMs: Int = 0
 ) : ConnectorConfiguration
 
 class RaspberryPiDigitalPinInput(private val digitalInputDevice: DigitalInputDevice) : BinaryInput {

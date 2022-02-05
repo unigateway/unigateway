@@ -4,13 +4,13 @@ import com.mqgateway.core.device.RelayDevice.RelayState.CLOSED
 import com.mqgateway.core.device.RelayDevice.RelayState.OPEN
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
-import com.pi4j.io.gpio.PinState
+import com.mqgateway.core.hardware.io.BinaryOutput
+import com.mqgateway.core.hardware.io.BinaryState
 import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class RelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val triggerLevel: PinState) : DigitalOutputDevice(id, DeviceType.RELAY, pin) {
+class RelayDevice(id: String, status: BinaryOutput, private val closedState: BinaryState) : DigitalOutputDevice(id, DeviceType.RELAY, status) {
 
   override fun initProperty(propertyId: String, value: String) {
     if (propertyId != STATE.toString()) {
@@ -22,10 +22,10 @@ class RelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val triggerLe
 
   fun changeState(newState: RelayState) {
     if (newState == CLOSED) {
-      pin.setState(closedState())
+      binaryOutput.setState(closedState())
       notify(STATE, STATE_ON)
     } else {
-      pin.setState(openState())
+      binaryOutput.setState(openState())
       notify(STATE, STATE_OFF)
     }
   }
@@ -39,16 +39,16 @@ class RelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val triggerLe
     }
   }
 
-  private fun closedState(): PinState = triggerLevel
-  private fun openState(): PinState = PinState.getInverseState(closedState())!!
+  private fun closedState(): BinaryState = closedState
+  private fun openState(): BinaryState = closedState().inverse()
 
   enum class RelayState {
     OPEN, CLOSED
   }
 
   companion object {
-    const val CONFIG_TRIGGER_LEVEL_KEY = "triggerLevel"
-    val CONFIG_TRIGGER_LEVEL_DEFAULT = PinState.LOW
+    const val CONFIG_CLOSED_STATE_KEY = "triggerLevel"
+    val CONFIG_CLOSED_STATE_DEFAULT = BinaryState.LOW
 
     const val STATE_ON = "ON"
     const val STATE_OFF = "OFF"

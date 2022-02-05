@@ -5,27 +5,27 @@ import com.mqgateway.core.device.TimerSwitchRelayDevice.TimerSwitchRelayState.OP
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
+import com.mqgateway.core.hardware.io.BinaryOutput
+import com.mqgateway.core.hardware.io.BinaryState
 import com.mqgateway.core.utils.TimersScheduler
-import com.pi4j.io.gpio.PinState
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 private val LOGGER = KotlinLogging.logger {}
 
-class TimerSwitchRelayDevice(id: String, pin: MqGpioPinDigitalOutput, private val scheduler: TimersScheduler) :
-  DigitalOutputDevice(id, DeviceType.TIMER_SWITCH, pin),
+class TimerSwitchRelayDevice(id: String, state: BinaryOutput, private val scheduler: TimersScheduler) :
+  DigitalOutputDevice(id, DeviceType.TIMER_SWITCH, state),
   TimersScheduler.SchedulableTimer {
 
   private var turnOffTime: LocalDateTime = LocalDateTime.now()
 
   private fun changeRelayState(newState: TimerSwitchRelayState) {
     if (newState == CLOSED) {
-      pin.setState(RELAY_CLOSED_STATE)
+      binaryOutput.setState(RELAY_CLOSED_STATE)
       notify(STATE, STATE_ON)
     } else {
-      pin.setState(RELAY_OPEN_STATE)
+      binaryOutput.setState(RELAY_OPEN_STATE)
       notify(STATE, STATE_OFF)
     }
   }
@@ -59,8 +59,8 @@ class TimerSwitchRelayDevice(id: String, pin: MqGpioPinDigitalOutput, private va
   }
 
   companion object {
-    val RELAY_CLOSED_STATE = PinState.LOW
-    val RELAY_OPEN_STATE = PinState.getInverseState(RELAY_CLOSED_STATE)!!
+    val RELAY_CLOSED_STATE = BinaryState.LOW
+    val RELAY_OPEN_STATE = RELAY_CLOSED_STATE.inverse()
     const val STATE_ON = "ON"
     const val STATE_OFF = "OFF"
   }

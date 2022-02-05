@@ -18,11 +18,12 @@ import com.mqgateway.core.hardware.provider.HardwareInputOutputProvider
 
 class MqGatewayInputOutputProvider : HardwareInputOutputProvider {
 
-  // TODO how to pass it from configuration? What configuration? Device? Where?
+  // TODO should be passed from the Hardware configuration on application.yaml
   private val mcpExpanders: MqGatewayMcpExpanders = MqGatewayMcpExpanders(listOf(0x20, 0x21, 0x22, 0x23))
 
   override fun getBinaryInput(connectorConfiguration: ConnectorConfiguration): MqGatewayDigitalPinInput {
     val config = connectorConfiguration as MqGatewayConnectorConfiguration
+    // TODO support debounce somehow - it is not easily achievable in diozero with MCP23017
     val digitalInputDevice = DigitalInputDevice.Builder.builder(pinOnMcp(config.portNumber, config.wireColor))
       .setDeviceFactory(mcpExpanders.getByPort(config.portNumber))
       .setPullUpDown(GpioPullUpDown.PULL_UP)
@@ -46,12 +47,12 @@ class MqGatewayInputOutputProvider : HardwareInputOutputProvider {
   private fun pinOnMcp(portNumber: Int, wireColor: WireColor): Int {
     return ((portNumber - 1) % 4) * 4 + (wireColor.number - 3)
   }
-
 }
 
 data class MqGatewayConnectorConfiguration(
   val portNumber: Int,
-  val wireColor: WireColor
+  val wireColor: WireColor,
+  val debounceMs: Int = 100 // TODO should it be here of implemented and configured in SwitchButtonDevice?
 ) : ConnectorConfiguration
 
 class MqGatewayDigitalPinInput(private val digitalInputDevice: DigitalInputDevice) : BinaryInput {
@@ -77,7 +78,6 @@ class MqGatewayBinaryStateChangeEvent(private val event: DigitalInputEvent) : Bi
 /**
  * Initializes collection of MCP23017 expanders based on given bus number and addresses in I2c bus
  *
- * @param i2CBusNumber see constants in com.diozero.api.I2CConstants
  * @param expanderAddresses list of MCP23017 expanders addresses ORDERED in the same way they are connected with ports
  */
 class MqGatewayMcpExpanders(expanderAddresses: List<Int>) {

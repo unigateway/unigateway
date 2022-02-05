@@ -2,20 +2,15 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalInput
+import com.mqgateway.core.hardware.io.BinaryInput
 import com.pi4j.io.gpio.PinState
 
 class MotionSensorDevice(
   id: String,
-  private val pin: MqGpioPinDigitalInput,
+  status: BinaryInput,
   debounceMs: Int,
   private val motionSignalLevel: PinState
-) : DigitalInputDevice(id, DeviceType.MOTION_DETECTOR, pin, debounceMs) {
-
-  override fun initDevice() {
-    super.initDevice()
-    pin.setDebounce(debounceMs)
-  }
+) : DigitalInputDevice(id, DeviceType.MOTION_DETECTOR, status, debounceMs) {
 
   override fun updatableProperty() = STATE
   override fun highStateValue() = if (motionSignalLevel == PinState.HIGH) MOVE_START_STATE_VALUE else MOVE_STOP_STATE_VALUE

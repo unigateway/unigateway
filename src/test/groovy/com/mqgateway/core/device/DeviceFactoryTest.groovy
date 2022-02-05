@@ -8,11 +8,14 @@ import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.WireColor
+import com.mqgateway.core.hardware.provider.InputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedExpanderPinProvider
 import com.mqgateway.core.hardware.simulated.SimulatedGpioController
 import com.mqgateway.core.hardware.simulated.SimulatedMcpExpanders
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.hwimpl.SimulatedBinaryInput
+import com.mqgateway.hwimpl.SimulatedInputOutputProvider
 import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinPullResistance
@@ -22,10 +25,10 @@ import spock.lang.Subject
 
 class DeviceFactoryTest extends Specification {
 
-	SimulatedExpanderPinProvider pinProvider = new SimulatedExpanderPinProvider(new SimulatedGpioController(), new SimulatedMcpExpanders([]))
+	InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider())
 
   @Subject
-  DeviceFactory deviceFactory = new DeviceFactory(pinProvider, new TimersScheduler(), new FakeSystemInfoProvider())
+  DeviceFactory deviceFactory = new DeviceFactory(new TimersScheduler(), new FakeSystemInfoProvider(), ioProvider)
 
   def "should create relay"() {
 		given:

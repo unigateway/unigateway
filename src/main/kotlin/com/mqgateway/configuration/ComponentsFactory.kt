@@ -12,9 +12,11 @@ import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
-import com.mqgateway.core.hardware.MqExpanderPinProvider
+import com.mqgateway.core.hardware.provider.InputOutputProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.hwimpl.MqGatewayInputOutputProvider
+import com.mqgateway.hwimpl.RaspberryPiInputOutputProvider
 import io.micronaut.context.annotation.Factory
 import javax.inject.Named
 import javax.inject.Singleton
@@ -68,12 +70,22 @@ internal class ComponentsFactory {
   }
 
   @Singleton
+  fun inputOutputProvider(properties: GatewaySystemProperties): InputOutputProvider {
+    val hardwareInputOutputProvider = when (properties.platform) {
+      GatewaySystemProperties.SystemPlatform.NANOPI -> MqGatewayInputOutputProvider()
+      GatewaySystemProperties.SystemPlatform.RASPBERRYPI -> RaspberryPiInputOutputProvider()
+      GatewaySystemProperties.SystemPlatform.SIMULATED -> TODO()
+    }
+    return InputOutputProvider(hardwareInputOutputProvider)
+  }
+
+  @Singleton
   fun deviceFactory(
-    expanderPinProvider: MqExpanderPinProvider,
+    inputOutputProvider: InputOutputProvider,
     timersScheduler: TimersScheduler,
     systemInfoProvider: SystemInfoProvider
   ): DeviceFactory {
-    return DeviceFactory(expanderPinProvider, timersScheduler, systemInfoProvider)
+    return DeviceFactory(timersScheduler, systemInfoProvider, inputOutputProvider)
   }
 
   @Singleton

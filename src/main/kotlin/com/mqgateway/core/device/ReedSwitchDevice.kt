@@ -2,25 +2,20 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalInput
-import com.pi4j.io.gpio.PinState
+import com.mqgateway.core.hardware.io.BinaryInput
+import com.mqgateway.core.hardware.io.BinaryState
 
 class ReedSwitchDevice(
   id: String,
-  private val pin: MqGpioPinDigitalInput,
+  status: BinaryInput,
   debounceMs: Int = CONFIG_DEBOUNCE_DEFAULT
-) : DigitalInputDevice(id, DeviceType.REED_SWITCH, pin, debounceMs) {
-
-  override fun initDevice() {
-    super.initDevice()
-    pin.setDebounce(debounceMs)
-  }
+) : DigitalInputDevice(id, DeviceType.REED_SWITCH, status, debounceMs) {
 
   override fun updatableProperty() = STATE
   override fun highStateValue() = OPEN_STATE_VALUE
   override fun lowStateValue() = CLOSED_STATE_VALUE
 
-  fun isClosed() = state == PinState.LOW
+  fun isClosed() = state == BinaryState.LOW
   fun isOpen() = !isClosed()
 
   companion object {

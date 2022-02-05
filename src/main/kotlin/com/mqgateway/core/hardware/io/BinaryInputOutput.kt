@@ -10,7 +10,11 @@ interface BinaryInput {
 }
 
 enum class BinaryState {
-  HIGH, LOW
+  HIGH, LOW;
+
+  fun inverse(): BinaryState {
+    return if (this == HIGH) LOW else HIGH
+  }
 }
 
 interface BinaryStateChangeEvent {

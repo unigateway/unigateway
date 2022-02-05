@@ -2,7 +2,7 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalInput
+import com.mqgateway.core.hardware.io.BinaryInput
 import mu.KotlinLogging
 import java.time.Instant
 import java.util.Timer
@@ -13,20 +13,15 @@ private val LOGGER = KotlinLogging.logger {}
 
 class SwitchButtonDevice(
   id: String,
-  private val pin: MqGpioPinDigitalInput,
+  status: BinaryInput,
   debounceMs: Int = CONFIG_DEBOUNCE_DEFAULT,
   private val longPressTimeMs: Long = CONFIG_LONG_PRESS_TIME_MS_DEFAULT
-) : DigitalInputDevice(id, DeviceType.SWITCH_BUTTON, pin, debounceMs) {
+) : DigitalInputDevice(id, DeviceType.SWITCH_BUTTON, status, debounceMs) {
 
   private var pressedTime: Instant? = null
   private val longPressTimer = Timer("SwitchButtonLongPress_$id", false)
   private var longPressTimerTask: TimerTask? = null
   private var longPressDone = false
-
-  override fun initDevice() {
-    super.initDevice()
-    pin.setDebounce(debounceMs)
-  }
 
   override fun updatableProperty() = STATE
   override fun highStateValue() = RELEASED_STATE_VALUE

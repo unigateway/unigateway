@@ -4,8 +4,6 @@ import com.mqgateway.core.hardware.io.BinaryInput
 import com.mqgateway.core.hardware.io.BinaryOutput
 import com.mqgateway.core.hardware.io.FloatInput
 
-
-// TODO START HERE - find out where to use it - create some kind of DeviceFactory which will create RelayDevice to start with
 class InputOutputProvider(
   private val hardwareInputOutputProvider: HardwareInputOutputProvider
 ) {
