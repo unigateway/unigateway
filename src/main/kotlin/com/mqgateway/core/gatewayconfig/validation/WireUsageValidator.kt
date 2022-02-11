@@ -1,16 +1,16 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.configuration.GatewaySystemProperties
-import com.mqgateway.core.gatewayconfig.DeviceConfig
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import javax.inject.Singleton
 
 @Singleton
 class WireUsageValidator : GatewayValidator {
-  override fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val deviceConfigs: List<List<DeviceConfig>> = gateway.rooms.flatMap { room -> room.points }.map { it.devices }
+  override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+    val deviceConfigurations: List<List<DeviceConfiguration>> = gatewayConfiguration.rooms.flatMap { room -> room.points }.map { it.devices }
 
-    return deviceConfigs
+    return deviceConfigurations
       .map { devices ->
         devices
           .filter { device ->
@@ -25,7 +25,7 @@ class WireUsageValidator : GatewayValidator {
       }
   }
 
-  class SameWireUsedInManyDevices(val devices: List<DeviceConfig>) : ValidationFailureReason() {
+  class SameWireUsedInManyDevices(val devices: List<DeviceConfiguration>) : ValidationFailureReason() {
 
     override fun getDescription(): String {
       val duplicatedWiresNames = devices.map { it.wires }.let { it[0].intersect(it[1]) }.map { it.name }

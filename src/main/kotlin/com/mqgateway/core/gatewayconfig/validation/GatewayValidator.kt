@@ -1,10 +1,10 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.configuration.GatewaySystemProperties
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 
 interface GatewayValidator {
-  fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason>
+  fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason>
 }
 
 abstract class ValidationFailureReason {

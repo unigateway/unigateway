@@ -5,9 +5,9 @@ import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration
 import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration
 import com.mqgateway.configuration.GatewaySystemProperties.ExpanderConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceConfig
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.Point
 import com.mqgateway.core.gatewayconfig.Room
 import com.mqgateway.core.gatewayconfig.WireColor
@@ -64,11 +64,11 @@ class ConfigValidatorTest extends Specification {
 		given:
 		def gateway = gatewayWith(
 			roomWith(
-				pointWith([someDevice()].toArray() as DeviceConfig[], 1, "A")
+				pointWith([someDevice()].toArray() as DeviceConfiguration[], 1, "A")
 			),
 			roomWith(
-				pointWith([someDevice()].toArray() as DeviceConfig[], 1, "B"),
-				pointWith([someDevice()].toArray() as DeviceConfig[], 2, "C")
+				pointWith([someDevice()].toArray() as DeviceConfiguration[], 1, "B"),
+				pointWith([someDevice()].toArray() as DeviceConfiguration[], 2, "C")
 			)
 		)
 
@@ -91,7 +91,7 @@ class ConfigValidatorTest extends Specification {
 						someDevice("dev-on-blue-1", "dev-on-blue-1", DeviceType.RELAY, [WireColor.BLUE]),
 						someDevice("dev-on-green",  "dev-on-green",  DeviceType.MOTION_DETECTOR, [WireColor.GREEN]),
 						someDevice("dev-on-blue-2", "dev-on-blue-2", DeviceType.MOTION_DETECTOR, [WireColor.BLUE])
-				  	].toArray() as DeviceConfig[],
+				  	].toArray() as DeviceConfiguration[],
 					1, "B"
 				)
 			)
@@ -188,9 +188,9 @@ class ConfigValidatorTest extends Specification {
     ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
     def gateway = gatewayWith(
       roomWith(
-        pointWith([someDevice()].toArray() as DeviceConfig[], 17, "Point with too high port number 1"),
-        pointWith([someDevice()].toArray() as DeviceConfig[], 16, "Point with proper port number"),
-        pointWith([someDevice()].toArray() as DeviceConfig[], 18, "Point with too high port number 2")
+		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 17, "Point with too high port number 1"),
+		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 16, "Point with proper port number"),
+		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 18, "Point with too high port number 2")
       )
     )
 
@@ -212,9 +212,9 @@ class ConfigValidatorTest extends Specification {
     ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
     def gateway = gatewayWith(
       roomWith(
-        pointWith([someDevice()].toArray() as DeviceConfig[], 16, "Point with proper port number 1"),
-        pointWith([someDevice()].toArray() as DeviceConfig[], 32, "Point with proper port number 2"),
-        pointWith([someDevice()].toArray() as DeviceConfig[], 33, "Point with too high port number")
+		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 16, "Point with proper port number 1"),
+		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 32, "Point with proper port number 2"),
+		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 33, "Point with too high port number")
       )
     )
 
@@ -232,8 +232,8 @@ class ConfigValidatorTest extends Specification {
 
   def "should fail validation when REFERENCE device references non-existing device"() {
     given:
-    DeviceConfig referencingDeviceConfig = new DeviceConfig("referencing_device_id", "test name", DeviceType.REFERENCE, [], [:], [:], "non-existing-id")
-    Gateway gateway = gatewayWith(roomWith(pointWith(referencingDeviceConfig)))
+    DeviceConfiguration referencingDeviceConfig = new DeviceConfiguration("referencing_device_id", "test name", DeviceType.REFERENCE, [], [:], [:], "non-existing-id")
+    GatewayConfiguration gateway = gatewayWith(roomWith(pointWith(referencingDeviceConfig)))
 
     when:
     def result = configValidator.validateGateway(gateway)
@@ -246,28 +246,28 @@ class ConfigValidatorTest extends Specification {
     reasons*.referencedDeviceId == ["non-existing-id"]
   }
 
-	static Gateway gatewayWith(Room[] rooms) {
-		new Gateway("1.0", "some gateway", "192.168.1.123", rooms.toList())
+	static GatewayConfiguration gatewayWith(Room[] rooms) {
+		new GatewayConfiguration("1.0", "some gateway", "192.168.1.123", rooms.toList())
 	}
 
 	static Room roomWith(Point[] points, String name = UUID.randomUUID().toString()) {
 		new Room(name, points.toList())
 	}
 
-	Point pointWith(DeviceConfig[] devices, int portNumber = nextPortNumber(), String name = UUID.randomUUID().toString()) {
+	Point pointWith(DeviceConfiguration[] devices, int portNumber = nextPortNumber(), String name = UUID.randomUUID().toString()) {
 		new Point(name, portNumber, devices.toList())
 	}
 
 	def nextPortNumber()  { nextPortNumber++ }
 
-	static DeviceConfig someDevice(String id = UUID.randomUUID().toString(),
-								   String name = UUID.randomUUID().toString().replace("-", ""),
-								   DeviceType type = DeviceType.RELAY,
-								   List<WireColor> wires = [WireColor.BLUE],
-								   Map<String, String> config = [:],
-								   Map<String, DeviceConfig> internalDevices = [:]) {
+	static DeviceConfiguration someDevice(String id = UUID.randomUUID().toString(),
+										  String name = UUID.randomUUID().toString().replace("-", ""),
+										  DeviceType type = DeviceType.RELAY,
+										  List<WireColor> wires = [WireColor.BLUE],
+										  Map<String, String> config = [:],
+										  Map<String, DeviceConfiguration> internalDevices = [:]) {
 
-		new DeviceConfig(id, name, type, wires, config, internalDevices)
+		new DeviceConfiguration(id, name, type, wires, config, internalDevices)
 	}
 
   static GatewaySystemProperties prepareSystemProperties(ExpanderConfiguration expanderConfiguration = null,

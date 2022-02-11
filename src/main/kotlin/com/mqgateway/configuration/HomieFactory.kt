@@ -1,7 +1,7 @@
 package com.mqgateway.configuration
 
 import com.mqgateway.core.device.DeviceRegistry
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.MqttStatusIndicator
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
@@ -16,20 +16,20 @@ import javax.inject.Singleton
 class HomieFactory {
 
   @Singleton
-  fun mqttClientFactory(gateway: Gateway): MqttClientFactory = HiveMqttClientFactory(gateway.mqttHostname)
+  fun mqttClientFactory(gatewayConfiguration: GatewayConfiguration): MqttClientFactory = HiveMqttClientFactory(gatewayConfiguration.mqttHostname)
 
   @Singleton
   fun homieDevice(
-    mqttClientFactory: MqttClientFactory,
-    homieReceiver: GatewayHomieReceiver,
-    mqttConnectionListeners: List<HomieDevice.MqttConnectionListener>,
-    gatewayApplicationProperties: GatewayApplicationProperties,
-    gatewaySystemProperties: GatewaySystemProperties,
-    gateway: Gateway
+      mqttClientFactory: MqttClientFactory,
+      homieReceiver: GatewayHomieReceiver,
+      mqttConnectionListeners: List<HomieDevice.MqttConnectionListener>,
+      gatewayApplicationProperties: GatewayApplicationProperties,
+      gatewaySystemProperties: GatewaySystemProperties,
+      gatewayConfiguration: GatewayConfiguration
   ): HomieDevice {
 
     val homieDevice = HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)
-      .toHomieDevice(gateway, gatewaySystemProperties.networkAdapter)
+      .toHomieDevice(gatewayConfiguration, gatewaySystemProperties.networkAdapter)
 
     mqttConnectionListeners.forEach { listener ->
       homieDevice.addMqttConnectedListener(listener)

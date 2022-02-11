@@ -1,16 +1,16 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.configuration.GatewaySystemProperties
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.Point
 import javax.inject.Singleton
 
 @Singleton
 class PortNumbersRangeValidator : GatewayValidator {
 
-  override fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+  override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
     val maxPortNumber = maxPortNumber(systemProperties.expander.enabled)
-    val pointWithWrongPortNumber: List<Point> = gateway.rooms.flatMap { room -> room.points }.filter { point -> point.portNumber > maxPortNumber }
+    val pointWithWrongPortNumber: List<Point> = gatewayConfiguration.rooms.flatMap { room -> room.points }.filter { point -> point.portNumber > maxPortNumber }
     return pointWithWrongPortNumber.map { PortNumberOutOfRange(it, systemProperties.expander.enabled) }
   }
 

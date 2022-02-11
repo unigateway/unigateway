@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.WireColor
 import spock.lang.Specification
 
@@ -23,7 +23,7 @@ class YamlParserTest extends Specification {
 		def yamlFileBytes = YamlParserTest.getResourceAsStream("/example.gateway.yaml").bytes
 
 		when:
-		Gateway gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
+		GatewayConfiguration gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
 
 		then:
 		gateway.configVersion == "1.1"
@@ -55,7 +55,7 @@ class YamlParserTest extends Specification {
 		def yamlFileBytes = YamlParserTest.getResourceAsStream("/example.gateway.yaml").bytes
 
 		when:
-		Gateway gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
+		GatewayConfiguration gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
 
 		then:
 		def bedroom = gateway.rooms.find { it.name == "bedroom" }
@@ -83,7 +83,7 @@ class YamlParserTest extends Specification {
 		def yamlFileBytes = YamlParserTest.getResourceAsStream("/example.gateway.yaml").bytes
 
 		when:
-		Gateway gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
+		GatewayConfiguration gateway = parser.parse(parser.toJsonNode(yamlFileBytes))
 
 		then:
 		def garage = gateway.rooms.find { it.name == "garage" }

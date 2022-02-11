@@ -1,13 +1,9 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.AVAILABILITY
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.HUMIDITY
+
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.LAST_PING
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.MEMORY
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POWER
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.PRESSURE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
@@ -16,9 +12,9 @@ import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.mqgateway.core.gatewayconfig.DataUnit
-import com.mqgateway.core.gatewayconfig.DeviceConfig
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.WireColor
 import spock.lang.Specification
 import spock.lang.Subject
@@ -33,8 +29,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway relay to HA light when set explicitly in gateway configuration"() {
 		given:
-		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], ["haComponent":"light"], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
+		def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], ["haComponent":"light"], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -57,8 +53,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway relay to HA switch when haComponent not set explicitly in gateway configuration"() {
 		given:
-		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
+		def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -81,8 +77,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway SWITCH_BUTTON to 4 HA triggers when haComponent is set to 'device_automation'"() {
 		given:
-		def switchButtonDeviceConfig = new DeviceConfig("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [haComponent: "device_automation"], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
+		def switchButtonDeviceConfig = new DeviceConfiguration("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [haComponent: "device_automation"], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -115,8 +111,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway SWITCH_BUTTON to sensor when haComponent is set to 'sensor'"() {
 		given:
-		def switchButtonDeviceConfig = new DeviceConfig("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [haComponent: "sensor"], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
+		def switchButtonDeviceConfig = new DeviceConfiguration("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [haComponent: "sensor"], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -137,8 +133,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway SWITCH_BUTTON to binary sensor when haComponent is not set"() {
 		given:
-		def switchButtonDeviceConfig = new DeviceConfig("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
+		def switchButtonDeviceConfig = new DeviceConfiguration("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [switchButtonDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -161,8 +157,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway REED_SWITCH to HA binary sensor"() {
 		given:
-		def reedSwitchDeviceConfig = new DeviceConfig("myReedSwitch", "Test reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [reedSwitchDeviceConfig])])])
+		def reedSwitchDeviceConfig = new DeviceConfiguration("myReedSwitch", "Test reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [reedSwitchDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -184,8 +180,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway MOTION_DETECTOR to HA binary sensor"() {
 		given:
-		def motionDetectorDeviceConfig = new DeviceConfig("myMotionDetector", "Test motion detector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [motionDetectorDeviceConfig])])])
+		def motionDetectorDeviceConfig = new DeviceConfiguration("myMotionDetector", "Test motion detector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [motionDetectorDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -207,8 +203,8 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway EMULATED_SWITCH to HA switch"() {
 		given:
-		def emulatedSwitchDeviceConfig = new DeviceConfig("myEmulatedSwitch", "Test emulated switch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [emulatedSwitchDeviceConfig])])])
+		def emulatedSwitchDeviceConfig = new DeviceConfiguration("myEmulatedSwitch", "Test emulated switch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [emulatedSwitchDeviceConfig])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -231,13 +227,13 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway SHUTTER to HA cover"() {
 		given:
-		def shutterDevice = new DeviceConfig("myShutter", "Test shutter device", DeviceType.SHUTTER, [],
-											 [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
-											 [
-												 stopRelay  : new DeviceConfig("stopRelay", "relay1", DeviceType.RELAY, [WireColor.BLUE], [:], [:]),
-												 upDownRelay: new DeviceConfig("upDownRelay", "relay2", DeviceType.RELAY, [WireColor.GREEN], [:], [:])
+		def shutterDevice = new DeviceConfiguration("myShutter", "Test shutter device", DeviceType.SHUTTER, [],
+													[fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
+													[
+												 stopRelay  : new DeviceConfiguration("stopRelay", "relay1", DeviceType.RELAY, [WireColor.BLUE], [:], [:]),
+												 upDownRelay: new DeviceConfiguration("upDownRelay", "relay2", DeviceType.RELAY, [WireColor.GREEN], [:], [:])
 											 ])
-		Gateway gateway = gateway([room([point("point name", 3, [shutterDevice])])])
+		GatewayConfiguration gateway = gateway([room([point("point name", 3, [shutterDevice])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -271,14 +267,14 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway GATE to HA cover"() {
 		given:
-		def gateDevice = new DeviceConfig("myGate", "Test gate device", DeviceType.GATE, [], [:],
-											 [
-												 stopButton  : new DeviceConfig("stopButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
-												 openButton  : new DeviceConfig("openButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:]),
-												 closeButton  : new DeviceConfig("closeButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE], [:], [:]),
-												 closedReedSwitch: new DeviceConfig("closedReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+		def gateDevice = new DeviceConfiguration("myGate", "Test gate device", DeviceType.GATE, [], [:],
+												 [
+												 stopButton  : new DeviceConfiguration("stopButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
+												 openButton  : new DeviceConfiguration("openButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:]),
+												 closeButton  : new DeviceConfiguration("closeButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE], [:], [:]),
+												 closedReedSwitch: new DeviceConfiguration("closedReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
 											 ])
-		Gateway gateway = gateway([room([point("point name", 3, [gateDevice])])])
+		GatewayConfiguration gateway = gateway([room([point("point name", 3, [gateDevice])])])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -308,7 +304,7 @@ class HomeAssistantConverterTest extends Specification {
 
 	def "should convert MqGateway device to 6 HA sensors"() {
 		given:
-		Gateway gateway = gateway([])
+		GatewayConfiguration gateway = gateway([])
 
 		when:
 		def components = converter.convert(gateway)
@@ -359,10 +355,10 @@ class HomeAssistantConverterTest extends Specification {
 
   def "should convert MqGateway REFERENCE device to HA device"() {
     given:
-    def reedSwitchDevice = new DeviceConfig("reedSwitch1", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE])
-    def referenceDevice = new DeviceConfig("referenceToReedSwitch", "reference to reed switch", DeviceType.REFERENCE, [], [:], [:], "reedSwitch1")
+    def reedSwitchDevice = new DeviceConfiguration("reedSwitch1", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.BLUE])
+    def referenceDevice = new DeviceConfiguration("referenceToReedSwitch", "reference to reed switch", DeviceType.REFERENCE, [], [:], [:], "reedSwitch1")
 
-    Gateway gateway = gateway([room([point("point name", 3, [referenceDevice]), point("point 2", 2, [reedSwitchDevice])])])
+    GatewayConfiguration gateway = gateway([room([point("point name", 3, [referenceDevice]), point("point 2", 2, [reedSwitchDevice])])])
 
     when:
     def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -397,7 +393,7 @@ class HomeAssistantConverterTest extends Specification {
 
   }
 
-	private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, Gateway gateway, DeviceConfig deviceConfig) {
+	private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, GatewayConfiguration gateway, DeviceConfiguration deviceConfig) {
 		assert haComponent.properties.device.firmwareVersion == firmwareVersion
 		assert haComponent.properties.device.identifiers == [gateway.name + "_" + deviceConfig.id]
 		assert haComponent.properties.device.manufacturer == "Aetas"
@@ -414,7 +410,7 @@ class HomeAssistantConverterTest extends Specification {
 		return "homie/${gatewayName}/${deviceId}/${propertyType}/set"
 	}
 
-	static boolean isNotFromMqGatewayCore(HomeAssistantComponent component, Gateway gateway) {
+	static boolean isNotFromMqGatewayCore(HomeAssistantComponent component, GatewayConfiguration gateway) {
 		!component.properties.objectId.startsWith(gateway.name)
 	}
 }

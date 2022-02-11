@@ -2,7 +2,7 @@ package com.mqgateway.core.gatewayconfig.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.ValidationFailureReason
 import mu.KotlinLogging
@@ -32,7 +32,7 @@ class GatewayConfigurationService(
       return GatewayConfigurationReplacementResult(false, jsonValidationSucceeded = false)
     }
 
-    val newConfiguration: Gateway = yamlObjectMapper.readValue(newConfigurationString, Gateway::class.java)
+    val newConfiguration: GatewayConfiguration = yamlObjectMapper.readValue(newConfigurationString, GatewayConfiguration::class.java)
     val validationResult = configValidator.validateGateway(newConfiguration)
     if (validationResult.succeeded) {
       LOGGER.info { "New Gateway configuration validation succeeded ✔" }
