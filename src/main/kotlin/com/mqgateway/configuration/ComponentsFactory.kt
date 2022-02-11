@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
@@ -54,7 +54,7 @@ internal class ComponentsFactory {
   fun gatewayConfiguration(
     gatewayApplicationProperties: GatewayApplicationProperties,
     gatewayConfigLoader: ConfigLoader
-  ): Gateway {
+  ): GatewayConfiguration {
     return gatewayConfigLoader.load(gatewayApplicationProperties.configPath)
   }
 
@@ -78,9 +78,9 @@ internal class ComponentsFactory {
 
   @Singleton
   fun deviceRegistry(
-    gateway: Gateway,
+    gatewayConfiguration: GatewayConfiguration,
     deviceFactory: DeviceFactory
   ): DeviceRegistry {
-    return DeviceRegistry(deviceFactory.createAll(gateway))
+    return DeviceRegistry(deviceFactory.createAll(gatewayConfiguration))
   }
 }

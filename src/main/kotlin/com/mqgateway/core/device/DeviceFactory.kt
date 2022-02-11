@@ -1,9 +1,9 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.gatewayconfig.DeviceConfig
-import com.mqgateway.core.gatewayconfig.DeviceConfig.UnexpectedDeviceConfigurationException
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration.UnexpectedDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
@@ -18,76 +18,76 @@ class DeviceFactory(
 
   private val createdDevices: MutableMap<String, Device> = mutableMapOf()
 
-  fun createAll(gateway: Gateway): Set<Device> {
-    val gatewayDevice = MqGatewayDevice(gateway.name, Duration.ofSeconds(30), systemInfoProvider)
-    return setOf(gatewayDevice) + gateway.rooms
+  fun createAll(gatewayConfiguration: GatewayConfiguration): Set<Device> {
+    val gatewayDevice = MqGatewayDevice(gatewayConfiguration.name, Duration.ofSeconds(30), systemInfoProvider)
+    return setOf(gatewayDevice) + gatewayConfiguration.rooms
       .flatMap { it.points }
       .flatMap { point ->
         val portNumber = point.portNumber
-        point.devices.map { create(portNumber, it, gateway) }
+        point.devices.map { create(portNumber, it, gatewayConfiguration) }
       }.toSet()
   }
 
-  private fun create(portNumber: Int, deviceConfig: DeviceConfig, gateway: Gateway): Device {
-    return createdDevices.getOrPut(deviceConfig.id) {
-      when (deviceConfig.type) {
+  private fun create(portNumber: Int, deviceConfiguration: DeviceConfiguration, gatewayConfiguration: GatewayConfiguration): Device {
+    return createdDevices.getOrPut(deviceConfiguration.id) {
+      when (deviceConfiguration.type) {
         DeviceType.REFERENCE -> {
-          val referencedDeviceConfig = deviceConfig.dereferenceIfNeeded(gateway)
-          val referencedPortNumber = gateway.portNumberByDeviceId(referencedDeviceConfig.id)
-          create(referencedPortNumber, referencedDeviceConfig, gateway)
+          val referencedDeviceConfig = deviceConfiguration.dereferenceIfNeeded(gatewayConfiguration)
+          val referencedPortNumber = gatewayConfiguration.portNumberByDeviceId(referencedDeviceConfig.id)
+          create(referencedPortNumber, referencedDeviceConfig, gatewayConfiguration)
         }
         DeviceType.RELAY -> {
           val triggerLevel =
-            deviceConfig.config[RelayDevice.CONFIG_TRIGGER_LEVEL_KEY]?.let { PinState.valueOf(it) } ?: RelayDevice.CONFIG_TRIGGER_LEVEL_DEFAULT
-          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          RelayDevice(deviceConfig.id, pin, triggerLevel)
+            deviceConfiguration.config[RelayDevice.CONFIG_TRIGGER_LEVEL_KEY]?.let { PinState.valueOf(it) } ?: RelayDevice.CONFIG_TRIGGER_LEVEL_DEFAULT
+          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfiguration.wires.first(), deviceConfiguration.id + "_pin")
+          RelayDevice(deviceConfiguration.id, pin, triggerLevel)
         }
         DeviceType.SWITCH_BUTTON -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
+          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfiguration.wires.first(), deviceConfiguration.id + "_pin")
+          val debounceMs = deviceConfiguration.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: SwitchButtonDevice.CONFIG_DEBOUNCE_DEFAULT
           val longPressTimeMs =
-            deviceConfig.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
-          SwitchButtonDevice(deviceConfig.id, pin, debounceMs, longPressTimeMs)
+            deviceConfiguration.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
+          SwitchButtonDevice(deviceConfiguration.id, pin, debounceMs, longPressTimeMs)
         }
         DeviceType.REED_SWITCH -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
-          ReedSwitchDevice(deviceConfig.id, pin, debounceMs)
+          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfiguration.wires.first(), deviceConfiguration.id + "_pin")
+          val debounceMs = deviceConfiguration.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: ReedSwitchDevice.CONFIG_DEBOUNCE_DEFAULT
+          ReedSwitchDevice(deviceConfiguration.id, pin, debounceMs)
         }
         DeviceType.MOTION_DETECTOR -> {
-          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          val debounceMs = deviceConfig.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
-          val motionSignalLevelString = deviceConfig.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
+          val pin = pinProvider.pinDigitalInput(portNumber, deviceConfiguration.wires.first(), deviceConfiguration.id + "_pin")
+          val debounceMs = deviceConfiguration.config[DigitalInputDevice.CONFIG_DEBOUNCE_KEY]?.toInt() ?: MotionSensorDevice.CONFIG_DEBOUNCE_DEFAULT
+          val motionSignalLevelString = deviceConfiguration.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
           val motionSignalLevel = motionSignalLevelString?.let { PinState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
-          MotionSensorDevice(deviceConfig.id, pin, debounceMs, motionSignalLevel)
+          MotionSensorDevice(deviceConfiguration.id, pin, debounceMs, motionSignalLevel)
         }
         DeviceType.EMULATED_SWITCH -> {
-          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          EmulatedSwitchButtonDevice(deviceConfig.id, pin)
+          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfiguration.wires.first(), deviceConfiguration.id + "_pin")
+          EmulatedSwitchButtonDevice(deviceConfiguration.id, pin)
         }
         DeviceType.TIMER_SWITCH -> {
-          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfig.wires.first(), deviceConfig.id + "_pin")
-          TimerSwitchRelayDevice(deviceConfig.id, pin, timersScheduler)
+          val pin = pinProvider.pinDigitalOutput(portNumber, deviceConfiguration.wires.first(), deviceConfiguration.id + "_pin")
+          TimerSwitchRelayDevice(deviceConfiguration.id, pin, timersScheduler)
         }
         DeviceType.SHUTTER -> {
-          val stopRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("stopRelay"), gateway) as RelayDevice
-          val upDownRelayDevice = create(portNumber, deviceConfig.internalDevices.getValue("upDownRelay"), gateway) as RelayDevice
+          val stopRelayDevice = create(portNumber, deviceConfiguration.internalDevices.getValue("stopRelay"), gatewayConfiguration) as RelayDevice
+          val upDownRelayDevice = create(portNumber, deviceConfiguration.internalDevices.getValue("upDownRelay"), gatewayConfiguration) as RelayDevice
           ShutterDevice(
-            deviceConfig.id,
+            deviceConfiguration.id,
             stopRelayDevice,
             upDownRelayDevice,
-            deviceConfig.config.getValue("fullOpenTimeMs").toLong(),
-            deviceConfig.config.getValue("fullCloseTimeMs").toLong()
+            deviceConfiguration.config.getValue("fullOpenTimeMs").toLong(),
+            deviceConfiguration.config.getValue("fullCloseTimeMs").toLong()
           )
         }
         DeviceType.GATE -> {
-          if (listOf("stopButton", "openButton", "closeButton").all { deviceConfig.internalDevices.containsKey(it) }) {
-            createThreeButtonGateDevice(portNumber, deviceConfig, gateway)
-          } else if (deviceConfig.internalDevices.containsKey("actionButton")) {
-            createSingleButtonGateDevice(portNumber, deviceConfig, gateway)
+          if (listOf("stopButton", "openButton", "closeButton").all { deviceConfiguration.internalDevices.containsKey(it) }) {
+            createThreeButtonGateDevice(portNumber, deviceConfiguration, gatewayConfiguration)
+          } else if (deviceConfiguration.internalDevices.containsKey("actionButton")) {
+            createSingleButtonGateDevice(portNumber, deviceConfiguration, gatewayConfiguration)
           } else {
             throw UnexpectedDeviceConfigurationException(
-              deviceConfig.id,
+              deviceConfiguration.id,
               "Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)"
             )
           }
@@ -97,14 +97,14 @@ class DeviceFactory(
     }
   }
 
-  private fun createThreeButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig, gateway: Gateway): ThreeButtonsGateDevice {
-    val stopButton = create(portNumber, deviceConfig.internalDevices.getValue("stopButton"), gateway) as EmulatedSwitchButtonDevice
-    val openButton = create(portNumber, deviceConfig.internalDevices.getValue("openButton"), gateway) as EmulatedSwitchButtonDevice
-    val closeButton = create(portNumber, deviceConfig.internalDevices.getValue("closeButton"), gateway) as EmulatedSwitchButtonDevice
-    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
-    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
+  private fun createThreeButtonGateDevice(portNumber: Int, deviceConfiguration: DeviceConfiguration, gatewayConfiguration: GatewayConfiguration): ThreeButtonsGateDevice {
+    val stopButton = create(portNumber, deviceConfiguration.internalDevices.getValue("stopButton"), gatewayConfiguration) as EmulatedSwitchButtonDevice
+    val openButton = create(portNumber, deviceConfiguration.internalDevices.getValue("openButton"), gatewayConfiguration) as EmulatedSwitchButtonDevice
+    val closeButton = create(portNumber, deviceConfiguration.internalDevices.getValue("closeButton"), gatewayConfiguration) as EmulatedSwitchButtonDevice
+    val openReedSwitch = deviceConfiguration.internalDevices["openReedSwitch"]?.let { create(portNumber, it, gatewayConfiguration) } as ReedSwitchDevice?
+    val closedReedSwitch = deviceConfiguration.internalDevices["closedReedSwitch"]?.let { create(portNumber, it, gatewayConfiguration) } as ReedSwitchDevice?
     return ThreeButtonsGateDevice(
-      deviceConfig.id,
+      deviceConfiguration.id,
       stopButton,
       openButton,
       closeButton,
@@ -113,12 +113,12 @@ class DeviceFactory(
     )
   }
 
-  private fun createSingleButtonGateDevice(portNumber: Int, deviceConfig: DeviceConfig, gateway: Gateway): SingleButtonsGateDevice {
-    val actionButton = create(portNumber, deviceConfig.internalDevices.getValue("actionButton"), gateway) as EmulatedSwitchButtonDevice
-    val openReedSwitch = deviceConfig.internalDevices["openReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
-    val closedReedSwitch = deviceConfig.internalDevices["closedReedSwitch"]?.let { create(portNumber, it, gateway) } as ReedSwitchDevice?
+  private fun createSingleButtonGateDevice(portNumber: Int, deviceConfiguration: DeviceConfiguration, gatewayConfiguration: GatewayConfiguration): SingleButtonsGateDevice {
+    val actionButton = create(portNumber, deviceConfiguration.internalDevices.getValue("actionButton"), gatewayConfiguration) as EmulatedSwitchButtonDevice
+    val openReedSwitch = deviceConfiguration.internalDevices["openReedSwitch"]?.let { create(portNumber, it, gatewayConfiguration) } as ReedSwitchDevice?
+    val closedReedSwitch = deviceConfiguration.internalDevices["closedReedSwitch"]?.let { create(portNumber, it, gatewayConfiguration) } as ReedSwitchDevice?
     return SingleButtonsGateDevice(
-      deviceConfig.id,
+      deviceConfiguration.id,
       actionButton,
       openReedSwitch,
       closedReedSwitch

@@ -6,9 +6,9 @@ import static com.mqgateway.utils.TestGatewayFactory.room
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.HomeAssistantProperties
-import com.mqgateway.core.gatewayconfig.DeviceConfig
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.WireColor
 import com.mqgateway.utils.MqttClientFactoryStub
 import spock.lang.Specification
@@ -26,8 +26,8 @@ class HomeAssistantConfigurerTest extends Specification {
 
 	def "should connect to MQTT and disconnect after sending HA configurations when gateway configuration has been changed"() {
 		given:
-		DeviceConfig device = new DeviceConfig("switchButton_in_test", "Switch Button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE_WHITE], [:], [:])
-		Gateway gateway = gateway([room([point([device])])])
+		DeviceConfiguration device = new DeviceConfiguration("switchButton_in_test", "Switch Button", DeviceType.SWITCH_BUTTON, [WireColor.BLUE_WHITE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point([device])])])
 
 		when:
 		configurer.sendHomeAssistantConfiguration(gateway)

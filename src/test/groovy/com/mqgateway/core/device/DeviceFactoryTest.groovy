@@ -4,9 +4,9 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 import static com.mqgateway.utils.TestGatewayFactory.point
 import static com.mqgateway.utils.TestGatewayFactory.room
 
-import com.mqgateway.core.gatewayconfig.DeviceConfig
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.WireColor
 import com.mqgateway.core.hardware.simulated.SimulatedExpanderPinProvider
 import com.mqgateway.core.hardware.simulated.SimulatedGpioController
@@ -29,8 +29,8 @@ class DeviceFactoryTest extends Specification {
 
   def "should create relay"() {
 		given:
-		def relayDeviceConfig = new DeviceConfig("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
+		def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [relayDeviceConfig])])])
 
 		when:
 		def devices = deviceFactory.createAll(gateway)
@@ -44,9 +44,9 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create switch button"() {
 		given:
-		def deviceConfig = new DeviceConfig("mySwitchButton", "Test switchButton", DeviceType.SWITCH_BUTTON, [WireColor.GREEN],
-											["debounceMs": "124"], [:])
-		Gateway gateway = gateway([room([point("point name", 5, [deviceConfig])])])
+		def deviceConfig = new DeviceConfiguration("mySwitchButton", "Test switchButton", DeviceType.SWITCH_BUTTON, [WireColor.GREEN],
+												   ["debounceMs": "124"], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 5, [deviceConfig])])])
 		pinProvider.pinDigitalInput(5, WireColor.GREEN, "mySwitchButton_pin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
 
 		when:
@@ -61,8 +61,8 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create reed switch"() {
 		given:
-		def deviceConfig = new DeviceConfig("myReedSwitch", "Test ReedSwitch", DeviceType.REED_SWITCH, [WireColor.GREEN_WHITE], ["debounceMs": "54"], [:])
-		Gateway gateway = gateway([room([point("point name", 4, [deviceConfig])])])
+		def deviceConfig = new DeviceConfiguration("myReedSwitch", "Test ReedSwitch", DeviceType.REED_SWITCH, [WireColor.GREEN_WHITE], ["debounceMs": "54"], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 4, [deviceConfig])])])
 		pinProvider.pinDigitalInput(4, WireColor.GREEN_WHITE, "myReedSwitch_pin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
 
 		when:
@@ -77,8 +77,8 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create motion detector"() {
 		given:
-		def deviceConfig = new DeviceConfig("myMotionDetector", "Test MotionDetector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], ["debounceMs": "1"], [:])
-		Gateway gateway = gateway([room([point("point name", 12, [deviceConfig])])])
+		def deviceConfig = new DeviceConfiguration("myMotionDetector", "Test MotionDetector", DeviceType.MOTION_DETECTOR, [WireColor.BLUE], ["debounceMs": "1"], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 12, [deviceConfig])])])
 		pinProvider.pinDigitalInput(12, WireColor.BLUE, "myMotionDetector_pin", PinPullResistance.PULL_UP) >> Mock(GpioPinDigitalInput)
 
 		when:
@@ -93,8 +93,8 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create timer switch"() {
 		given:
-		def timerSwitchDeviceConfig = new DeviceConfig("myTimerSwitch", "Test timer switch", DeviceType.TIMER_SWITCH, [WireColor.BLUE], [:], [:])
-		Gateway gateway = gateway([room([point("point name", 2, [timerSwitchDeviceConfig])])])
+		def timerSwitchDeviceConfig = new DeviceConfiguration("myTimerSwitch", "Test timer switch", DeviceType.TIMER_SWITCH, [WireColor.BLUE], [:], [:])
+		GatewayConfiguration gateway = gateway([room([point("point name", 2, [timerSwitchDeviceConfig])])])
 		pinProvider.pinDigitalOutput(2, WireColor.BLUE, "myTimerSwitch_pin", PinState.HIGH) >> Mock(GpioPinDigitalOutput)
 
 		when:
@@ -109,13 +109,13 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create shutter"() {
 		given:
-		def deviceConfig = new DeviceConfig("myShutter", "Test shutter device", DeviceType.SHUTTER, [],
-											[fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
-											[
-												stopRelay: new DeviceConfig("stopRelay", "relay1", DeviceType.RELAY, [WireColor.BLUE], [:], [:]),
-												upDownRelay: new DeviceConfig("upDownRelay", "relay2", DeviceType.RELAY, [WireColor.GREEN], [:], [:])
+		def deviceConfig = new DeviceConfiguration("myShutter", "Test shutter device", DeviceType.SHUTTER, [],
+												   [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
+												   [
+												stopRelay: new DeviceConfiguration("stopRelay", "relay1", DeviceType.RELAY, [WireColor.BLUE], [:], [:]),
+												upDownRelay: new DeviceConfiguration("upDownRelay", "relay2", DeviceType.RELAY, [WireColor.GREEN], [:], [:])
 											])
-		Gateway gateway = gateway([room([point("point name", 14, [deviceConfig])])])
+		GatewayConfiguration gateway = gateway([room([point("point name", 14, [deviceConfig])])])
 
 		when:
 		def devices = deviceFactory.createAll(gateway)
@@ -129,14 +129,14 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create three buttons gate device when gate device configuration has three buttons configured"() {
 		given:
-    def deviceConfig = new DeviceConfig("myGate", "Test gate device", DeviceType.GATE, [], [:],
-                      [
-                        stopButton      : new DeviceConfig("stopButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
-                        openButton      : new DeviceConfig("openButton", "es2", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:]),
-                        closeButton     : new DeviceConfig("closeButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE], [:], [:]),
-                        closedReedSwitch: new DeviceConfig("closedReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+    def deviceConfig = new DeviceConfiguration("myGate", "Test gate device", DeviceType.GATE, [], [:],
+											   [
+                        stopButton      : new DeviceConfiguration("stopButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
+                        openButton      : new DeviceConfiguration("openButton", "es2", DeviceType.EMULATED_SWITCH, [WireColor.BLUE], [:], [:]),
+                        closeButton     : new DeviceConfiguration("closeButton", "es3", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE], [:], [:]),
+                        closedReedSwitch: new DeviceConfiguration("closedReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
                       ])
-		Gateway gateway = gateway([room([point("point name", 15, [deviceConfig])])])
+		GatewayConfiguration gateway = gateway([room([point("point name", 15, [deviceConfig])])])
 
 		when:
 		def devices = deviceFactory.createAll(gateway)
@@ -150,13 +150,13 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create single button gate device when gate device configuration has action button configured only"() {
 		given:
-    def deviceConfig = new DeviceConfig("myGateSingleButton", "Test gate device", DeviceType.GATE, [], [:],
-                    [
-                      actionButton    : new DeviceConfig("actionButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
-                      openReedSwitch  : new DeviceConfig("openReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:]),
-                      closedReedSwitch: new DeviceConfig("closedReedSwitch", "reedSwitch2", DeviceType.REED_SWITCH, [WireColor.GREEN_WHITE], [:], [:])
+    def deviceConfig = new DeviceConfiguration("myGateSingleButton", "Test gate device", DeviceType.GATE, [], [:],
+											   [
+                      actionButton    : new DeviceConfiguration("actionButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
+                      openReedSwitch  : new DeviceConfiguration("openReedSwitch", "reedSwitch1", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:]),
+                      closedReedSwitch: new DeviceConfiguration("closedReedSwitch", "reedSwitch2", DeviceType.REED_SWITCH, [WireColor.GREEN_WHITE], [:], [:])
                     ])
-		Gateway gateway = gateway([room([point("point name", 15, [deviceConfig])])])
+		GatewayConfiguration gateway = gateway([room([point("point name", 15, [deviceConfig])])])
 
 		when:
 		def devices = deviceFactory.createAll(gateway)
@@ -170,13 +170,13 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create device with internal devices referencing to other devices"() {
 		given:
-    def reedSwitchConfig = new DeviceConfig("closedReedSwitch", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
-    def deviceConfig = new DeviceConfig("gateWithReferencedReedSwitch", "Test gate device", DeviceType.GATE, [], [:],
-                    [
-                      actionButton    : new DeviceConfig("actionButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
-                      closedReedSwitch: new DeviceConfig("closedReedSwitchReference", "reedSwitchReference", DeviceType.REFERENCE, [], [:], [:], "closedReedSwitch")
+    def reedSwitchConfig = new DeviceConfiguration("closedReedSwitch", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+    def deviceConfig = new DeviceConfiguration("gateWithReferencedReedSwitch", "Test gate device", DeviceType.GATE, [], [:],
+											   [
+                      actionButton    : new DeviceConfiguration("actionButton", "es1", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE], [:], [:]),
+                      closedReedSwitch: new DeviceConfiguration("closedReedSwitchReference", "reedSwitchReference", DeviceType.REFERENCE, [], [:], [:], "closedReedSwitch")
                     ])
-		Gateway gateway = gateway([room([point("point name", 15, [deviceConfig]), point("another point", 12, [reedSwitchConfig])])])
+		GatewayConfiguration gateway = gateway([room([point("point name", 15, [deviceConfig]), point("another point", 12, [reedSwitchConfig])])])
 
 		when:
 		def devices = deviceFactory.createAll(gateway)
@@ -188,9 +188,9 @@ class DeviceFactoryTest extends Specification {
 	}
 
     def "should create each device only once when it is referenced"() {
-    def reedSwitchConfig = new DeviceConfig("closedReedSwitch", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
-    def referenceDeviceConfig = new DeviceConfig("referenceDevice", "Reference device", DeviceType.REFERENCE, [], [:], [:], "closedReedSwitch")
-    Gateway gateway = gateway([room([point("point name", 15, [referenceDeviceConfig]), point("another point", 12, [reedSwitchConfig])])])
+    def reedSwitchConfig = new DeviceConfiguration("closedReedSwitch", "Referenced reed switch", DeviceType.REED_SWITCH, [WireColor.GREEN], [:], [:])
+    def referenceDeviceConfig = new DeviceConfiguration("referenceDevice", "Reference device", DeviceType.REFERENCE, [], [:], [:], "closedReedSwitch")
+    GatewayConfiguration gateway = gateway([room([point("point name", 15, [referenceDeviceConfig]), point("another point", 12, [reedSwitchConfig])])])
 
     when:
     def createdDevices = deviceFactory.createAll(gateway)
@@ -204,7 +204,7 @@ class DeviceFactoryTest extends Specification {
 
 	def "should create MqGateway as a device"() {
 		given:
-		Gateway gateway = gateway([])
+		GatewayConfiguration gateway = gateway([])
 
 		when:
 		def devices = deviceFactory.createAll(gateway)

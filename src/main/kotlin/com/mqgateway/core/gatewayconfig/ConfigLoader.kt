@@ -20,7 +20,7 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
     private const val CONFIGURATION_FILE_QUICK_PATH = ".previousConfig.cbor"
   }
 
-  fun load(gatewayConfigPath: String): Gateway {
+  fun load(gatewayConfigPath: String): GatewayConfiguration {
     val gatewayConfigBytes = File(gatewayConfigPath).readBytes()
     val currentConfigurationFileHash = calculateHash(gatewayConfigBytes)
     val storedConfigurationFileHash = loadStoredConfigurationFileHash()
@@ -66,8 +66,8 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
     }
   }
 
-  private fun validateGatewayConfigurationValues(gateway: Gateway) {
-    val validationResult = configValidator.validateGateway(gateway)
+  private fun validateGatewayConfigurationValues(gatewayConfiguration: GatewayConfiguration) {
+    val validationResult = configValidator.validateGateway(gatewayConfiguration)
 
     if (validationResult.succeeded) {
       LOGGER.info { "Gateway configuration validation succeeded ✔" }

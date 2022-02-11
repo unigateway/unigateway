@@ -19,25 +19,25 @@ import kotlinx.serialization.Serializable
 import com.mqgateway.core.gatewayconfig.DeviceProperty as Property
 
 @Serializable
-data class DeviceConfig
+data class DeviceConfiguration
 @JvmOverloads constructor(
   val id: String,
   val name: String,
   val type: DeviceType,
   val wires: List<WireColor> = emptyList(),
   val config: Map<String, String> = emptyMap(),
-  val internalDevices: Map<String, DeviceConfig> = emptyMap(),
+  val internalDevices: Map<String, DeviceConfiguration> = emptyMap(),
   val referencedDeviceId: String? = null,
 ) {
 
-  fun dereferenceIfNeeded(gateway: Gateway): DeviceConfig {
+  fun dereferenceIfNeeded(gatewayConfiguration: GatewayConfiguration): DeviceConfiguration {
     if (type != DeviceType.REFERENCE) {
       return this
     }
     if (referencedDeviceId == null) {
       throw UnexpectedDeviceConfigurationException(id, "Missing 'referenceDeviceId' configuration")
     }
-    return gateway.deviceById(referencedDeviceId).dereferenceIfNeeded(gateway)
+    return gatewayConfiguration.deviceById(referencedDeviceId).dereferenceIfNeeded(gatewayConfiguration)
   }
 
   class UnexpectedDeviceConfigurationException(deviceId: String, message: String) :

@@ -1,15 +1,15 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.configuration.GatewaySystemProperties
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.Point
 import jakarta.inject.Singleton
 
 @Singleton
 class UniquePortNumbersForPointsValidator : GatewayValidator {
 
-  override fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val points: List<Point> = gateway.rooms.flatMap { room -> room.points }
+  override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+    val points: List<Point> = gatewayConfiguration.rooms.flatMap { room -> room.points }
     return points.groupBy { point -> point.portNumber }.filter { it.value.size > 1 }.values.toList().map { DuplicatedPortNumbersOnPoints(it) }
   }
 

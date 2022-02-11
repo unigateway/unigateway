@@ -1,6 +1,6 @@
 package com.mqgateway.configuration
 
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.discovery.MulticastDnsServiceDiscovery
 import io.micronaut.context.annotation.Factory
 import java.net.Inet4Address
@@ -16,7 +16,7 @@ class MdnsDiscoveryFactory {
   }
 
   @Singleton
-  fun multicastDnsServiceDiscovery(jmDNS: JmDNS, gateway: Gateway): MulticastDnsServiceDiscovery {
-    return MulticastDnsServiceDiscovery(jmDNS, gateway.name)
+  fun multicastDnsServiceDiscovery(jmDNS: JmDNS, gatewayConfiguration: GatewayConfiguration): MulticastDnsServiceDiscovery {
+    return MulticastDnsServiceDiscovery(jmDNS, gatewayConfiguration.name)
   }
 }
