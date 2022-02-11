@@ -22,5 +22,5 @@ interface BinaryStateChangeEvent {
 }
 
 fun interface BinaryStateListener {
-  fun handleBinaryStateChangeEvent(event: BinaryStateChangeEvent)
+  fun handle(event: BinaryStateChangeEvent)
 }

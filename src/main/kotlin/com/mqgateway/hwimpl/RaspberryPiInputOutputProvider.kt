@@ -39,7 +39,7 @@ data class RaspberryPiConnectorConfiguration(
 class RaspberryPiDigitalPinInput(private val digitalInputDevice: DigitalInputDevice) : BinaryInput {
 
   override fun addListener(listener: BinaryStateListener) {
-    digitalInputDevice.addListener { listener.handleBinaryStateChangeEvent(RaspberryPiBinaryStateChangeEvent(it)) }
+    digitalInputDevice.addListener { listener.handle(RaspberryPiBinaryStateChangeEvent(it)) }
   }
 
   override fun getState() = if (digitalInputDevice.value) BinaryState.HIGH else BinaryState.LOW

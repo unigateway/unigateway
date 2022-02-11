@@ -10,5 +10,5 @@ interface FloatStateChangeEvent {
 }
 
 fun interface FloatStateListener {
-  fun handleFloatStateChangeEvent(event: FloatStateChangeEvent)
+  fun handle(event: FloatStateChangeEvent)
 }

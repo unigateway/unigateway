@@ -29,6 +29,7 @@ abstract class Device(val id: String, val type: DeviceType) {
    */
   @JvmOverloads
   fun init(listenersExpected: Boolean = true) {
+    // TODO do not let to initialize twice (check initialized) - this might be problematic if complex device initialize simple,referred device
     LOGGER.info { "Initializing device type='$type' id='$id'" }
     if (listenersExpected && updateListeners.isEmpty()) {
       LOGGER.error { "No update listener registered for device id='$id'" }

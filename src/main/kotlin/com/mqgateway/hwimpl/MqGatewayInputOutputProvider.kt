@@ -16,31 +16,29 @@ import com.mqgateway.core.hardware.io.FloatInput
 import com.mqgateway.core.hardware.provider.ConnectorConfiguration
 import com.mqgateway.core.hardware.provider.HardwareInputOutputProvider
 
-class MqGatewayInputOutputProvider : HardwareInputOutputProvider {
+class MqGatewayInputOutputProvider : HardwareInputOutputProvider<MqGatewayConnectorConfiguration> {
 
   // TODO should be passed from the Hardware configuration on application.yaml
   private val mcpExpanders: MqGatewayMcpExpanders = MqGatewayMcpExpanders(listOf(0x20, 0x21, 0x22, 0x23))
 
-  override fun getBinaryInput(connectorConfiguration: ConnectorConfiguration): MqGatewayDigitalPinInput {
-    val config = connectorConfiguration as MqGatewayConnectorConfiguration
+  override fun getBinaryInput(connectorConfiguration: MqGatewayConnectorConfiguration): MqGatewayDigitalPinInput {
     // TODO support debounce somehow - it is not easily achievable in diozero with MCP23017
-    val digitalInputDevice = DigitalInputDevice.Builder.builder(pinOnMcp(config.portNumber, config.wireColor))
-      .setDeviceFactory(mcpExpanders.getByPort(config.portNumber))
+    val digitalInputDevice = DigitalInputDevice.Builder.builder(pinOnMcp(connectorConfiguration.portNumber, connectorConfiguration.wireColor))
+      .setDeviceFactory(mcpExpanders.getByPort(connectorConfiguration.portNumber))
       .setPullUpDown(GpioPullUpDown.PULL_UP)
       .build()
     return MqGatewayDigitalPinInput(digitalInputDevice)
   }
 
-  override fun getBinaryOutput(connectorConfiguration: ConnectorConfiguration): MqGatewayDigitalPinOutput {
-    val config = connectorConfiguration as MqGatewayConnectorConfiguration
-    val digitalOutputDevice = DigitalOutputDevice.Builder.builder(pinOnMcp(config.portNumber, config.wireColor))
-      .setDeviceFactory(mcpExpanders.getByPort(config.portNumber))
+  override fun getBinaryOutput(connectorConfiguration: MqGatewayConnectorConfiguration): MqGatewayDigitalPinOutput {
+    val digitalOutputDevice = DigitalOutputDevice.Builder.builder(pinOnMcp(connectorConfiguration.portNumber, connectorConfiguration.wireColor))
+      .setDeviceFactory(mcpExpanders.getByPort(connectorConfiguration.portNumber))
       .setInitialValue(false)
       .build()
     return MqGatewayDigitalPinOutput(digitalOutputDevice)
   }
 
-  override fun getFloatInput(connectorConfiguration: ConnectorConfiguration): FloatInput {
+  override fun getFloatInput(connectorConfiguration: MqGatewayConnectorConfiguration): FloatInput {
     TODO("Not yet implemented")
   }
 
@@ -58,7 +56,7 @@ data class MqGatewayConnectorConfiguration(
 class MqGatewayDigitalPinInput(private val digitalInputDevice: DigitalInputDevice) : BinaryInput {
 
   override fun addListener(listener: BinaryStateListener) {
-    digitalInputDevice.addListener { listener.handleBinaryStateChangeEvent(MqGatewayBinaryStateChangeEvent(it)) }
+    digitalInputDevice.addListener { listener.handle(MqGatewayBinaryStateChangeEvent(it)) }
   }
 
   override fun getState() = if (digitalInputDevice.value) BinaryState.HIGH else BinaryState.LOW
