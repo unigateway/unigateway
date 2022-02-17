@@ -9,14 +9,12 @@ import javax.inject.Singleton
 @Singleton
 class GateAdditionalConfigValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val gates: List<DeviceConfiguration> = gatewayConfiguration.rooms
-      .flatMap { room -> room.points }
-      .flatMap { point -> point.devices }
+    val gates: List<DeviceConfiguration> = gatewayConfiguration.devices
       .filter { device -> device.type in listOf(DeviceType.GATE) }
 
     return gates.flatMap { gate ->
       internalDeviceWithUnexpectedType(gate, BUTTON_NAMES, DeviceType.EMULATED_SWITCH, gatewayConfiguration) +
-        internalDeviceWithUnexpectedType(gate, REED_SWITCHES_NAMES, DeviceType.REED_SWITCH, gatewayConfiguration)
+          internalDeviceWithUnexpectedType(gate, REED_SWITCHES_NAMES, DeviceType.REED_SWITCH, gatewayConfiguration)
     }
   }
 
@@ -26,15 +24,7 @@ class GateAdditionalConfigValidator : GatewayValidator {
     expectedType: DeviceType,
     gatewayConfiguration: GatewayConfiguration
   ): List<UnexpectedGateInternalDevice> {
-
-    return gateDevice.internalDevices
-      .mapValues { deviceConfig ->
-        deviceConfig.value.dereferenceIfNeeded(gatewayConfiguration)
-      }.filter { internalDevice ->
-        internalDevice.key in internalDevicesNamesToCheck && internalDevice.value.type != expectedType
-      }.map { internalDevice ->
-        UnexpectedGateInternalDevice(gateDevice, internalDevice.key, expectedType)
-      }
+    TODO()
   }
 
   class UnexpectedGateInternalDevice(

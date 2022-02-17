@@ -38,7 +38,7 @@ class HomieDeviceIT extends MqttSpecification {
 
   def "should publish all devices on MQTT and remove old devices when application is starting"() {
     given:
-    def gatewayConfiguration = slurper.parse(HomieDeviceIT.getClassLoader().getResourceAsStream('example.gateway.yaml'))
+    def gatewayConfiguration = slurper.parse(HomieDeviceIT.getClassLoader().getResourceAsStream('example-1.0-simulated.gateway.yaml'))
 
     when:
     mqGateway.initialize()

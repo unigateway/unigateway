@@ -17,7 +17,7 @@ class ConnectorFactory<T : HardwareConnector>(
   /**
    * @param config connector config read from device config section
    */
-  fun create(config: HashMap<String, Any>): Connector {
+  fun create(config: Map<String, *>): Connector {
     val source: Source = Source.valueOf(config[SOURCE_KEY] as String? ?: Source.HARDWARE.name)
     return when (source) {
       Source.HARDWARE -> hardwareConnectorFactory.create(config)

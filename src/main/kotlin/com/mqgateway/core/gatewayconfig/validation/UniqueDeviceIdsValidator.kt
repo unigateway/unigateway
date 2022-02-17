@@ -9,8 +9,7 @@ import javax.inject.Singleton
 class UniqueDeviceIdsValidator : GatewayValidator {
 
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val devices: List<DeviceConfiguration> = gatewayConfiguration.rooms.flatMap { room -> room.points }.flatMap { point -> point.devices }
-    return devices.groupBy { device -> device.id }.filter { it.value.size > 1 }.values.toList().map { DuplicatedDeviceIds(it) }
+    TODO()
   }
 
   class DuplicatedDeviceIds(private val duplicates: List<DeviceConfiguration>) : ValidationFailureReason() {

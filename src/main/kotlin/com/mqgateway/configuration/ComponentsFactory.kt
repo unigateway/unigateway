@@ -8,6 +8,8 @@ import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
+import com.mqgateway.core.gatewayconfig.parser.ConfigurationJacksonModule
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
@@ -42,10 +44,12 @@ internal class ComponentsFactory {
 
   @Singleton
   @Named("yamlObjectMapper")
-  fun yamlObjectMapper(): ObjectMapper {
+  fun yamlObjectMapper(connectorFactory: ConnectorFactory<*>): ObjectMapper {
     val mapper = ObjectMapper(YAMLFactory())
     mapper.registerModule(KotlinModule())
     mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+
+    mapper.registerModule(ConfigurationJacksonModule(connectorFactory))
 
     return mapper
   }

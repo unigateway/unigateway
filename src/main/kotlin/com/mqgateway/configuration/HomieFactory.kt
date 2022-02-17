@@ -7,7 +7,6 @@ import com.mqgateway.homie.MqttStatusIndicator
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
 import com.mqgateway.homie.gateway.HomieDeviceFactory
-import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import io.micronaut.context.annotation.Factory
 import javax.inject.Singleton
@@ -16,16 +15,18 @@ import javax.inject.Singleton
 class HomieFactory {
 
   @Singleton
-  fun mqttClientFactory(gatewayConfiguration: GatewayConfiguration): MqttClientFactory = HiveMqttClientFactory(gatewayConfiguration.mqttHostname)
+  fun mqttClientFactory(gatewayConfiguration: GatewayConfiguration): MqttClientFactory {
+    TODO()
+  }
 
   @Singleton
   fun homieDevice(
-      mqttClientFactory: MqttClientFactory,
-      homieReceiver: GatewayHomieReceiver,
-      mqttConnectionListeners: List<HomieDevice.MqttConnectionListener>,
-      gatewayApplicationProperties: GatewayApplicationProperties,
-      gatewaySystemProperties: GatewaySystemProperties,
-      gatewayConfiguration: GatewayConfiguration
+    mqttClientFactory: MqttClientFactory,
+    homieReceiver: GatewayHomieReceiver,
+    mqttConnectionListeners: List<HomieDevice.MqttConnectionListener>,
+    gatewayApplicationProperties: GatewayApplicationProperties,
+    gatewaySystemProperties: GatewaySystemProperties,
+    gatewayConfiguration: GatewayConfiguration
   ): HomieDevice {
 
     val homieDevice = HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)

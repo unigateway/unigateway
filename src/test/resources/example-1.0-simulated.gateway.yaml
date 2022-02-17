@@ -1,0 +1,10 @@
+configVersion: "1.0"
+name: "Simulated gateway"
+devices:
+  - id: "workshop_light"
+    type: RELAY
+    name: "Workshop light"
+    connectors:
+      status:
+        source: HARDWARE
+        pin: 1

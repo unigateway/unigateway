@@ -15,6 +15,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
+import com.mqgateway.core.io.provider.Connector
 import kotlinx.serialization.Serializable
 import com.mqgateway.core.gatewayconfig.DeviceProperty as Property
 
@@ -24,25 +25,9 @@ data class DeviceConfiguration
   val id: String,
   val name: String,
   val type: DeviceType,
-  val wires: List<WireColor> = emptyList(),
-  val config: Map<String, String> = emptyMap(),
-  val internalDevices: Map<String, DeviceConfiguration> = emptyMap(),
-  val referencedDeviceId: String? = null,
-) {
-
-  fun dereferenceIfNeeded(gatewayConfiguration: GatewayConfiguration): DeviceConfiguration {
-    if (type != DeviceType.REFERENCE) {
-      return this
-    }
-    if (referencedDeviceId == null) {
-      throw UnexpectedDeviceConfigurationException(id, "Missing 'referenceDeviceId' configuration")
-    }
-    return gatewayConfiguration.deviceById(referencedDeviceId).dereferenceIfNeeded(gatewayConfiguration)
-  }
-
-  class UnexpectedDeviceConfigurationException(deviceId: String, message: String) :
-    RuntimeException("Unexpected configuration found for device '$deviceId': $message")
-}
+  val connectors: Map<String, Connector> = emptyMap(),
+  val internalDevices: Map<String, InternalDeviceConfiguration> = emptyMap(),
+)
 
 data class DeviceProperty(
   val type: DevicePropertyType,
