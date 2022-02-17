@@ -56,13 +56,13 @@ class RaspberryPiAnalogPinInput : FloatInput {
     TODO("Not yet implemented")
   }
 
-  override fun getState(): Float {
+  override fun getValue(): Float {
     TODO("Not yet implemented")
   }
 }
 
 class RaspberryPiAnalogPinOutput : FloatOutput {
-  override fun setState(state: Float) {
+  override fun setValue(state: Float) {
     TODO("Not yet implemented")
   }
 }
