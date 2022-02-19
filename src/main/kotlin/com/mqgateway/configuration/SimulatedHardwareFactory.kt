@@ -12,12 +12,12 @@ import io.micronaut.context.annotation.Requires
 import javax.inject.Singleton
 
 @Factory
-@Requires(property = "gateway.system.platform", value = "SIMULATED")
+@Requires(property = "gateway.system.platform", value = "MQGATEWAY") // TODO this class needs to be removed completely
 class SimulatedHardwareFactory {
 
   @Singleton
-  fun mcpExpanders(gatewaySystemProperties: GatewaySystemProperties): MqMcpExpanders {
-    val mcpPorts: List<Int> = gatewaySystemProperties.components.mcp23017.getPorts().map { it.toInt(16) }
+  fun mcpExpanders(): MqMcpExpanders { // TODO needs to be changed or removed
+    val mcpPorts: List<Int> = listOf("20", "21", "22", "23", "24", "25", "26", "27").map { it.toInt(16) }
     return SimulatedMcpExpanders(mcpPorts)
   }
 

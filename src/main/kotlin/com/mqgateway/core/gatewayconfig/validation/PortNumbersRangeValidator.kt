@@ -8,10 +8,11 @@ import javax.inject.Singleton
 @Singleton
 class PortNumbersRangeValidator : GatewayValidator {
 
+  // TODO needs to be removed or moved to the configuration validation specific to Hardware Interface
   override fun validate(gateway: Gateway, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val maxPortNumber = maxPortNumber(systemProperties.expander.enabled)
+    val maxPortNumber = maxPortNumber(true)
     val pointWithWrongPortNumber: List<Point> = gateway.rooms.flatMap { room -> room.points }.filter { point -> point.portNumber > maxPortNumber }
-    return pointWithWrongPortNumber.map { PortNumberOutOfRange(it, systemProperties.expander.enabled) }
+    return pointWithWrongPortNumber.map { PortNumberOutOfRange(it, true) }
   }
 
   companion object {

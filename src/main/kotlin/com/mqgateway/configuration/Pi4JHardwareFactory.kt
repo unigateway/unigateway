@@ -15,18 +15,18 @@ import io.micronaut.context.annotation.Requires
 import javax.inject.Singleton
 
 @Factory
-@Requires(property = "gateway.system.platform", notEquals = "SIMULATED")
+@Requires(property = "gateway.system.platform", notEquals = "MQGATEWAY") // TODO this class needs to be removed completely
 internal class Pi4JHardwareFactory {
 
   @Singleton
-  fun mcpExpanders(gatewaySystemProperties: GatewaySystemProperties): MqMcpExpanders {
-    val mcpPorts: List<Int> = gatewaySystemProperties.components.mcp23017.getPorts().map { it.toInt(16) }
+  fun mcpExpanders(): MqMcpExpanders {
+    val mcpPorts: List<Int> = listOf("20", "21", "22", "23", "24", "25", "26", "27").map { it.toInt(16) } // TODO needs to be removed
     return Pi4JMcpExpanders(I2CBus.BUS_0, mcpPorts)
   }
 
   @Singleton
   fun expanderPinProvider(gatewaySystemProperties: GatewaySystemProperties, mcpExpanders: MqMcpExpanders): MqExpanderPinProvider {
-    Pi4jConfigurer.setup(gatewaySystemProperties.platform)
+    Pi4jConfigurer.setup()
     val gpio = Pi4JGpioController(GpioFactory.getInstance())
     return Pi4JExpanderPinProvider(gpio, mcpExpanders)
   }

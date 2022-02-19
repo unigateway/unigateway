@@ -83,4 +83,10 @@ internal class ComponentsFactory {
   ): DeviceRegistry {
     return DeviceRegistry(deviceFactory.createAll(gateway))
   }
+
+  @Singleton
+  fun platformConfiguration(platformConfigurationFactories: List<PlatformConfigurationFactory>, gatewaySystemProperties: GatewaySystemProperties): GatewaySystemProperties.PlatformConfiguration {
+    val platformConfigurationFactory = platformConfigurationFactories.find { it.supports(gatewaySystemProperties.platform) } // TODO handle not finding proper implementation
+    return platformConfigurationFactory!!.create(gatewaySystemProperties.platformConfig)
+  }
 }

@@ -25,7 +25,7 @@ open class GatewayStatusController(
       ipAddress = systemInfoProvider.getIPAddresses(),
       mqttConnected = mqttStatusIndicator.isConnected,
       firmwareVersion = gatewayApplicationProperties.appVersion,
-      expanderEnabled = systemProperties.expander.enabled,
+      expanderEnabled = true, // TODO need some kind of interface for hardware to be able to provide status and/or configuration information
       mqGatewayLatestVersion = updateChecker.getLatestVersionInfo()
     )
   }

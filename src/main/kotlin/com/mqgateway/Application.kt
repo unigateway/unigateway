@@ -5,7 +5,9 @@ import com.mqgateway.core.device.UpdateListener
 import com.mqgateway.discovery.MulticastDnsServiceDiscovery
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.webapi.WebSocketLogAppender
+import io.micronaut.context.event.StartupEvent
 import io.micronaut.runtime.Micronaut.build
+import io.micronaut.runtime.event.annotation.EventListener
 import mu.KotlinLogging
 import javax.inject.Singleton
 
@@ -17,16 +19,9 @@ fun main(args: Array<String>) {
     .packages("com.mqgateway")
     .start()
 
+  // TODO do we need this ?
   Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
     LOGGER.error(exception) { "Uncaught exception in thread '${thread.name}'." }
-  }
-
-  try {
-    val mqGateway = context.getBean(MqGateway::class.java)
-    mqGateway.initialize()
-  } catch (throwable: Throwable) {
-    LOGGER.error(throwable) { "Fatal error" }
-    throw throwable
   }
 }
 
@@ -39,7 +34,9 @@ class MqGateway(
   private val webSocketLogAppender: WebSocketLogAppender
 ) {
 
-  fun initialize() {
+  // TODO check what happen when exception is thrown - previously it was logging error and rethrowing exception
+  @EventListener
+  fun initialize(event: StartupEvent) {
     LOGGER.info { "MqGateway started. Initialization..." }
 
     updateListeners.forEach { deviceRegistry.addUpdateListener(it) }

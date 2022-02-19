@@ -18,10 +18,11 @@ gateway:
   app-version: <%=version%>
   config-path: gateway.yaml
   system:
-    network-adapter: eth0
-    platform: NANOPI
-    expander:
-      enabled: false
+    network-adapter: eth0 #TODO move it to platform configuration? It is related to platform, but also system related, maybe we should have some code to find it?
+    platform: MQGATEWAY
+    platform-config:
+      expander:
+        enabled: false
   websocket:
     enabled: true
   update:
