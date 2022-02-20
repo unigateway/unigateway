@@ -3,7 +3,6 @@ package com.mqgateway
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.device.UpdateListener
 import com.mqgateway.homie.HomieDevice
-import com.mqgateway.webapi.WebSocketLogAppender
 import io.micronaut.context.event.ShutdownEvent
 import io.micronaut.context.event.StartupEvent
 import io.micronaut.runtime.Micronaut.build
@@ -24,8 +23,7 @@ fun main(args: Array<String>) {
 class MqGateway(
   private val deviceRegistry: DeviceRegistry,
   private val homieDevice: HomieDevice,
-  private val updateListeners: List<UpdateListener>,
-  private val webSocketLogAppender: WebSocketLogAppender
+  private val updateListeners: List<UpdateListener>
 ) {
 
   @EventListener
@@ -35,7 +33,6 @@ class MqGateway(
     updateListeners.forEach { deviceRegistry.addUpdateListener(it) }
     homieDevice.connect()
     deviceRegistry.initializeDevices()
-    webSocketLogAppender.init()
 
     LOGGER.info { "Initialization finished successfully. Running normally." }
   }
