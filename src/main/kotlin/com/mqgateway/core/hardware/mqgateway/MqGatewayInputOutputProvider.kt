@@ -31,7 +31,7 @@ class MqGatewayInputOutputProvider : HardwareInputOutputProvider<MqGatewayConnec
 data class MqGatewayConnector(
   val pinNumber: Int,
   val debounceMs: Int = 0
-) : HardwareConnector()
+) : HardwareConnector
 
 class MqGatewayDigitalPinInput : BinaryInput {
   override fun addListener(listener: BinaryStateListener) {

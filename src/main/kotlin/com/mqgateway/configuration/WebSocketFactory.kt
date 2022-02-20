@@ -5,7 +5,7 @@ import com.mqgateway.webapi.GatewayWebSocketUpdateListener
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import io.micronaut.websocket.WebSocketBroadcaster
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Factory
 @Requires(property = "gateway.websocket.enabled", value = "true")

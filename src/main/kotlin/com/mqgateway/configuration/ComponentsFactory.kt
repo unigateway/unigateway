@@ -16,8 +16,8 @@ import com.mqgateway.core.hardware.MqExpanderPinProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import io.micronaut.context.annotation.Factory
-import javax.inject.Named
-import javax.inject.Singleton
+import jakarta.inject.Named
+import jakarta.inject.Singleton
 
 @Factory
 internal class ComponentsFactory {

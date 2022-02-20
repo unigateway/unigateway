@@ -32,7 +32,7 @@ class RaspberryPiInputOutputProvider : HardwareInputOutputProvider<RaspberryPiCo
 data class RaspberryPiConnector(
   val pinNumber: Int,
   val debounceMs: Int = 0
-) : HardwareConnector()
+) : HardwareConnector
 
 class RaspberryPiDigitalPinInput : BinaryInput {
   override fun addListener(listener: BinaryStateListener) {

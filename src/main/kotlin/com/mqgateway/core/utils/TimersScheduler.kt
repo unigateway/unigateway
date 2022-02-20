@@ -2,7 +2,7 @@ package com.mqgateway.core.utils
 
 import io.micronaut.scheduling.annotation.Scheduled
 import java.time.LocalDateTime
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Singleton
 class TimersScheduler {

@@ -1,13 +1,13 @@
 package com.mqgateway
 
+import com.mqgateway.utils.MqttSpecification
 import io.micronaut.runtime.EmbeddedApplication
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import javax.inject.Inject
-import spock.lang.Specification
+import jakarta.inject.Inject
 import spock.lang.Timeout
 
 @MicronautTest
-class MqGatewaySpec extends Specification {
+class MqGatewaySpec extends MqttSpecification {
 
 	@Inject
 	EmbeddedApplication application
@@ -17,5 +17,4 @@ class MqGatewaySpec extends Specification {
 		expect:
     application.running
 	}
-
 }

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull
 
 @ConfigurationProperties("gateway.system")
 data class GatewaySystemProperties @ConfigurationInject constructor(
-  @NotBlank val networkAdapter: String = "eth0",
+  @NotBlank val networkAdapter: String,
   @NotNull val platform: SystemPlatform,
   @NotNull val expander: ExpanderConfiguration,
   @NotNull val components: ComponentsConfiguration
@@ -19,7 +19,7 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
 
   @ConfigurationProperties("expander")
   data class ExpanderConfiguration @ConfigurationInject constructor(
-    val enabled: Boolean = false
+    val enabled: Boolean
   ) {
     fun getMcp23017DefaultPorts(): List<String> {
       return if (enabled) {
@@ -38,7 +38,7 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
     @ConfigurationProperties("mcp23017")
     data class Mcp23017Configuration @ConfigurationInject constructor(
       private val expander: ExpanderConfiguration,
-      private val ports: List<String>? = null
+      private val ports: List<String>?
     ) {
 
       fun getPorts(): List<String> = ports ?: expander.getMcp23017DefaultPorts()

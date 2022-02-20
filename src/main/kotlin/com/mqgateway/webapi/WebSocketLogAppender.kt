@@ -6,7 +6,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import org.slf4j.LoggerFactory
 import javax.annotation.PreDestroy
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Singleton
 class WebSocketLogAppender(private val logsWebSocketPublisher: LogsWebSocketPublisher) : AppenderBase<ILoggingEvent>() {

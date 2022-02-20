@@ -7,6 +7,6 @@ import javax.validation.constraints.NotBlank
 @ConfigurationProperties("gateway")
 data class GatewayApplicationProperties @ConfigurationInject
 constructor(
-  @NotBlank val configPath: String = "gateway.yaml",
-  @NotBlank val appVersion: String = "SNAPSHOT"
+  @NotBlank val configPath: String,
+  @NotBlank val appVersion: String
 )
