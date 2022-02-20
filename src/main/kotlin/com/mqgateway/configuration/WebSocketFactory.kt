@@ -14,7 +14,7 @@ import jakarta.inject.Singleton
 internal class WebSocketFactory {
 
   @Singleton
-  fun logsWebSocketPublisher(broadcaster: WebSocketBroadcaster):  LogsWebSocketPublisher {
+  fun logsWebSocketPublisher(broadcaster: WebSocketBroadcaster): LogsWebSocketPublisher {
     return LogsWebSocketPublisher(broadcaster)
   }
 

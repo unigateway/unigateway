@@ -9,7 +9,8 @@ import io.micronaut.context.event.StartupEvent
 import org.slf4j.LoggerFactory
 import javax.annotation.PreDestroy
 
-class WebSocketLogAppender(private val logsWebSocketPublisher: LogsWebSocketPublisher) : AppenderBase<ILoggingEvent>(), ApplicationEventListener<StartupEvent> {
+class WebSocketLogAppender(private val logsWebSocketPublisher: LogsWebSocketPublisher) :
+  AppenderBase<ILoggingEvent>(), ApplicationEventListener<StartupEvent> {
 
   override fun append(eventObject: ILoggingEvent) {
     logsWebSocketPublisher.onLogEvent(eventObject)
