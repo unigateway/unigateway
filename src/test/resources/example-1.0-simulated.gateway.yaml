@@ -5,6 +5,9 @@ devices:
     type: RELAY
     name: "Workshop light"
     connectors:
-      status:
+      state:
         source: HARDWARE
         pin: 1
+    config:
+      stringValue: "1"
+      intValue: 300

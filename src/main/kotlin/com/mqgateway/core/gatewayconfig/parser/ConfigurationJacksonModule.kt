@@ -6,16 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.mqgateway.core.gatewayconfig.ConnectorDeserializer
 import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
 import com.mqgateway.core.io.provider.Connector
-import com.mqgateway.core.io.provider.HardwareConnector
 
 val VERSION: Version = VersionUtil.parseVersion(
-    "1.0.0", "com.unigateway", "unigateway"
+  "1.0.0", "unigateway", "unigateway"
 )
 
-class ConfigurationJacksonModule<T : HardwareConnector>(connectorFactory: ConnectorFactory<T>) : SimpleModule("UniGatewayModule", VERSION) {
+class ConfigurationJacksonModule(connectorFactory: ConnectorFactory<*>) : SimpleModule("UniGatewayModule", VERSION) {
 
-    init {
-        addDeserializer(Connector::class.java, ConnectorDeserializer(connectorFactory))
-    }
-
+  init {
+    addDeserializer(Connector::class.java, ConnectorDeserializer(connectorFactory))
+  }
 }

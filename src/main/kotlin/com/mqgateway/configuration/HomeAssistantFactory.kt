@@ -37,7 +37,10 @@ internal class HomeAssistantFactory {
   }
 
   @Singleton
-  fun homeAssistantMqttListener(homeAssistantConfigurer: HomeAssistantConfigurer, gatewayConfiguration: GatewayConfiguration): HomieDevice.MqttConnectionListener {
+  fun homeAssistantMqttListener(
+    homeAssistantConfigurer: HomeAssistantConfigurer,
+    gatewayConfiguration: GatewayConfiguration
+  ): HomieDevice.MqttConnectionListener {
     return object : HomieDevice.MqttConnectionListener {
       override fun onConnected() {
         homeAssistantConfigurer.sendHomeAssistantConfiguration(gatewayConfiguration)

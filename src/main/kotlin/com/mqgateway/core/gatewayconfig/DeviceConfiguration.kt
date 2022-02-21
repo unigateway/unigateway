@@ -27,6 +27,7 @@ data class DeviceConfiguration
   val type: DeviceType,
   val connectors: Map<String, Connector> = emptyMap(),
   val internalDevices: Map<String, InternalDeviceConfiguration> = emptyMap(),
+  val config: Map<String, String> = emptyMap()
 )
 
 data class DeviceProperty(

@@ -17,7 +17,11 @@ class MdnsDiscoveryFactory {
   }
 
   @Singleton
-  fun multicastDnsServiceDiscovery(jmDNS: JmDNS, gatewayConfiguration: GatewayConfiguration, embeddedServer: EmbeddedServer): MulticastDnsServiceDiscovery {
+  fun multicastDnsServiceDiscovery(
+    jmDNS: JmDNS,
+    gatewayConfiguration: GatewayConfiguration,
+    embeddedServer: EmbeddedServer
+  ): MulticastDnsServiceDiscovery {
     return MulticastDnsServiceDiscovery(jmDNS, gatewayConfiguration.name, embeddedServer.port)
   }
 }

@@ -17,9 +17,11 @@ import com.pi4j.io.gpio.GpioPinDigitalInput
 import com.pi4j.io.gpio.GpioPinDigitalOutput
 import com.pi4j.io.gpio.PinPullResistance
 import com.pi4j.io.gpio.PinState
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 
+@Ignore
 class DeviceFactoryTest extends Specification {
 
 	SimulatedExpanderPinProvider pinProvider = new SimulatedExpanderPinProvider(new SimulatedGpioController(), new SimulatedMcpExpanders([]))
