@@ -1,18 +1,18 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
 class EmulatedSwitchButtonDeviceTest extends Specification {
-	def pin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
+	SimulatedBinaryOutput binaryOutput = new SimulatedBinaryOutput()
 
 	@Subject
-	EmulatedSwitchButtonDevice emulatedSwitch = new EmulatedSwitchButtonDevice("emulatedSwitch1", pin, 10)
+	EmulatedSwitchButtonDevice emulatedSwitch = new EmulatedSwitchButtonDevice("emulatedSwitch1", binaryOutput, 10)
 
 	@Unroll
 	def "should change pin state to LOW when requested to be PRESSED"() {
@@ -20,7 +20,7 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 		emulatedSwitch.change("state", "PRESSED")
 
 		then:
-		pin.getState() == PinState.LOW
+		binaryOutput.getState() == BinaryState.LOW
 	}
 
 	def "should notify listeners on button pressed"() {

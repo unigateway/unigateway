@@ -25,10 +25,10 @@ class HomieDeviceIT extends MqttSpecification {
 
     MqttClient mqttClient = mqttClientFactory.create("testClient") {} {}
     mqttClient.connect(new MqttMessage("test", "disconnected", 0, false), true)
-    mqttClient.subscribeAsync("homie/TestGw1/#") { receivedMessages.add(it) }
-    mqttClient.subscribeAsync('homie/TestGw1/$state') { if (it.payload == "ready") mqGatewayIsReady.set(true) }
+    mqttClient.subscribeAsync("homie/Simulated gateway/#") { receivedMessages.add(it) }
+    mqttClient.subscribeAsync('homie/Simulated gateway/$state') { if (it.payload == "ready") mqGatewayIsReady.set(true) }
 
-    mqttClient.publishSync(new MqttMessage("homie/TestGw1/nonExistingDevice1", "something", 1, true))
+    mqttClient.publishSync(new MqttMessage("homie/Simulated gateway/nonExistingDevice1", "something", 1, true))
   }
 
   def "should publish all devices on MQTT and remove old devices when application is starting"() {
@@ -41,10 +41,10 @@ class HomieDeviceIT extends MqttSpecification {
     then:
     mqGatewayIsReady.get()
     !receivedMessages.isEmpty()
-    gatewayConfiguration.rooms*.points*.devices.flatten().forEach { Map device ->
-      assert receivedMessages.find {it.topic == "homie/TestGw1/${device.id}/\$name" }.payload == device.name
+    gatewayConfiguration.devices.forEach { Map device ->
+      assert receivedMessages.find {it.topic == "homie/Simulated gateway/${device.id}/\$name" }.payload == device.name
     }
-    receivedMessages.contains(new MqttMessage("homie/TestGw1/nonExistingDevice1", "", 0, false)) // deleting retained message
+    receivedMessages.contains(new MqttMessage("homie/Simulated gateway/nonExistingDevice1", "", 0, false)) // deleting retained message
 
     cleanup:
     server.close()

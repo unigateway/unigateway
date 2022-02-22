@@ -148,9 +148,9 @@ class ConfigValidatorTest extends Specification {
 
     then:
     !result.succeeded
-    result.failureReasons*.class.every { it == ReferenceDeviceValidator.IncorrectReferencedDevice }
-    List<ReferenceDeviceValidator.IncorrectReferencedDevice> reasons = result.failureReasons
-    reasons*.referencingDevice.id == ["referencing_device_id"]
+    ReferenceDeviceValidator.IncorrectReferencedDevice failureReason =
+      result.failureReasons.find {it.class == ReferenceDeviceValidator.IncorrectReferencedDevice } as ReferenceDeviceValidator.IncorrectReferencedDevice
+    failureReason.referencingDevice.id == "referencing_device_id"
   }
 
   static GatewayConfiguration gatewayWith(DeviceConfiguration[] devices) {

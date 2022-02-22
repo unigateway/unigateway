@@ -28,7 +28,7 @@ class GateAdditionalConfigValidator : GatewayValidator {
     return gateDevice.internalDevices
       .filter { internalDeviceEntry ->
         val (key, internalDevice) = internalDeviceEntry
-        key in internalDevicesNamesToCheck && gatewayConfiguration.devices.find { it.id == internalDevice.referenceId }!!.type != expectedType
+        key in internalDevicesNamesToCheck && gatewayConfiguration.devices.find { it.id == internalDevice.referenceId }?.type != expectedType
       }.map { internalDevice ->
         UnexpectedGateInternalDevice(gateDevice, internalDevice.key, expectedType)
       }

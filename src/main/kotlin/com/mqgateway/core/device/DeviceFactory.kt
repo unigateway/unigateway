@@ -24,7 +24,7 @@ class DeviceFactory(
     return setOf(gatewayDevice) + gatewayConfiguration.devices.map { create(it, gatewayConfiguration) }.toSet()
   }
 
-  private fun create(deviceConfig: DeviceConfiguration, gatewayConfiguration: GatewayConfiguration): Device { // TODO probably no need to pass "gateway"
+  private fun create(deviceConfig: DeviceConfiguration, gatewayConfiguration: GatewayConfiguration): Device {
     return createdDevices.getOrPut(deviceConfig.id) {
       when (deviceConfig.type) {
         DeviceType.RELAY -> {

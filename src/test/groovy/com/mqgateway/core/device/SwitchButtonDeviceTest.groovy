@@ -1,9 +1,8 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryInput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinPullResistance
-import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.util.concurrent.PollingConditions
@@ -11,23 +10,12 @@ import spock.util.concurrent.PollingConditions
 class SwitchButtonDeviceTest extends Specification {
 
 	public static final int LONG_PRESS_MS = 100
-	def pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
+	def binaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
 
 	def conditions = new PollingConditions(initialDelay: 0.1, timeout: 1)
 
 	@Subject
-	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 0, LONG_PRESS_MS)
-
-	def "should set debounce on pin during initialization"() {
-    given:
-    SwitchButtonDevice deviceWithDebounce = new SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
-
-		when:
-    deviceWithDebounce.init()
-
-		then:
-		pin.getDebounce(PinState.HIGH) == 200
-	}
+	SwitchButtonDevice device = new SwitchButtonDevice("button1", binaryInput, LONG_PRESS_MS)
 
 	def "should notify listeners on switch button pressed (LOW state)"() {
 		given:
@@ -36,7 +24,7 @@ class SwitchButtonDeviceTest extends Specification {
 		device.init()
 
 		when:
-		pin.setState(PinState.LOW)
+		binaryInput.setState(BinaryState.LOW)
 
 		then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("button1", "state", "PRESSED")
@@ -47,10 +35,10 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-    pin.setState(PinState.LOW)
+    binaryInput.setState(BinaryState.LOW)
 
 		when:
-		pin.setState(PinState.HIGH)
+		binaryInput.setState(BinaryState.HIGH)
 
 		then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("button1", "state", "RELEASED")
@@ -63,7 +51,7 @@ class SwitchButtonDeviceTest extends Specification {
 		device.init()
 
 		when:
-		pin.low()
+		binaryInput.low()
 
 		then:
 		conditions.eventually {
@@ -76,13 +64,13 @@ class SwitchButtonDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-		pin.low()
+		binaryInput.low()
 		conditions.eventually {
 			assert listenerStub.receivedUpdates.find {it.newValue == "LONG_PRESSED" }
 		}
 
 		when:
-		pin.high()
+		binaryInput.high()
 
 		then:
 		conditions.eventually {

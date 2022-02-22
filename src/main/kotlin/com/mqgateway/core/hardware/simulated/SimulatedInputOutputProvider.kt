@@ -15,7 +15,7 @@ import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 class SimulatedInputOutputProvider : HardwareInputOutputProvider<SimulatedConnector> {
 
   override fun getBinaryInput(connector: SimulatedConnector): SimulatedBinaryInput {
-    return SimulatedBinaryInput()
+    return SimulatedBinaryInput(BinaryState.valueOf(connector.initialValue ?: "HIGH"))
   }
 
   override fun getBinaryOutput(connector: SimulatedConnector): SimulatedBinaryOutput {
@@ -23,7 +23,7 @@ class SimulatedInputOutputProvider : HardwareInputOutputProvider<SimulatedConnec
   }
 
   override fun getFloatInput(connector: SimulatedConnector): SimulatedFloatInput {
-    return SimulatedFloatInput()
+    return SimulatedFloatInput(connector.initialValue?.toFloat() ?: 0f)
   }
 
   override fun getFloatOutput(connector: SimulatedConnector): SimulatedFloatOutput {
@@ -31,25 +31,35 @@ class SimulatedInputOutputProvider : HardwareInputOutputProvider<SimulatedConnec
   }
 }
 
-data class SimulatedConnector(
-  val pinNumber: Int
+data class SimulatedConnector @JvmOverloads constructor(
+  val pin: Int,
+  val initialValue: String? = null
 ) : HardwareConnector
 
-class SimulatedBinaryInput(initialState: BinaryState? = null) : BinaryInput {
+class SimulatedBinaryInput(initialState: BinaryState) : BinaryInput {
 
-  private var state: BinaryState? = initialState
+  private var state: BinaryState = initialState
   private val listeners: MutableList<BinaryStateListener> = mutableListOf()
 
   override fun addListener(listener: BinaryStateListener) {
     listeners.add(listener)
   }
 
-  override fun getState(): BinaryState = state ?: throw IllegalStateException("Should never ask for the state if it was not set before")
+  override fun getState(): BinaryState = state
 
   fun setState(newState: BinaryState) {
     if (state != newState) {
+      state = newState
       listeners.forEach { it.handle(SimulatedBinaryStateChangeEvent(newState)) }
     }
+  }
+
+  fun high() {
+    setState(BinaryState.HIGH)
+  }
+
+  fun low() {
+    setState(BinaryState.LOW)
   }
 }
 
@@ -65,19 +75,19 @@ class SimulatedBinaryOutput : BinaryOutput {
     state = newState
   }
 
-  fun getState() = state
+  fun getState(): BinaryState = state ?: throw IllegalStateException("Should never ask for the value if it was not set before")
 }
 
-class SimulatedFloatInput(initialValue: Float? = null) : FloatInput {
+class SimulatedFloatInput(initialValue: Float) : FloatInput {
 
-  private var value: Float? = initialValue
+  private var value: Float = initialValue
   private val listeners: MutableList<FloatValueListener> = mutableListOf()
 
   override fun addListener(listener: FloatValueListener) {
     listeners.add(listener)
   }
 
-  override fun getValue() = value ?: throw IllegalStateException("Should never ask for the value if it was not set before")
+  override fun getValue() = value
 
   fun setValue(newValue: Float) {
     if (value != newValue) {
@@ -94,7 +104,7 @@ class SimulatedFloatOutput : FloatOutput {
     value = newValue
   }
 
-  fun getValue() = value
+  fun getValue(): Float = value ?: throw IllegalStateException("Should never ask for the value if it was not set before")
 }
 
 data class SimulatedFloatValueChangeEvent(val newValue: Float) : FloatValueChangeEvent {

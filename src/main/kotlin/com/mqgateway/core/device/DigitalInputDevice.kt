@@ -36,8 +36,4 @@ abstract class DigitalInputDevice(
   protected abstract fun lowStateValue(): String
 
   protected open fun additionalOnStateChanged(newState: String) {}
-
-  companion object {
-    const val CONFIG_DEBOUNCE_KEY = "debounceMs"
-  }
 }

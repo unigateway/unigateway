@@ -11,3 +11,17 @@ devices:
     config:
       stringValue: "1"
       intValue: 300
+  - id: "workshop_light_switch"
+    type: SWITCH_BUTTON
+    name: "Workshop light switch"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 13
+  - id: "bedroom_light_switch"
+    type: SWITCH_BUTTON
+    name: "Bedroom light switch"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 14
