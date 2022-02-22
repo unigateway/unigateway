@@ -9,16 +9,13 @@ import jakarta.inject.Singleton
 @Singleton
 class ShutterAdditionalConfigValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val shutters: List<DeviceConfiguration> = gatewayConfiguration.rooms
-      .flatMap { room -> room.points }
-      .flatMap { point -> point.devices }
+    val shutters: List<DeviceConfiguration> = gatewayConfiguration.devices
       .filter { device -> device.type == DeviceType.SHUTTER }
 
     return shutters.filter { shutter ->
       shutter.internalDevices.values
-        .map { it.dereferenceIfNeeded(gatewayConfiguration) }
         .any { internalDevice ->
-          internalDevice.type != DeviceType.RELAY
+          gatewayConfiguration.devices.find { it.id == internalDevice.referenceId }!!.type != DeviceType.RELAY
         }
     }.map { NonRelayShutterInternalDevice(it) }
   }

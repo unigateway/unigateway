@@ -9,9 +9,7 @@ import jakarta.inject.Singleton
 class PortNumbersRangeValidator : GatewayValidator {
 
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val maxPortNumber = maxPortNumber(systemProperties.expander.enabled)
-    val pointWithWrongPortNumber: List<Point> = gatewayConfiguration.rooms.flatMap { room -> room.points }.filter { point -> point.portNumber > maxPortNumber }
-    return pointWithWrongPortNumber.map { PortNumberOutOfRange(it, systemProperties.expander.enabled) }
+    return emptyList()
   }
 
   companion object {

@@ -36,11 +36,8 @@ class HomieDeviceFactory(
       getHomiePropertiesFor(gatewayConfiguration.name, gatewayConfiguration.name, DeviceType.MQGATEWAY)
     )
 
-    val homieNodes: Map<String, HomieNode> = gatewayConfiguration.rooms
-      .flatMap { it.points }
-      .flatMap { it.devices }
-      .map { it.id to toHomieNode(gatewayConfiguration.name, it) }
-      .toMap() + (gatewayConfiguration.name to mqGatewayAsNode)
+    val homieNodes: Map<String, HomieNode> = gatewayConfiguration.devices
+      .associate { it.id to toHomieNode(gatewayConfiguration.name, it) } + (gatewayConfiguration.name to mqGatewayAsNode)
 
     val networkInterface = NetworkInterface.getByName(networkAdapter)
     return HomieDevice(

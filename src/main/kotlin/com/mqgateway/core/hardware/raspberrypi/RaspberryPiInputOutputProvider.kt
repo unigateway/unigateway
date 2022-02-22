@@ -6,7 +6,7 @@ import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.BinaryStateListener
 import com.mqgateway.core.io.FloatInput
 import com.mqgateway.core.io.FloatOutput
-import com.mqgateway.core.io.FloatStateListener
+import com.mqgateway.core.io.FloatValueListener
 import com.mqgateway.core.io.provider.HardwareConnector
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
@@ -45,14 +45,14 @@ class RaspberryPiDigitalPinInput : BinaryInput {
 }
 
 class RaspberryPiDigitalPinOutput : BinaryOutput {
-  override fun setState(state: BinaryState) {
+  override fun setState(newState: BinaryState) {
     TODO("Not yet implemented")
   }
 }
 
 class RaspberryPiAnalogPinInput : FloatInput {
 
-  override fun addListener(listener: FloatStateListener) {
+  override fun addListener(listener: FloatValueListener) {
     TODO("Not yet implemented")
   }
 
@@ -62,7 +62,7 @@ class RaspberryPiAnalogPinInput : FloatInput {
 }
 
 class RaspberryPiAnalogPinOutput : FloatOutput {
-  override fun setValue(state: Float) {
+  override fun setValue(newValue: Float) {
     TODO("Not yet implemented")
   }
 }

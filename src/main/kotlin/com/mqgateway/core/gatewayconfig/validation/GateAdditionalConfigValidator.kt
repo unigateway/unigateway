@@ -9,9 +9,7 @@ import jakarta.inject.Singleton
 @Singleton
 class GateAdditionalConfigValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val gates: List<DeviceConfiguration> = gatewayConfiguration.rooms
-      .flatMap { room -> room.points }
-      .flatMap { point -> point.devices }
+    val gates: List<DeviceConfiguration> = gatewayConfiguration.devices
       .filter { device -> device.type in listOf(DeviceType.GATE) }
 
     return gates.flatMap { gate ->
@@ -28,10 +26,9 @@ class GateAdditionalConfigValidator : GatewayValidator {
   ): List<UnexpectedGateInternalDevice> {
 
     return gateDevice.internalDevices
-      .mapValues { deviceConfig ->
-        deviceConfig.value.dereferenceIfNeeded(gatewayConfiguration)
-      }.filter { internalDevice ->
-        internalDevice.key in internalDevicesNamesToCheck && internalDevice.value.type != expectedType
+      .filter { internalDeviceEntry ->
+        val (key, internalDevice) = internalDeviceEntry
+        key in internalDevicesNamesToCheck && gatewayConfiguration.devices.find { it.id == internalDevice.referenceId }!!.type != expectedType
       }.map { internalDevice ->
         UnexpectedGateInternalDevice(gateDevice, internalDevice.key, expectedType)
       }

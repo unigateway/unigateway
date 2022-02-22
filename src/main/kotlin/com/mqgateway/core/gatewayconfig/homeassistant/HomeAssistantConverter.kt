@@ -26,9 +26,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
 
   fun convert(gatewayConfiguration: GatewayConfiguration): List<HomeAssistantComponent> {
     LOGGER.info { "Converting Gateway configuration to HomeAssistant auto-discovery config" }
-    val devices = gatewayConfiguration.rooms
-      .flatMap { it.points }
-      .flatMap { it.devices }
+    val devices = gatewayConfiguration.devices
 
     val mqGatewayCoreComponents = convertMqGatewayRootDeviceToHaSensors(gatewayConfiguration)
 
@@ -55,9 +53,6 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
   ): List<HomeAssistantComponent> {
 
     val components = when (device.type) {
-      DeviceType.REFERENCE -> {
-        toHomeAssistantComponents(device.dereferenceIfNeeded(gatewayConfiguration), haDevice, basicProperties, gatewayConfiguration)
-      }
       DeviceType.RELAY -> {
         val stateTopic = homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE)
         val commandTopic = homieCommandTopic(gatewayConfiguration, device, DevicePropertyType.STATE)

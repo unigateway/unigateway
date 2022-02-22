@@ -4,7 +4,7 @@ import com.mqgateway.core.gatewayconfig.connector.HardwareConnectorFactory
 
 class RaspberryPiConnectorFactory : HardwareConnectorFactory<RaspberryPiConnector> {
 
-  override fun create(config: HashMap<String, Any>): RaspberryPiConnector {
+  override fun create(config: Map<String, *>): RaspberryPiConnector {
     TODO("Not yet implemented")
   }
 }

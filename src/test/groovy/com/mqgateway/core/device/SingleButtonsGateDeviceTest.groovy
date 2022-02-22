@@ -20,9 +20,9 @@ class SingleButtonsGateDeviceTest extends Specification {
   EmulatedSwitchButtonDevice actionButton = new EmulatedSwitchButtonDevice("actionButton", actionPin, 10)
 
   def openReedSwitchPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
-  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchPin, 0)
+  ReedSwitchDevice openReedSwitch = new com.mqgateway.core.device.ReedSwitchDevice.ReedSwitchDevice("openReedSwitch", openReedSwitchPin, 0)
   def closedReedSwitchPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
-  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", closedReedSwitchPin, 0)
+  ReedSwitchDevice closedReedSwitch = new com.mqgateway.core.device.ReedSwitchDevice.ReedSwitchDevice("closedReedSwitch", closedReedSwitchPin, 0)
 
   @Subject
   SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, openReedSwitch, closedReedSwitch)

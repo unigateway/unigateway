@@ -7,7 +7,7 @@ class MySensorsConnectorFactory {
   /**
    * @param config connector config read from device config section
    */
-  fun create(config: HashMap<String, Any>): MySensorsConnector {
+  fun create(config: Map<String, *>): MySensorsConnector {
     TODO("Not yet implemented")
   }
 }

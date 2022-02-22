@@ -12,7 +12,7 @@ class ReedSwitchDeviceTest extends Specification {
 	def pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
 
 	@Subject
-	ReedSwitchDevice device = new ReedSwitchDevice("reed1", pin, 0)
+	ReedSwitchDevice device = new com.mqgateway.core.device.ReedSwitchDevice.ReedSwitchDevice("reed1", pin, 0)
 
   void setup() {
     // starting with closed circuit (LOW state)
@@ -21,7 +21,7 @@ class ReedSwitchDeviceTest extends Specification {
 
   def "should set debounce on pin during initialization"() {
     given:
-    ReedSwitchDevice deviceWithDebounce = new ReedSwitchDevice("reed1", pin, 150)
+    ReedSwitchDevice deviceWithDebounce = new com.mqgateway.core.device.ReedSwitchDevice.ReedSwitchDevice("reed1", pin, 150)
 
 		when:
     deviceWithDebounce.init()

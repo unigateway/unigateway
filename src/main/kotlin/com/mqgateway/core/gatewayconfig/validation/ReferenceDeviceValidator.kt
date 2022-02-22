@@ -2,28 +2,28 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import jakarta.inject.Singleton
 
 @Singleton
 class ReferenceDeviceValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val referenceDevices: List<DeviceConfiguration> = gatewayConfiguration.rooms
-      .flatMap { room -> room.points }
-      .flatMap { point -> point.devices }
-      .filter { device -> device.type == DeviceType.REFERENCE }
+    val devicesWithInternalDevices: List<DeviceConfiguration> = gatewayConfiguration.devices
+      .filter { device -> device.internalDevices.isNotEmpty() }
 
-    return referenceDevices
-      .filter { referenceDevice ->
-        gatewayConfiguration.allDevices().none { device -> device.id == referenceDevice.referencedDeviceId }
-      }.map { IncorrectReferencedDevice(it, it.referencedDeviceId!!) }
+    return devicesWithInternalDevices
+      .filter { deviceWithInternalDevice ->
+        deviceWithInternalDevice.internalDevices.any { reference ->
+          val (_, internalDevice) = reference
+          !gatewayConfiguration.devices.map { it.id }.contains(internalDevice.referenceId)
+        }
+      }.map { IncorrectReferencedDevice(it) }
   }
 
-  class IncorrectReferencedDevice(val referencingDevice: DeviceConfiguration, val referencedDeviceId: String) : ValidationFailureReason() {
+  class IncorrectReferencedDevice(val referencingDevice: DeviceConfiguration) : ValidationFailureReason() {
 
     override fun getDescription(): String {
-      return "Device: '${referencingDevice.id}' has reference to device '$referencedDeviceId', but no such device exists"
+      return "Device: '${referencingDevice.id}' has internal device which is not configured"
     }
   }
 }

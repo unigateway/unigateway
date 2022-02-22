@@ -36,10 +36,12 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
       val gateway = yamlParser.parse(gatewayJsonNode)
       validateGatewayConfigurationValues(gateway)
 
-      File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
+      // TODO enable writing MD5 when fixed
+      // File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
 
-      val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
-      File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
+      // TODO what about writing to CBOR?
+      // val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
+      // File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
 
       return gateway
     }

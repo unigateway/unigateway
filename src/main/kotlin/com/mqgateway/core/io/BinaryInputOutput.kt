@@ -5,7 +5,7 @@ package com.mqgateway.core.io
  * Depending on implementation, may represent hardware digital pin, process communication, external communication, etc.
  */
 interface BinaryOutput {
-  fun setState(state: BinaryState)
+  fun setState(newState: BinaryState)
 }
 
 /**

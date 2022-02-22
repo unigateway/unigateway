@@ -16,7 +16,7 @@ import jakarta.inject.Singleton
 class HomieFactory {
 
   @Singleton
-  fun mqttClientFactory(gatewayConfiguration: GatewayConfiguration): MqttClientFactory = HiveMqttClientFactory(gatewayConfiguration.mqttHostname)
+  fun mqttClientFactory(gateway: GatewayConfiguration): MqttClientFactory = HiveMqttClientFactory("localhost") // TODO definitely need to be read from somewhere
 
   @Singleton
   fun homieDevice(

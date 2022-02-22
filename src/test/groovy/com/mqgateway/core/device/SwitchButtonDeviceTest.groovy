@@ -16,11 +16,11 @@ class SwitchButtonDeviceTest extends Specification {
 	def conditions = new PollingConditions(initialDelay: 0.1, timeout: 1)
 
 	@Subject
-	SwitchButtonDevice device = new SwitchButtonDevice("button1", pin, 0, LONG_PRESS_MS)
+	SwitchButtonDevice device = new com.mqgateway.core.device.SwitchButtonDevice.SwitchButtonDevice("button1", pin, 0, LONG_PRESS_MS)
 
 	def "should set debounce on pin during initialization"() {
     given:
-    SwitchButtonDevice deviceWithDebounce = new SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
+    SwitchButtonDevice deviceWithDebounce = new com.mqgateway.core.device.SwitchButtonDevice.SwitchButtonDevice("button1", pin, 200, LONG_PRESS_MS)
 
 		when:
     deviceWithDebounce.init()

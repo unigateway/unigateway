@@ -1,7 +1,5 @@
 package com.mqgateway.core.utils
 
-import com.pi4j.system.NetworkInfo
-import com.pi4j.system.SystemInfo
 import java.lang.management.ManagementFactory
 import java.time.Duration
 
@@ -12,11 +10,13 @@ interface SystemInfoProvider {
   fun getIPAddresses(): String
 }
 
+// TODO how to get this without hardware specific library?
+// TODO create Singleton of this when fixed
 class Pi4JSystemInfoProvider : SystemInfoProvider {
-  override fun getCpuTemperature(): Float = SystemInfo.getCpuTemperature() / 1000
-  override fun getMemoryFree(): Long = SystemInfo.getMemoryFree()
+  override fun getCpuTemperature(): Float = 50f
+  override fun getMemoryFree(): Long = 50000L
   override fun getUptime(): Duration = Duration.ofMillis(ManagementFactory.getRuntimeMXBean().uptime)
-  override fun getIPAddresses(): String = NetworkInfo.getIPAddresses().joinToString(", ")
+  override fun getIPAddresses(): String = "0.0.0.0"
 }
 
 class SimulatedSystemInfoProvider : SystemInfoProvider {

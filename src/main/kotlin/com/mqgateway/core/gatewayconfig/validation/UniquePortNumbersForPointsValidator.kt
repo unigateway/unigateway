@@ -9,8 +9,7 @@ import jakarta.inject.Singleton
 class UniquePortNumbersForPointsValidator : GatewayValidator {
 
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val points: List<Point> = gatewayConfiguration.rooms.flatMap { room -> room.points }
-    return points.groupBy { point -> point.portNumber }.filter { it.value.size > 1 }.values.toList().map { DuplicatedPortNumbersOnPoints(it) }
+    return emptyList()
   }
 
   class DuplicatedPortNumbersOnPoints(val points: List<Point>) : ValidationFailureReason() {
