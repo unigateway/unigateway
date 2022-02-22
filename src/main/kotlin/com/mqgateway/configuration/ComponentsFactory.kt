@@ -39,11 +39,15 @@ internal class ComponentsFactory {
   }
 
   @Singleton
+  fun yamlParser(@Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper): YamlParser {
+    return YamlParser(yamlObjectMapper)
+  }
+
+  @Singleton
   fun gatewayConfigLoader(
-    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
+    yamlParser: YamlParser,
     configValidator: ConfigValidator
   ): ConfigLoader {
-    val yamlParser = YamlParser(yamlObjectMapper)
     return ConfigLoader(yamlParser, configValidator)
   }
 

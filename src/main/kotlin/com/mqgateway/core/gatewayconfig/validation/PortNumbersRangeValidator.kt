@@ -9,6 +9,7 @@ import jakarta.inject.Singleton
 class PortNumbersRangeValidator : GatewayValidator {
 
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+    // TODO need to move somewhere to be implemented with MqGateway Hardware Interface
     return emptyList()
   }
 

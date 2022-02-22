@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://unigateway.com/configuration/schema#",
+  "$id": "http://unigateway/configuration/schema#",
   "title": "UniGateway 1.0 Configuration file",
   "description": "JSON schema for UniGateway Configuration file",
   "type": "object",

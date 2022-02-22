@@ -6,4 +6,8 @@ devices:
     name: "Workshop light"
     connectors:
       state:
-        pinNumber: 12
+        source: HARDWARE
+        pin: 12
+    config:
+      stringValue: "1"
+      intValue: 300

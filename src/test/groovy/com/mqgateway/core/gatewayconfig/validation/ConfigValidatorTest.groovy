@@ -8,9 +8,7 @@ import com.mqgateway.configuration.GatewaySystemProperties.ExpanderConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
-import com.mqgateway.core.gatewayconfig.Point
-import com.mqgateway.core.gatewayconfig.Room
-import com.mqgateway.core.gatewayconfig.WireColor
+import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -28,170 +26,16 @@ class ConfigValidatorTest extends Specification {
 
   GatewaySystemProperties systemProperties = prepareSystemProperties()
 
-	@Subject
-	ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
-	int nextPortNumber = 1
+  @Subject
+  ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
 
-	def "should validation failed when there are more than one device with the same id"() {
-		given:
-		def gateway = gatewayWith(
-				roomWith(
-					pointWith(
-						someDevice("1", "duplicate 1_A", DeviceType.RELAY, [WireColor.BLUE]),
-						someDevice("2", "duplicate 2_A", DeviceType.RELAY, [WireColor.BLUE_WHITE])
-					)
-				),
-				roomWith(
-					pointWith(
-						someDevice("1", "duplicate 1_B", DeviceType.RELAY, [WireColor.BLUE]),
-						someDevice("2", "duplicate 2_B", DeviceType.RELAY, [WireColor.BLUE_WHITE])
-					)
-				)
-		)
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		def reason1 = result.failureReasons[0] as UniqueDeviceIdsValidator.DuplicatedDeviceIds
-		reason1.duplicates*.name.toSet() == ["duplicate 1_A", "duplicate 1_B"].toSet()
-		def reason2 = result.failureReasons[1] as UniqueDeviceIdsValidator.DuplicatedDeviceIds
-		reason2.duplicates*.name.toSet() == ["duplicate 2_A", "duplicate 2_B"].toSet()
-	}
-
-	def "should validation failed when there are two points with the same port"() {
-		given:
-		def gateway = gatewayWith(
-			roomWith(
-				pointWith([someDevice()].toArray() as DeviceConfiguration[], 1, "A")
-			),
-			roomWith(
-				pointWith([someDevice()].toArray() as DeviceConfiguration[], 1, "B"),
-				pointWith([someDevice()].toArray() as DeviceConfiguration[], 2, "C")
-			)
-		)
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-
-		def reason = result.failureReasons[0] as UniquePortNumbersForPointsValidator.DuplicatedPortNumbersOnPoints
-		reason.points*.name.toSet() == ["A", "B"].toSet()
-	}
-
-	def "should validation fail when the same wire is used in many devices"() {
-		given:
-		def gateway = gatewayWith(
-			roomWith(
-				pointWith(
-					[
-						someDevice("dev-on-blue-1", "dev-on-blue-1", DeviceType.RELAY, [WireColor.BLUE]),
-						someDevice("dev-on-green",  "dev-on-green",  DeviceType.MOTION_DETECTOR, [WireColor.GREEN]),
-						someDevice("dev-on-blue-2", "dev-on-blue-2", DeviceType.MOTION_DETECTOR, [WireColor.BLUE])
-				  	].toArray() as DeviceConfiguration[],
-					1, "B"
-				)
-			)
-		)
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-
-		def reason = result.failureReasons[0] as WireUsageValidator.SameWireUsedInManyDevices
-		reason.devices*.id.toSet() == ["dev-on-blue-1", "dev-on-blue-2"].toSet()
-	}
-
-	def "should fail validation of shutter device when any internal device is not of RELAY type"() {
-		given:
-		def devices = [
-			someDevice("withWrongInternalDevice", "shutter1", DeviceType.SHUTTER, [],
-					   [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"],
-					   [
-						   stopRelay: someDevice("1", "relay1", DeviceType.RELAY, [WireColor.BLUE]),
-						   upDownRelay: someDevice("1", "emulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
-					   ]),
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
-
-		List<ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice> reasons =
-			result.failureReasons.findAll { it instanceof ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
-		reasons*.device.id == ["withWrongInternalDevice"]
-	}
-
-	def "should fail validation of gate device when button internal device is not of type EMULATED_BUTTON"() {
-		given:
-		def devices = [
-			someDevice("withWrongInternalDevice", "gate1", DeviceType.GATE, [],
-					   [:],
-					   [
-						   stopButton: someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
-						   closeButton: someDevice("1", "closeRelay", DeviceType.RELAY, [WireColor.BLUE]),
-						   openButton: someDevice("1", "openEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE]),
-					   ]),
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
-
-		List<GateAdditionalConfigValidator.UnexpectedGateInternalDevice> reasons =
-			result.failureReasons.findAll { it instanceof GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
-		reasons*.device.id == ["withWrongInternalDevice"]
-	}
-
-	def "should fail validation of gate device when reed switch internal device is not of type REED_SWITCH"() {
-		given:
-		def devices = [
-			someDevice("withWrongInternalDevice", "gate1", DeviceType.GATE, [],
-					   [:],
-					   [
-						   stopButton: someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
-						   closeButton: someDevice("1", "closeEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.BLUE_WHITE]),
-						   openButton: someDevice("1", "openEmulatedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.GREEN_WHITE]),
-               closedReedSwitch: someDevice("1", "emulatedSwitchInsteadOfReedSwitch", DeviceType.EMULATED_SWITCH, [WireColor.GREEN]),
-					   ]),
-		]
-		def gateway = gatewayWith(roomWith(pointWith(*devices)))
-
-		when:
-		def result = configValidator.validateGateway(gateway)
-
-		then:
-		!result.succeeded
-		result.failureReasons*.class.every {  it == GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
-
-		List<GateAdditionalConfigValidator.UnexpectedGateInternalDevice> reasons =
-			result.failureReasons.findAll { it instanceof GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
-		reasons*.device.id == ["withWrongInternalDevice"]
-	}
-
-  def "should fail validation of device when using port number higher than 16 and I/O expander is disabled"() {
+  def "should validation failed when there are more than one device with the same id"() {
     given:
-    GatewaySystemProperties systemProperties = prepareSystemProperties(new ExpanderConfiguration(false))
-    ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
     def gateway = gatewayWith(
-      roomWith(
-		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 17, "Point with too high port number 1"),
-		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 16, "Point with proper port number"),
-		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 18, "Point with too high port number 2")
-      )
+      someDevice("1", "duplicate 1_A", DeviceType.RELAY),
+      someDevice("2", "duplicate 2_A", DeviceType.RELAY),
+      someDevice("1", "duplicate 1_B", DeviceType.RELAY),
+      someDevice("2", "duplicate 2_B", DeviceType.RELAY)
     )
 
     when:
@@ -199,76 +43,129 @@ class ConfigValidatorTest extends Specification {
 
     then:
     !result.succeeded
-    result.failureReasons*.class.every {  it == PortNumbersRangeValidator.PortNumberOutOfRange }
-
-    List<PortNumbersRangeValidator.PortNumberOutOfRange> reasons =
-      result.failureReasons.findAll { it instanceof PortNumbersRangeValidator.PortNumberOutOfRange }
-    reasons*.point.name.toSet() == ["Point with too high port number 1", "Point with too high port number 2"].toSet()
+    def reason1 = result.failureReasons[0] as UniqueDeviceIdsValidator.DuplicatedDeviceIds
+    reason1.duplicates*.name.toSet() == ["duplicate 1_A", "duplicate 1_B"].toSet()
+    def reason2 = result.failureReasons[1] as UniqueDeviceIdsValidator.DuplicatedDeviceIds
+    reason2.duplicates*.name.toSet() == ["duplicate 2_A", "duplicate 2_B"].toSet()
   }
 
-  def "should fail validation of device when using port number higher than 32 and I/O expander is enabled"() {
+  def "should fail validation of shutter device when any internal device is not of RELAY type"() {
     given:
-    GatewaySystemProperties systemProperties = prepareSystemProperties(new ExpanderConfiguration(true))
-    ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
-    def gateway = gatewayWith(
-      roomWith(
-		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 16, "Point with proper port number 1"),
-		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 32, "Point with proper port number 2"),
-		  pointWith([someDevice()].toArray() as DeviceConfiguration[], 33, "Point with too high port number")
-      )
-    )
+    def devices = [
+      someDevice("1", "relay1", DeviceType.RELAY),
+      someDevice("2", "emulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice(
+        "withWrongInternalDevice", "shutter1", DeviceType.SHUTTER, [
+        stopRelay  : new InternalDeviceConfiguration("1"),
+        upDownRelay: new InternalDeviceConfiguration("2"),
+      ],
+        [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"]
+      ),
+    ]
+    def gateway = gatewayWith(*devices)
 
     when:
     def result = configValidator.validateGateway(gateway)
 
     then:
     !result.succeeded
-    result.failureReasons*.class.every {  it == PortNumbersRangeValidator.PortNumberOutOfRange }
+    result.failureReasons*.class.every { it == ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
 
-    List<PortNumbersRangeValidator.PortNumberOutOfRange> reasons =
-      result.failureReasons.findAll { it instanceof PortNumbersRangeValidator.PortNumberOutOfRange }
-    reasons*.point.name == ["Point with too high port number"]
+    List<ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice> reasons =
+      result.failureReasons.findAll { it instanceof ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
+    reasons*.device.id == ["withWrongInternalDevice"]
   }
 
-  def "should fail validation when REFERENCE device references non-existing device"() {
+  def "should fail validation of gate device when button internal device is not of type EMULATED_BUTTON"() {
     given:
-    DeviceConfiguration referencingDeviceConfig = new DeviceConfiguration("referencing_device_id", "test name", DeviceType.REFERENCE, [], [:], [:], "non-existing-id")
-    GatewayConfiguration gateway = gatewayWith(roomWith(pointWith(referencingDeviceConfig)))
+    def devices = [
+      someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("2", "closeRelay", DeviceType.RELAY),
+      someDevice("3", "openEmulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("withWrongInternalDevice", "gate1", DeviceType.GATE, [
+        stopButton : new InternalDeviceConfiguration("1"),
+        closeButton: new InternalDeviceConfiguration("2"),
+        openButton : new InternalDeviceConfiguration("3")
+      ])
+    ]
+    def gateway = gatewayWith(*devices)
 
     when:
     def result = configValidator.validateGateway(gateway)
 
     then:
     !result.succeeded
-    result.failureReasons*.class.every {  it == ReferenceDeviceValidator.IncorrectReferencedDevice }
+    result.failureReasons*.class.every { it == GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+
+    List<GateAdditionalConfigValidator.UnexpectedGateInternalDevice> reasons =
+      result.failureReasons.findAll { it instanceof GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+    reasons*.device.id == ["withWrongInternalDevice"]
+  }
+
+  def "should fail validation of gate device when reed switch internal device is not of type REED_SWITCH"() {
+    given:
+    def devices = [
+      someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("2", "closeEmulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("3", "openEmulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("4", "emulatedSwitchInsteadOfReedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("withWrongInternalDevice", "gate1", DeviceType.GATE, [
+        stopButton      : new InternalDeviceConfiguration("1"),
+        closeButton     : new InternalDeviceConfiguration("2"),
+        openButton      : new InternalDeviceConfiguration("3"),
+        closedReedSwitch: new InternalDeviceConfiguration("4")
+      ]),
+    ]
+    def gateway = gatewayWith(*devices)
+
+    when:
+    def result = configValidator.validateGateway(gateway)
+
+    then:
+    !result.succeeded
+    result.failureReasons*.class.every { it == GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+
+    List<GateAdditionalConfigValidator.UnexpectedGateInternalDevice> reasons =
+      result.failureReasons.findAll { it instanceof GateAdditionalConfigValidator.UnexpectedGateInternalDevice }
+    reasons*.device.id == ["withWrongInternalDevice"]
+  }
+
+  def "should fail validation when device references non-existing device as internal device"() {
+    given:
+    def devices = [
+      someDevice("1", "stopEmulatedSwitch", DeviceType.EMULATED_SWITCH),
+      someDevice("2", "closeRelay", DeviceType.RELAY),
+      someDevice("referencing_device_id", "test name", DeviceType.GATE, [
+        stopButton : new InternalDeviceConfiguration("1"),
+        closeButton: new InternalDeviceConfiguration("2"),
+        openButton : new InternalDeviceConfiguration("non-existing-id")
+      ])
+    ]
+    GatewayConfiguration gateway = gatewayWith(*devices)
+
+    when:
+    def result = configValidator.validateGateway(gateway)
+
+    then:
+    !result.succeeded
+    result.failureReasons*.class.every { it == ReferenceDeviceValidator.IncorrectReferencedDevice }
     List<ReferenceDeviceValidator.IncorrectReferencedDevice> reasons = result.failureReasons
     reasons*.referencingDevice.id == ["referencing_device_id"]
-    reasons*.referencedDeviceId == ["non-existing-id"]
   }
 
-	static GatewayConfiguration gatewayWith(Room[] rooms) {
-		new GatewayConfiguration("1.0", "some gateway", "192.168.1.123", rooms.toList())
-	}
+  static GatewayConfiguration gatewayWith(DeviceConfiguration[] devices) {
+    new GatewayConfiguration("1.0", "some gateway", devices.toList())
+  }
 
-	static Room roomWith(Point[] points, String name = UUID.randomUUID().toString()) {
-		new Room(name, points.toList())
-	}
 
-	Point pointWith(DeviceConfiguration[] devices, int portNumber = nextPortNumber(), String name = UUID.randomUUID().toString()) {
-		new Point(name, portNumber, devices.toList())
-	}
+  static DeviceConfiguration someDevice(String id = UUID.randomUUID().toString(),
+                                        String name = UUID.randomUUID().toString().replace("-", ""),
+                                        DeviceType type = DeviceType.RELAY,
+                                        Map<String, InternalDeviceConfiguration> internalDevices = [:],
+                                        Map<String, String> config = [:]) {
 
-	def nextPortNumber()  { nextPortNumber++ }
-
-	static DeviceConfiguration someDevice(String id = UUID.randomUUID().toString(),
-										  String name = UUID.randomUUID().toString().replace("-", ""),
-										  DeviceType type = DeviceType.RELAY,
-										  List<WireColor> wires = [WireColor.BLUE],
-										  Map<String, String> config = [:],
-										  Map<String, DeviceConfiguration> internalDevices = [:]) {
-
-		new DeviceConfiguration(id, name, type, wires, config, internalDevices)
-	}
+    new DeviceConfiguration(id, name, type, [:], internalDevices, config)
+  }
 
   static GatewaySystemProperties prepareSystemProperties(ExpanderConfiguration expanderConfiguration = null,
                                                          Mcp23017Configuration mcp23017Configuration = null) {
@@ -280,6 +177,6 @@ class ConfigValidatorTest extends Specification {
     return new GatewaySystemProperties("eth0",
                                        GatewaySystemProperties.SystemPlatform.SIMULATED,
                                        expanderConfiguration ?: defaultExpanderConfiguration,
-                                       componentsConfiguration)
+                                       componentsConfiguration, "localhost")
   }
 }

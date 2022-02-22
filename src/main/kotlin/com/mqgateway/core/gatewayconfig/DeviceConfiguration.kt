@@ -25,13 +25,10 @@ data class DeviceConfiguration
   val id: String,
   val name: String,
   val type: DeviceType,
-  val config: Map<String, String> = emptyMap(),
   val connectors: Map<String, Connector> = emptyMap(),
-  val internalDevices: Map<String, InternalDeviceConfiguration> = emptyMap()
-) {
-  class UnexpectedDeviceConfigurationException(deviceId: String, message: String) :
-    RuntimeException("Unexpected configuration found for device '$deviceId': $message")
-}
+  val internalDevices: Map<String, InternalDeviceConfiguration> = emptyMap(),
+  val config: Map<String, String> = emptyMap()
+)
 
 @Serializable
 data class InternalDeviceConfiguration(
