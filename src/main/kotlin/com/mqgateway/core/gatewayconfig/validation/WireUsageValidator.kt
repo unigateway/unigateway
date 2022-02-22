@@ -3,7 +3,7 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfig
 import com.mqgateway.core.gatewayconfig.Gateway
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Singleton
 class WireUsageValidator : GatewayValidator {

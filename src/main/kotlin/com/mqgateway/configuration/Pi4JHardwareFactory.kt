@@ -12,7 +12,7 @@ import com.pi4j.io.gpio.GpioFactory
 import com.pi4j.io.i2c.I2CBus
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Factory
 @Requires(property = "gateway.system.platform", notEquals = "SIMULATED")

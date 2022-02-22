@@ -6,5 +6,5 @@ import javax.validation.constraints.NotNull
 
 @ConfigurationProperties("gateway.websocket")
 data class GatewayWebSocketProperties @ConfigurationInject constructor(
-  @NotNull val enabled: Boolean = true
+  @NotNull val enabled: Boolean
 )

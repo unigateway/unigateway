@@ -9,7 +9,7 @@ import com.mqgateway.core.utils.SimulatedSystemInfoProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Factory
 @Requires(property = "gateway.system.platform", value = "SIMULATED")

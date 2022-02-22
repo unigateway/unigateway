@@ -8,13 +8,15 @@ import groovy.json.JsonSlurper
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import io.micronaut.websocket.RxWebSocketClient
+import io.micronaut.websocket.WebSocketClient
 import io.micronaut.websocket.WebSocketSession
 import io.micronaut.websocket.annotation.ClientWebSocket
 import io.micronaut.websocket.annotation.OnMessage
 import io.micronaut.websocket.annotation.OnOpen
+import io.reactivex.Flowable
+import jakarta.inject.Inject
 import java.util.concurrent.ConcurrentLinkedQueue
-import javax.inject.Inject
+import org.reactivestreams.Publisher
 import spock.lang.Shared
 import spock.lang.Timeout
 import spock.util.concurrent.PollingConditions
@@ -25,7 +27,7 @@ class GatewayServerWebSocketTest extends MqttSpecification {
 
   @Inject
   @Client("/")
-  RxWebSocketClient webSocketClient
+  WebSocketClient webSocketClient
 
   @Shared
   @Inject
@@ -35,22 +37,13 @@ class GatewayServerWebSocketTest extends MqttSpecification {
 
   TestWebSocketClient client
 
-  void setupSpec() {
-    mqGateway.initialize()
-  }
-
-  void cleanupSpec() {
-    mqGateway.close()
-  }
-
   void setup() {
-    client = webSocketClient
-      .connect(TestWebSocketClient.class, "/devices/tests")
-      .blockingFirst()
+    Publisher<TestWebSocketClient> publisher = webSocketClient.connect(TestWebSocketClient.class, "/devices/tests")
+    client = Flowable.fromPublisher(publisher).blockingFirst()
   }
 
   void cleanup() {
-    client.close()
+    webSocketClient.close()
   }
 
   def "should receive current devices states when connecting to websocket"() {

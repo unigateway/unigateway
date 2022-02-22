@@ -9,7 +9,7 @@ import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Factory
 @Requires(property = "homeassistant.enabled", value = "true")

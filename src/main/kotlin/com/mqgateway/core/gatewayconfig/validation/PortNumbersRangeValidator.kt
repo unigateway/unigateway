@@ -3,7 +3,7 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.Gateway
 import com.mqgateway.core.gatewayconfig.Point
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 @Singleton
 class PortNumbersRangeValidator : GatewayValidator {

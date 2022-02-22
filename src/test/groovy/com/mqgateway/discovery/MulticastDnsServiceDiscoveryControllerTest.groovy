@@ -1,17 +1,19 @@
 package com.mqgateway.discovery
 
+import com.mqgateway.utils.MqttSpecification
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.runtime.server.EmbeddedServer
+import io.micronaut.runtime.server.event.ServerStartupEvent
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import javax.inject.Inject
+import jakarta.inject.Inject
 import javax.jmdns.JmDNS
-import spock.lang.Specification
 
 @MicronautTest
-class MulticastDnsServiceDiscoveryControllerTest extends Specification {
+class MulticastDnsServiceDiscoveryControllerTest extends MqttSpecification {
 
   @Inject
   JmDNS jmDNS
@@ -27,7 +29,7 @@ class MulticastDnsServiceDiscoveryControllerTest extends Specification {
   def "should receive a list of other MqGateways in the local network"() {
     given:
     jmDNS.addServiceListener(_, _) >> { type, listener -> jmDnsStub.addServiceListener(type, listener) }
-    serviceDiscovery.init()
+    serviceDiscovery.onApplicationEvent(new ServerStartupEvent(Mock(EmbeddedServer)))
     jmDnsStub.handleServiceResolved("_mqgateway._tcp.local.", "gateway1", 7777, "192.168.6.101")
     jmDnsStub.handleServiceResolved("_mqgateway._tcp.local.", "gateway2", 8888, "192.168.6.102")
     jmDnsStub.handleServiceResolved("_mqgateway._tcp.local.", "gateway3", 9999, "192.168.6.103")
