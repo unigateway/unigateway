@@ -7,12 +7,19 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
-import com.mqgateway.core.gatewayconfig.Gateway
+import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
+import com.mqgateway.core.gatewayconfig.connector.HardwareConnectorFactory
+import com.mqgateway.core.gatewayconfig.connector.MySensorsConnectorFactory
+import com.mqgateway.core.gatewayconfig.parser.ConfigurationJacksonModule
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
-import com.mqgateway.core.hardware.MqExpanderPinProvider
+import com.mqgateway.core.io.provider.HardwareConnector
+import com.mqgateway.core.io.provider.HardwareInputOutputProvider
+import com.mqgateway.core.io.provider.InputOutputProvider
+import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import io.micronaut.context.annotation.Factory
@@ -32,20 +39,26 @@ internal class ComponentsFactory {
   }
 
   @Singleton
+  fun yamlParser(@Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper): YamlParser {
+    return YamlParser(yamlObjectMapper)
+  }
+
+  @Singleton
   fun gatewayConfigLoader(
-    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
+    yamlParser: YamlParser,
     configValidator: ConfigValidator
   ): ConfigLoader {
-    val yamlParser = YamlParser(yamlObjectMapper)
     return ConfigLoader(yamlParser, configValidator)
   }
 
   @Singleton
   @Named("yamlObjectMapper")
-  fun yamlObjectMapper(): ObjectMapper {
+  fun yamlObjectMapper(connectorFactory: ConnectorFactory<*>): ObjectMapper {
     val mapper = ObjectMapper(YAMLFactory())
     mapper.registerModule(KotlinModule())
     mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+
+    mapper.registerModule(ConfigurationJacksonModule(connectorFactory))
 
     return mapper
   }
@@ -54,7 +67,7 @@ internal class ComponentsFactory {
   fun gatewayConfiguration(
     gatewayApplicationProperties: GatewayApplicationProperties,
     gatewayConfigLoader: ConfigLoader
-  ): Gateway {
+  ): GatewayConfiguration {
     return gatewayConfigLoader.load(gatewayApplicationProperties.configPath)
   }
 
@@ -69,18 +82,44 @@ internal class ComponentsFactory {
 
   @Singleton
   fun deviceFactory(
-    expanderPinProvider: MqExpanderPinProvider,
+    inputOutputProvider: InputOutputProvider<*>,
     timersScheduler: TimersScheduler,
     systemInfoProvider: SystemInfoProvider
   ): DeviceFactory {
-    return DeviceFactory(expanderPinProvider, timersScheduler, systemInfoProvider)
+    return DeviceFactory(inputOutputProvider, timersScheduler, systemInfoProvider)
   }
 
   @Singleton
   fun deviceRegistry(
-    gateway: Gateway,
+    gatewayConfiguration: GatewayConfiguration,
     deviceFactory: DeviceFactory
   ): DeviceRegistry {
-    return DeviceRegistry(deviceFactory.createAll(gateway))
+    return DeviceRegistry(deviceFactory.createAll(gatewayConfiguration))
+  }
+
+  @Singleton
+  fun mySensorsConnectorFactory(): MySensorsConnectorFactory {
+    return MySensorsConnectorFactory()
+  }
+
+  @Singleton
+  fun mySensorsInputOutputProvider(): MySensorsInputOutputProvider {
+    return MySensorsInputOutputProvider()
+  }
+
+  @Singleton
+  fun <T : HardwareConnector> connectorFactory(
+    mySensorsConnectorFactory: MySensorsConnectorFactory,
+    hardwareConnectorFactory: HardwareConnectorFactory<T>
+  ): ConnectorFactory<T> {
+    return ConnectorFactory(mySensorsConnectorFactory, hardwareConnectorFactory)
+  }
+
+  @Singleton
+  fun <T : HardwareConnector> inputOutputProvider(
+    hardwareInputOutputProvider: HardwareInputOutputProvider<T>,
+    mySensorsInputOutputProvider: MySensorsInputOutputProvider
+  ): InputOutputProvider<T> {
+    return InputOutputProvider(hardwareInputOutputProvider, mySensorsInputOutputProvider)
   }
 }

@@ -4,11 +4,10 @@ import static com.mqgateway.core.device.EmulatedSwitchButtonDevice.PRESSED_STATE
 import static com.mqgateway.core.device.EmulatedSwitchButtonDevice.RELEASED_STATE_VALUE
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryInput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinPullResistance
-import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
@@ -16,13 +15,13 @@ import spock.util.concurrent.PollingConditions
 
 class SingleButtonsGateDeviceTest extends Specification {
 
-  def actionPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
-  EmulatedSwitchButtonDevice actionButton = new EmulatedSwitchButtonDevice("actionButton", actionPin, 10)
+  def actionBinaryOutput = new SimulatedBinaryOutput()
+  EmulatedSwitchButtonDevice actionButton = new EmulatedSwitchButtonDevice("actionButton", actionBinaryOutput, 10)
 
-  def openReedSwitchPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
-  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchPin, 0)
-  def closedReedSwitchPin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
-  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", closedReedSwitchPin, 0)
+  def openReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
+  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchBinaryInput)
+  def closedReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
+  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", closedReedSwitchBinaryInput)
 
   @Subject
   SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, openReedSwitch, closedReedSwitch)
@@ -35,7 +34,7 @@ class SingleButtonsGateDeviceTest extends Specification {
     given:
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
-    closedReedSwitchPin.state = PinState.LOW // Gate closed
+    closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
     gateDevice.init()
 
     when:
@@ -54,7 +53,7 @@ class SingleButtonsGateDeviceTest extends Specification {
     given:
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
-    openReedSwitchPin.state = PinState.LOW // Gate open
+    openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
     gateDevice.init()
 
     when:
@@ -75,9 +74,9 @@ class SingleButtonsGateDeviceTest extends Specification {
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
     if (oldState == 'CLOSED') {
-      closedReedSwitchPin.state = PinState.LOW // Gate closed
+      closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
     } else if (oldState == 'OPEN') {
-      openReedSwitchPin.state = PinState.LOW // Gate open
+      openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
     }
     gateDevice.init()
 
@@ -100,7 +99,7 @@ class SingleButtonsGateDeviceTest extends Specification {
     SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, null, closedReedSwitch)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
-    closedReedSwitchPin.state = PinState.LOW // Gate closed
+    closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
     gateDevice.init()
 
     when:
@@ -123,7 +122,7 @@ class SingleButtonsGateDeviceTest extends Specification {
     SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, openReedSwitch, null)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
-    openReedSwitchPin.state = PinState.LOW // Gate open
+    openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
     gateDevice.init()
 
     when:
@@ -178,22 +177,22 @@ class SingleButtonsGateDeviceTest extends Specification {
     gateDevice.addListener(new UpdateListenerStub())
     List<String> expectedUpdates = []
     if (initialState == 'OPEN') {
-      closedReedSwitchPin.state = PinState.HIGH
-      openReedSwitchPin.state = PinState.LOW // Gate open
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH
+      openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
     } else if (initialState == 'CLOSED') {
-      closedReedSwitchPin.state = PinState.LOW // Gate closed
-      openReedSwitchPin.state = PinState.HIGH
+      closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
+      openReedSwitchBinaryInput.state = BinaryState.HIGH
     } else if (initialState == 'OPENING') {
-      closedReedSwitchPin.state = PinState.HIGH // Gate position unknown
-      openReedSwitchPin.state = PinState.HIGH // Gate position unknown
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
+      openReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
       gateDevice.open()
       expectedUpdates.addAll([
         PRESSED_STATE_VALUE, // first time is for OPEN send above
         RELEASED_STATE_VALUE
       ])
     } else if (initialState == 'CLOSING') {
-      closedReedSwitchPin.state = PinState.HIGH // Gate position unknown
-      openReedSwitchPin.state = PinState.HIGH // Gate position unknown
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
+      openReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
       gateDevice.close()
       expectedUpdates.addAll([
         PRESSED_STATE_VALUE, // first time is for CLOSE send above
@@ -228,25 +227,25 @@ class SingleButtonsGateDeviceTest extends Specification {
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
     gateDevice.addListener(listenerStub)
     if (initialState == 'OPEN') {
-      closedReedSwitchPin.state = PinState.HIGH
-      openReedSwitchPin.state = PinState.LOW // Gate open
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH
+      openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
       if (hasOpenReedSwitch) {
         expectedUpdates.add(0, "OPEN")
       }
     } else if (initialState == 'CLOSED') {
-      closedReedSwitchPin.state = PinState.LOW // Gate closed
-      openReedSwitchPin.state = PinState.HIGH
+      closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
+      openReedSwitchBinaryInput.state = BinaryState.HIGH
       if (hasClosedReedSwitch) {
         expectedUpdates.add(0, "CLOSED")
       }
     } else if (initialState == 'OPENING') {
-      closedReedSwitchPin.state = PinState.HIGH // Gate position unknown
-      openReedSwitchPin.state = PinState.HIGH // Gate position unknown
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
+      openReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
       gateDevice.open()
       expectedUpdates.add(0, "OPENING")
     } else if (initialState == 'CLOSING') {
-      closedReedSwitchPin.state = PinState.HIGH // Gate position unknown
-      openReedSwitchPin.state = PinState.HIGH // Gate position unknown
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
+      openReedSwitchBinaryInput.state = BinaryState.HIGH // Gate position unknown
       gateDevice.close()
       expectedUpdates.add(0, "CLOSING")
     }
@@ -308,14 +307,14 @@ class SingleButtonsGateDeviceTest extends Specification {
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
     gateDevice.addListener(listenerStub)
     if (initialState == 'OPEN') {
-      closedReedSwitchPin.state = PinState.HIGH
-      openReedSwitchPin.state = PinState.LOW // Gate open
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH
+      openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
       if (hasOpenReedSwitch) {
         expectedUpdates.add(0, "OPEN")
       }
     } else if (initialState == 'CLOSED') {
-      closedReedSwitchPin.state = PinState.LOW // Gate closed
-      openReedSwitchPin.state = PinState.HIGH
+      closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
+      openReedSwitchBinaryInput.state = BinaryState.HIGH
       if (hasClosedReedSwitch) {
         expectedUpdates.add(0, "CLOSED")
       }
@@ -324,9 +323,9 @@ class SingleButtonsGateDeviceTest extends Specification {
 
     when:
     if (reedSwitchChange == "opening") {
-      closedReedSwitchPin.state = PinState.HIGH
+      closedReedSwitchBinaryInput.state = BinaryState.HIGH
     } else if (reedSwitchChange == "closing") {
-      openReedSwitchPin.state = PinState.HIGH
+      openReedSwitchBinaryInput.state = BinaryState.HIGH
     }
 
     then:

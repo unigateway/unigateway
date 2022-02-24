@@ -40,9 +40,8 @@ dependencies {
     implementation 'io.github.microutils:kotlin-logging-jvm:2.1.21'
     implementation 'ch.qos.logback:logback-classic'
 
-    // Pi4J
-    implementation 'com.pi4j:pi4j-core:1.2'
-    implementation 'com.pi4j:pi4j-device:1.2'
+    // DioZero
+    implementation 'com.diozero:diozero-core:1.3.2'
 
     // MQTT
     implementation 'com.hivemq:hivemq-mqtt-client:1.3.0'

@@ -10,7 +10,8 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
   @NotBlank val networkAdapter: String,
   @NotNull val platform: SystemPlatform,
   @NotNull val expander: ExpanderConfiguration,
-  @NotNull val components: ComponentsConfiguration
+  @NotNull val components: ComponentsConfiguration,
+  @NotNull val mqttHostname: String
 ) {
 
   enum class SystemPlatform {

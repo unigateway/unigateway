@@ -15,34 +15,25 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
+import com.mqgateway.core.io.provider.Connector
 import kotlinx.serialization.Serializable
 import com.mqgateway.core.gatewayconfig.DeviceProperty as Property
 
 @Serializable
-data class DeviceConfig
+data class DeviceConfiguration
 @JvmOverloads constructor(
   val id: String,
   val name: String,
   val type: DeviceType,
-  val wires: List<WireColor> = emptyList(),
-  val config: Map<String, String> = emptyMap(),
-  val internalDevices: Map<String, DeviceConfig> = emptyMap(),
-  val referencedDeviceId: String? = null,
-) {
+  val connectors: Map<String, Connector> = emptyMap(),
+  val internalDevices: Map<String, InternalDeviceConfiguration> = emptyMap(),
+  val config: Map<String, String> = emptyMap()
+)
 
-  fun dereferenceIfNeeded(gateway: Gateway): DeviceConfig {
-    if (type != DeviceType.REFERENCE) {
-      return this
-    }
-    if (referencedDeviceId == null) {
-      throw UnexpectedDeviceConfigurationException(id, "Missing 'referenceDeviceId' configuration")
-    }
-    return gateway.deviceById(referencedDeviceId).dereferenceIfNeeded(gateway)
-  }
-
-  class UnexpectedDeviceConfigurationException(deviceId: String, message: String) :
-    RuntimeException("Unexpected configuration found for device '$deviceId': $message")
-}
+@Serializable
+data class InternalDeviceConfiguration(
+  val referenceId: String
+)
 
 data class DeviceProperty(
   val type: DevicePropertyType,
@@ -64,7 +55,6 @@ enum class DeviceType(vararg val properties: Property) {
     Property(UPTIME, INTEGER, null, retained = true, unit = SECOND),
     Property(IP_ADDRESS, STRING, null, retained = true)
   ),
-  REFERENCE,
   RELAY(
     Property(STATE, ENUM, "ON,OFF", settable = true, retained = true)
   ),
@@ -108,15 +98,4 @@ enum class DataType {
 enum class DataUnit(val value: String?) {
   CELSIUS("°C"), FAHRENHEIT("°F"), DEGREE("°"), LITER("L"), GALON("gal"), VOLTS("V"), WATT("W"), AMPERE("A"), PERCENT("%"),
   METER("m"), FEET("ft"), PASCAL("Pa"), PSI("psi"), COUNT("#"), SECOND("s"), BYTES("B"), NONE(null)
-}
-
-enum class WireColor(val number: Int) {
-  ORANGE_WHITE(1),
-  ORANGE(2),
-  GREEN_WHITE(3),
-  BLUE(4),
-  BLUE_WHITE(5),
-  GREEN(6),
-  BROWN_WHITE(7),
-  BROWN(8)
 }

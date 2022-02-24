@@ -50,8 +50,7 @@ class GatewayServerWebSocketTest extends MqttSpecification {
     expect:
     conditions.within(5) {
       def initialStateMessage = client.getReceivedMessages().find { it.type == "INITIAL_STATE_LIST" }
-      assert (initialStateMessage.message as List).collect { it.deviceId }
-        .containsAll(["workshop_light_switch", "bedroom_light_switch", "bedroom_shutter", "right_garage_door"])
+      assert (initialStateMessage.message as List).collect { it.deviceId }.containsAll(["workshop_light_switch", "bedroom_light_switch"])
       def deviceState = initialStateMessage.message.find { it.deviceId == "workshop_light_switch" }
       assert deviceState["properties"].find{ Object property -> property.propertyId == "state" }.value == "RELEASED"
     }

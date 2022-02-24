@@ -1,26 +1,26 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinState
 import java.time.LocalDateTime
 import spock.lang.Specification
 import spock.lang.Subject
 
 class TimerSwitchRelayDeviceTest extends Specification {
-	def pin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
+	def binaryOutput = new SimulatedBinaryOutput()
 	def timerScheduler = new TimersScheduler()
 
 	@Subject
-	TimerSwitchRelayDevice timerSwitch = new TimerSwitchRelayDevice("timerSwitch1", pin, timerScheduler)
+	TimerSwitchRelayDevice timerSwitch = new TimerSwitchRelayDevice("timerSwitch1", binaryOutput, timerScheduler)
 
 	def "should turn on relay when timer is set"() {
 		when:
 		timerSwitch.change("timer", "10")
 
 		then:
-		pin.getState() == PinState.LOW
+		binaryOutput.getState() == BinaryState.LOW
 	}
 
 
@@ -32,7 +32,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
 		timerSwitch.change("timer", "0")
 
 		then:
-		pin.getState() == PinState.HIGH
+		binaryOutput.getState() == BinaryState.HIGH
 	}
 
 	def "should turn off relay when time is up"() {
@@ -43,7 +43,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
 		timerSwitch.updateTimer(LocalDateTime.now().plusMinutes(1))
 
 		then:
-		pin.getState() == PinState.HIGH
+		binaryOutput.getState() == BinaryState.HIGH
 	}
 
 	def "should notify listeners on switch turned ON"() {

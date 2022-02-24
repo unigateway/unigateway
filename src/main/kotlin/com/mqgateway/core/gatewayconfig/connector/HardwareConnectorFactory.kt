@@ -11,5 +11,5 @@ interface HardwareConnectorFactory<out T : HardwareConnector> {
   /**
    * @param config connector config read from device config section
    */
-  fun create(config: HashMap<String, Any>): T
+  fun create(config: Map<String, *>): T
 }

@@ -3,6 +3,7 @@ gateway:
   config-path: "src/test/resources/example.gateway.yaml"
   system:
     network-adapter: enp0s25
+    mqttHostname: localhost
     platform: SIMULATED
     expander:
       enabled: true

@@ -50,7 +50,7 @@ class GatewayStatusControllerTest extends Specification {
     return new GatewaySystemProperties("eth0",
                                        GatewaySystemProperties.SystemPlatform.SIMULATED,
                                        expanderConfiguration ?: defaultExpanderConfiguration,
-                                       componentsConfiguration)
+                                       componentsConfiguration, "localhost")
   }
 }
 
