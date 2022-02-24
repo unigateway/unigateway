@@ -61,10 +61,9 @@ Tests use [Spock Framework](https://spockframework.org/) and are written in Groo
 It is possible to run the UniGateway on x86/x64 (non-ARM) machine with simulated I/O.
 To do that, set environment variables and run with Gradle:
 ```shell
-export GATEWAY_SYSTEM_PLATFORM=SIMULATED
-export GATEWAY_CONFIG_PATH=src/test/resources/example.gateway.yaml # optional - will use example gateway configuration from tests
+export MICRONAUT_ENVIRONMENTS=dev
 
-./gradlew run  
+./gradlew run
 ```
 
 Example configuration expects the MQTT broker to be running locally. You can run it with Docker:

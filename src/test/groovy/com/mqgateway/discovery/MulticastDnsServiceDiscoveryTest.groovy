@@ -1,6 +1,8 @@
 package com.mqgateway.discovery
 
 
+import io.micronaut.runtime.server.EmbeddedServer
+import io.micronaut.runtime.server.event.ServerStartupEvent
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -11,11 +13,16 @@ class MulticastDnsServiceDiscoveryTest extends Specification {
   JmDnsStub jmDnsStub = new JmDnsStub(InetAddress.getByName(THIS_GATEWAY_IP_ADDRESS))
 
   @Subject
-  MulticastDnsServiceDiscovery serviceDiscovery = new MulticastDnsServiceDiscovery(jmDnsStub, "testGateway", THIS_GATEWAY_PORT_NUMBER)
+  MulticastDnsServiceDiscovery serviceDiscovery = new MulticastDnsServiceDiscovery(jmDnsStub, "testGateway")
+  EmbeddedServer embeddedServerMock = Mock(EmbeddedServer)
+
+  void setup() {
+    embeddedServerMock.getPort() >> THIS_GATEWAY_PORT_NUMBER
+    serviceDiscovery.onApplicationEvent(new ServerStartupEvent(embeddedServerMock))
+  }
 
   def "should add gateway to the list when it is discovered and resolved"() {
     given:
-    serviceDiscovery.init()
     def ipAddress = "192.168.5.100"
     def portNumber = 8081
     def otherGatewayName = "someTestGw2"
@@ -29,7 +36,6 @@ class MulticastDnsServiceDiscoveryTest extends Specification {
 
   def "should remove gateway from the list when it is removed"() {
     given:
-    serviceDiscovery.init()
     def ipAddress = "192.168.5.100"
     def portNumber = 8081
     def otherGatewayName = "someTestGw2"
@@ -43,9 +49,6 @@ class MulticastDnsServiceDiscoveryTest extends Specification {
   }
 
   def "should not add itself to the list of gateways"() {
-    given:
-    serviceDiscovery.init()
-
     when:
     jmDnsStub.handleServiceResolved("_mqgateway._tcp.local.", "thisGateway", THIS_GATEWAY_PORT_NUMBER, THIS_GATEWAY_IP_ADDRESS)
 

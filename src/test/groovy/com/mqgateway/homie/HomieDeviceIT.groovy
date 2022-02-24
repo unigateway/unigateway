@@ -1,26 +1,21 @@
 package com.mqgateway.homie
 
-import com.mqgateway.MqGateway
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
 import com.mqgateway.utils.MqttSpecification
 import groovy.yaml.YamlSlurper
-import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import javax.inject.Inject
+import io.micronaut.context.ApplicationContext
+import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
 
 @Timeout(30)
-@MicronautTest
 class HomieDeviceIT extends MqttSpecification {
 
   static Set<MqttMessage> receivedMessages = []
   YamlSlurper slurper = new YamlSlurper()
-
-  @Inject
-  MqGateway mqGateway
 
   static BlockingVariable<Boolean> mqGatewayIsReady = new BlockingVariable<>()
 
@@ -41,7 +36,7 @@ class HomieDeviceIT extends MqttSpecification {
     def gatewayConfiguration = slurper.parse(HomieDeviceIT.getClassLoader().getResourceAsStream('example-1.0-simulated.gateway.yaml'))
 
     when:
-    mqGateway.initialize()
+    EmbeddedServer server = ApplicationContext.run(EmbeddedServer)
 
     then:
     mqGatewayIsReady.get()
@@ -49,9 +44,9 @@ class HomieDeviceIT extends MqttSpecification {
     gatewayConfiguration.rooms*.points*.devices.flatten().forEach { Map device ->
       assert receivedMessages.find {it.topic == "homie/TestGw1/${device.id}/\$name" }.payload == device.name
     }
-    receivedMessages.contains(new MqttMessage("homie/TestGw1/nonExistingDevice1", "", 0, false))
+    receivedMessages.contains(new MqttMessage("homie/TestGw1/nonExistingDevice1", "", 0, false)) // deleting retained message
 
     cleanup:
-    mqGateway.close()
+    server.close()
   }
 }
