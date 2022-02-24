@@ -3,7 +3,7 @@ package com.mqgateway.webapi
 import ch.qos.logback.classic.spi.ILoggingEvent
 import io.micronaut.websocket.WebSocketBroadcaster
 import io.micronaut.websocket.WebSocketSession
-import java.util.*
+import java.util.LinkedList
 
 class LogsWebSocketPublisher(private val broadcaster: WebSocketBroadcaster) {
 
