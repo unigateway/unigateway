@@ -12,6 +12,7 @@ import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -97,6 +98,7 @@ class DeviceFactoryTest extends Specification {
     device.type == DeviceType.TIMER_SWITCH
   }
 
+  @Ignore("TODO #21")
   def "should create shutter"() {
     given:
     List<DeviceConfiguration> devicesConfiguration = [
@@ -119,6 +121,7 @@ class DeviceFactoryTest extends Specification {
     device.type == DeviceType.SHUTTER
   }
 
+  @Ignore("TODO #21")
   def "should create three buttons gate device when gate device configuration has three buttons configured"() {
     given:
     List<DeviceConfiguration> devicesConfiguration = [
@@ -146,6 +149,7 @@ class DeviceFactoryTest extends Specification {
     device.type == DeviceType.GATE
   }
 
+  @Ignore("TODO #21")
   def "should create single button gate device when gate device configuration has action button configured only"() {
     given:
     List<DeviceConfiguration> devicesConfiguration = [
@@ -171,7 +175,7 @@ class DeviceFactoryTest extends Specification {
     device.type == DeviceType.GATE
   }
 
-  def "should create MqGateway as a device"() {
+  def "should create UniGateway as a device"() {
     given:
     GatewayConfiguration gateway = gateway([])
 

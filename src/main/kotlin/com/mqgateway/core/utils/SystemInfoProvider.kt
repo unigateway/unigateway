@@ -10,8 +10,6 @@ interface SystemInfoProvider {
   fun getIPAddresses(): String
 }
 
-// TODO how to get this without hardware specific library?
-// TODO create Singleton of this when fixed
 class Pi4JSystemInfoProvider : SystemInfoProvider {
   override fun getCpuTemperature(): Float = 50f
   override fun getMemoryFree(): Long = 50000L

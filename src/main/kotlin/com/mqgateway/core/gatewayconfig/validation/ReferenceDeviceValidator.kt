@@ -3,27 +3,24 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import jakarta.inject.Singleton
 
 @Singleton
 class ReferenceDeviceValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    val devicesWithInternalDevices: List<DeviceConfiguration> = gatewayConfiguration.devices
-      .filter { device -> device.internalDevices.isNotEmpty() }
-
-    return devicesWithInternalDevices
-      .filter { deviceWithInternalDevice ->
-        deviceWithInternalDevice.internalDevices.any { reference ->
-          val (_, internalDevice) = reference
+    return gatewayConfiguration.devices
+      .flatMap { device ->
+        device.internalDevices.filter { (_: String, internalDevice: InternalDeviceConfiguration) ->
           !gatewayConfiguration.devices.map { it.id }.contains(internalDevice.referenceId)
-        }
-      }.map { IncorrectReferencedDevice(it) }
+        }.map { IncorrectReferencedDevice(device, it.value.referenceId) }
+      }
   }
 
-  class IncorrectReferencedDevice(val referencingDevice: DeviceConfiguration) : ValidationFailureReason() {
+  class IncorrectReferencedDevice(val referencingDevice: DeviceConfiguration, val referencedDeviceId: String) : ValidationFailureReason() {
 
     override fun getDescription(): String {
-      return "Device: '${referencingDevice.id}' has internal device which is not configured"
+      return "Device: '${referencingDevice.id}' has reference to device '$referencedDeviceId', but no such device exists"
     }
   }
 }

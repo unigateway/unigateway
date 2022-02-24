@@ -7,4 +7,7 @@ data class GatewayConfiguration(
   val configVersion: String,
   val name: String,
   val devices: List<DeviceConfiguration>
-)
+) {
+  fun deviceById(id: String): DeviceConfiguration? = devices.find { it.id == id }
+  fun devicesByType(type: DeviceType): List<DeviceConfiguration> = devices.filter { it.type == type }
+}

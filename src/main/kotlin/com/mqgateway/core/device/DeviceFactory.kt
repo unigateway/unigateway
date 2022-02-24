@@ -9,7 +9,7 @@ import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import java.time.Duration
 
-private const val STATE_CONNECTOR = "state" // TODO move to better place
+private const val STATE_CONNECTOR = "state" // TODO move to specific device factory when they are created #11
 
 class DeviceFactory(
   private val ioProvider: InputOutputProvider<*>,
@@ -58,7 +58,6 @@ class DeviceFactory(
           TimerSwitchRelayDevice(deviceConfig.id, stateBinaryOutput, timersScheduler)
         }
         DeviceType.SHUTTER -> {
-          // TODO how to build complex devices???
           TODO()
           // val stopRelayDevice = create(deviceConfig.internalDevices.getValue("stopRelay"), gateway) as RelayDevice
           // val upDownRelayDevice = create(deviceConfig.internalDevices.getValue("upDownRelay"), gateway) as RelayDevice

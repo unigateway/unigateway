@@ -16,11 +16,8 @@ class ConfigValidatorTest extends Specification {
 
   def validators = [
     new UniqueDeviceIdsValidator(),
-    new UniquePortNumbersForPointsValidator(),
-    new WireUsageValidator(),
     new ShutterAdditionalConfigValidator(),
     new GateAdditionalConfigValidator(),
-    new PortNumbersRangeValidator(),
     new ReferenceDeviceValidator()
   ]
 
@@ -151,6 +148,7 @@ class ConfigValidatorTest extends Specification {
     ReferenceDeviceValidator.IncorrectReferencedDevice failureReason =
       result.failureReasons.find {it.class == ReferenceDeviceValidator.IncorrectReferencedDevice } as ReferenceDeviceValidator.IncorrectReferencedDevice
     failureReason.referencingDevice.id == "referencing_device_id"
+    failureReason.referencedDeviceId == "non-existing-id"
   }
 
   static GatewayConfiguration gatewayWith(DeviceConfiguration[] devices) {
