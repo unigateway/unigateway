@@ -3,15 +3,17 @@ package com.mqgateway.core.gatewayconfig
 import com.fasterxml.jackson.databind.JsonNode
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
-import kotlinx.serialization.cbor.Cbor
-import kotlinx.serialization.decodeFromByteArray
 import mu.KotlinLogging
 import java.io.File
 import java.security.MessageDigest
 
 private val LOGGER = KotlinLogging.logger {}
 
-class ConfigLoader(private val yamlParser: YamlParser, private val configValidator: ConfigValidator) {
+class ConfigLoader(
+  private val yamlParser: YamlParser,
+  private val fastConfigurationSerializer: FastConfigurationSerializer,
+  private val configValidator: ConfigValidator
+) {
 
   companion object {
     private const val HASH_ALGORITHM = "MD5"
@@ -26,21 +28,19 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
     LOGGER.trace("previousConfigHash=$storedConfigurationFileHash newConfigHash=$currentConfigurationFileHash")
     if (currentConfigurationFileHash == storedConfigurationFileHash) {
       LOGGER.debug { "Configuration file has not changed. Loading configuration from binary store." }
-      return Cbor.decodeFromByteArray(File(CONFIGURATION_FILE_QUICK_PATH).readBytes())
+      return fastConfigurationSerializer.decode(File(CONFIGURATION_FILE_QUICK_PATH).readBytes())
     } else {
       LOGGER.info { "New configuration detected. Starting validation." }
 
       val gatewayJsonNode = yamlParser.toJsonNode(gatewayConfigBytes)
       validateConfigurationAgainstJsonSchema(gatewayJsonNode)
-      val gateway = yamlParser.parse(gatewayJsonNode)
+      val gateway: GatewayConfiguration = yamlParser.parse(gatewayJsonNode)
       validateGatewayConfigurationValues(gateway)
 
-      // TODO enable writing MD5 when fixed
-      // File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
+      val gatewayCbor: ByteArray = fastConfigurationSerializer.encode(gateway)
 
-      // TODO what about writing to CBOR?
-      // val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
-      // File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
+      File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
+      File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
 
       return gateway
     }
