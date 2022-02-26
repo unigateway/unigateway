@@ -1,5 +1,7 @@
 package com.mqgateway.discovery
 
+import io.micronaut.context.event.ApplicationEventListener
+import io.micronaut.runtime.server.event.ServerStartupEvent
 import mu.KotlinLogging
 import java.net.InetAddress
 import javax.jmdns.JmDNS
@@ -9,13 +11,15 @@ import javax.jmdns.ServiceListener
 
 private val LOGGER = KotlinLogging.logger {}
 
-class MulticastDnsServiceDiscovery(private val jmDns: JmDNS, private val gatewayName: String, private val portNumber: Int) {
+class MulticastDnsServiceDiscovery(private val jmDns: JmDNS, private val gatewayName: String) : ApplicationEventListener<ServerStartupEvent> {
 
-  private var gateways: MutableMap<String, MqGateway> = mutableMapOf()
+  private val gateways: MutableMap<String, MqGateway> = mutableMapOf()
+  private var portNumber: Int? = null
 
-  fun init() {
+  override fun onApplicationEvent(event: ServerStartupEvent) {
     LOGGER.info { "Starting multi-cast service discovery..." }
-    jmDns.registerService(ServiceInfo.create("_mqgateway._tcp.local.", gatewayName, portNumber, "path=/ui"))
+    portNumber = event.source.port
+    jmDns.registerService(ServiceInfo.create("_mqgateway._tcp.local.", gatewayName, portNumber!!, "path=/ui"))
     jmDns.addServiceListener("_mqgateway._tcp.local.", MultiCaseDnsListener())
     LOGGER.info { "Multi-cast service discovery started" }
   }

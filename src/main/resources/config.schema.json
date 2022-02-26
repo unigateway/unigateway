@@ -1,342 +1,83 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://mqgateway.com/configuration/schema#",
-  "title": "Aetas Smart Home MqGateway 1.1 Configuration file",
-  "description": "JSON schema for Aetas Smart Home MqGateway Configuration file",
+  "$id": "http://unigateway/configuration/schema#",
+  "title": "UniGateway 1.0 Configuration file",
+  "description": "JSON schema for UniGateway Configuration file",
   "type": "object",
   "required": [
     "configVersion",
     "name",
-    "mqttHostname",
-    "rooms"
+    "devices"
   ],
   "properties": {
     "configVersion": {
-      "description": "Version of MqGateway configuration file",
+      "description": "Version of UniGateway configuration file",
       "type": "string",
-      "pattern": "^1\\.0|1\\.1$"
+      "pattern": "^1\\.0$"
     },
     "name": {
       "description": "Unique name of Gateway",
       "type": "string"
     },
-    "mqttHostname": {
-      "description": "Address IP or hostname of MQTT server",
-      "type": "string"
-    },
-    "rooms": {
-      "description": "List of rooms managed by this Gateway",
+    "devices": {
+      "description": "List of device configurations",
       "type": "array",
       "minItems": 1,
       "items": {
-        "required": [
-          "name",
-          "points"
-        ],
-        "properties": {
-          "name": {
-            "description": "Name of the room",
-            "type": "string"
-          },
-          "points": {
-            "description": "List of points (each place connected with single cable)",
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "#/definitions/point"
-            }
-          }
-        }
+        "$ref": "#/definitions/device"
       }
     }
   },
   "definitions": {
-    "point": {
-      "type": "object",
-      "required": [
-        "name",
-        "portNumber",
-        "devices"
-      ],
-      "properties": {
-        "name": {
-          "description": "Name of the point",
-          "type": "string"
-        },
-        "portNumber": {
-          "description": "Number of port in Gateway to which point is connected (1-16)",
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 32
-        },
-        "devices": {
-          "description": "List of devices connected to single point/cable",
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/device"
-          }
-        }
-      }
-    },
     "device": {
       "type": "object",
       "oneOf": [
         {
           "required": [
-            "name",
             "id",
-            "wires",
-            "type"
+            "name",
+            "type",
+            "connectors"
           ]
         },
         {
           "required": [
-            "name",
             "id",
-            "internalDevices",
-            "type"
-          ]
-        },
-        {
-          "required": [
             "name",
-            "id",
-            "referencedDeviceId",
-            "type"
+            "type",
+            "internalDevices"
           ]
         }
       ],
       "properties": {
-        "name": {
-          "$ref": "#/definitions/deviceName"
-        },
         "id": {
           "description": "Unique identifier for the device across all devices on this Gateway",
           "$ref": "#/definitions/deviceId"
         },
-        "wires": {
-          "description": "List of wires to which device is connected",
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "enum": [
-              "BLUE",
-              "BLUE_WHITE",
-              "GREEN",
-              "GREEN_WHITE",
-              "BROWN",
-              "BROWN_WHITE"
-            ]
-          }
+        "name": {
+          "$ref": "#/definitions/deviceName"
         },
         "type": {
           "$ref": "#/definitions/deviceType"
-        }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "type": {"const": "REFERENCE"}
-            },
-            "required": ["name","id","type"]
-          },
-          "then": {
-            "additionalProperties": false,
-            "required": ["referencedDeviceId"],
-            "properties": {
-              "name": {
-                "$ref": "#/definitions/deviceName"
-              },
-              "id": {
-                "description": "Unique identifier for the device across all devices on this Gateway",
-                "$ref": "#/definitions/deviceId"
-              },
-              "type": {
-                "$ref": "#/definitions/deviceType"
-              },
-              "referencedDeviceId": {
-                "$ref": "#/definitions/deviceId",
-                "description": "Identifier of the referenced device on this Gateway"
-              }
+        },
+        "connectors": {
+          "description": "Connectors configuration for specific device",
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[^\\s]*$": {
+              "$ref": "#/definitions/connector"
             }
           }
         },
-        {
-          "if": {
-            "properties": {
-              "type": {"const": "RELAY"}
-            },
-            "required": ["type"]
-          },
-          "then": {
-            "properties": {
-              "config": {
-                "$ref": "#/definitions/relayConfig"
-              }
+        "internalDevices": {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "referenceId": {
+              "$ref": "#/definitions/deviceId"
             }
           }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {"const": "MOTION_DETECTOR"}
-            },
-            "required": ["type"]
-          },
-          "then": {
-            "properties": {
-              "config": {
-                "$ref": "#/definitions/motionDetectorConfig"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {"const": "SHUTTER"}
-            },
-            "required": ["type"]
-          },
-          "then": {
-            "required": ["internalDevices", "config"],
-            "properties": {
-              "internalDevices": {
-                "$ref": "#/definitions/shutterInternalDevices"
-              },
-              "config": {
-                "$ref": "#/definitions/shutterConfig"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {"const": "GATE"}
-            },
-            "required": ["type"]
-          },
-          "then": {
-            "required": ["internalDevices"],
-            "properties": {
-              "internalDevices": {
-                "$ref": "#/definitions/gateInternalDevices"
-              },
-              "config": {
-                "$ref": "#/definitions/gateConfig"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "shutterInternalDevices": {
-      "description": "Relays configuration for SHUTTER device",
-      "type": "object",
-      "required": ["stopRelay", "upDownRelay"],
-      "properties": {
-        "stopRelay": {
-          "$ref": "#/definitions/device"
-        },
-        "upDownRelay": {
-          "$ref": "#/definitions/device"
-        }
-      }
-    },
-    "shutterConfig": {
-      "description": "Additional configuration for SHUTTER device",
-      "type": "object",
-      "required": ["fullOpenTimeMs", "fullCloseTimeMs"],
-      "properties": {
-        "fullOpenTimeMs": {
-          "type": "integer",
-          "exclusiveMinimum": 0
-        },
-        "fullCloseTimeMs": {
-          "type": "integer",
-          "exclusiveMinimum": 0
-        }
-      }
-    },
-    "gateInternalDevices": {
-      "description": "Internal devices configuration for GATE device",
-      "type": "object",
-      "oneOf": [{
-        "required": ["stopButton", "openButton", "closeButton"],
-        "properties": {
-          "stopButton": {
-            "$ref": "#/definitions/device"
-          },
-          "openButton": {
-            "$ref": "#/definitions/device"
-          },
-          "closeButton": {
-            "$ref": "#/definitions/device"
-          },
-          "openReedSwitch": {
-            "$ref": "#/definitions/device"
-          },
-          "closedReedSwitch": {
-            "$ref": "#/definitions/device"
-          }
-        }
-      },
-      {
-        "required": ["actionButton"],
-        "properties": {
-          "actionButton": {
-            "$ref": "#/definitions/device"
-          },
-          "openReedSwitch": {
-            "$ref": "#/definitions/device"
-          },
-          "closedReedSwitch": {
-            "$ref": "#/definitions/device"
-          }
-        }
-      }]
-    },
-    "gateConfig": {
-      "description": "Additional configuration for GATE device",
-      "type": "object",
-      "properties": {
-        "haDeviceClass": {
-          "description": "Home Assistant device class for cover device - 'gate' and 'garage' are supported. Defaults to 'garage'.",
-          "type": "string",
-          "enum": ["gate", "garage"]
-        }
-      }
-    },
-    "motionDetectorConfig": {
-      "description": "Additional configuration for MOTION_DETECTOR device",
-      "type": "object",
-      "properties": {
-        "motionSignalLevel": {
-          "description": "The signal LEVEL which means that motion has been detected (default HIGH)",
-          "type": "string",
-          "enum": ["HIGH", "LOW"],
-          "default": "HIGH"
-        },
-        "debounceMs": {
-          "description": "Debounce time in milliseconds to filter flickering (default: 50)",
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 500
-        }
-      }
-    },
-    "relayConfig": {
-      "description": "Additional configuration for RELAY device",
-      "type": "object",
-      "properties": {
-        "triggerLevel": {
-          "description": "The signal LEVEL which triggers the relay (default LOW)",
-          "type": "string",
-          "enum": ["HIGH", "LOW"],
-          "default": "LOW"
         }
       }
     },
@@ -353,19 +94,27 @@
     "deviceType": {
       "description": "Type of device",
       "enum": [
-        "REFERENCE",
         "RELAY",
         "SWITCH_BUTTON",
         "REED_SWITCH",
-        "BME280",
-        "SCT013",
-        "DHT22",
         "MOTION_DETECTOR",
         "EMULATED_SWITCH",
         "TIMER_SWITCH",
         "SHUTTER",
         "GATE"
       ]
+    },
+    "connector": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Connector source",
+          "enum": [
+            "HARDWARE",
+            "MYSENSORS"
+          ]
+        }
+      }
     }
   }
 }

@@ -2,8 +2,8 @@ package com.mqgateway.core.device
 
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.hardware.MqGpioPinDigitalOutput
-import com.pi4j.io.gpio.PinState
+import com.mqgateway.core.io.BinaryOutput
+import com.mqgateway.core.io.BinaryState
 import mu.KotlinLogging
 import kotlin.concurrent.thread
 
@@ -11,14 +11,14 @@ private val LOGGER = KotlinLogging.logger {}
 
 class EmulatedSwitchButtonDevice(
   id: String,
-  pin: MqGpioPinDigitalOutput,
+  state: BinaryOutput,
   private val timeBeforeReleaseInMs: Long = DEFAULT_TIME_BEFORE_RELEASE_IN_MS
 ) :
-  DigitalOutputDevice(id, DeviceType.EMULATED_SWITCH, pin) {
+  DigitalOutputDevice(id, DeviceType.EMULATED_SWITCH, state) {
 
   private fun changeState(newState: EmulatedSwitchState) {
     val newPinState = if (newState == EmulatedSwitchState.PRESSED) PRESSED_STATE else RELEASED_STATE
-    pin.setState(newPinState)
+    binaryOutput.setState(newPinState)
   }
 
   fun shortPress(blocking: Boolean = false) {
@@ -49,8 +49,8 @@ class EmulatedSwitchButtonDevice(
   companion object {
     const val PRESSED_STATE_VALUE = "PRESSED"
     const val RELEASED_STATE_VALUE = "RELEASED"
-    val PRESSED_STATE = PinState.LOW
-    val RELEASED_STATE = PinState.getInverseState(PRESSED_STATE)!!
+    val PRESSED_STATE = BinaryState.LOW
+    val RELEASED_STATE = PRESSED_STATE.invert()
     const val DEFAULT_TIME_BEFORE_RELEASE_IN_MS = 500L
   }
 }

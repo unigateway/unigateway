@@ -5,7 +5,6 @@ import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.encodeToByteArray
 import mu.KotlinLogging
 import java.io.File
 import java.security.MessageDigest
@@ -20,7 +19,7 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
     private const val CONFIGURATION_FILE_QUICK_PATH = ".previousConfig.cbor"
   }
 
-  fun load(gatewayConfigPath: String): Gateway {
+  fun load(gatewayConfigPath: String): GatewayConfiguration {
     val gatewayConfigBytes = File(gatewayConfigPath).readBytes()
     val currentConfigurationFileHash = calculateHash(gatewayConfigBytes)
     val storedConfigurationFileHash = loadStoredConfigurationFileHash()
@@ -36,10 +35,12 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
       val gateway = yamlParser.parse(gatewayJsonNode)
       validateGatewayConfigurationValues(gateway)
 
-      File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
+      // TODO enable writing MD5 when fixed
+      // File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
 
-      val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
-      File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
+      // TODO what about writing to CBOR?
+      // val gatewayCbor: ByteArray = Cbor.encodeToByteArray(gateway)
+      // File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
 
       return gateway
     }
@@ -66,8 +67,8 @@ class ConfigLoader(private val yamlParser: YamlParser, private val configValidat
     }
   }
 
-  private fun validateGatewayConfigurationValues(gateway: Gateway) {
-    val validationResult = configValidator.validateGateway(gateway)
+  private fun validateGatewayConfigurationValues(gatewayConfiguration: GatewayConfiguration) {
+    val validationResult = configValidator.validateGateway(gatewayConfiguration)
 
     if (validationResult.succeeded) {
       LOGGER.info { "Gateway configuration validation succeeded ✔" }

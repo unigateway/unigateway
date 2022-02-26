@@ -5,7 +5,7 @@ package com.mqgateway.core.io
  * Depending on implementation, may represent hardware analog pin, process communication, external communication, etc.
  */
 interface FloatInput {
-  fun addListener(listener: FloatStateListener)
+  fun addListener(listener: FloatValueListener)
   fun getValue(): Float
 }
 
@@ -14,17 +14,17 @@ interface FloatInput {
  * Depending on implementation, may represent hardware analog pin, process communication, external communication, etc.
  */
 interface FloatOutput {
-  fun setValue(state: Float)
+  fun setValue(newValue: Float)
 }
 
 /**
  * Event on change of FloatOutput
  * @see BinaryOutput
  */
-interface FloatStateChangeEvent {
+interface FloatValueChangeEvent {
   fun newValue(): Float
 }
 
-fun interface FloatStateListener {
-  fun handle(event: FloatStateChangeEvent)
+fun interface FloatValueListener {
+  fun handle(event: FloatValueChangeEvent)
 }

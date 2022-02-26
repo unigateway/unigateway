@@ -1,34 +1,17 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalInput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryInput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinPullResistance
-import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 
 class MotionSensorDeviceTest extends Specification {
 
-	def pin = new SimulatedGpioPinDigitalInput(PinPullResistance.PULL_UP)
+	SimulatedBinaryInput binaryInput = new SimulatedBinaryInput(BinaryState.LOW) // when sensor will be connected it will keep LOW state when no motion
 
 	@Subject
-	MotionSensorDevice device = new MotionSensorDevice("device1", pin, 0, PinState.HIGH)
-
-  void setup() {
-    // when sensor will be connected it will keep LOW state when no motion
-    pin.setState(PinState.LOW)
-  }
-
-  def "should set debounce on pin during initialization"() {
-    given:
-    MotionSensorDevice deviceWithDebounce = new MotionSensorDevice("device1", pin, 300, PinState.HIGH)
-
-    when:
-		deviceWithDebounce.init()
-
-		then:
-		pin.getDebounce(PinState.HIGH) == 300
-	}
+	MotionSensorDevice device = new MotionSensorDevice("device1", binaryInput, BinaryState.HIGH)
 
 	def "should notify listeners on motion (HIGH state)"() {
 		given:
@@ -37,7 +20,7 @@ class MotionSensorDeviceTest extends Specification {
 		device.init()
 
 		when:
-		pin.setState(PinState.HIGH)
+		binaryInput.setState(BinaryState.HIGH)
 
 		then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "ON")
@@ -48,10 +31,10 @@ class MotionSensorDeviceTest extends Specification {
 		def listenerStub = new UpdateListenerStub()
 		device.addListener(listenerStub)
 		device.init()
-    pin.setState(PinState.HIGH)
+    binaryInput.setState(BinaryState.HIGH)
 
 		when:
-		pin.setState(PinState.LOW)
+		binaryInput.setState(BinaryState.LOW)
 
 		then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "OFF")
@@ -59,13 +42,13 @@ class MotionSensorDeviceTest extends Specification {
 
   def "should notify about motion when state is LOW when motionSignalLevel is set to LOW"() {
     given:
-    MotionSensorDevice motionSensorWithLowOnMotion = new MotionSensorDevice("deviceLow", pin, 0, PinState.LOW)
+    MotionSensorDevice motionSensorWithLowOnMotion = new MotionSensorDevice("deviceLow", binaryInput, BinaryState.LOW)
     def listenerStub = new UpdateListenerStub()
     motionSensorWithLowOnMotion.addListener(listenerStub)
     motionSensorWithLowOnMotion.init()
 
     when:
-    pin.setState(PinState.LOW)
+    binaryInput.setState(BinaryState.LOW)
 
     then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("deviceLow", "state", "ON")

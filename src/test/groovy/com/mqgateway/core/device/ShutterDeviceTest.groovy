@@ -3,9 +3,9 @@ package com.mqgateway.core.device
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinState
 import java.time.Duration
 import spock.lang.Specification
 import spock.lang.Subject
@@ -13,11 +13,11 @@ import spock.util.time.MutableClock
 
 class ShutterDeviceTest extends Specification {
 
-	def stopPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
-	RelayDevice stopRelay = new RelayDevice("stopRelay", stopPin, PinState.LOW)
+	def stopBinaryOutput = new SimulatedBinaryOutput()
+	RelayDevice stopRelay = new RelayDevice("stopRelay", stopBinaryOutput, BinaryState.LOW)
 
-	def upDownPin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
-	RelayDevice upDownRelay = new RelayDevice("upDownRelay", upDownPin, PinState.LOW)
+	def upDownBinaryOutput = new SimulatedBinaryOutput()
+	RelayDevice upDownRelay = new RelayDevice("upDownRelay", upDownBinaryOutput, BinaryState.LOW)
 
 	static int FULL_OPEN_MS = 2000
 	static int FULL_CLOSE_MS = 1000
@@ -44,11 +44,11 @@ class ShutterDeviceTest extends Specification {
 
 		then:
 		stoppingTimer.lastScheduledDelay == (FULL_CLOSE_MS * 0.3).toLong()
-		stopPin.state == PinState.LOW
-		upDownPin.state == PinState.HIGH
+		stopBinaryOutput.state == BinaryState.LOW
+		upDownBinaryOutput.state == BinaryState.HIGH
 		stoppingTimer.runNow()
-		stopPin.state == PinState.HIGH
-		upDownPin.state == PinState.HIGH
+		stopBinaryOutput.state == BinaryState.HIGH
+		upDownBinaryOutput.state == BinaryState.HIGH
 	}
 
 	def "should start upDownRelay for 55% of fullOpenTime when position is changed from 10 (almost closed) to 65 (OPENING/UP)"() {
@@ -62,11 +62,11 @@ class ShutterDeviceTest extends Specification {
 
 		then:
 		stoppingTimer.lastScheduledDelay == (FULL_OPEN_MS * 0.55).toLong()
-		stopPin.state == PinState.LOW
-		upDownPin.state == PinState.LOW
+		stopBinaryOutput.state == BinaryState.LOW
+		upDownBinaryOutput.state == BinaryState.LOW
 		stoppingTimer.runNow()
-		stopPin.state == PinState.HIGH
-		upDownPin.state == PinState.HIGH
+		stopBinaryOutput.state == BinaryState.HIGH
+		upDownBinaryOutput.state == BinaryState.HIGH
 	}
 
 	def "should stop immediately when STOP command is sent"() {
@@ -82,7 +82,7 @@ class ShutterDeviceTest extends Specification {
 		shutterDevice.change(STATE.toString(), "STOP")
 
 		then:
-		stopPin.state == PinState.HIGH
+		stopBinaryOutput.state == BinaryState.HIGH
 		listenerStub.updatesByPropertyId(POSITION.toString()).last().newValue == "20"
 		listenerStub.updatesByPropertyId(STATE.toString()).last().newValue == "OPEN"
 	}

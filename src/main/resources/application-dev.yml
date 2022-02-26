@@ -3,10 +3,9 @@ gateway:
   config-path: "src/test/resources/example.gateway.yaml"
   system:
     network-adapter: enp0s25
-    platform: MQGATEWAY
+    platform: SIMULATED
     platform-config:
-      components:
-        mcp23017:
-          ports: ["20","21","22","23"]
+      someConfigurtion: simulated-test
+    mqttHostname: "localhost"
   websocket:
     enabled: true

@@ -4,9 +4,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import io.micronaut.websocket.WebSocketBroadcaster
 import io.micronaut.websocket.WebSocketSession
 import java.util.LinkedList
-import javax.inject.Singleton
 
-@Singleton
 class LogsWebSocketPublisher(private val broadcaster: WebSocketBroadcaster) {
 
   private val lastLogs: LinkedList<GatewayLogsServerWebSocket.Log> = LinkedList()

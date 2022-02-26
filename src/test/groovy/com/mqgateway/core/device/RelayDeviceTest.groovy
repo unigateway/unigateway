@@ -1,31 +1,31 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.hardware.simulated.SimulatedGpioPinDigitalOutput
+import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
+import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
-import com.pi4j.io.gpio.PinState
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
 class RelayDeviceTest extends Specification {
 
-	def pin = new SimulatedGpioPinDigitalOutput(PinState.HIGH)
+  SimulatedBinaryOutput binaryOutput = new SimulatedBinaryOutput()
 
 	@Subject
-	RelayDevice relay = new RelayDevice("relay1", pin, PinState.LOW)
+	RelayDevice relay = new RelayDevice("relay1", binaryOutput, BinaryState.LOW)
 
 	@Unroll
-	def "should change pin state when requested to #newState"(String newState, PinState pinState) {
+	def "should change pin state when requested to #newState"(String newState, BinaryState binaryState) {
 		when:
 		relay.change("state", newState)
 
 		then:
-		pin.getState() == pinState
+		binaryOutput.getState() == binaryState
 
 		where:
-		newState || pinState
-		"OFF"    || PinState.HIGH
-		"ON"     || PinState.LOW
+		newState || binaryState
+		"OFF"    || BinaryState.HIGH
+		"ON"     || BinaryState.LOW
 	}
 
 	def "should notify listeners on relay closed - ON"() {
@@ -55,17 +55,17 @@ class RelayDeviceTest extends Specification {
 	}
 
   @Unroll
-  def "should change pin state when requested to #newState when trigger level is set to LOW"(String newState, PinState pinState) {
+  def "should change pin state when requested to #newState when trigger level is set to LOW"(String newState, BinaryState binaryState) {
     when:
-    RelayDevice relayHigh = new RelayDevice("relay1", pin, PinState.HIGH)
+    RelayDevice relayHigh = new RelayDevice("relay1", binaryOutput, BinaryState.HIGH)
     relayHigh.change("state", newState)
 
     then:
-    pin.getState() == pinState
+    binaryOutput.getState() == binaryState
 
     where:
-    newState || pinState
-    "OFF"    || PinState.LOW
-    "ON"     || PinState.HIGH
+    newState || binaryState
+    "OFF"    || BinaryState.LOW
+    "ON"     || BinaryState.HIGH
   }
 }

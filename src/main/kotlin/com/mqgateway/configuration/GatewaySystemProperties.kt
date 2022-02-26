@@ -7,9 +7,10 @@ import javax.validation.constraints.NotNull
 
 @ConfigurationProperties("gateway.system")
 data class GatewaySystemProperties @ConfigurationInject constructor(
-  @NotBlank val networkAdapter: String = "eth0",
-  @NotNull val platform: String,
-  @NotNull val platformConfig: Map<String, Any>
+  @NotBlank val networkAdapter: String,
+  @NotNull val platform: String, // TODO should this be string or Enum
+  @NotNull val platformConfig: Map<String, Any>,
+  @NotNull val mqttHostname: String
 ) {
 
   interface PlatformConfiguration // TODO this probably should not be here
