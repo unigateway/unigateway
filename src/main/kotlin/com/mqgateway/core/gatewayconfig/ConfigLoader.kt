@@ -37,10 +37,10 @@ class ConfigLoader(
       val gateway: GatewayConfiguration = yamlParser.parse(gatewayJsonNode)
       validateGatewayConfigurationValues(gateway)
 
-      val gatewayCbor: ByteArray = fastConfigurationSerializer.encode(gateway)
+      val gatewayBinary: ByteArray = fastConfigurationSerializer.encode(gateway)
 
       File(CONFIGURATION_HASH_PATH).writeText(currentConfigurationFileHash)
-      File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayCbor)
+      File(CONFIGURATION_FILE_QUICK_PATH).writeBytes(gatewayBinary)
 
       return gateway
     }
