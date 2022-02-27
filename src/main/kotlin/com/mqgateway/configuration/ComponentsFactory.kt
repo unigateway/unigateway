@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
+import com.mqgateway.core.gatewayconfig.FastConfigurationSerializer
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
 import com.mqgateway.core.gatewayconfig.connector.HardwareConnectorFactory
@@ -25,6 +26,7 @@ import com.mqgateway.core.utils.TimersScheduler
 import io.micronaut.context.annotation.Factory
 import jakarta.inject.Named
 import jakarta.inject.Singleton
+import kotlinx.serialization.modules.SerializersModule
 
 @Factory
 internal class ComponentsFactory {
@@ -44,11 +46,17 @@ internal class ComponentsFactory {
   }
 
   @Singleton
+  fun fastConfigurationSerializer(serializersModule: SerializersModule): FastConfigurationSerializer {
+    return FastConfigurationSerializer(serializersModule)
+  }
+
+  @Singleton
   fun gatewayConfigLoader(
     yamlParser: YamlParser,
+    fastConfigurationSerializer: FastConfigurationSerializer,
     configValidator: ConfigValidator
   ): ConfigLoader {
-    return ConfigLoader(yamlParser, configValidator)
+    return ConfigLoader(yamlParser, fastConfigurationSerializer, configValidator)
   }
 
   @Singleton

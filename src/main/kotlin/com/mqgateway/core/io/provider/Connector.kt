@@ -1,5 +1,7 @@
 package com.mqgateway.core.io.provider
 
+import kotlinx.serialization.Serializable
+
 /**
  * Configuration used by InputOutputProviders to instantiate input/output interface (i.e. BinaryInput, BinaryOutput etc.)
  */
@@ -10,6 +12,7 @@ sealed interface Connector
  */
 interface HardwareConnector : Connector
 
+@Serializable
 data class MySensorsConnector(
   val nodeId: Int
 ) : Connector
