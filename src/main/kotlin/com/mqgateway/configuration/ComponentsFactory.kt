@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.DeviceRegistry
+import com.mqgateway.core.device.factory.DeviceFactoryProvider
 import com.mqgateway.core.gatewayconfig.ConfigLoader
 import com.mqgateway.core.gatewayconfig.FastConfigurationSerializer
+import com.mqgateway.core.gatewayconfig.DeviceConfiguration
+import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
 import com.mqgateway.core.gatewayconfig.connector.HardwareConnectorFactory
@@ -89,20 +91,31 @@ internal class ComponentsFactory {
   }
 
   @Singleton
-  fun deviceFactory(
+  fun deviceFactoryProvider(
     inputOutputProvider: InputOutputProvider<*>,
     timersScheduler: TimersScheduler,
     systemInfoProvider: SystemInfoProvider
-  ): DeviceFactory {
-    return DeviceFactory(inputOutputProvider, timersScheduler, systemInfoProvider)
+  ): DeviceFactoryProvider {
+    return DeviceFactoryProvider(inputOutputProvider, timersScheduler, systemInfoProvider)
   }
 
   @Singleton
   fun deviceRegistry(
     gatewayConfiguration: GatewayConfiguration,
-    deviceFactory: DeviceFactory
+    deviceFactoryProvider: DeviceFactoryProvider
   ): DeviceRegistry {
-    return DeviceRegistry(deviceFactory.createAll(gatewayConfiguration))
+    // todo move to some class (how to call it? xD) to test it
+    //  todo here should be also logic that first we create all basic devices, and then all devices with internalDevice
+    val mqGatewayDeviceConfiguration = DeviceConfiguration(gatewayConfiguration.name, gatewayConfiguration.name, DeviceType.MQGATEWAY)
+    val gatewayDevice = deviceFactoryProvider.getFactory(DeviceType.MQGATEWAY).create(mqGatewayDeviceConfiguration)
+
+    val configuredDevices = gatewayConfiguration.devices.map {
+      deviceFactoryProvider
+        .getFactory(it.type)
+        .create(it)
+    }.toSet()
+
+    return DeviceRegistry(setOf(gatewayDevice) + configuredDevices)
   }
 
   @Singleton
