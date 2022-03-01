@@ -1,12 +1,12 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
-import com.mqgateway.core.device.EmulatedSwitchButtonDevice
-import com.mqgateway.core.device.MotionSensorDevice
-import com.mqgateway.core.device.ReedSwitchDevice
-import com.mqgateway.core.device.RelayDevice
-import com.mqgateway.core.device.ShutterDevice
-import com.mqgateway.core.device.SingleButtonsGateDevice
-import com.mqgateway.core.device.SwitchButtonDevice
+import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
+import com.mqgateway.core.device.motiondetector.MotionSensorDevice
+import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
+import com.mqgateway.core.device.relay.RelayDevice
+import com.mqgateway.core.device.shutter.ShutterDevice
+import com.mqgateway.core.device.gate.SingleButtonsGateDevice
+import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DevicePropertyType
 import com.mqgateway.core.gatewayconfig.DeviceType
