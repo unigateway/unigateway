@@ -7,8 +7,6 @@ import com.diozero.api.DigitalInputDevice
 import com.diozero.api.DigitalOutputDevice
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
-// todo add task for pull up/down
-
 class RaspberryPiInputOutputProvider : HardwareInputOutputProvider<RaspberryPiConnector> {
 
   override fun getBinaryInput(connector: RaspberryPiConnector): RaspberryPiDigitalPinInput {
