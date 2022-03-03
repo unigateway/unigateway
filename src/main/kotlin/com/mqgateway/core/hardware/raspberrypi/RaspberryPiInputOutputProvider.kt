@@ -10,7 +10,8 @@ import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 class RaspberryPiInputOutputProvider : HardwareInputOutputProvider<RaspberryPiConnector> {
 
   override fun getBinaryInput(connector: RaspberryPiConnector): RaspberryPiDigitalPinInput {
-    val digitalInputDevice: DigitalInputDevice = DebouncedDigitalInputDevice.Builder.builder(connector.pin, connector.debounceMs)
+    val digitalInputDevice: DigitalInputDevice = DebouncedDigitalInputDevice.Builder
+      .builder(connector.pin, connector.debounceMs ?: DEFAULT_DEBOUNCE)
       .build()
     return RaspberryPiDigitalPinInput(digitalInputDevice)
   }
@@ -31,5 +32,10 @@ class RaspberryPiInputOutputProvider : HardwareInputOutputProvider<RaspberryPiCo
     val analogOutputDevice = AnalogOutputDevice.Builder.builder(connector.pin)
       .build()
     return RaspberryPiAnalogPinOutput(analogOutputDevice)
+  }
+
+  companion object {
+    // TODO default debounce, should be taken from hardware configuration
+    private const val DEFAULT_DEBOUNCE: Int = 50
   }
 }
