@@ -21,7 +21,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   EmulatedSwitchButtonDevice actionButton = new EmulatedSwitchButtonDevice("actionButton", actionBinaryOutput, 10)
 
   def openReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
-	ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchBinaryInput)
+  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchBinaryInput)
   def closedReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
   ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", closedReedSwitchBinaryInput)
 
@@ -209,7 +209,7 @@ class SingleButtonsGateDeviceTest extends Specification {
 
     then:
     conditions.eventually {
-      assert listenerStub.receivedUpdates.collect {it.newValue} == expectedUpdates
+      assert listenerStub.receivedUpdates.collect { it.newValue } == expectedUpdates
     }
 
     where:
@@ -334,10 +334,10 @@ class SingleButtonsGateDeviceTest extends Specification {
     listenerStub.receivedUpdates*.newValue == expectedUpdates
 
     where:
-    initialState | expectedUpdates     | hasClosedReedSwitch | hasOpenReedSwitch | reedSwitchChange | whenDescription
-    "CLOSED"     | ["OPENING"]         | true                | true              | "opening" | "opening without action (both reed switches)"
-    "CLOSED"     | ["OPEN"]            | true                | false             | "opening" | "opening without action (closed reed switch only)"
-    "OPEN"       | ["CLOSING"]         | true                | true              | "closing" | "closing without action (both reed switches)"
-    "OPEN"       | ["CLOSED"]          | false               | true              | "closing" | "closing without action (open reed switch only)"
+    initialState | expectedUpdates | hasClosedReedSwitch | hasOpenReedSwitch | reedSwitchChange | whenDescription
+    "CLOSED"     | ["OPENING"]     | true                | true              | "opening"        | "opening without action (both reed switches)"
+    "CLOSED"     | ["OPEN"]        | true                | false             | "opening"        | "opening without action (closed reed switch only)"
+    "OPEN"       | ["CLOSING"]     | true                | true              | "closing"        | "closing without action (both reed switches)"
+    "OPEN"       | ["CLOSED"]      | false               | true              | "closing"        | "closing without action (open reed switch only)"
   }
 }
