@@ -18,11 +18,10 @@ gateway:
   app-version: <%=version%>
   config-path: gateway.yaml
   system:
-    network-adapter: eth0 #TODO move it to platform configuration? It is related to platform, but also system related, maybe we should have some code to find it?
-    platform: MQGATEWAY
+    network-adapter: eth0
+    platform: SIMULATED
     platform-config:
-      expander:
-        enabled: false
+      some-config: simulated-prod
   websocket:
     enabled: true
   update:

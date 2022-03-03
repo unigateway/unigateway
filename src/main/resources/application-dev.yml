@@ -5,7 +5,7 @@ gateway:
     network-adapter: enp0s25
     platform: SIMULATED
     platform-config:
-      someConfigurtion: simulated-test
+      some-config: simulated-dev
     mqttHostname: "localhost"
   websocket:
     enabled: true

@@ -2,7 +2,7 @@ package com.mqgateway.core.hardware.raspberrypi
 
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
-class RaspberryPiInputOutputProvider : HardwareInputOutputProvider<RaspberryPiConnector> {
+class RaspberryPiInputOutputProvider(platformConfiguration: RaspberryPiPlatformConfiguration) : HardwareInputOutputProvider<RaspberryPiConnector> {
 
   override fun getBinaryInput(connector: RaspberryPiConnector): RaspberryPiDigitalPinInput {
     TODO("Not yet implemented")

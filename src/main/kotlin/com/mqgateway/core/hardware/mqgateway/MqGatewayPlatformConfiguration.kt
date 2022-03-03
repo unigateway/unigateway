@@ -1,10 +1,8 @@
 package com.mqgateway.core.hardware.mqgateway
 
-import com.mqgateway.configuration.GatewaySystemProperties
-
 data class MqGatewayPlatformConfiguration(
   val expander: ExpanderConfiguration, val components: ComponentsConfiguration
-) : GatewaySystemProperties.PlatformConfiguration {
+) {
 
   data class ExpanderConfiguration(
     val enabled: Boolean = false
