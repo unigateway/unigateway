@@ -2,6 +2,7 @@ package com.mqgateway.core.device.shutter
 
 import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.relay.RelayDevice
+import com.mqgateway.core.device.relay.RelayDevice.RelayState
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
@@ -171,22 +172,22 @@ class ShutterDevice(
   }
 
   private fun goDown() {
-    upDownRelay.changeState(RelayDevice.RelayState.OPEN)
-    stopRelay.changeState(RelayDevice.RelayState.CLOSED)
+    upDownRelay.changeState(RelayState.OPEN)
+    stopRelay.changeState(RelayState.CLOSED)
     moveStartTime = Instant.now(clock)
     state = State.CLOSING
   }
 
   private fun goUp() {
-    upDownRelay.changeState(RelayDevice.RelayState.CLOSED)
-    stopRelay.changeState(RelayDevice.RelayState.CLOSED)
+    upDownRelay.changeState(RelayState.CLOSED)
+    stopRelay.changeState(RelayState.CLOSED)
     moveStartTime = Instant.now(clock)
     state = State.OPENING
   }
 
   private fun stop(newPosition: Int) {
-    stopRelay.changeState(RelayDevice.RelayState.OPEN)
-    upDownRelay.changeState(RelayDevice.RelayState.OPEN)
+    stopRelay.changeState(RelayState.OPEN)
+    upDownRelay.changeState(RelayState.OPEN)
     moveStartTime = null
     currentPosition = newPosition
     state = currentState(currentPosition!!)

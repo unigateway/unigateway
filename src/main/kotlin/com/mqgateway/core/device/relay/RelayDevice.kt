@@ -1,6 +1,8 @@
 package com.mqgateway.core.device.relay
 
 import com.mqgateway.core.device.DigitalOutputDevice
+import com.mqgateway.core.device.relay.RelayDevice.RelayState.OPEN
+import com.mqgateway.core.device.relay.RelayDevice.RelayState.CLOSED
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryOutput
@@ -20,7 +22,7 @@ class RelayDevice(id: String, state: BinaryOutput, private val closedState: Bina
   }
 
   fun changeState(newState: RelayState) {
-    if (newState == RelayState.CLOSED) {
+    if (newState == CLOSED) {
       binaryOutput.setState(closedState())
       notify(STATE, STATE_ON)
     } else {
@@ -32,9 +34,9 @@ class RelayDevice(id: String, state: BinaryOutput, private val closedState: Bina
   override fun change(propertyId: String, newValue: String) {
     LOGGER.debug { "Changing state on relay $id to $newValue" }
     if (newValue == STATE_ON) {
-      changeState(RelayState.CLOSED)
+      changeState(CLOSED)
     } else {
-      changeState(RelayState.OPEN)
+      changeState(OPEN)
     }
   }
 

@@ -1,6 +1,5 @@
 package com.mqgateway.core.device.motiondetector
 
-import com.mqgateway.core.device.motiondetector.MotionSensorDevice
 import com.mqgateway.core.hardware.simulated.SimulatedBinaryInput
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
@@ -9,37 +8,37 @@ import spock.lang.Subject
 
 class MotionSensorDeviceTest extends Specification {
 
-	SimulatedBinaryInput binaryInput = new SimulatedBinaryInput(BinaryState.LOW) // when sensor will be connected it will keep LOW state when no motion
+  SimulatedBinaryInput binaryInput = new SimulatedBinaryInput(BinaryState.LOW) // when sensor will be connected it will keep LOW state when no motion
 
-	@Subject
-	MotionSensorDevice device = new MotionSensorDevice("device1", binaryInput, BinaryState.HIGH)
+  @Subject
+  MotionSensorDevice device = new MotionSensorDevice("device1", binaryInput, BinaryState.HIGH)
 
-	def "should notify listeners on motion (HIGH state)"() {
-		given:
-		def listenerStub = new UpdateListenerStub()
-		device.addListener(listenerStub)
-		device.init()
+  def "should notify listeners on motion (HIGH state)"() {
+    given:
+    def listenerStub = new UpdateListenerStub()
+    device.addListener(listenerStub)
+    device.init()
 
-		when:
-		binaryInput.setState(BinaryState.HIGH)
-
-		then:
-    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "ON")
-	}
-
-	def "should notify listeners on motion stopped (LOW state)"() {
-		given:
-		def listenerStub = new UpdateListenerStub()
-		device.addListener(listenerStub)
-		device.init()
+    when:
     binaryInput.setState(BinaryState.HIGH)
 
-		when:
-		binaryInput.setState(BinaryState.LOW)
+    then:
+    listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "ON")
+  }
 
-		then:
+  def "should notify listeners on motion stopped (LOW state)"() {
+    given:
+    def listenerStub = new UpdateListenerStub()
+    device.addListener(listenerStub)
+    device.init()
+    binaryInput.setState(BinaryState.HIGH)
+
+    when:
+    binaryInput.setState(BinaryState.LOW)
+
+    then:
     listenerStub.receivedUpdates.last() == new UpdateListenerStub.Update("device1", "state", "OFF")
-	}
+  }
 
   def "should notify about motion when state is LOW when motionSignalLevel is set to LOW"() {
     given:
