@@ -1,6 +1,6 @@
 package com.mqgateway.core.utils
 
-import java.lang.management.ManagementFactory
+import oshi.SystemInfo
 import java.time.Duration
 
 interface SystemInfoProvider {
@@ -8,13 +8,38 @@ interface SystemInfoProvider {
   fun getMemoryFree(): Long
   fun getUptime(): Duration
   fun getIPAddresses(): String
+  fun getSummary(): String
 }
 
-class Pi4JSystemInfoProvider : SystemInfoProvider {
-  override fun getCpuTemperature(): Float = 50f
-  override fun getMemoryFree(): Long = 50000L
-  override fun getUptime(): Duration = Duration.ofMillis(ManagementFactory.getRuntimeMXBean().uptime)
-  override fun getIPAddresses(): String = "0.0.0.0"
+class OshiSystemInfoProvider: SystemInfoProvider {
+  private val systemInfo: SystemInfo = SystemInfo()
+
+  override fun getCpuTemperature(): Float {
+    return systemInfo.hardware.sensors.cpuTemperature.toFloat() // todo change to double?
+  }
+
+  override fun getMemoryFree(): Long {
+    return systemInfo.hardware.memory.available
+  }
+
+  override fun getUptime(): Duration {
+    return Duration.ofSeconds(systemInfo.operatingSystem.systemUptime)
+  }
+
+  override fun getIPAddresses(): String {
+    // todo systemInfo.hardware.networkIFs
+    return ""
+  }
+
+  override fun getSummary(): String {
+    return """
+      System info
+      CPU temperature: ${getCpuTemperature()} 
+      Free memory: ${getMemoryFree()}
+      Uptime: ${getUptime()}
+      IP address: ${getIPAddresses()}
+    """.trimIndent()
+  }
 }
 
 class SimulatedSystemInfoProvider : SystemInfoProvider {
@@ -43,4 +68,8 @@ class SimulatedSystemInfoProvider : SystemInfoProvider {
   override fun getUptime(): Duration = uptime
 
   override fun getIPAddresses(): String = ipAddress
+
+  override fun getSummary(): String {
+    TODO("Not yet implemented")
+  }
 }
