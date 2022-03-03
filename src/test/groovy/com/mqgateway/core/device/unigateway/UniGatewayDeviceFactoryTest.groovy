@@ -13,13 +13,13 @@ class UniGatewayDeviceFactoryTest extends Specification {
 
   def "should create MqGateway as a device"() {
     given:
-    def deviceConfig = new DeviceConfiguration("id", "name", DeviceType.MQGATEWAY)
+    def deviceConfig = new DeviceConfiguration("id", "name", DeviceType.UNIGATEWAY)
 
     when:
     def device = factory.create(deviceConfig)
 
     then:
     device.id == "id"
-    device.type == DeviceType.MQGATEWAY
+    device.type == DeviceType.UNIGATEWAY
   }
 }

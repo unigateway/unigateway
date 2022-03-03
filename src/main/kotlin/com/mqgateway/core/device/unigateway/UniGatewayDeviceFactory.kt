@@ -11,7 +11,7 @@ class UniGatewayDeviceFactory(
 ) : DeviceFactory<UniGatewayDevice> {
 
   override fun deviceType(): DeviceType {
-    return DeviceType.MQGATEWAY
+    return DeviceType.UNIGATEWAY
   }
 
   override fun create(deviceConfiguration: DeviceConfiguration): UniGatewayDevice {

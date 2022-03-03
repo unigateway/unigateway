@@ -6,6 +6,7 @@
   "type": "object",
   "required": [
     "configVersion",
+    "id",
     "name",
     "devices"
   ],
@@ -14,6 +15,10 @@
       "description": "Version of UniGateway configuration file",
       "type": "string",
       "pattern": "^1\\.0$"
+    },
+    "id": {
+      "description": "Identifier of Gateway",
+      "type": "string"
     },
     "name": {
       "description": "Unique name of Gateway",

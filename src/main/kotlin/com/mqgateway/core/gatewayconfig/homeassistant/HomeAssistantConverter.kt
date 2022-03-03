@@ -205,7 +205,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           false
         )
       )
-      DeviceType.MQGATEWAY -> throw IllegalArgumentException("MqGateway should not be configured as a device")
+      DeviceType.UNIGATEWAY -> throw IllegalArgumentException("MqGateway should not be configured as a device")
     }
 
     LOGGER.debug { "Device ${device.id} (${device.type}) converted to HA components types: ${components.map { it.componentType }}" }
@@ -234,7 +234,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.TEMPERATURE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.TEMPERATURE),
-        DeviceType.MQGATEWAY.property(DevicePropertyType.TEMPERATURE).unit.value
+        DeviceType.UNIGATEWAY.property(DevicePropertyType.TEMPERATURE).unit.value
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_MEMORY_FREE"),
@@ -244,7 +244,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.MEMORY),
-        DeviceType.MQGATEWAY.property(DevicePropertyType.MEMORY).unit.value
+        DeviceType.UNIGATEWAY.property(DevicePropertyType.MEMORY).unit.value
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_UPTIME"),
@@ -254,7 +254,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.UPTIME),
-        DeviceType.MQGATEWAY.property(DevicePropertyType.UPTIME).unit.value
+        DeviceType.UNIGATEWAY.property(DevicePropertyType.UPTIME).unit.value
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_IP_ADDRESS"),
@@ -264,7 +264,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.IP_ADDRESS),
-        DeviceType.MQGATEWAY.property(DevicePropertyType.IP_ADDRESS).unit.value
+        DeviceType.UNIGATEWAY.property(DevicePropertyType.IP_ADDRESS).unit.value
       )
     )
   }

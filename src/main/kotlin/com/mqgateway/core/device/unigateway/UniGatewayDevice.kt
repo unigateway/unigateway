@@ -11,12 +11,12 @@ import java.time.Duration
 import kotlin.concurrent.fixedRateTimer
 
 class UniGatewayDevice(id: String, private val periodBetweenUpdates: Duration, private val systemInfoProvider: SystemInfoProvider) :
-  Device(id, DeviceType.MQGATEWAY) {
+  Device(id, DeviceType.UNIGATEWAY) {
 
   override fun initDevice() {
     super.initDevice()
 
-    fixedRateTimer(name = "mqgateway-$id-timer", daemon = true, period = periodBetweenUpdates.toMillis()) {
+    fixedRateTimer(name = "unigateway-$id-timer", daemon = true, period = periodBetweenUpdates.toMillis()) {
       notifyNow()
     }
   }

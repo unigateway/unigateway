@@ -21,7 +21,7 @@ class FastConfigurationSerializerTest extends Specification {
 
   def "should serialize and deserialize configuration"() {
     given:
-    def config = new GatewayConfiguration("1.0.0", "Test config", [
+    def config = new GatewayConfiguration("1.0.0", "unigateway-id", "Test config", [
       new DeviceConfiguration("device_1", "First device", DeviceType.RELAY, ["state": new SimulatedConnector(1)]),
       new DeviceConfiguration("device_2", "Second device", DeviceType.RELAY, ["state": new SimulatedConnector(2)]),
       new DeviceConfiguration("device_3", "Third device", DeviceType.RELAY, ["state": new MySensorsConnector(1)]),
@@ -39,12 +39,12 @@ class FastConfigurationSerializerTest extends Specification {
 
   def "should fail when trying to serialize different connector type"() {
     given:
-    def config = new GatewayConfiguration("1.0.0", "Test config", [
+    def config = new GatewayConfiguration("1.0.0", "unigateway-id", "Test config", [
       new DeviceConfiguration("device_1", "First device", DeviceType.RELAY, ["state": new MqGatewayConnector(1, WireColor.BLUE, 100)])
     ])
 
     when:
-    def bytes = serializer.encode(config)
+    serializer.encode(config)
 
     then:
     thrown(SerializationException)

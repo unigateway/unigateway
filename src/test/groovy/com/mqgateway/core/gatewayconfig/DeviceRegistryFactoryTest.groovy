@@ -20,18 +20,18 @@ class DeviceRegistryFactoryTest extends Specification {
 
   def "should register UniGateway device"() {
     given:
-    def config = new GatewayConfiguration("1.0.0", "UniGateway", [])
+    def config = new GatewayConfiguration("1.0.0", "unigateway-id", "UniGateway", [])
 
     when:
     def registry = factory.create(config)
 
     then:
-    registry.getById("UniGateway").type == DeviceType.MQGATEWAY
+    registry.getById("unigateway-id").type == DeviceType.UNIGATEWAY
   }
 
   def "should register devices from configuration"() {
     given:
-    def config = new GatewayConfiguration("1.0.0", "UniGateway", [
+    def config = new GatewayConfiguration("1.0.0", "unigateway-id", "UniGateway", [
       new DeviceConfiguration("relay_device_1", "Relay device", DeviceType.RELAY, [state: new SimulatedConnector(10)])
     ])
 

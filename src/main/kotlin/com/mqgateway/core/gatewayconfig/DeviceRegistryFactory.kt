@@ -7,8 +7,8 @@ class DeviceRegistryFactory(
   private val deviceFactoryProvider: DeviceFactoryProvider
 ) {
   fun create(gatewayConfiguration: GatewayConfiguration): DeviceRegistry {
-    val mqGatewayDeviceConfiguration = DeviceConfiguration(gatewayConfiguration.name, gatewayConfiguration.name, DeviceType.MQGATEWAY)
-    val gatewayDevice = deviceFactoryProvider.getFactory(DeviceType.MQGATEWAY).create(mqGatewayDeviceConfiguration)
+    val uniGatewayDeviceConfiguration = DeviceConfiguration(gatewayConfiguration.id, gatewayConfiguration.name, DeviceType.UNIGATEWAY)
+    val gatewayDevice = deviceFactoryProvider.getFactory(DeviceType.UNIGATEWAY).create(uniGatewayDeviceConfiguration)
 
     val configuredDevices = gatewayConfiguration.devices.map {
       deviceFactoryProvider

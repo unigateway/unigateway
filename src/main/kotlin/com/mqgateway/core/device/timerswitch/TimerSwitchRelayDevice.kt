@@ -1,6 +1,8 @@
 package com.mqgateway.core.device.timerswitch
 
 import com.mqgateway.core.device.DigitalOutputDevice
+import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDevice.TimerSwitchRelayState.CLOSED
+import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDevice.TimerSwitchRelayState.OPEN
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DeviceType
@@ -20,7 +22,7 @@ class TimerSwitchRelayDevice(id: String, state: BinaryOutput, private val schedu
   private var turnOffTime: LocalDateTime = LocalDateTime.now()
 
   private fun changeRelayState(newState: TimerSwitchRelayState) {
-    if (newState == TimerSwitchRelayState.CLOSED) {
+    if (newState == CLOSED) {
       binaryOutput.setState(RELAY_CLOSED_STATE)
       notify(STATE, STATE_ON)
     } else {
@@ -37,9 +39,9 @@ class TimerSwitchRelayDevice(id: String, state: BinaryOutput, private val schedu
     if (timerInMinutes > 0) {
       turnOffTime = LocalDateTime.now().plusMinutes(timerInMinutes)
       scheduler.registerTimer(this)
-      changeRelayState(TimerSwitchRelayState.CLOSED)
+      changeRelayState(CLOSED)
     } else {
-      changeRelayState(TimerSwitchRelayState.OPEN)
+      changeRelayState(OPEN)
       scheduler.unregisterTimer(this)
     }
     notify(TIMER, newValue)
