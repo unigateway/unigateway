@@ -1,6 +1,6 @@
 package com.mqgateway.core.device.switchbutton
 
-
+import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
@@ -29,4 +29,14 @@ class SwitchButtonDeviceFactoryTest extends Specification {
     device.type == DeviceType.SWITCH_BUTTON
   }
 
+  def "should throw exception when state connector configuration is not provided"() {
+    given:
+    def deviceConfig = new DeviceConfiguration("mySwitchButton", "Test switchButton", DeviceType.SWITCH_BUTTON)
+
+    when:
+    factory.create(deviceConfig)
+
+    then:
+    thrown(MissingConnectorInDeviceConfigurationException)
+  }
 }

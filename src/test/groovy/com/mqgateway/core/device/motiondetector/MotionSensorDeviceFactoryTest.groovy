@@ -1,6 +1,6 @@
 package com.mqgateway.core.device.motiondetector
 
-
+import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
@@ -28,5 +28,17 @@ class MotionSensorDeviceFactoryTest extends Specification {
     device.id == "myMotionDetector"
     device.type == DeviceType.MOTION_DETECTOR
   }
+
+  def "should throw exception when state connector configuration is not provided"() {
+    given:
+    def deviceConfig = new DeviceConfiguration("myMotionDetector", "Test MotionDetector", DeviceType.MOTION_DETECTOR)
+
+    when:
+    factory.create(deviceConfig)
+
+    then:
+    thrown(MissingConnectorInDeviceConfigurationException)
+  }
+
 
 }

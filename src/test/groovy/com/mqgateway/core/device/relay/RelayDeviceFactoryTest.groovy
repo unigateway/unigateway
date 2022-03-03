@@ -1,6 +1,6 @@
 package com.mqgateway.core.device.relay
 
-
+import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
@@ -29,4 +29,14 @@ class RelayDeviceFactoryTest extends Specification {
     device.type == DeviceType.RELAY
   }
 
+  def "should throw exception when state connector configuration is not provided"() {
+    given:
+    def deviceConfiguration = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY)
+
+    when:
+    factory.create(deviceConfiguration)
+
+    then:
+    thrown(MissingConnectorInDeviceConfigurationException)
+  }
 }

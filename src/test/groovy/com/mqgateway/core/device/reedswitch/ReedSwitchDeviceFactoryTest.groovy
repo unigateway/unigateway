@@ -1,6 +1,6 @@
 package com.mqgateway.core.device.reedswitch
 
-
+import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
@@ -27,6 +27,17 @@ class ReedSwitchDeviceFactoryTest extends Specification {
     then:
     device.id == "myReedSwitch"
     device.type == DeviceType.REED_SWITCH
+  }
+
+  def "should throw exception when state connector configuration is not provided"() {
+    given:
+    def deviceConfig = new DeviceConfiguration("myReedSwitch", "Test ReedSwitch", DeviceType.REED_SWITCH)
+
+    when:
+    factory.create(deviceConfig)
+
+    then:
+    thrown(MissingConnectorInDeviceConfigurationException)
   }
 
 }

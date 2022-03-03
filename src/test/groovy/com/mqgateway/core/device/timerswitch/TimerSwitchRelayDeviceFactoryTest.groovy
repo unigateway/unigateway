@@ -1,6 +1,6 @@
 package com.mqgateway.core.device.timerswitch
 
-
+import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
@@ -30,4 +30,14 @@ class TimerSwitchRelayDeviceFactoryTest extends Specification {
     device.type == DeviceType.TIMER_SWITCH
   }
 
+  def "should throw exception when state connector configuration is not provided"() {
+    given:
+    def deviceConfig = new DeviceConfiguration("myTimerSwitch", "Test timer switch", DeviceType.TIMER_SWITCH)
+
+    when:
+    factory.create(deviceConfig)
+
+    then:
+    thrown(MissingConnectorInDeviceConfigurationException)
+  }
 }
