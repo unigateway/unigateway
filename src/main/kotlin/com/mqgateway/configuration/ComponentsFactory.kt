@@ -21,6 +21,7 @@ import com.mqgateway.core.io.provider.HardwareConnector
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
+import com.mqgateway.core.utils.SimulatedSystemInfoProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import io.micronaut.context.annotation.Factory
@@ -129,5 +130,10 @@ internal class ComponentsFactory {
     mySensorsInputOutputProvider: MySensorsInputOutputProvider
   ): InputOutputProvider<T> {
     return InputOutputProvider(hardwareInputOutputProvider, mySensorsInputOutputProvider)
+  }
+
+  @Singleton
+  fun systemInfoProvider(): SystemInfoProvider {
+    return SimulatedSystemInfoProvider()
   }
 }

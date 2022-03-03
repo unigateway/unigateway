@@ -4,8 +4,6 @@ import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedConnectorFactory
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.io.provider.Connector
-import com.mqgateway.core.utils.SimulatedSystemInfoProvider
-import com.mqgateway.core.utils.SystemInfoProvider
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import jakarta.inject.Singleton
@@ -34,10 +32,5 @@ class SimulatedHardwareFactory {
         subclass(SimulatedConnector::class)
       }
     }
-  }
-
-  @Singleton
-  fun systemInfoProvider(): SystemInfoProvider {
-    return SimulatedSystemInfoProvider()
   }
 }

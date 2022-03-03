@@ -4,8 +4,6 @@ import com.mqgateway.core.hardware.raspberrypi.RaspberryPiConnector
 import com.mqgateway.core.hardware.raspberrypi.RaspberryPiConnectorFactory
 import com.mqgateway.core.hardware.raspberrypi.RaspberryPiInputOutputProvider
 import com.mqgateway.core.io.provider.Connector
-import com.mqgateway.core.utils.SimulatedSystemInfoProvider
-import com.mqgateway.core.utils.SystemInfoProvider
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import jakarta.inject.Singleton
@@ -34,10 +32,5 @@ class RaspberryPiHardwareFactory {
         subclass(RaspberryPiConnector::class)
       }
     }
-  }
-
-  @Singleton
-  fun systemInfoProvider(): SystemInfoProvider {
-    return SimulatedSystemInfoProvider()
   }
 }
