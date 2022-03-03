@@ -152,7 +152,7 @@ class ConfigValidatorTest extends Specification {
   }
 
   static GatewayConfiguration gatewayWith(DeviceConfiguration[] devices) {
-    new GatewayConfiguration("1.0", "some gateway", devices.toList())
+    new GatewayConfiguration("1.0", "unigateway-id", "some gateway", devices.toList())
   }
 
 

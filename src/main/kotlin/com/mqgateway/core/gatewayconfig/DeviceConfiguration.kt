@@ -49,7 +49,7 @@ data class DeviceProperty(
 }
 
 enum class DeviceType(vararg val properties: Property) {
-  MQGATEWAY(
+  UNIGATEWAY(
     Property(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
     Property(MEMORY, INTEGER, null, retained = true, unit = BYTES),
     Property(UPTIME, INTEGER, null, retained = true, unit = SECOND),

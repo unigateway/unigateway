@@ -54,6 +54,7 @@ class JsonSchemaValidationTest extends Specification {
   private static String configWithDevice(String device, String configVersion = DEFAULT_CONFIG_VERSION) {
     def config = """
     configVersion: "$configVersion"
+    id: "unigateway_id"
     name: "TestGateway"
     devices:
 ${device.readLines().collect { "    $it" }.join(System.lineSeparator())}

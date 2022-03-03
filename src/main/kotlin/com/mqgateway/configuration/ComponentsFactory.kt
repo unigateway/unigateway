@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.mqgateway.core.device.DeviceFactory
+import com.mqgateway.core.device.DeviceFactoryProvider
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.ConfigLoader
+import com.mqgateway.core.gatewayconfig.DeviceRegistryFactory
 import com.mqgateway.core.gatewayconfig.FastConfigurationSerializer
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
@@ -89,20 +90,27 @@ internal class ComponentsFactory {
   }
 
   @Singleton
-  fun deviceFactory(
+  fun deviceFactoryProvider(
     inputOutputProvider: InputOutputProvider<*>,
     timersScheduler: TimersScheduler,
     systemInfoProvider: SystemInfoProvider
-  ): DeviceFactory {
-    return DeviceFactory(inputOutputProvider, timersScheduler, systemInfoProvider)
+  ): DeviceFactoryProvider {
+    return DeviceFactoryProvider(inputOutputProvider, timersScheduler, systemInfoProvider)
+  }
+
+  @Singleton
+  fun deviceRegistryFactory(
+    deviceFactoryProvider: DeviceFactoryProvider
+  ): DeviceRegistryFactory {
+    return DeviceRegistryFactory(deviceFactoryProvider)
   }
 
   @Singleton
   fun deviceRegistry(
-    gatewayConfiguration: GatewayConfiguration,
-    deviceFactory: DeviceFactory
+    deviceRegistryFactory: DeviceRegistryFactory,
+    gatewayConfiguration: GatewayConfiguration
   ): DeviceRegistry {
-    return DeviceRegistry(deviceFactory.createAll(gatewayConfiguration))
+    return deviceRegistryFactory.create(gatewayConfiguration)
   }
 
   @Singleton
