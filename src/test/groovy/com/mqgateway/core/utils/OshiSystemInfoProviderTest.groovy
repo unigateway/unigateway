@@ -10,9 +10,9 @@ class OshiSystemInfoProviderTest extends Specification {
 
   def "should return system info"() {
     expect:
-    println("1" + provider.getCpuTemperature())
-    println("2" + provider.getIPAddresses())
-    println("3" + provider.getMemoryFree())
-    println("4" + provider.getUptime())
+    provider.getCpuTemperature() != 0
+    !provider.getIPAddresses().isEmpty()
+    provider.getMemoryFree() != 0
+    provider.getUptime() != null
   }
 }
