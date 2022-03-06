@@ -6,6 +6,7 @@ import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 import com.mqgateway.core.gatewayconfig.DeviceType
 import mu.KotlinLogging
+import java.util.Locale
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -76,7 +77,7 @@ class ThreeButtonsGateDevice(
     }
 
     LOGGER.info { "Changing gate $id state to $newValue" }
-    when (Command.valueOf(newValue.toUpperCase())) {
+    when (Command.valueOf(newValue.uppercase(Locale.getDefault()))) {
       Command.OPEN -> open()
       Command.CLOSE -> close()
       Command.STOP -> stop()

@@ -12,6 +12,7 @@ import com.mqgateway.homie.HomieReceiver
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import mu.KotlinLogging
 import java.net.NetworkInterface
+import java.util.Locale
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -32,7 +33,7 @@ class HomieDeviceFactory(
       gatewayConfiguration.id,
       gatewayConfiguration.name,
       "MqGateway ${gatewayConfiguration.name}",
-      DeviceType.UNIGATEWAY.name.toLowerCase(),
+      DeviceType.UNIGATEWAY.name.lowercase(Locale.getDefault()),
       getHomiePropertiesFor(gatewayConfiguration.name, gatewayConfiguration.name, DeviceType.UNIGATEWAY)
     )
 
@@ -74,7 +75,7 @@ class HomieDeviceFactory(
       gatewayName,
       deviceConfiguration.id,
       deviceConfiguration.name,
-      deviceConfiguration.type.name.toLowerCase(),
+      deviceConfiguration.type.name.lowercase(Locale.getDefault()),
       getHomiePropertiesFor(gatewayName, deviceConfiguration.id, deviceConfiguration.type)
     )
 

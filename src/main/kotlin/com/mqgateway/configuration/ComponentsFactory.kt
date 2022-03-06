@@ -28,8 +28,10 @@ import com.mqgateway.core.utils.TimersScheduler
 import io.micronaut.context.annotation.Factory
 import jakarta.inject.Named
 import jakarta.inject.Singleton
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 
+@ExperimentalSerializationApi
 @Factory
 internal class ComponentsFactory {
 

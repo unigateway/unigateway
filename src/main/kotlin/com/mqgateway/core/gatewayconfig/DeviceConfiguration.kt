@@ -17,6 +17,7 @@ import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
 import com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
 import com.mqgateway.core.io.provider.Connector
 import kotlinx.serialization.Serializable
+import java.util.Locale
 import com.mqgateway.core.gatewayconfig.DeviceProperty as Property
 
 @Serializable
@@ -88,7 +89,7 @@ enum class DeviceType(vararg val properties: Property) {
 enum class DevicePropertyType {
   STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION, MEMORY, IP_ADDRESS, AVAILABILITY;
 
-  override fun toString(): String = this.name.toLowerCase()
+  override fun toString(): String = this.name.lowercase(Locale.getDefault())
 }
 
 enum class DataType {

@@ -4,6 +4,7 @@ import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
 import mu.KotlinLogging
+import java.util.Locale
 
 const val HOMIE_PREFIX = "homie"
 
@@ -145,11 +146,39 @@ data class HomieProperty(
     this.mqttClient = mqttClient
 
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishAsync(MqttMessage("$baseTopic/\$settable", settable.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishAsync(MqttMessage("$baseTopic/\$retained", retained.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
-    mqttClient.publishAsync(MqttMessage("$baseTopic/\$datatype", datatype.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+    mqttClient.publishAsync(
+      MqttMessage(
+        "$baseTopic/\$settable",
+        settable.toString().lowercase(Locale.getDefault()),
+        HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
+        true
+      )
+    )
+    mqttClient.publishAsync(
+      MqttMessage(
+        "$baseTopic/\$retained",
+        retained.toString().lowercase(Locale.getDefault()),
+        HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
+        true
+      )
+    )
+    mqttClient.publishAsync(
+      MqttMessage(
+        "$baseTopic/\$datatype",
+        datatype.toString().lowercase(Locale.getDefault()),
+        HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
+        true
+      )
+    )
     if (format != null) {
-      mqttClient.publishAsync(MqttMessage("$baseTopic/\$format", format.toString().toLowerCase(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
+      mqttClient.publishAsync(
+        MqttMessage(
+          "$baseTopic/\$format",
+          format.toString().lowercase(Locale.getDefault()),
+          HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
+          true
+        )
+      )
     }
     if (unit != Unit.NONE) {
       mqttClient.publishAsync(MqttMessage("$baseTopic/\$unit", unit.value, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))

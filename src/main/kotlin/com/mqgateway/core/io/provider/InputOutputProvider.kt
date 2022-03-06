@@ -15,6 +15,7 @@ class InputOutputProvider<T : HardwareConnector>(
   private val mySensorsInputOutputProvider: MySensorsInputOutputProvider
 ) {
 
+  @Suppress("UNCHECKED_CAST")
   fun getBinaryInput(connector: Connector): BinaryInput {
     return when (connector) {
       is MySensorsConnector -> mySensorsInputOutputProvider.getBinaryInput(connector)
@@ -22,6 +23,7 @@ class InputOutputProvider<T : HardwareConnector>(
     }
   }
 
+  @Suppress("UNCHECKED_CAST")
   fun getBinaryOutput(connector: Connector): BinaryOutput {
     return when (connector) {
       is MySensorsConnector -> mySensorsInputOutputProvider.getBinaryOutput(connector)
@@ -29,6 +31,7 @@ class InputOutputProvider<T : HardwareConnector>(
     }
   }
 
+  @Suppress("UNCHECKED_CAST")
   fun getFloatInput(connector: Connector): FloatInput {
     return when (connector) {
       is MySensorsConnector -> mySensorsInputOutputProvider.getFloatInput(connector)
@@ -36,6 +39,7 @@ class InputOutputProvider<T : HardwareConnector>(
     }
   }
 
+  @Suppress("UNCHECKED_CAST")
   fun getFloatOutput(connector: Connector): FloatOutput {
     return when (connector) {
       is MySensorsConnector -> mySensorsInputOutputProvider.getFloatOutput(connector)
