@@ -27,7 +27,7 @@ class MqGateway(
 ) {
 
   @EventListener
-  fun initialize(event: StartupEvent) {
+  fun initialize(@Suppress("UNUSED_PARAMETER") event: StartupEvent) {
     LOGGER.info { "MqGateway started. Initialization..." }
 
     updateListeners.forEach { deviceRegistry.addUpdateListener(it) }
@@ -38,7 +38,7 @@ class MqGateway(
   }
 
   @EventListener
-  fun close(event: ShutdownEvent) {
+  fun close(@Suppress("UNUSED_PARAMETER") event: ShutdownEvent) {
     LOGGER.info { "Closing MqGateway..." }
     homieDevice.disconnect()
     LOGGER.info { "MqGateway closed" }

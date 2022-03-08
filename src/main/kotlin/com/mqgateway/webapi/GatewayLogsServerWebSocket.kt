@@ -22,12 +22,12 @@ class GatewayLogsServerWebSocket(private val logsWebSocketPublisher: LogsWebSock
   }
 
   @OnMessage
-  fun onMessage(clientId: String, message: String, session: WebSocketSession) {
+  fun onMessage(clientId: String, message: String, @Suppress("UNUSED_PARAMETER") session: WebSocketSession) {
     LOGGER.info { "Message from client: '$clientId' with content $message" }
   }
 
   @OnClose
-  fun onClose(clientId: String) {
+  fun onClose(@Suppress("UNUSED_PARAMETER") clientId: String) {
   }
 
   data class Log(val message: String, val time: Long, val level: String, val loggerName: String)
