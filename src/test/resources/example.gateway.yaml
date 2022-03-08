@@ -1,4 +1,5 @@
 configVersion: "1.0"
+id: "simulated_gateway"
 name: "Simulated gateway"
 devices:
   - id: "workshop_light"

@@ -1,7 +1,8 @@
 package com.mqgateway.core.hardware.mqgateway
 
 data class MqGatewayPlatformConfiguration(
-  val expander: ExpanderConfiguration, val components: ComponentsConfiguration
+  val expander: ExpanderConfiguration,
+  val components: ComponentsConfiguration
 ) {
 
   data class ExpanderConfiguration(
@@ -21,7 +22,8 @@ data class MqGatewayPlatformConfiguration(
   ) {
 
     data class Mcp23017Configuration(
-      private val expander: ExpanderConfiguration, private val ports: List<String>? = null
+      private val expander: ExpanderConfiguration,
+      private val ports: List<String>? = null
     ) {
 
       fun getPorts(): List<String> = ports ?: expander.getMcp23017DefaultPorts()
