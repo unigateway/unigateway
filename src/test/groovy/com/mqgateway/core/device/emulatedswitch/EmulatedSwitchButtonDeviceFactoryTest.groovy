@@ -13,7 +13,8 @@ import spock.lang.Subject
 
 class EmulatedSwitchButtonDeviceFactoryTest extends Specification {
 
-  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(new SimulatedPlatformConfiguration("someValue")), new MySensorsInputOutputProvider())
+  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(new SimulatedPlatformConfiguration("someValue")),
+                                                           new MySensorsInputOutputProvider())
 
   @Subject
   def factory = new EmulatedSwitchButtonDeviceFactory(ioProvider)

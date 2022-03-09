@@ -1,6 +1,5 @@
 package com.mqgateway.core.hardware.mqgateway
 
-// TODO needs testing
 class MqGatewayPlatformConfigurationFactory {
 
   fun create(configMap: Map<String, *>): MqGatewayPlatformConfiguration {

@@ -1,15 +1,14 @@
 package com.mqgateway.core.gatewayconfig
 
-
 import static kotlin.jvm.JvmClassMappingKt.getKotlinClass
 
 import com.mqgateway.core.hardware.mqgateway.MqGatewayConnector
 import com.mqgateway.core.hardware.mqgateway.WireColor
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
+import com.mqgateway.core.hardware.simulated.SimulatedConnectorSerializer
 import com.mqgateway.core.io.provider.Connector
 import com.mqgateway.core.io.provider.MySensorsConnector
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.SerializersKt
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.SerializersModuleBuilder
@@ -56,7 +55,7 @@ class FastConfigurationSerializerTest extends Specification {
     def connectorKClass = getKotlinClass(Connector.class)
     def simulatedConnectorKClass = getKotlinClass(SimulatedConnector.class)
     def polymorphicModuleBuilder = new PolymorphicModuleBuilder(connectorKClass, null)
-    polymorphicModuleBuilder.subclass(simulatedConnectorKClass, SerializersKt.serializer(simulatedConnectorKClass))
+    polymorphicModuleBuilder.subclass(simulatedConnectorKClass, SimulatedConnectorSerializer.INSTANCE)
     polymorphicModuleBuilder.buildTo(builder)
 
     return builder.build()

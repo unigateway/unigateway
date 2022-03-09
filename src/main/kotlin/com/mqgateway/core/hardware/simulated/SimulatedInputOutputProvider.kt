@@ -3,7 +3,8 @@ package com.mqgateway.core.hardware.simulated
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
-class SimulatedInputOutputProvider(private val platformConfiguration: SimulatedPlatformConfiguration) : HardwareInputOutputProvider<SimulatedConnector> {
+class SimulatedInputOutputProvider(private val platformConfiguration: SimulatedPlatformConfiguration) :
+  HardwareInputOutputProvider<SimulatedConnector> {
 
   override fun getBinaryInput(connector: SimulatedConnector): SimulatedBinaryInput {
     return SimulatedBinaryInput(connector.initialValue?.let { BinaryState.valueOf(it) } ?: BinaryState.HIGH)

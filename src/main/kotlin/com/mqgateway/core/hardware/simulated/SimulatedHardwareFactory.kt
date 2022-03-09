@@ -23,6 +23,6 @@ class SimulatedHardwareFactory : HardwareInterfaceFactory<SimulatedConnector> {
   @ExperimentalSerializationApi
   @InternalSerializationApi
   override fun connectorSerializer(): KSerializer<SimulatedConnector> {
-    return SimulatedConnectorSerializer()
+    return SimulatedConnectorSerializer
   }
 }

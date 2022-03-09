@@ -23,6 +23,6 @@ class RaspberryPiHardwareFactory : HardwareInterfaceFactory<RaspberryPiConnector
   @ExperimentalSerializationApi
   @InternalSerializationApi
   override fun connectorSerializer(): KSerializer<RaspberryPiConnector> {
-    return RaspberryPiConnectorSerializer()
+    return RaspberryPiConnectorSerializer
   }
 }
