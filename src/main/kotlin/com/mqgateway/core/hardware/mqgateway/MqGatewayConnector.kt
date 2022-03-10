@@ -1,7 +1,9 @@
 package com.mqgateway.core.hardware.mqgateway
 
 import com.mqgateway.core.io.provider.HardwareConnector
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MqGatewayConnector(
   val portNumber: Int,
   val wireColor: WireColor,

@@ -15,6 +15,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import kotlinx.serialization.serializer
 
 @Factory
 class HardwareComponentsFactory {
@@ -34,7 +35,7 @@ class HardwareComponentsFactory {
     hardwareInterfaceFactory: HardwareInterfaceFactory<*>,
     gatewaySystemProperties: GatewaySystemProperties
   ): HardwareInputOutputProvider<*> {
-    return hardwareInterfaceFactory.hardwareInputOutputProvider(gatewaySystemProperties.platformConfig)
+    return hardwareInterfaceFactory.hardwareInputOutputProvider(gatewaySystemProperties.platformConfig ?: emptyMap<String, Any>())
   }
 
   @Singleton
@@ -49,7 +50,7 @@ class HardwareComponentsFactory {
     return SerializersModule {
       polymorphic(Connector::class) {
         subclass(MySensorsConnector::class)
-        subclass(hardwareInterfaceFactory.connectorClass(), hardwareInterfaceFactory.connectorSerializer())
+        subclass(hardwareInterfaceFactory.connectorClass(), hardwareInterfaceFactory.connectorClass().serializer())
       }
     }
   }
