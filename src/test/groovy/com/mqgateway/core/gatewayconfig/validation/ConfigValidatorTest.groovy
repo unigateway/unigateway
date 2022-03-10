@@ -2,9 +2,6 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.GatewaySystemProperties
-import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration
-import com.mqgateway.configuration.GatewaySystemProperties.ComponentsConfiguration.Mcp23017Configuration
-import com.mqgateway.configuration.GatewaySystemProperties.ExpanderConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
@@ -165,16 +162,8 @@ class ConfigValidatorTest extends Specification {
     new DeviceConfiguration(id, name, type, [:], internalDevices, config)
   }
 
-  static GatewaySystemProperties prepareSystemProperties(ExpanderConfiguration expanderConfiguration = null,
-                                                         Mcp23017Configuration mcp23017Configuration = null) {
+  static GatewaySystemProperties prepareSystemProperties() {
 
-    def defaultExpanderConfiguration = new ExpanderConfiguration(false)
-    def defaultMcp23017Configuration = new Mcp23017Configuration(expanderConfiguration ?: defaultExpanderConfiguration, null)
-
-    def componentsConfiguration = new ComponentsConfiguration(mcp23017Configuration ?: defaultMcp23017Configuration)
-    return new GatewaySystemProperties("eth0",
-                                       GatewaySystemProperties.SystemPlatform.SIMULATED,
-                                       expanderConfiguration ?: defaultExpanderConfiguration,
-                                       componentsConfiguration, "localhost")
+    return new GatewaySystemProperties("eth0", "SIMULATED", [:], "localhost")
   }
 }

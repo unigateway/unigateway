@@ -1,6 +1,5 @@
 package com.mqgateway.core.gatewayconfig
 
-
 import static kotlin.jvm.JvmClassMappingKt.getKotlinClass
 
 import com.mqgateway.core.hardware.mqgateway.MqGatewayConnector

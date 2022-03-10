@@ -19,9 +19,9 @@ gateway:
   config-path: gateway.yaml
   system:
     network-adapter: eth0
-    platform: NANOPI
-    expander:
-      enabled: false
+    platform: SIMULATED
+    platform-config:
+      some-config: simulated-prod
   websocket:
     enabled: true
   update:

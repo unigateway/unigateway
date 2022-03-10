@@ -3,6 +3,7 @@ package com.mqgateway.core.gatewayconfig
 import com.mqgateway.core.device.DeviceFactoryProvider
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
+import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
 import com.mqgateway.core.utils.FakeSystemInfoProvider
@@ -12,7 +13,8 @@ import spock.lang.Subject
 
 class DeviceRegistryFactoryTest extends Specification {
 
-  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(), new MySensorsInputOutputProvider())
+  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(new SimulatedPlatformConfiguration("someValue")),
+                                                           new MySensorsInputOutputProvider())
   def deviceFactoryProvider = new DeviceFactoryProvider(ioProvider, new TimersScheduler(), new FakeSystemInfoProvider())
 
   @Subject
