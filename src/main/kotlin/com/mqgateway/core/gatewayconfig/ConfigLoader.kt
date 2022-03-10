@@ -3,12 +3,14 @@ package com.mqgateway.core.gatewayconfig
 import com.fasterxml.jackson.databind.JsonNode
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
+import kotlinx.serialization.ExperimentalSerializationApi
 import mu.KotlinLogging
 import java.io.File
 import java.security.MessageDigest
 
 private val LOGGER = KotlinLogging.logger {}
 
+@ExperimentalSerializationApi
 class ConfigLoader(
   private val yamlParser: YamlParser,
   private val fastConfigurationSerializer: FastConfigurationSerializer,
