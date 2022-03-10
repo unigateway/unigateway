@@ -28,4 +28,9 @@ class FakeSystemInfoProvider implements SystemInfoProvider {
 	String getIPAddresses() {
 		return ipAddresses
 	}
+
+  @Override
+  String getSummary() {
+    return "Fake system provider"
+  }
 }
