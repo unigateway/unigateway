@@ -1,6 +1,6 @@
 package com.mqgateway.core.utils
 
-import java.lang.management.ManagementFactory
+import oshi.SystemInfo
 import java.time.Duration
 
 interface SystemInfoProvider {
@@ -8,39 +8,37 @@ interface SystemInfoProvider {
   fun getMemoryFree(): Long
   fun getUptime(): Duration
   fun getIPAddresses(): String
+  fun getSummary(): String
 }
 
-class Pi4JSystemInfoProvider : SystemInfoProvider {
-  override fun getCpuTemperature(): Float = 50f
-  override fun getMemoryFree(): Long = 50000L
-  override fun getUptime(): Duration = Duration.ofMillis(ManagementFactory.getRuntimeMXBean().uptime)
-  override fun getIPAddresses(): String = "0.0.0.0"
-}
+class OshiSystemInfoProvider : SystemInfoProvider {
+  private val systemInfo: SystemInfo = SystemInfo()
 
-class SimulatedSystemInfoProvider : SystemInfoProvider {
-  private var cpuTemperature: Float = 30f
-    set(value) {
-      field = value
-    }
+  override fun getCpuTemperature(): Float {
+    return systemInfo.hardware.sensors.cpuTemperature.toFloat()
+  }
 
-  private var memoryFree: Long = 1000000000
-    set(value) {
-      field = value
-    }
+  override fun getMemoryFree(): Long {
+    return systemInfo.hardware.memory.available
+  }
 
-  private var uptime: Duration = Duration.ofDays(1)
-    set(value) {
-      field = value
-    }
+  override fun getUptime(): Duration {
+    return Duration.ofSeconds(systemInfo.operatingSystem.systemUptime)
+  }
 
-  private var ipAddress: String = "192.168.1.70"
-    get() = field
+  override fun getIPAddresses(): String {
+    return systemInfo.hardware.networkIFs
+      .flatMap { it.iPv4addr.toList() }
+      .joinToString()
+  }
 
-  override fun getCpuTemperature(): Float = cpuTemperature
-
-  override fun getMemoryFree(): Long = memoryFree
-
-  override fun getUptime(): Duration = uptime
-
-  override fun getIPAddresses(): String = ipAddress
+  override fun getSummary(): String {
+    return """
+      System info
+      CPU temperature: ${getCpuTemperature()} 
+      Free memory: ${getMemoryFree()}
+      Uptime: ${getUptime()}
+      IP address: ${getIPAddresses()}
+    """.trimIndent()
+  }
 }
