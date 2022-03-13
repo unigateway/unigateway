@@ -1,11 +1,15 @@
 package com.mqgateway.core.device.shutter
 
+import com.mqgateway.core.device.DataType.ENUM
+import com.mqgateway.core.device.DataType.INTEGER
+import com.mqgateway.core.device.DataUnit.PERCENT
 import com.mqgateway.core.device.Device
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.POSITION
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.relay.RelayDevice.RelayState
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
 import mu.KotlinLogging
 import java.time.Clock
 import java.time.Duration
@@ -21,11 +25,18 @@ private val LOGGER = KotlinLogging.logger {}
 
 class ShutterDevice(
   id: String,
+  name: String,
   private val stopRelay: RelayDevice,
   private val upDownRelay: RelayDevice,
   private val fullOpenTimeMs: Long,
   private val fullCloseTimeMs: Long
-) : Device(id, DeviceType.SHUTTER) {
+) : Device(
+  id, name, DeviceType.SHUTTER,
+  setOf(
+    DeviceProperty(POSITION, INTEGER, "0:100", settable = true, retained = true, unit = PERCENT),
+    DeviceProperty(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
+  )
+) {
 
   private var currentPosition: Int? = null
     private set(value) {

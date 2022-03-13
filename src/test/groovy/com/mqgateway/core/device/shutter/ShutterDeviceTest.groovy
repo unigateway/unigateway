@@ -1,7 +1,7 @@
 package com.mqgateway.core.device.shutter
 
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
+import static com.mqgateway.core.device.DevicePropertyType.POSITION
+import static com.mqgateway.core.device.DevicePropertyType.STATE
 
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
@@ -15,16 +15,16 @@ import spock.util.time.MutableClock
 class ShutterDeviceTest extends Specification {
 
   def stopBinaryOutput = new SimulatedBinaryOutput()
-  RelayDevice stopRelay = new RelayDevice("stopRelay", stopBinaryOutput, BinaryState.LOW)
+  RelayDevice stopRelay = new RelayDevice("stopRelay", "Stop relay", stopBinaryOutput, BinaryState.LOW)
 
   def upDownBinaryOutput = new SimulatedBinaryOutput()
-  RelayDevice upDownRelay = new RelayDevice("upDownRelay", upDownBinaryOutput, BinaryState.LOW)
+  RelayDevice upDownRelay = new RelayDevice("upDownRelay", "Up down relay", upDownBinaryOutput, BinaryState.LOW)
 
   static int FULL_OPEN_MS = 2000
   static int FULL_CLOSE_MS = 1000
 
   @Subject
-  ShutterDevice shutterDevice = new ShutterDevice("testShutter", stopRelay, upDownRelay, FULL_OPEN_MS, FULL_CLOSE_MS)
+  ShutterDevice shutterDevice = new ShutterDevice("testShutter", "Test shutter", stopRelay, upDownRelay, FULL_OPEN_MS, FULL_CLOSE_MS)
 
   UpdateListenerStub listenerStub = new UpdateListenerStub()
   TimerFake stoppingTimer = new TimerFake()

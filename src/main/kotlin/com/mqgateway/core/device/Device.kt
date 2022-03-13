@@ -1,7 +1,5 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.gatewayconfig.DevicePropertyType
-import com.mqgateway.core.gatewayconfig.DeviceType
 import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
@@ -9,7 +7,12 @@ private val LOGGER = KotlinLogging.logger {}
 /**
  * Add listeners before init
  */
-abstract class Device(val id: String, val type: DeviceType) {
+abstract class Device @JvmOverloads constructor(
+  val id: String,
+  val name: String,
+  val type: DeviceType,
+  val properties: Set<DeviceProperty> = emptySet()
+) {
 
   private val updateListeners: MutableList<UpdateListener> = mutableListOf()
   private var initialized: Boolean = false

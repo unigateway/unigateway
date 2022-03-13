@@ -1,7 +1,7 @@
 package com.mqgateway.core.gatewayconfig.parser
 
 
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.utils.MqttSpecification

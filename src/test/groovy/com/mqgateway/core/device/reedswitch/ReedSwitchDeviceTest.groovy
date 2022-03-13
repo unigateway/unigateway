@@ -12,7 +12,7 @@ class ReedSwitchDeviceTest extends Specification {
 	SimulatedBinaryInput binaryInput = new SimulatedBinaryInput(BinaryState.LOW) // starting with closed circuit (LOW state)
 
 	@Subject
-	ReedSwitchDevice device = new ReedSwitchDevice("reed1", binaryInput)
+	ReedSwitchDevice device = new ReedSwitchDevice("reed1", "Reed switch", binaryInput)
 
 	def "should notify listeners on reed switch open (HIGH state)"() {
 		given:

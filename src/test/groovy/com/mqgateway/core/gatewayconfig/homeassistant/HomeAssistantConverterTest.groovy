@@ -1,17 +1,17 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
 
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.IP_ADDRESS
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.MEMORY
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.POSITION
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.TEMPERATURE
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.UPTIME
+import static com.mqgateway.core.device.DevicePropertyType.IP_ADDRESS
+import static com.mqgateway.core.device.DevicePropertyType.MEMORY
+import static com.mqgateway.core.device.DevicePropertyType.POSITION
+import static com.mqgateway.core.device.DevicePropertyType.STATE
+import static com.mqgateway.core.device.DevicePropertyType.TEMPERATURE
+import static com.mqgateway.core.device.DevicePropertyType.UPTIME
 import static com.mqgateway.utils.TestGatewayFactory.gateway
 
-import com.mqgateway.core.gatewayconfig.DataUnit
+import com.mqgateway.core.device.DataUnit
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import spock.lang.Specification
 import spock.lang.Subject
@@ -25,9 +25,11 @@ class HomeAssistantConverterTest extends Specification {
 
 
 	def "should convert MqGateway relay to HA light when set explicitly in gateway configuration"() {
-		given:
-		def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [:], [:], ["haComponent":"light"])
-		GatewayConfiguration gateway = gateway([relayDeviceConfig])
+    given:
+    def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [:], [:], ["haComponent": "light"])
+		GatewayConfiguration gateway = new GatewayConfiguration("1.0", "unigateway-id", "Gateway name", [
+      relayDeviceConfig
+    ])
 
 		when:
 		def components = converter.convert(gateway).findAll{ isNotFromMqGatewayCore(it, gateway) }
@@ -37,7 +39,7 @@ class HomeAssistantConverterTest extends Specification {
 		HomeAssistantLight lightComponent = components[0] as HomeAssistantLight
 		lightComponent.componentType == HomeAssistantComponentType.LIGHT
 		lightComponent.name == "Test relay"
-		lightComponent.properties.nodeId == "gtwName"
+		lightComponent.properties.nodeId == "Gateway name"
 		lightComponent.properties.objectId == "myRelay"
 		lightComponent.stateTopic == expectedStateTopic(gateway.name, relayDeviceConfig.id, STATE.toString())
 		lightComponent.commandTopic == expectedCommandTopic(gateway.name, relayDeviceConfig.id, STATE.toString())
@@ -61,7 +63,7 @@ class HomeAssistantConverterTest extends Specification {
 		HomeAssistantSwitch switchComponent = components[0] as HomeAssistantSwitch
 		switchComponent.componentType == HomeAssistantComponentType.SWITCH
 		switchComponent.name == "Test relay"
-		switchComponent.properties.nodeId == "gtwName"
+		switchComponent.properties.nodeId == "Gateway name"
 		switchComponent.properties.objectId == "myRelay"
 		switchComponent.stateTopic == expectedStateTopic(gateway.name, relayDeviceConfig.id, STATE.toString())
 		switchComponent.commandTopic == expectedCommandTopic(gateway.name, relayDeviceConfig.id, STATE.toString())
@@ -91,7 +93,7 @@ class HomeAssistantConverterTest extends Specification {
 			HomeAssistantTrigger triggerComponent = component as HomeAssistantTrigger
 			assertHomeAssistantDevice(component, gateway, switchButtonDeviceConfig)
 			assert triggerComponent.componentType == HomeAssistantComponentType.TRIGGER
-			assert triggerComponent.properties.nodeId == "gtwName"
+			assert triggerComponent.properties.nodeId == "Gateway name"
 			assert triggerComponent.topic == expectedStateTopic(gateway.name, switchButtonDeviceConfig.id, STATE.toString())
 			assert triggerComponent.subtype == "button"
 		}
@@ -119,7 +121,7 @@ class HomeAssistantConverterTest extends Specification {
 		HomeAssistantSensor sensorComponent = components[0] as HomeAssistantSensor
 		sensorComponent.componentType == HomeAssistantComponentType.SENSOR
 		sensorComponent.name == "Test button"
-		sensorComponent.properties.nodeId == "gtwName"
+		sensorComponent.properties.nodeId == "Gateway name"
 		sensorComponent.properties.objectId == "mySwitchButton"
 		sensorComponent.stateTopic == expectedStateTopic(gateway.name, switchButtonDeviceConfig.id, STATE.toString())
 		sensorComponent.unitOfMeasurement == null
@@ -165,7 +167,7 @@ class HomeAssistantConverterTest extends Specification {
 		HomeAssistantBinarySensor binarySensorComponent = components[0] as HomeAssistantBinarySensor
 		binarySensorComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
 		binarySensorComponent.name == "Test reed switch"
-		binarySensorComponent.properties.nodeId == "gtwName"
+		binarySensorComponent.properties.nodeId == "Gateway name"
 		binarySensorComponent.properties.objectId == "myReedSwitch"
 		binarySensorComponent.stateTopic == expectedStateTopic(gateway.name, reedSwitchDeviceConfig.id, STATE.toString())
 		binarySensorComponent.payloadOn == "OPEN"
@@ -188,7 +190,7 @@ class HomeAssistantConverterTest extends Specification {
 		HomeAssistantBinarySensor binarySensorComponent = components[0] as HomeAssistantBinarySensor
 		binarySensorComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
 		binarySensorComponent.name == "Test motion detector"
-		binarySensorComponent.properties.nodeId == "gtwName"
+		binarySensorComponent.properties.nodeId == "Gateway name"
 		binarySensorComponent.properties.objectId == "myMotionDetector"
 		binarySensorComponent.stateTopic == expectedStateTopic(gateway.name, motionDetectorDeviceConfig.id, STATE.toString())
 		binarySensorComponent.payloadOn == "ON"
@@ -211,7 +213,7 @@ class HomeAssistantConverterTest extends Specification {
 		HomeAssistantSwitch switchComponent = components[0] as HomeAssistantSwitch
 		switchComponent.componentType == HomeAssistantComponentType.SWITCH
 		switchComponent.name == "Test emulated switch"
-		switchComponent.properties.nodeId == "gtwName"
+		switchComponent.properties.nodeId == "Gateway name"
 		switchComponent.properties.objectId == "myEmulatedSwitch"
 		switchComponent.stateTopic == expectedStateTopic(gateway.name, emulatedSwitchDeviceConfig.id, STATE.toString())
 		switchComponent.commandTopic == expectedCommandTopic(gateway.name, emulatedSwitchDeviceConfig.id, STATE.toString())
@@ -237,7 +239,7 @@ class HomeAssistantConverterTest extends Specification {
 		cover.componentType == HomeAssistantComponentType.COVER
 		cover.deviceClass == HomeAssistantCover.DeviceClass.SHUTTER
 		cover.name == "Test shutter device"
-		cover.properties.nodeId == "gtwName"
+		cover.properties.nodeId == "Gateway name"
 		cover.properties.objectId == "myShutter"
 		cover.stateTopic == expectedStateTopic(gateway.name, shutterDevice.id, STATE.toString())
 		cover.commandTopic == expectedCommandTopic(gateway.name, shutterDevice.id, STATE.toString())
@@ -272,7 +274,7 @@ class HomeAssistantConverterTest extends Specification {
 		cover.componentType == HomeAssistantComponentType.COVER
 		cover.deviceClass == HomeAssistantCover.DeviceClass.GARAGE
 		cover.name == "Test gate device"
-		cover.properties.nodeId == "gtwName"
+		cover.properties.nodeId == "Gateway name"
 		cover.properties.objectId == "myGate"
 		cover.stateTopic == expectedStateTopic(gateway.name, gateDevice.id, STATE.toString())
 		cover.commandTopic == expectedCommandTopic(gateway.name, gateDevice.id, STATE.toString())
@@ -320,22 +322,22 @@ class HomeAssistantConverterTest extends Specification {
 
     temperature.name == "CPU temperature"
 		temperature.stateTopic == expectedStateTopic(gateway.name, gateway.name, TEMPERATURE.toString())
-		temperature.unitOfMeasurement == DataUnit.CELSIUS.value
+		temperature.unitOfMeasurement == null // todo DataUnit.CELSIUS.value
 		temperature.properties.objectId == gateway.name + "_CPU_TEMPERATURE"
 		temperature.uniqueId == gateway.name + "_" + gateway.name + "_CPU_TEMPERATURE"
     freeMemory.name == "Free memory"
 		freeMemory.stateTopic == expectedStateTopic(gateway.name, gateway.name, MEMORY.toString())
-		freeMemory.unitOfMeasurement == DataUnit.BYTES.value
+		freeMemory.unitOfMeasurement == null // todo DataUnit.BYTES.value
 		freeMemory.properties.objectId == gateway.name + "_MEMORY_FREE"
 		freeMemory.uniqueId == gateway.name + "_" + gateway.name + "_MEMORY_FREE"
     uptime.name == "Uptime"
 		uptime.stateTopic == expectedStateTopic(gateway.name, gateway.name, UPTIME.toString())
-		uptime.unitOfMeasurement == DataUnit.SECOND.value
+		uptime.unitOfMeasurement == null // todo DataUnit.SECOND.value
 		uptime.properties.objectId == gateway.name + "_UPTIME"
 		uptime.uniqueId == gateway.name + "_" + gateway.name + "_UPTIME"
     ipAddress.name == "IP address"
 		ipAddress.stateTopic == expectedStateTopic(gateway.name, gateway.name, IP_ADDRESS.toString())
-		ipAddress.unitOfMeasurement == DataUnit.NONE.value
+		ipAddress.unitOfMeasurement == null // todo DataUnit.NONE.value
 		ipAddress.properties.objectId == gateway.name + "_IP_ADDRESS"
 		ipAddress.uniqueId == gateway.name + "_" + gateway.name + "_IP_ADDRESS"
 	}

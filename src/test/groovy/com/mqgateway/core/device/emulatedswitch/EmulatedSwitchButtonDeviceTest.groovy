@@ -12,7 +12,8 @@ class EmulatedSwitchButtonDeviceTest extends Specification {
 	SimulatedBinaryOutput binaryOutput = new SimulatedBinaryOutput()
 
 	@Subject
-	EmulatedSwitchButtonDevice emulatedSwitch = new EmulatedSwitchButtonDevice("emulatedSwitch1", binaryOutput, 10)
+	EmulatedSwitchButtonDevice emulatedSwitch = new EmulatedSwitchButtonDevice("emulatedSwitch1", "Emulated switch",
+                                                                             binaryOutput, 10)
 
 	@Unroll
 	def "should change pin state to LOW when requested to be PRESSED"() {

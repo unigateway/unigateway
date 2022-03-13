@@ -3,7 +3,7 @@ package com.mqgateway.core.device.motiondetector
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.provider.InputOutputProvider
 
@@ -21,7 +21,7 @@ class MotionSensorDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryInput = ioProvider.getBinaryInput(connector)
-    return MotionSensorDevice(deviceConfiguration.id, stateBinaryInput, motionSignalLevel)
+    return MotionSensorDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, motionSignalLevel)
   }
 
   companion object {

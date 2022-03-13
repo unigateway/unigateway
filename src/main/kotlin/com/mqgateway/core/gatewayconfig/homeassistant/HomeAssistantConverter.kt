@@ -1,15 +1,15 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
+import com.mqgateway.core.device.DevicePropertyType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
+import com.mqgateway.core.device.gate.SingleButtonsGateDevice
 import com.mqgateway.core.device.motiondetector.MotionSensorDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.shutter.ShutterDevice
-import com.mqgateway.core.device.gate.SingleButtonsGateDevice
 import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DevicePropertyType
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.LIGHT
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantCover.DeviceClass
@@ -22,6 +22,8 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
+// TODO it needs adjustment to get ha configuration from device. Maybe the device should have support for HA and specific properties to set
+//  when configuring. Maybe device can implement some interface?
 class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
 
   fun convert(gatewayConfiguration: GatewayConfiguration): List<HomeAssistantComponent> {
@@ -234,7 +236,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.TEMPERATURE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.TEMPERATURE),
-        DeviceType.UNIGATEWAY.property(DevicePropertyType.TEMPERATURE).unit.value
+        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.TEMPERATURE).unit.value
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_MEMORY_FREE"),
@@ -244,7 +246,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.MEMORY),
-        DeviceType.UNIGATEWAY.property(DevicePropertyType.MEMORY).unit.value
+        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.MEMORY).unit.value
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_UPTIME"),
@@ -254,7 +256,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.UPTIME),
-        DeviceType.UNIGATEWAY.property(DevicePropertyType.UPTIME).unit.value
+        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.UPTIME).unit.value
       ),
       HomeAssistantSensor(
         HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_IP_ADDRESS"),
@@ -264,7 +266,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
         homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.IP_ADDRESS),
-        DeviceType.UNIGATEWAY.property(DevicePropertyType.IP_ADDRESS).unit.value
+        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.IP_ADDRESS).unit.value
       )
     )
   }

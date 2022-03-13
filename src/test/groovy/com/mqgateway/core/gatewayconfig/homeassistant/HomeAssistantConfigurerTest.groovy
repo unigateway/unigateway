@@ -5,7 +5,7 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.HomeAssistantProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.utils.MqttClientFactoryStub
 import spock.lang.Specification

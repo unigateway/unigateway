@@ -1,8 +1,8 @@
 package com.mqgateway.core.device.gate
 
+import static com.mqgateway.core.device.DevicePropertyType.STATE
 import static com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice.PRESSED_STATE_VALUE
 import static com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice.RELEASED_STATE_VALUE
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
@@ -18,15 +18,15 @@ import spock.util.concurrent.PollingConditions
 class SingleButtonsGateDeviceTest extends Specification {
 
   def actionBinaryOutput = new SimulatedBinaryOutput()
-  EmulatedSwitchButtonDevice actionButton = new EmulatedSwitchButtonDevice("actionButton", actionBinaryOutput, 10)
+  EmulatedSwitchButtonDevice actionButton = new EmulatedSwitchButtonDevice("actionButton", "Emulated switch", actionBinaryOutput, 10)
 
   def openReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
-  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchBinaryInput)
+  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", "Open reed switch", openReedSwitchBinaryInput)
   def closedReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
-  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", closedReedSwitchBinaryInput)
+  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", "Closed reed switch", closedReedSwitchBinaryInput)
 
   @Subject
-  SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, openReedSwitch, closedReedSwitch)
+  SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton, openReedSwitch, closedReedSwitch)
 
   UpdateListenerStub listenerStub = new UpdateListenerStub()
 
@@ -98,7 +98,7 @@ class SingleButtonsGateDeviceTest extends Specification {
 
   def "should trigger action button on state change OPEN when there is no reed switch for open state and even though gate is in OPEN state"() {
     given:
-    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, null, closedReedSwitch)
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton, null, closedReedSwitch)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
     closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
@@ -121,7 +121,7 @@ class SingleButtonsGateDeviceTest extends Specification {
 
   def "should trigger action button on state change CLOSE when there is no reed switch for closed state and even though gate is in CLOSED state"() {
     given:
-    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, openReedSwitch, null)
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton, openReedSwitch, null)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
     openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
@@ -143,7 +143,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   }
 
   def "should trigger action button on state change STOP in any state when there is no reed switch"() {
-    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton, null, null)
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton, null, null)
     actionButton.addListener(listenerStub)
     gateDevice.addListener(new UpdateListenerStub())
     if (initialState == 'CLOSED') {
@@ -172,7 +172,7 @@ class SingleButtonsGateDeviceTest extends Specification {
 
   def "should trigger action button on state change STOP only if gate state is not closed when there is only closedReedSwitch available"() {
     given:
-    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton,
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton,
                                                                      hasOpenReedSwitch ? openReedSwitch : null,
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
     actionButton.addListener(listenerStub)
@@ -224,7 +224,7 @@ class SingleButtonsGateDeviceTest extends Specification {
 
   def "should gate state change from #initialState to #expectedUpdates when sent state change '#action' and #whenDescription"() {
     given:
-    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton,
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton,
                                                                      hasOpenReedSwitch ? openReedSwitch : null,
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
     gateDevice.addListener(listenerStub)
@@ -304,7 +304,7 @@ class SingleButtonsGateDeviceTest extends Specification {
   @Unroll
   def "should change gate state when reed switch reports #whenDescription"() {
     given:
-    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", actionButton,
+    SingleButtonsGateDevice gateDevice = new SingleButtonsGateDevice("testGate", "Single buttons gate", actionButton,
                                                                      hasOpenReedSwitch ? openReedSwitch : null,
                                                                      hasClosedReedSwitch ? closedReedSwitch : null)
     gateDevice.addListener(listenerStub)

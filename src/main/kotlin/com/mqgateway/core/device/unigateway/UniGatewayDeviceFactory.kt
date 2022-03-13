@@ -2,7 +2,7 @@ package com.mqgateway.core.device.unigateway
 
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.utils.SystemInfoProvider
 import java.time.Duration
 
@@ -15,6 +15,6 @@ class UniGatewayDeviceFactory(
   }
 
   override fun create(deviceConfiguration: DeviceConfiguration): UniGatewayDevice {
-    return UniGatewayDevice(deviceConfiguration.id, Duration.ofSeconds(30), systemInfoProvider)
+    return UniGatewayDevice(deviceConfiguration.id, deviceConfiguration.name, Duration.ofSeconds(30), systemInfoProvider)
   }
 }

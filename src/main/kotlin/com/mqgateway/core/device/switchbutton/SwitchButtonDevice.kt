@@ -1,8 +1,10 @@
 package com.mqgateway.core.device.switchbutton
 
+import com.mqgateway.core.device.DataType.ENUM
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.DigitalInputDevice
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryInput
 import mu.KotlinLogging
 import java.time.Instant
@@ -14,9 +16,15 @@ private val LOGGER = KotlinLogging.logger {}
 
 class SwitchButtonDevice(
   id: String,
+  name: String,
   state: BinaryInput,
   private val longPressTimeMs: Long = CONFIG_LONG_PRESS_TIME_MS_DEFAULT
-) : DigitalInputDevice(id, DeviceType.SWITCH_BUTTON, state) {
+) : DigitalInputDevice(
+  id, name, DeviceType.SWITCH_BUTTON, state,
+  setOf(
+    DeviceProperty(STATE, ENUM, "PRESSED,RELEASED")
+  )
+) {
 
   private var pressedTime: Instant? = null
   private val longPressTimer = Timer("SwitchButtonLongPress_$id", false)

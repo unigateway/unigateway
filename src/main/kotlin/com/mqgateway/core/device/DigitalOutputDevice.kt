@@ -1,6 +1,11 @@
 package com.mqgateway.core.device
 
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryOutput
 
-abstract class DigitalOutputDevice(id: String, type: DeviceType, protected val binaryOutput: BinaryOutput) : Device(id, type)
+abstract class DigitalOutputDevice(
+  id: String,
+  name: String,
+  type: DeviceType,
+  protected val binaryOutput: BinaryOutput,
+  properties: Set<DeviceProperty>
+) : Device(id, name, type, properties)

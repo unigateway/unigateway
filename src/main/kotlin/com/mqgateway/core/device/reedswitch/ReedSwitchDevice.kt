@@ -1,15 +1,23 @@
 package com.mqgateway.core.device.reedswitch
 
+import com.mqgateway.core.device.DataType.ENUM
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.DigitalInputDevice
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryInput
 import com.mqgateway.core.io.BinaryState
 
 class ReedSwitchDevice(
   id: String,
+  name: String,
   state: BinaryInput
-) : DigitalInputDevice(id, DeviceType.REED_SWITCH, state) {
+) : DigitalInputDevice(
+  id, name, DeviceType.REED_SWITCH, state,
+  setOf(
+    DeviceProperty(STATE, ENUM, "OPEN,CLOSED", retained = true)
+  )
+) {
 
   override fun updatableProperty() = STATE
   override fun highStateValue() = OPEN_STATE_VALUE
