@@ -6,7 +6,7 @@ import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import jakarta.inject.Singleton
 
-@Singleton
+@Singleton // todo remove?
 class ShutterAdditionalConfigValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
     val shutters: List<DeviceConfiguration> = gatewayConfiguration.devicesByType(DeviceType.SHUTTER)

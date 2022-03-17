@@ -5,7 +5,7 @@ import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import jakarta.inject.Singleton
 
-@Singleton
+@Singleton // todo remove?
 class UniqueDeviceIdsValidator : GatewayValidator {
 
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
