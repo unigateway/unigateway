@@ -4,9 +4,7 @@ import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
-import jakarta.inject.Singleton
 
-@Singleton // todo remove?
 class GateAdditionalConfigValidator : GatewayValidator {
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
     val gates: List<DeviceConfiguration> = gatewayConfiguration.devicesByType(DeviceType.GATE)

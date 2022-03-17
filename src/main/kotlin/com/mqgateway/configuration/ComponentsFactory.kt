@@ -17,8 +17,11 @@ import com.mqgateway.core.gatewayconfig.parser.ConfigurationJacksonModule
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.rest.GatewayConfigurationService
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
+import com.mqgateway.core.gatewayconfig.validation.GateAdditionalConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.JsonSchemaValidator
-import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
+import com.mqgateway.core.gatewayconfig.validation.ReferenceDeviceValidator
+import com.mqgateway.core.gatewayconfig.validation.ShutterAdditionalConfigValidator
+import com.mqgateway.core.gatewayconfig.validation.UniqueDeviceIdsValidator
 import com.mqgateway.core.io.provider.HardwareConnector
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 import com.mqgateway.core.io.provider.InputOutputProvider
@@ -48,9 +51,15 @@ internal class ComponentsFactory {
   fun configValidator(
     jsonSchemaValidator: JsonSchemaValidator,
     gatewaySystemProperties: GatewaySystemProperties,
-    gatewayValidators: List<GatewayValidator>
+    hardwareInterfaceFactory: HardwareInterfaceFactory<*>
   ): ConfigValidator {
-    return ConfigValidator(jsonSchemaValidator, gatewaySystemProperties, gatewayValidators)
+    val validators = listOf(
+      GateAdditionalConfigValidator(),
+      ReferenceDeviceValidator(),
+      ShutterAdditionalConfigValidator(),
+      UniqueDeviceIdsValidator()
+    )
+    return ConfigValidator(jsonSchemaValidator, gatewaySystemProperties, validators + hardwareInterfaceFactory.configurationValidator())
   }
 
   @Singleton

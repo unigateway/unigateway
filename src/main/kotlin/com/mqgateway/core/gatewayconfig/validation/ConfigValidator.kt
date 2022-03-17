@@ -10,11 +10,10 @@ private val LOGGER = KotlinLogging.logger {}
 class ConfigValidator(
   private val jsonSchemaValidator: JsonSchemaValidator,
   private val gatewaySystemProperties: GatewaySystemProperties,
-  private val validators: List<GatewayValidator>
+  private val validators: List<GatewayValidator>,
 ) {
 
   fun validateGateway(gatewayConfiguration: GatewayConfiguration): ValidationResult {
-
     val validationFailureReasons = validators.flatMap { it.validate(gatewayConfiguration, gatewaySystemProperties) }
 
     return if (validationFailureReasons.isEmpty()) {
