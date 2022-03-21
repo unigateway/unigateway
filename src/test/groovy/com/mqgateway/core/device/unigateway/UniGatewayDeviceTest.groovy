@@ -9,7 +9,7 @@ import spock.util.concurrent.PollingConditions
 class UniGatewayDeviceTest extends Specification {
 
   FakeSystemInfoProvider systemInfoProvider = new FakeSystemInfoProvider()
-  UniGatewayDevice device = new UniGatewayDevice("unigateway-test-id", "Unigateway name", Duration.ofMillis(100), systemInfoProvider)
+  UniGatewayDevice device = new UniGatewayDevice("unigateway-test-id", "Unigateway name", Duration.ofMillis(100), systemInfoProvider, [:])
   UpdateListenerStub listenerStub = new UpdateListenerStub()
   PollingConditions conditions = new PollingConditions()
 

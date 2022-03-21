@@ -11,7 +11,7 @@ class MotionSensorDeviceTest extends Specification {
   SimulatedBinaryInput binaryInput = new SimulatedBinaryInput(BinaryState.LOW) // when sensor will be connected it will keep LOW state when no motion
 
   @Subject
-  MotionSensorDevice device = new MotionSensorDevice("device1", "Motion sensor", binaryInput, BinaryState.HIGH)
+  MotionSensorDevice device = new MotionSensorDevice("device1", "Motion sensor", binaryInput, BinaryState.HIGH, [:])
 
   def "should notify listeners on motion (HIGH state)"() {
     given:
@@ -42,7 +42,7 @@ class MotionSensorDeviceTest extends Specification {
 
   def "should notify about motion when state is LOW when motionSignalLevel is set to LOW"() {
     given:
-    MotionSensorDevice motionSensorWithLowOnMotion = new MotionSensorDevice("deviceLow", "Motion sensor", binaryInput, BinaryState.LOW)
+    MotionSensorDevice motionSensorWithLowOnMotion = new MotionSensorDevice("deviceLow", "Motion sensor", binaryInput, BinaryState.LOW, [:])
     def listenerStub = new UpdateListenerStub()
     motionSensorWithLowOnMotion.addListener(listenerStub)
     motionSensorWithLowOnMotion.init()

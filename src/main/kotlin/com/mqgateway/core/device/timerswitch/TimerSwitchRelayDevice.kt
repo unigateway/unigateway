@@ -18,13 +18,20 @@ import java.time.temporal.ChronoUnit
 
 private val LOGGER = KotlinLogging.logger {}
 
-class TimerSwitchRelayDevice(id: String, name: String, state: BinaryOutput, private val scheduler: TimersScheduler) :
+class TimerSwitchRelayDevice(
+  id: String,
+  name: String,
+  state: BinaryOutput,
+  private val scheduler: TimersScheduler,
+  config: Map<String, String> = emptyMap()
+) :
   DigitalOutputDevice(
     id, name, DeviceType.TIMER_SWITCH, state,
     setOf(
       DeviceProperty(STATE, DataType.ENUM, "ON,OFF", retained = true),
       DeviceProperty(TIMER, DataType.INTEGER, "0:1440", settable = true, retained = true, unit = DataUnit.SECOND)
-    )
+    ),
+    config
   ),
   TimersScheduler.SchedulableTimer {
 

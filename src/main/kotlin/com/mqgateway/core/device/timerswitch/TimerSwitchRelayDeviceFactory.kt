@@ -20,7 +20,7 @@ class TimerSwitchRelayDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryOutput = ioProvider.getBinaryOutput(connector)
-    return TimerSwitchRelayDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput, timersScheduler)
+    return TimerSwitchRelayDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput, timersScheduler, deviceConfiguration.config)
   }
 
   companion object {

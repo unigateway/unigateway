@@ -11,12 +11,14 @@ import com.mqgateway.core.io.BinaryState
 class ReedSwitchDevice(
   id: String,
   name: String,
-  state: BinaryInput
+  state: BinaryInput,
+  config: Map<String, String> = emptyMap()
 ) : DigitalInputDevice(
   id, name, DeviceType.REED_SWITCH, state,
   setOf(
     DeviceProperty(STATE, ENUM, "OPEN,CLOSED", retained = true)
-  )
+  ),
+  config
 ) {
 
   override fun updatableProperty() = STATE

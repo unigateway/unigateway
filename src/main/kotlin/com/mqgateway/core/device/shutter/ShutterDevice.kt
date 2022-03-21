@@ -29,13 +29,15 @@ class ShutterDevice(
   private val stopRelay: RelayDevice,
   private val upDownRelay: RelayDevice,
   private val fullOpenTimeMs: Long,
-  private val fullCloseTimeMs: Long
+  private val fullCloseTimeMs: Long,
+  config: Map<String, String> = emptyMap()
 ) : Device(
   id, name, DeviceType.SHUTTER,
   setOf(
     DeviceProperty(POSITION, INTEGER, "0:100", settable = true, retained = true, unit = PERCENT),
     DeviceProperty(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
-  )
+  ),
+  config
 ) {
 
   private var currentPosition: Int? = null

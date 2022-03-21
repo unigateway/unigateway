@@ -18,7 +18,7 @@ class EmulatedSwitchButtonDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryOutput = ioProvider.getBinaryOutput(connector)
-    return EmulatedSwitchButtonDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput)
+    return EmulatedSwitchButtonDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput, config = deviceConfiguration.config)
   }
 
   companion object {

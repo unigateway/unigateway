@@ -15,7 +15,7 @@ class SwitchButtonDeviceTest extends Specification {
   def conditions = new PollingConditions(initialDelay: 0.1, timeout: 1)
 
   @Subject
-  SwitchButtonDevice device = new SwitchButtonDevice("button1", "Switch button", binaryInput, LONG_PRESS_MS)
+  SwitchButtonDevice device = new SwitchButtonDevice("button1", "Switch button", binaryInput, LONG_PRESS_MS, [:])
 
   def "should notify listeners on switch button pressed (LOW state)"() {
     given:

@@ -11,8 +11,9 @@ abstract class DigitalInputDevice(
   name: String,
   type: DeviceType,
   private val binaryInput: BinaryInput,
-  properties: Set<DeviceProperty>
-) : Device(id, name, type, properties) {
+  properties: Set<DeviceProperty>,
+  config: Map<String, String> = emptyMap()
+) : Device(id, name, type, properties, config) {
 
   protected var state: BinaryState = binaryInput.getState()
     private set(value) {

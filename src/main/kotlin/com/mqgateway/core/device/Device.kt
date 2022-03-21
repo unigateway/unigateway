@@ -7,11 +7,12 @@ private val LOGGER = KotlinLogging.logger {}
 /**
  * Add listeners before init
  */
-abstract class Device @JvmOverloads constructor(
+abstract class Device(
   val id: String,
   val name: String,
   val type: DeviceType,
-  val properties: Set<DeviceProperty> = emptySet()
+  val properties: Set<DeviceProperty>,
+  val config: Map<String, String> = emptyMap()
 ) {
 
   private val updateListeners: MutableList<UpdateListener> = mutableListOf()
@@ -67,6 +68,13 @@ abstract class Device @JvmOverloads constructor(
   open fun change(propertyId: String, newValue: String) {
     throw UnsupportedStateChangeException(id, propertyId)
   }
+
+  fun getProperty(propertyType: DevicePropertyType): DeviceProperty {
+    return properties.find { it.type == propertyType } ?: throw PropertyNotFoundException(propertyType, properties)
+  }
 }
 
 class UnsupportedStateChangeException(deviceId: String, propertyId: String) : Exception("deviceId=$deviceId, propertyId=$propertyId")
+
+class PropertyNotFoundException(propertyType: DevicePropertyType, properties: Set<DeviceProperty>) :
+  Exception("Property of type: $propertyType not found for device. Available properties: $properties")

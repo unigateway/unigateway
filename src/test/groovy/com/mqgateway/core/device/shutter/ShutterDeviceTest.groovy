@@ -15,16 +15,16 @@ import spock.util.time.MutableClock
 class ShutterDeviceTest extends Specification {
 
   def stopBinaryOutput = new SimulatedBinaryOutput()
-  RelayDevice stopRelay = new RelayDevice("stopRelay", "Stop relay", stopBinaryOutput, BinaryState.LOW)
+  RelayDevice stopRelay = new RelayDevice("stopRelay", "Stop relay", stopBinaryOutput, BinaryState.LOW, [:])
 
   def upDownBinaryOutput = new SimulatedBinaryOutput()
-  RelayDevice upDownRelay = new RelayDevice("upDownRelay", "Up down relay", upDownBinaryOutput, BinaryState.LOW)
+  RelayDevice upDownRelay = new RelayDevice("upDownRelay", "Up down relay", upDownBinaryOutput, BinaryState.LOW, [:])
 
   static int FULL_OPEN_MS = 2000
   static int FULL_CLOSE_MS = 1000
 
   @Subject
-  ShutterDevice shutterDevice = new ShutterDevice("testShutter", "Test shutter", stopRelay, upDownRelay, FULL_OPEN_MS, FULL_CLOSE_MS)
+  ShutterDevice shutterDevice = new ShutterDevice("testShutter", "Test shutter", stopRelay, upDownRelay, FULL_OPEN_MS, FULL_CLOSE_MS, [:])
 
   UpdateListenerStub listenerStub = new UpdateListenerStub()
   TimerFake stoppingTimer = new TimerFake()

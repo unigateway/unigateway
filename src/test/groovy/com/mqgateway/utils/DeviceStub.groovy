@@ -11,7 +11,7 @@ class DeviceStub extends Device {
 	boolean initialized = false
 
 	DeviceStub(String id, DeviceType deviceType = DeviceType.RELAY) {
-		super(id, "Name of ${id}", deviceType)
+		super(id, "Name of ${id}", deviceType, [], [:])
 	}
 
 	@Override

@@ -16,12 +16,14 @@ class EmulatedSwitchButtonDevice(
   id: String,
   name: String,
   state: BinaryOutput,
-  private val timeBeforeReleaseInMs: Long = DEFAULT_TIME_BEFORE_RELEASE_IN_MS
+  private val timeBeforeReleaseInMs: Long = DEFAULT_TIME_BEFORE_RELEASE_IN_MS,
+  config: Map<String, String> = emptyMap()
 ) : DigitalOutputDevice(
   id, name, DeviceType.EMULATED_SWITCH, state,
   setOf(
     DeviceProperty(STATE, ENUM, "PRESSED,RELEASED", settable = true)
-  )
+  ),
+  config
 ) {
 
   private fun changeState(newState: EmulatedSwitchState) {

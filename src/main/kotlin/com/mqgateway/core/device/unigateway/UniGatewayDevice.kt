@@ -17,7 +17,13 @@ import com.mqgateway.core.utils.SystemInfoProvider
 import java.time.Duration
 import kotlin.concurrent.fixedRateTimer
 
-class UniGatewayDevice(id: String, name: String, private val periodBetweenUpdates: Duration, private val systemInfoProvider: SystemInfoProvider) :
+class UniGatewayDevice(
+  id: String,
+  name: String,
+  private val periodBetweenUpdates: Duration,
+  private val systemInfoProvider: SystemInfoProvider,
+  config: Map<String, String> = emptyMap()
+) :
   Device(
     id, name, DeviceType.UNIGATEWAY,
     setOf(
@@ -25,7 +31,8 @@ class UniGatewayDevice(id: String, name: String, private val periodBetweenUpdate
       DeviceProperty(MEMORY, INTEGER, null, retained = true, unit = BYTES),
       DeviceProperty(UPTIME, INTEGER, null, retained = true, unit = SECOND),
       DeviceProperty(IP_ADDRESS, STRING, null, retained = true)
-    )
+    ),
+    config
   ) {
 
   override fun initDevice() {

@@ -13,7 +13,7 @@ class TimerSwitchRelayDeviceTest extends Specification {
   def timerScheduler = new TimersScheduler()
 
   @Subject
-  TimerSwitchRelayDevice timerSwitch = new TimerSwitchRelayDevice("timerSwitch1", "Timer switch", binaryOutput, timerScheduler)
+  TimerSwitchRelayDevice timerSwitch = new TimerSwitchRelayDevice("timerSwitch1", "Timer switch", binaryOutput, timerScheduler, [:])
 
   def "should turn on relay when timer is set"() {
     when:

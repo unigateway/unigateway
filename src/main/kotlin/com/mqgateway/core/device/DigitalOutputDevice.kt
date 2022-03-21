@@ -7,5 +7,6 @@ abstract class DigitalOutputDevice(
   name: String,
   type: DeviceType,
   protected val binaryOutput: BinaryOutput,
-  properties: Set<DeviceProperty>
-) : Device(id, name, type, properties)
+  properties: Set<DeviceProperty>,
+  config: Map<String, String> = emptyMap()
+) : Device(id, name, type, properties, config)

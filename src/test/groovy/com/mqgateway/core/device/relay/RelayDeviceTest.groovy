@@ -12,7 +12,7 @@ class RelayDeviceTest extends Specification {
   SimulatedBinaryOutput binaryOutput = new SimulatedBinaryOutput()
 
 	@Subject
-	RelayDevice relay = new RelayDevice("relay1", "Relay device", binaryOutput, BinaryState.LOW)
+	RelayDevice relay = new RelayDevice("relay1", "Relay device", binaryOutput, BinaryState.LOW, [:])
 
 	@Unroll
 	def "should change pin state when requested to #newState"(String newState, BinaryState binaryState) {
@@ -57,7 +57,7 @@ class RelayDeviceTest extends Specification {
   @Unroll
   def "should change pin state when requested to #newState when trigger level is set to LOW"(String newState, BinaryState binaryState) {
     when:
-    RelayDevice relayHigh = new RelayDevice("relay1", "Relay device", binaryOutput, BinaryState.HIGH)
+    RelayDevice relayHigh = new RelayDevice("relay1", "Relay device", binaryOutput, BinaryState.HIGH, [:])
     relayHigh.change("state", newState)
 
     then:

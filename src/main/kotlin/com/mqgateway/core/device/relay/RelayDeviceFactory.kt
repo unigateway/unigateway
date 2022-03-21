@@ -21,7 +21,7 @@ class RelayDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryOutput = ioProvider.getBinaryOutput(connector)
-    return RelayDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput, triggerLevel)
+    return RelayDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput, triggerLevel, deviceConfiguration.config)
   }
 
   companion object {

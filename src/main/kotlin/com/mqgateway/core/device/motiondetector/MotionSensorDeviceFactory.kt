@@ -21,7 +21,7 @@ class MotionSensorDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryInput = ioProvider.getBinaryInput(connector)
-    return MotionSensorDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, motionSignalLevel)
+    return MotionSensorDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, motionSignalLevel, deviceConfiguration.config)
   }
 
   companion object {

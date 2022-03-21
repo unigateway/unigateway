@@ -20,7 +20,7 @@ class SwitchButtonDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryInput = ioProvider.getBinaryInput(connector)
-    return SwitchButtonDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, longPressTimeMs)
+    return SwitchButtonDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, longPressTimeMs, deviceConfiguration.config)
   }
 
   companion object {

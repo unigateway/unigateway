@@ -1,6 +1,8 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DevicePropertyType
+import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.gate.SingleButtonsGateDevice
@@ -9,8 +11,6 @@ import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.shutter.ShutterDevice
 import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
-import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantComponentType.LIGHT
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantCover.DeviceClass
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantTrigger.TriggerType.BUTTON_LONG_PRESS
@@ -22,42 +22,42 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-// TODO it needs adjustment to get ha configuration from device. Maybe the device should have support for HA and specific properties to set
-//  when configuring. Maybe device can implement some interface?
 class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
 
-  fun convert(gatewayConfiguration: GatewayConfiguration): List<HomeAssistantComponent> {
+  fun convert(deviceRegistry: DeviceRegistry): List<HomeAssistantComponent> {
     LOGGER.info { "Converting Gateway configuration to HomeAssistant auto-discovery config" }
-    val devices = gatewayConfiguration.devices
+    val devices = deviceRegistry.devices.filter { it.type != DeviceType.UNIGATEWAY }
 
-    val mqGatewayCoreComponents = convertMqGatewayRootDeviceToHaSensors(gatewayConfiguration)
+    val uniGatewayDevice = deviceRegistry.getUniGatewayDevice()
+    val mqGatewayCoreComponents = convertMqGatewayRootDeviceToHaSensors(uniGatewayDevice)
 
+    val unigatewayId = uniGatewayDevice.id
     return mqGatewayCoreComponents + devices.flatMap { device ->
       val haDevice = HomeAssistantDevice(
-        identifiers = listOf("${gatewayConfiguration.name}_${device.id}"),
+        identifiers = listOf("${unigatewayId}_${device.id}"),
         name = device.name,
         manufacturer = "Aetas",
-        viaDevice = gatewayConfiguration.name,
+        viaDevice = unigatewayId,
         firmwareVersion = gatewayFirmwareVersion,
-        model = "MqGateway ${device.type.name}"
+        model = "UniGateway ${device.type.name}"
       )
-      val basicProperties = HomeAssistantComponentBasicProperties(haDevice, gatewayConfiguration.name, device.id)
+      val basicProperties = HomeAssistantComponentBasicProperties(haDevice, unigatewayId, device.id)
 
-      return@flatMap toHomeAssistantComponents(device, haDevice, basicProperties, gatewayConfiguration)
+      return@flatMap toHomeAssistantComponents(device, haDevice, basicProperties, unigatewayId)
     }
   }
 
   private fun toHomeAssistantComponents(
-    device: DeviceConfiguration,
+    device: Device,
     haDevice: HomeAssistantDevice,
     basicProperties: HomeAssistantComponentBasicProperties,
-    gatewayConfiguration: GatewayConfiguration
+    unigatewayId: String
   ): List<HomeAssistantComponent> {
 
     val components = when (device.type) {
       DeviceType.RELAY -> {
-        val stateTopic = homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE)
-        val commandTopic = homieCommandTopic(gatewayConfiguration, device, DevicePropertyType.STATE)
+        val stateTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE)
+        val commandTopic = homieCommandTopic(unigatewayId, device.id, DevicePropertyType.STATE)
         if (device.config[DEVICE_CONFIG_HA_COMPONENT].equals(LIGHT.value, true)) {
           listOf(HomeAssistantLight(basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
         } else {
@@ -65,33 +65,33 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         }
       }
       DeviceType.SWITCH_BUTTON -> {
-        val homieStateTopic = homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE)
+        val homieStateTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE)
         when {
           device.config[DEVICE_CONFIG_HA_COMPONENT].equals(HomeAssistantComponentType.TRIGGER.value, true) -> {
             listOf(
               HomeAssistantTrigger(
-                HomeAssistantComponentBasicProperties(haDevice, gatewayConfiguration.name, "${device.id}_PRESS"),
+                HomeAssistantComponentBasicProperties(haDevice, unigatewayId, "${device.id}_PRESS"),
                 homieStateTopic,
                 SwitchButtonDevice.PRESSED_STATE_VALUE,
                 BUTTON_SHORT_PRESS,
                 "button"
               ),
               HomeAssistantTrigger(
-                HomeAssistantComponentBasicProperties(haDevice, gatewayConfiguration.name, "${device.id}_RELEASE"),
+                HomeAssistantComponentBasicProperties(haDevice, unigatewayId, "${device.id}_RELEASE"),
                 homieStateTopic,
                 SwitchButtonDevice.RELEASED_STATE_VALUE,
                 BUTTON_SHORT_RELEASE,
                 "button"
               ),
               HomeAssistantTrigger(
-                HomeAssistantComponentBasicProperties(haDevice, gatewayConfiguration.name, "${device.id}_LONG_PRESS"),
+                HomeAssistantComponentBasicProperties(haDevice, unigatewayId, "${device.id}_LONG_PRESS"),
                 homieStateTopic,
                 SwitchButtonDevice.LONG_PRESSED_STATE_VALUE,
                 BUTTON_LONG_PRESS,
                 "button"
               ),
               HomeAssistantTrigger(
-                HomeAssistantComponentBasicProperties(haDevice, gatewayConfiguration.name, "${device.id}_LONG_RELEASE"),
+                HomeAssistantComponentBasicProperties(haDevice, unigatewayId, "${device.id}_LONG_RELEASE"),
                 homieStateTopic,
                 SwitchButtonDevice.LONG_RELEASED_STATE_VALUE,
                 BUTTON_LONG_RELEASE,
@@ -128,7 +128,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           HomeAssistantBinarySensor(
             basicProperties,
             device.name,
-            homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE),
+            homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE),
             ReedSwitchDevice.OPEN_STATE_VALUE,
             ReedSwitchDevice.CLOSED_STATE_VALUE,
             HomeAssistantBinarySensor.DeviceClass.OPENING
@@ -140,7 +140,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           HomeAssistantBinarySensor(
             basicProperties,
             device.name,
-            homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE),
+            homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE),
             MotionSensorDevice.MOVE_START_STATE_VALUE,
             MotionSensorDevice.MOVE_STOP_STATE_VALUE,
             HomeAssistantBinarySensor.DeviceClass.MOTION
@@ -148,8 +148,8 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         )
       }
       DeviceType.EMULATED_SWITCH -> {
-        val stateTopic = homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE)
-        val commandTopic = homieCommandTopic(gatewayConfiguration, device, DevicePropertyType.STATE)
+        val stateTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE)
+        val commandTopic = homieCommandTopic(unigatewayId, device.id, DevicePropertyType.STATE)
         listOf(
           HomeAssistantSwitch(
             basicProperties,
@@ -166,10 +166,10 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         HomeAssistantCover(
           basicProperties,
           device.name,
-          homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE),
-          homieCommandTopic(gatewayConfiguration, device, DevicePropertyType.STATE),
-          homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.POSITION),
-          homieCommandTopic(gatewayConfiguration, device, DevicePropertyType.POSITION),
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE),
+          homieCommandTopic(unigatewayId, device.id, DevicePropertyType.STATE),
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.POSITION),
+          homieCommandTopic(unigatewayId, device.id, DevicePropertyType.POSITION),
           DeviceClass.SHUTTER,
           ShutterDevice.Command.OPEN.name,
           ShutterDevice.Command.CLOSE.name,
@@ -189,8 +189,8 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         HomeAssistantCover(
           basicProperties,
           device.name,
-          homieStateTopic(gatewayConfiguration, device.id, DevicePropertyType.STATE),
-          homieCommandTopic(gatewayConfiguration, device, DevicePropertyType.STATE),
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE),
+          homieCommandTopic(unigatewayId, device.id, DevicePropertyType.STATE),
           null,
           null,
           if (device.config[DEVICE_CONFIG_HA_DEVICE_CLASS].equals(DeviceClass.GATE.name, true)) DeviceClass.GATE else DeviceClass.GARAGE,
@@ -216,67 +216,68 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
     return components
   }
 
-  private fun convertMqGatewayRootDeviceToHaSensors(gatewayConfiguration: GatewayConfiguration): List<HomeAssistantSensor> {
+  private fun convertMqGatewayRootDeviceToHaSensors(unigatewayDevice: Device): List<HomeAssistantSensor> {
+    val unigatewayId = unigatewayDevice.id
     val rootHaDevice = HomeAssistantDevice(
-      identifiers = listOf(gatewayConfiguration.name),
-      name = gatewayConfiguration.name,
+      identifiers = listOf(unigatewayId),
+      name = unigatewayDevice.name,
       manufacturer = "Aetas",
       firmwareVersion = gatewayFirmwareVersion,
-      model = "MqGateway"
+      model = "UniGateway"
     )
-    val availabilityTopic = "$HOMIE_PREFIX/${gatewayConfiguration.name}/\$state"
+    val availabilityTopic = "$HOMIE_PREFIX/$unigatewayId/\$state"
     val availabilityOnline = "ready"
     val availabilityOffline = "lost"
     return listOf(
       HomeAssistantSensor(
-        HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_CPU_TEMPERATURE"),
+        HomeAssistantComponentBasicProperties(rootHaDevice, unigatewayId, "${unigatewayId}_CPU_TEMPERATURE"),
         "CPU temperature",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.TEMPERATURE,
-        homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.TEMPERATURE),
-        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.TEMPERATURE).unit.value
+        homieStateTopic(unigatewayId, unigatewayId, DevicePropertyType.TEMPERATURE),
+        unigatewayDevice.getProperty(DevicePropertyType.TEMPERATURE).unit.value
       ),
       HomeAssistantSensor(
-        HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_MEMORY_FREE"),
+        HomeAssistantComponentBasicProperties(rootHaDevice, unigatewayId, "${unigatewayId}_MEMORY_FREE"),
         "Free memory",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
-        homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.MEMORY),
-        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.MEMORY).unit.value
+        homieStateTopic(unigatewayId, unigatewayId, DevicePropertyType.MEMORY),
+        unigatewayDevice.getProperty(DevicePropertyType.MEMORY).unit.value
       ),
       HomeAssistantSensor(
-        HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_UPTIME"),
+        HomeAssistantComponentBasicProperties(rootHaDevice, unigatewayId, "${unigatewayId}_UPTIME"),
         "Uptime",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
-        homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.UPTIME),
-        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.UPTIME).unit.value
+        homieStateTopic(unigatewayId, unigatewayId, DevicePropertyType.UPTIME),
+        unigatewayDevice.getProperty(DevicePropertyType.UPTIME).unit.value
       ),
       HomeAssistantSensor(
-        HomeAssistantComponentBasicProperties(rootHaDevice, gatewayConfiguration.name, "${gatewayConfiguration.name}_IP_ADDRESS"),
+        HomeAssistantComponentBasicProperties(rootHaDevice, unigatewayId, "${unigatewayId}_IP_ADDRESS"),
         "IP address",
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
         HomeAssistantSensor.DeviceClass.NONE,
-        homieStateTopic(gatewayConfiguration, gatewayConfiguration.name, DevicePropertyType.IP_ADDRESS),
-        null // todo DeviceType.UNIGATEWAY.property(DevicePropertyType.IP_ADDRESS).unit.value
+        homieStateTopic(unigatewayId, unigatewayId, DevicePropertyType.IP_ADDRESS),
+        unigatewayDevice.getProperty(DevicePropertyType.IP_ADDRESS).unit.value
       )
     )
   }
 
-  private fun homieStateTopic(gatewayConfiguration: GatewayConfiguration, deviceId: String, propertyType: DevicePropertyType): String {
-    return "$HOMIE_PREFIX/${gatewayConfiguration.name}/$deviceId/$propertyType"
+  private fun homieStateTopic(unigatewayId: String, deviceId: String, propertyType: DevicePropertyType): String {
+    return "$HOMIE_PREFIX/$unigatewayId/$deviceId/$propertyType"
   }
 
-  private fun homieCommandTopic(gatewayConfiguration: GatewayConfiguration, device: DeviceConfiguration, propertyType: DevicePropertyType): String {
-    return homieStateTopic(gatewayConfiguration, device.id, propertyType) + "/set"
+  private fun homieCommandTopic(unigatewayId: String, deviceId: String, propertyType: DevicePropertyType): String {
+    return homieStateTopic(unigatewayId, deviceId, propertyType) + "/set"
   }
 
   companion object {

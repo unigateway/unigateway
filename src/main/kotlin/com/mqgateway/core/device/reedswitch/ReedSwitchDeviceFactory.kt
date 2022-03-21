@@ -18,7 +18,7 @@ class ReedSwitchDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryInput = ioProvider.getBinaryInput(connector)
-    return ReedSwitchDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput)
+    return ReedSwitchDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, deviceConfiguration.config)
   }
 
   companion object {

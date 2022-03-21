@@ -19,12 +19,14 @@ class ThreeButtonsGateDevice(
   private val openButton: EmulatedSwitchButtonDevice,
   private val closeButton: EmulatedSwitchButtonDevice,
   private val openReedSwitch: ReedSwitchDevice?,
-  private val closedReedSwitch: ReedSwitchDevice?
+  private val closedReedSwitch: ReedSwitchDevice?,
+  config: Map<String, String> = emptyMap()
 ) : Device(
   id, name, DeviceType.GATE,
   setOf(
     DeviceProperty(STATE, DataType.ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
-  )
+  ),
+  config
 ) {
 
   private var state: State = State.UNKNOWN

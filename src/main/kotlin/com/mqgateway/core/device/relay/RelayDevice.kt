@@ -13,12 +13,13 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class RelayDevice(id: String, name: String, state: BinaryOutput, private val closedState: BinaryState) :
+class RelayDevice(id: String, name: String, state: BinaryOutput, private val closedState: BinaryState, config: Map<String, String> = emptyMap()) :
   DigitalOutputDevice(
     id, name, DeviceType.RELAY, state,
     setOf(
       DeviceProperty(STATE, ENUM, "ON,OFF", settable = true, retained = true)
-    )
+    ),
+    config
   ) {
 
   override fun initProperty(propertyId: String, value: String) {

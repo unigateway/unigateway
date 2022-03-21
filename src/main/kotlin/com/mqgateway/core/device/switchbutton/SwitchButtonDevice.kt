@@ -18,12 +18,14 @@ class SwitchButtonDevice(
   id: String,
   name: String,
   state: BinaryInput,
-  private val longPressTimeMs: Long = CONFIG_LONG_PRESS_TIME_MS_DEFAULT
+  private val longPressTimeMs: Long = CONFIG_LONG_PRESS_TIME_MS_DEFAULT,
+  config: Map<String, String> = emptyMap()
 ) : DigitalInputDevice(
   id, name, DeviceType.SWITCH_BUTTON, state,
   setOf(
     DeviceProperty(STATE, ENUM, "PRESSED,RELEASED")
-  )
+  ),
+  config
 ) {
 
   private var pressedTime: Instant? = null

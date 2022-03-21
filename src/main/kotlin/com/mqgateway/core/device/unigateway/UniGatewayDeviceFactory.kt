@@ -15,6 +15,9 @@ class UniGatewayDeviceFactory(
   }
 
   override fun create(deviceConfiguration: DeviceConfiguration): UniGatewayDevice {
-    return UniGatewayDevice(deviceConfiguration.id, deviceConfiguration.name, Duration.ofSeconds(30), systemInfoProvider)
+    return UniGatewayDevice(
+      deviceConfiguration.id, deviceConfiguration.name, Duration.ofSeconds(30), systemInfoProvider,
+      deviceConfiguration.config
+    )
   }
 }

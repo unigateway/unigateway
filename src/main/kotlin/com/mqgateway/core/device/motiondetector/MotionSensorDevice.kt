@@ -12,12 +12,14 @@ class MotionSensorDevice(
   id: String,
   name: String,
   state: BinaryInput,
-  private val motionSignalLevel: BinaryState
+  private val motionSignalLevel: BinaryState,
+  config: Map<String, String> = emptyMap()
 ) : DigitalInputDevice(
   id, name, DeviceType.MOTION_DETECTOR, state,
   setOf(
     DeviceProperty(STATE, ENUM, "ON,OFF", retained = true)
-  )
+  ),
+  config
 ) {
 
   override fun updatableProperty() = STATE
