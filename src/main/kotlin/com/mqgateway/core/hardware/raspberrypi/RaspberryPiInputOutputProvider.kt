@@ -5,6 +5,7 @@ import com.diozero.api.AnalogOutputDevice
 import com.diozero.api.DebouncedDigitalInputDevice
 import com.diozero.api.DigitalInputDevice
 import com.diozero.api.DigitalOutputDevice
+import com.diozero.api.GpioPullUpDown
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
 class RaspberryPiInputOutputProvider(
@@ -12,8 +13,10 @@ class RaspberryPiInputOutputProvider(
 ) : HardwareInputOutputProvider<RaspberryPiConnector> {
 
   override fun getBinaryInput(connector: RaspberryPiConnector): RaspberryPiDigitalPinInput {
+    val pullUpDown = convert(connector.pullUpDown ?: platformConfiguration.defaultPullUpDown)
     val digitalInputDevice: DigitalInputDevice = DebouncedDigitalInputDevice.Builder
       .builder(connector.pin, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
+      .setPullUpDown(pullUpDown)
       .build()
     return RaspberryPiDigitalPinInput(digitalInputDevice)
   }
@@ -34,5 +37,16 @@ class RaspberryPiInputOutputProvider(
     val analogOutputDevice = AnalogOutputDevice.Builder.builder(connector.pin)
       .build()
     return RaspberryPiAnalogPinOutput(analogOutputDevice)
+  }
+
+  fun convert(pullUpDown: PullUpDown): GpioPullUpDown {
+    return when (pullUpDown) {
+      PullUpDown.PULL_UP -> {
+        GpioPullUpDown.PULL_UP
+      }
+      PullUpDown.PULL_DOWN -> {
+        GpioPullUpDown.PULL_DOWN
+      }
+    }
   }
 }
