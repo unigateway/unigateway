@@ -6,7 +6,7 @@ class RaspberryPiConnectorFactory : HardwareConnectorFactory<RaspberryPiConnecto
 
   override fun create(config: Map<String, *>): RaspberryPiConnector {
     return RaspberryPiConnector(
-      config["pin"] as Int,
+      config["gpio"] as Int,
       config["debounce"] as Int?,
       (config["pullUpDown"] as String?)?.let { PullUpDown.valueOf(it) }
     )

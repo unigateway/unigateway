@@ -15,26 +15,26 @@ class RaspberryPiInputOutputProvider(
   override fun getBinaryInput(connector: RaspberryPiConnector): RaspberryPiDigitalPinInput {
     val pullUpDown = convert(connector.pullUpDown ?: platformConfiguration.defaultPullUpDown)
     val digitalInputDevice: DigitalInputDevice = DebouncedDigitalInputDevice.Builder
-      .builder(connector.pin, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
+      .builder(connector.gpio, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
       .setPullUpDown(pullUpDown)
       .build()
     return RaspberryPiDigitalPinInput(digitalInputDevice)
   }
 
   override fun getBinaryOutput(connector: RaspberryPiConnector): RaspberryPiDigitalPinOutput {
-    val digitalOutputDevice = DigitalOutputDevice.Builder.builder(connector.pin)
+    val digitalOutputDevice = DigitalOutputDevice.Builder.builder(connector.gpio)
       .build()
     return RaspberryPiDigitalPinOutput(digitalOutputDevice)
   }
 
   override fun getFloatInput(connector: RaspberryPiConnector): RaspberryPiAnalogPinInput {
-    val analogInputDevice = AnalogInputDevice.Builder.builder(connector.pin)
+    val analogInputDevice = AnalogInputDevice.Builder.builder(connector.gpio)
       .build()
     return RaspberryPiAnalogPinInput(analogInputDevice)
   }
 
   override fun getFloatOutput(connector: RaspberryPiConnector): RaspberryPiAnalogPinOutput {
-    val analogOutputDevice = AnalogOutputDevice.Builder.builder(connector.pin)
+    val analogOutputDevice = AnalogOutputDevice.Builder.builder(connector.gpio)
       .build()
     return RaspberryPiAnalogPinOutput(analogOutputDevice)
   }
