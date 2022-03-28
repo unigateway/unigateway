@@ -1,16 +1,26 @@
 package com.mqgateway.core.device.motiondetector
 
+import com.mqgateway.core.device.DataType.ENUM
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.DigitalInputDevice
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryInput
 import com.mqgateway.core.io.BinaryState
 
 class MotionSensorDevice(
   id: String,
+  name: String,
   state: BinaryInput,
-  private val motionSignalLevel: BinaryState
-) : DigitalInputDevice(id, DeviceType.MOTION_DETECTOR, state) {
+  private val motionSignalLevel: BinaryState,
+  config: Map<String, String> = emptyMap()
+) : DigitalInputDevice(
+  id, name, DeviceType.MOTION_DETECTOR, state,
+  setOf(
+    DeviceProperty(STATE, ENUM, "ON,OFF", retained = true)
+  ),
+  config
+) {
 
   override fun updatableProperty() = STATE
   override fun highStateValue() = if (motionSignalLevel == BinaryState.HIGH) MOVE_START_STATE_VALUE else MOVE_STOP_STATE_VALUE

@@ -1,8 +1,10 @@
 package com.mqgateway.core.device.emulatedswitch
 
+import com.mqgateway.core.device.DataType.ENUM
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.DigitalOutputDevice
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.BinaryState
 import mu.KotlinLogging
@@ -12,10 +14,17 @@ private val LOGGER = KotlinLogging.logger {}
 
 class EmulatedSwitchButtonDevice(
   id: String,
+  name: String,
   state: BinaryOutput,
-  private val timeBeforeReleaseInMs: Long = DEFAULT_TIME_BEFORE_RELEASE_IN_MS
-) :
-  DigitalOutputDevice(id, DeviceType.EMULATED_SWITCH, state) {
+  private val timeBeforeReleaseInMs: Long = DEFAULT_TIME_BEFORE_RELEASE_IN_MS,
+  config: Map<String, String> = emptyMap()
+) : DigitalOutputDevice(
+  id, name, DeviceType.EMULATED_SWITCH, state,
+  setOf(
+    DeviceProperty(STATE, ENUM, "PRESSED,RELEASED", settable = true)
+  ),
+  config
+) {
 
   private fun changeState(newState: EmulatedSwitchState) {
     val newPinState = if (newState == EmulatedSwitchState.PRESSED) PRESSED_STATE else RELEASED_STATE

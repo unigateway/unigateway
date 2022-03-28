@@ -9,7 +9,6 @@ import com.mqgateway.core.device.reedswitch.ReedSwitchDeviceFactory
 import com.mqgateway.core.device.relay.RelayDeviceFactory
 import com.mqgateway.core.device.switchbutton.SwitchButtonDeviceFactory
 import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDeviceFactory
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler

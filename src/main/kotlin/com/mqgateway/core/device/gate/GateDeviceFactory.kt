@@ -2,7 +2,7 @@ package com.mqgateway.core.device.gate
 
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 
 class GateDeviceFactory : DeviceFactory<SingleButtonsGateDevice> {
 

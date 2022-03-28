@@ -1,7 +1,7 @@
 package com.mqgateway.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantConfigurer
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantConverter
 import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantPublisher
@@ -39,11 +39,11 @@ internal class HomeAssistantFactory {
   @Singleton
   fun homeAssistantMqttListener(
     homeAssistantConfigurer: HomeAssistantConfigurer,
-    gatewayConfiguration: GatewayConfiguration
+    deviceRegistry: DeviceRegistry
   ): HomieDevice.MqttConnectionListener {
     return object : HomieDevice.MqttConnectionListener {
       override fun onConnected() {
-        homeAssistantConfigurer.sendHomeAssistantConfiguration(gatewayConfiguration)
+        homeAssistantConfigurer.sendHomeAssistantConfiguration(deviceRegistry)
       }
 
       override fun onDisconnect() {}

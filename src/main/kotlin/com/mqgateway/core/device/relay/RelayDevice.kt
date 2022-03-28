@@ -1,17 +1,26 @@
 package com.mqgateway.core.device.relay
 
+import com.mqgateway.core.device.DataType.ENUM
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.DigitalOutputDevice
-import com.mqgateway.core.device.relay.RelayDevice.RelayState.OPEN
 import com.mqgateway.core.device.relay.RelayDevice.RelayState.CLOSED
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.relay.RelayDevice.RelayState.OPEN
 import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.BinaryState
 import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class RelayDevice(id: String, state: BinaryOutput, private val closedState: BinaryState) : DigitalOutputDevice(id, DeviceType.RELAY, state) {
+class RelayDevice(id: String, name: String, state: BinaryOutput, private val closedState: BinaryState, config: Map<String, String> = emptyMap()) :
+  DigitalOutputDevice(
+    id, name, DeviceType.RELAY, state,
+    setOf(
+      DeviceProperty(STATE, ENUM, "ON,OFF", settable = true, retained = true)
+    ),
+    config
+  ) {
 
   override fun initProperty(propertyId: String, value: String) {
     if (propertyId != STATE.toString()) {
