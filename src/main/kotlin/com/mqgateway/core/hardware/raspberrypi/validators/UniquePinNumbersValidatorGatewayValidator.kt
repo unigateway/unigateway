@@ -15,10 +15,10 @@ class UniquePinNumbersValidatorGatewayValidator : GatewayValidator {
     LOGGER.debug { "Validating that pin numbers are unique in all devices" }
 
     return gatewayConfiguration.devices
-      .fold(listOf<Triple<String, String, Int>>()) { acc, deviceConfiguration ->
-        acc + deviceConfiguration.connectors
+      .flatMap {
+        it.connectors
           .filter { (_, connector) -> connector is RaspberryPiConnector }
-          .map { (name, connector) -> Triple(deviceConfiguration.id, name, (connector as RaspberryPiConnector).pin) }
+          .map { entry -> Triple(it.id, entry.key, (entry.value as RaspberryPiConnector).pin) }
       }
       .groupBy { it.third }
       .filter { it.value.size > 1 }

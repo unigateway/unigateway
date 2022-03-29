@@ -114,6 +114,7 @@
       "properties": {
         "source": {
           "description": "Connector source",
+          "default": "HARDWARE",
           "enum": [
             "HARDWARE",
             "MYSENSORS"
@@ -121,13 +122,13 @@
         }
       },
       "if": {
-        "properties": { "source": { "const": "MYSENSORS" } }
+        "properties": { "source": { "const": "HARDWARE" } }
       },
       "then": {
-        "properties": {}
+        "$ref": "classpath:/default-connector.schema.json"
       },
       "else": {
-        "$ref": "classpath:/connector.schema.json"
+        "properties": {}
       }
     }
   }
