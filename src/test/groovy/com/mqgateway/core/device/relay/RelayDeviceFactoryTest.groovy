@@ -2,7 +2,7 @@ package com.mqgateway.core.device.relay
 
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration

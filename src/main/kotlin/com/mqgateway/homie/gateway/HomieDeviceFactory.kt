@@ -1,10 +1,9 @@
 package com.mqgateway.homie.gateway
 
-import com.mqgateway.core.gatewayconfig.DataType
-import com.mqgateway.core.gatewayconfig.DataUnit
-import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
-import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.device.DataType
+import com.mqgateway.core.device.DataUnit
+import com.mqgateway.core.device.Device
+import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.HomieNode
 import com.mqgateway.homie.HomieProperty
@@ -28,26 +27,19 @@ class HomieDeviceFactory(
     private const val FIRMWARE_NAME = "Aetas MqGateway"
   }
 
-  fun toHomieDevice(gatewayConfiguration: GatewayConfiguration, networkAdapter: String): HomieDevice {
-    val mqGatewayAsNode = HomieNode(
-      gatewayConfiguration.id,
-      gatewayConfiguration.name,
-      "MqGateway ${gatewayConfiguration.name}",
-      DeviceType.UNIGATEWAY.name.lowercase(Locale.getDefault()),
-      getHomiePropertiesFor(gatewayConfiguration.name, gatewayConfiguration.name, DeviceType.UNIGATEWAY)
-    )
-
-    val homieNodes: Map<String, HomieNode> = gatewayConfiguration.devices
-      .associate { it.id to toHomieNode(gatewayConfiguration.name, it) } + (gatewayConfiguration.name to mqGatewayAsNode)
+  fun toHomieDevice(deviceRegistry: DeviceRegistry, networkAdapter: String): HomieDevice {
+    val uniGatewayDevice = deviceRegistry.getUniGatewayDevice()
+    val homieNodes: Map<String, HomieNode> = deviceRegistry.devices
+      .associate { it.id to toHomieNode(uniGatewayDevice.id, it) }
 
     val networkInterface = NetworkInterface.getByName(networkAdapter)
     return HomieDevice(
       mqttClientFactory,
       homieReceiver,
-      gatewayConfiguration.name,
+      uniGatewayDevice.id,
       homieNodes,
       HOMIE_VERSION,
-      gatewayConfiguration.name,
+      uniGatewayDevice.name,
       listOf("org.homie.legacy-firmware"),
       HOMIE_IMPLEMENTATION,
       FIRMWARE_NAME,
@@ -70,20 +62,20 @@ class HomieDeviceFactory(
     return sb.toString()
   }
 
-  private fun toHomieNode(gatewayName: String, deviceConfiguration: DeviceConfiguration) =
+  private fun toHomieNode(gatewayId: String, device: Device) =
     HomieNode(
-      gatewayName,
-      deviceConfiguration.id,
-      deviceConfiguration.name,
-      deviceConfiguration.type.name.lowercase(Locale.getDefault()),
-      getHomiePropertiesFor(gatewayName, deviceConfiguration.id, deviceConfiguration.type)
+      gatewayId,
+      device.id,
+      device.name,
+      device.type.name.lowercase(Locale.getDefault()),
+      getHomiePropertiesFor(gatewayId, device)
     )
 
-  private fun getHomiePropertiesFor(deviceName: String, nodeId: String, type: DeviceType): Map<String, HomieProperty> {
-    return type.properties.map { property ->
+  private fun getHomiePropertiesFor(gatewayId: String, device: Device): Map<String, HomieProperty> {
+    return device.properties.map { property ->
       property.toString() to HomieProperty(
-        deviceName,
-        nodeId,
+        gatewayId,
+        device.id,
         property.toString(),
         property.toString(),
         homieDataType(property.dataType),

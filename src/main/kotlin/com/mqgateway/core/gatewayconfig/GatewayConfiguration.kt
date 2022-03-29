@@ -1,5 +1,6 @@
 package com.mqgateway.core.gatewayconfig
 
+import com.mqgateway.core.device.DeviceType
 import kotlinx.serialization.Serializable
 
 @Serializable

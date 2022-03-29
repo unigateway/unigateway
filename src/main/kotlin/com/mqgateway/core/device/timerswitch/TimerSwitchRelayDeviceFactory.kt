@@ -3,7 +3,7 @@ package com.mqgateway.core.device.timerswitch
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.utils.TimersScheduler
 
@@ -20,7 +20,7 @@ class TimerSwitchRelayDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryOutput = ioProvider.getBinaryOutput(connector)
-    return TimerSwitchRelayDevice(deviceConfiguration.id, stateBinaryOutput, timersScheduler)
+    return TimerSwitchRelayDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryOutput, timersScheduler, deviceConfiguration.config)
   }
 
   companion object {

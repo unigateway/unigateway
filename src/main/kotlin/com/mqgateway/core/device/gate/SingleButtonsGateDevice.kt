@@ -1,10 +1,12 @@
 package com.mqgateway.core.device.gate
 
+import com.mqgateway.core.device.DataType
 import com.mqgateway.core.device.Device
-import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -12,10 +14,18 @@ private val LOGGER = KotlinLogging.logger {}
 
 class SingleButtonsGateDevice(
   id: String,
+  name: String,
   private val actionButton: EmulatedSwitchButtonDevice,
   private val openReedSwitch: ReedSwitchDevice?,
-  private val closedReedSwitch: ReedSwitchDevice?
-) : Device(id, DeviceType.GATE) {
+  private val closedReedSwitch: ReedSwitchDevice?,
+  config: Map<String, String> = emptyMap()
+) : Device(
+  id, name, DeviceType.GATE,
+  setOf(
+    DeviceProperty(STATE, DataType.ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
+  ),
+  config
+) {
 
   private var state: State = State.UNKNOWN
     private set(value) {

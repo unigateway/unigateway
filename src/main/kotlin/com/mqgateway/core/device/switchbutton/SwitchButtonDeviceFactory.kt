@@ -3,7 +3,7 @@ package com.mqgateway.core.device.switchbutton
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.io.provider.InputOutputProvider
 
 class SwitchButtonDeviceFactory(
@@ -20,7 +20,7 @@ class SwitchButtonDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryInput = ioProvider.getBinaryInput(connector)
-    return SwitchButtonDevice(deviceConfiguration.id, stateBinaryInput, longPressTimeMs)
+    return SwitchButtonDevice(deviceConfiguration.id, deviceConfiguration.name, stateBinaryInput, longPressTimeMs, deviceConfiguration.config)
   }
 
   companion object {

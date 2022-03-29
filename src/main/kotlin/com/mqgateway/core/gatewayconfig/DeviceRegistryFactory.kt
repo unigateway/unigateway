@@ -2,6 +2,7 @@ package com.mqgateway.core.gatewayconfig
 
 import com.mqgateway.core.device.DeviceFactoryProvider
 import com.mqgateway.core.device.DeviceRegistry
+import com.mqgateway.core.device.DeviceType
 
 class DeviceRegistryFactory(
   private val deviceFactoryProvider: DeviceFactoryProvider

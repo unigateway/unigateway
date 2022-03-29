@@ -1,8 +1,8 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.configuration.GatewaySystemProperties
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 
 class GateAdditionalConfigValidator : GatewayValidator {
