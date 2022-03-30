@@ -1,10 +1,6 @@
 package com.mqgateway.core.device.gate
 
-import com.mqgateway.core.device.DataType
-import com.mqgateway.core.device.Device
-import com.mqgateway.core.device.DeviceProperty
 import com.mqgateway.core.device.DevicePropertyType.STATE
-import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import mu.KotlinLogging
@@ -19,19 +15,9 @@ class SingleButtonsGateDevice(
   private val openReedSwitch: ReedSwitchDevice?,
   private val closedReedSwitch: ReedSwitchDevice?,
   config: Map<String, String> = emptyMap()
-) : Device(
-  id, name, DeviceType.GATE,
-  setOf(
-    DeviceProperty(STATE, DataType.ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
-  ),
-  config
+) : GateDevice(
+  id, name, config
 ) {
-
-  private var state: State = State.UNKNOWN
-    private set(value) {
-      field = value
-      notify(STATE, value.name)
-    }
 
   override fun initProperty(propertyId: String, value: String) {
     if (propertyId != STATE.toString()) {
@@ -131,12 +117,4 @@ class SingleButtonsGateDevice(
   private fun hasOpenReedSwitch() = openReedSwitch != null
   private fun isOpenForSure() = openReedSwitch?.isClosed() == true
   private fun isClosedForSure() = closedReedSwitch?.isClosed() == true
-
-  enum class Command {
-    OPEN, CLOSE, STOP
-  }
-
-  enum class State {
-    OPENING, CLOSING, OPEN, CLOSED, UNKNOWN
-  }
 }

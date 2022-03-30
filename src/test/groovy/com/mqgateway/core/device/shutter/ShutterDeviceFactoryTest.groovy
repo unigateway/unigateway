@@ -21,7 +21,7 @@ class ShutterDeviceFactoryTest extends Specification {
     ], [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"])
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "myShutter"

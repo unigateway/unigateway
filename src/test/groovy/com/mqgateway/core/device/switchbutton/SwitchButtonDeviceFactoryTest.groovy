@@ -24,7 +24,7 @@ class SwitchButtonDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("mySwitchButton", "Test switchButton", DeviceType.SWITCH_BUTTON, ["state": new SimulatedConnector(1)])
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "mySwitchButton"
@@ -36,7 +36,7 @@ class SwitchButtonDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("mySwitchButton", "Test switchButton", DeviceType.SWITCH_BUTTON)
 
     when:
-    factory.create(deviceConfig)
+    factory.create(deviceConfig, [] as Set)
 
     then:
     thrown(MissingConnectorInDeviceConfigurationException)

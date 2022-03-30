@@ -27,19 +27,19 @@ class TestGatewayFactory {
     return deviceFactoryProvider.getFactory(DeviceType.RELAY)
       .create(new DeviceConfiguration(id, "Relay ${id}", DeviceType.RELAY, [
         state: new SimulatedConnector(1)
-      ])) as RelayDevice
+      ]), [] as Set) as RelayDevice
   }
 
   UniGatewayDevice unigatewayDevice(String id) {
     return deviceFactoryProvider.getFactory(DeviceType.UNIGATEWAY)
-      .create(new DeviceConfiguration(id, "Unigateway ${id}", DeviceType.UNIGATEWAY)) as UniGatewayDevice
+      .create(new DeviceConfiguration(id, "Unigateway ${id}", DeviceType.UNIGATEWAY), [] as Set) as UniGatewayDevice
   }
 
   SwitchButtonDevice switchButtonDevice(String id) {
     return deviceFactoryProvider.getFactory(DeviceType.SWITCH_BUTTON)
       .create(new DeviceConfiguration(id, "Switch button ${id}", DeviceType.SWITCH_BUTTON, [
         state: new SimulatedConnector(1)
-      ])) as SwitchButtonDevice
+      ]), [] as Set) as SwitchButtonDevice
   }
 
   static GatewayConfiguration gateway(List<DeviceConfiguration> devices) {

@@ -24,7 +24,7 @@ class RelayDeviceFactoryTest extends Specification {
     def deviceConfiguration = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, ["state": new SimulatedConnector(1)])
 
     when:
-    def device = factory.create(deviceConfiguration)
+    def device = factory.create(deviceConfiguration, [] as Set)
 
     then:
     device.id == "myRelay"
@@ -36,7 +36,7 @@ class RelayDeviceFactoryTest extends Specification {
     def deviceConfiguration = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY)
 
     when:
-    factory.create(deviceConfiguration)
+    factory.create(deviceConfiguration, [] as Set)
 
     then:
     thrown(MissingConnectorInDeviceConfigurationException)
