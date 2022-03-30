@@ -8,10 +8,10 @@ class RaspberryPiConnectorFactoryTest extends Specification {
   @Subject
   RaspberryPiConnectorFactory factory = new RaspberryPiConnectorFactory()
 
-  def "should create connector"(pin, debounce, pullUpDown) {
+  def "should create connector"(gpio, debounce, pullUpDown) {
     given:
     Map<String, Object> config = [
-      "pin"       : pin,
+      "gpio"      : gpio,
       "debounce"  : debounce,
       "pullUpDown": pullUpDown
     ]
@@ -20,10 +20,10 @@ class RaspberryPiConnectorFactoryTest extends Specification {
     factory.create(config) == expectedConnector
 
     where:
-    pin | debounce | pullUpDown || expectedConnector
-    1   | null     | null        | new RaspberryPiConnector(1, null, null)
-    2   | 100      | null        | new RaspberryPiConnector(2, 100, null)
-    3   | 200      | "PULL_UP"   | new RaspberryPiConnector(3, 200, PullUpDown.PULL_UP)
-    4   | 304      | "PULL_DOWN"   | new RaspberryPiConnector(4, 304, PullUpDown.PULL_DOWN)
+    gpio | debounce | pullUpDown || expectedConnector
+    1    | null     | null        | new RaspberryPiConnector(1, null, null)
+    2    | 100      | null        | new RaspberryPiConnector(2, 100, null)
+    3    | 200      | "PULL_UP"   | new RaspberryPiConnector(3, 200, PullUpDown.PULL_UP)
+    4    | 304      | "PULL_DOWN" | new RaspberryPiConnector(4, 304, PullUpDown.PULL_DOWN)
   }
 }
