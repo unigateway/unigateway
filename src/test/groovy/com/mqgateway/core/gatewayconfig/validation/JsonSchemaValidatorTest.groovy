@@ -17,7 +17,7 @@ class JsonSchemaValidatorTest extends Specification {
   YamlSlurper yamlSlurper = new YamlSlurper()
   ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory())
   def simulatedSystemProperties = new GatewaySystemProperties("eth0", "SIMULATED", [:], "localhost")
-  def raspberryPiSystemProperties = new GatewaySystemProperties("eth0", "RASPBERRY", [:], "localhost")
+  def raspberryPiSystemProperties = new GatewaySystemProperties("eth0", "RASPBERRYPI", [:], "localhost")
 
   @Subject
   JsonSchemaValidator jsonSchemaValidator
@@ -97,7 +97,7 @@ class JsonSchemaValidatorTest extends Specification {
 
   def "should not allow for additional properties on raspberry pi connector"() {
     given:
-    jsonSchemaValidator = new JsonSchemaValidator(objectMapper, simulatedSystemProperties)
+    jsonSchemaValidator = new JsonSchemaValidator(objectMapper, raspberryPiSystemProperties)
     def device = """
     - id: "example_device"
       name: Example

@@ -18,11 +18,11 @@ class UniquePinNumbersValidatorGatewayValidator : GatewayValidator {
       .flatMap {
         it.connectors
           .filter { (_, connector) -> connector is RaspberryPiConnector }
-          .map { entry -> Triple(it.id, entry.key, (entry.value as RaspberryPiConnector).pin) }
+          .map { (connectorName, connector) -> Triple(it.id, connectorName, (connector as RaspberryPiConnector).pin) }
       }
-      .groupBy { it.third }
+      .groupBy { (_, _, pin) -> pin }
       .filter { it.value.size > 1 }
-      .map { PinNumberNotUnique(it.key, it.value.map { triple -> Pair(triple.first, triple.second) }) }
+      .map { (pin, group) -> PinNumberNotUnique(pin, group.map { (deviceId, connectorName, _) -> Pair(deviceId, connectorName) }) }
   }
 
   data class PinNumberNotUnique(private val pin: Int, private val connectorsOnDevices: List<Pair<String, String>>) : ValidationFailureReason() {
