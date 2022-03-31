@@ -82,7 +82,7 @@ class JsonSchemaValidatorTest extends Specification {
       type: RELAY
       connectors:
         status:
-          pin: 1
+          gpio: 1
 		""".stripIndent()
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
@@ -104,7 +104,7 @@ class JsonSchemaValidatorTest extends Specification {
       type: RELAY
       connectors:
         status:
-          pin: 1
+          gpio: 1
           theTruthIsThat: "js is better than kotlin"
 		""".stripIndent()
     def configWithDevice = configWithDevice(device)
