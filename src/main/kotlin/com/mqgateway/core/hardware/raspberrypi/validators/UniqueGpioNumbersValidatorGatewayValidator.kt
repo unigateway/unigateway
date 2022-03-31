@@ -9,26 +9,26 @@ import mu.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
-class UniquePinNumbersValidatorGatewayValidator : GatewayValidator {
+class UniqueGpioNumbersValidatorGatewayValidator : GatewayValidator {
 
   override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
-    LOGGER.debug { "Validating that pin numbers are unique in all devices" }
+    LOGGER.debug { "Validating that gpio numbers are unique in all devices" }
 
     return gatewayConfiguration.devices
       .flatMap {
         it.connectors
           .filter { (_, connector) -> connector is RaspberryPiConnector }
-          .map { (connectorName, connector) -> Triple(it.id, connectorName, (connector as RaspberryPiConnector).pin) }
+          .map { (connectorName, connector) -> Triple(it.id, connectorName, (connector as RaspberryPiConnector).gpio) }
       }
-      .groupBy { (_, _, pin) -> pin }
+      .groupBy { (_, _, gpio) -> gpio }
       .filter { it.value.size > 1 }
-      .map { (pin, group) -> PinNumberNotUnique(pin, group.map { (deviceId, connectorName, _) -> Pair(deviceId, connectorName) }) }
+      .map { (gpio, group) -> GpioNumberNotUnique(gpio, group.map { (deviceId, connectorName, _) -> Pair(deviceId, connectorName) }) }
   }
 
-  data class PinNumberNotUnique(private val pin: Int, private val connectorsOnDevices: List<Pair<String, String>>) : ValidationFailureReason() {
+  data class GpioNumberNotUnique(private val gpio: Int, private val connectorsOnDevices: List<Pair<String, String>>) : ValidationFailureReason() {
 
     override fun getDescription(): String {
-      return "Configuration contains the same pin number '$pin' on the following connectors: ${connectorsOnDevices
+      return "Configuration contains the same gpio number '$gpio' on the following connectors: ${connectorsOnDevices
         .map { "<deviceId: ${it.first}, connector: ${it.second}>" }}"
     }
   }

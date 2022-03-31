@@ -3,7 +3,7 @@
   "title": "Raspberry Pi connector",
   "type": "object",
   "required": [
-    "pin"
+    "gpio"
   ],
   "additionalProperties": false,
   "properties": {
@@ -13,9 +13,21 @@
         "HARDWARE"
       ]
     },
-    "pin": {
-      "description": "Pin number",
+    "gpio": {
+      "description": "GPIO number",
       "type": "number"
+    },
+    "debounceMs": {
+      "description": "Debounce in milliseconds",
+      "type": "number",
+      "minimum": 0
+    },
+    "pullUpDown": {
+      "description": "Pull up or down on gpio",
+      "enum": [
+        "PULL_UP",
+        "PULL_DOWN"
+      ]
     }
   }
 }
