@@ -4,7 +4,7 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.hardware.raspberrypi.validators.UniqueGpioNumbersValidatorGatewayValidator
 import kotlin.Pair
 import spock.lang.Specification
