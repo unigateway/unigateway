@@ -19,7 +19,6 @@ class RaspberryPiHardwareFactory : HardwareInterfaceFactory<RaspberryPiConnector
   }
 
   override fun configurationValidator(): GatewayValidator {
-
     return RaspberryPiGatewayValidator()
   }
 }

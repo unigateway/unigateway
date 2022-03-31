@@ -42,6 +42,6 @@ class JsonSchemaValidator(
 
   companion object {
     private const val JSON_SCHEMA_RESOURCE_NAME: String = "/config.schema.json"
-    private const val CONNECTOR_URI: String = "classpath:/connector.schema.json"
+    private const val CONNECTOR_URI: String = "classpath:/default-connector.schema.json"
   }
 }

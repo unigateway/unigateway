@@ -15,14 +15,14 @@ class UniqueGpioNumbersValidatorGatewayValidator : GatewayValidator {
     LOGGER.debug { "Validating that gpio numbers are unique in all devices" }
 
     return gatewayConfiguration.devices
-      .fold(listOf<Triple<String, String, Int>>()) { acc, deviceConfiguration ->
-        acc + deviceConfiguration.connectors
+      .flatMap {
+        it.connectors
           .filter { (_, connector) -> connector is RaspberryPiConnector }
-          .map { (name, connector) -> Triple(deviceConfiguration.id, name, (connector as RaspberryPiConnector).gpio) }
+          .map { (connectorName, connector) -> Triple(it.id, connectorName, (connector as RaspberryPiConnector).gpio) }
       }
-      .groupBy { it.third }
+      .groupBy { (_, _, gpio) -> gpio }
       .filter { it.value.size > 1 }
-      .map { GpioNumberNotUnique(it.key, it.value.map { triple -> Pair(triple.first, triple.second) }) }
+      .map { (gpio, group) -> GpioNumberNotUnique(gpio, group.map { (deviceId, connectorName, _) -> Pair(deviceId, connectorName) }) }
   }
 
   data class GpioNumberNotUnique(private val gpio: Int, private val connectorsOnDevices: List<Pair<String, String>>) : ValidationFailureReason() {
