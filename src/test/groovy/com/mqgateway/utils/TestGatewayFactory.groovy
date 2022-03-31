@@ -2,6 +2,8 @@ package com.mqgateway.utils
 
 import com.mqgateway.core.device.DeviceFactoryProvider
 import com.mqgateway.core.device.DeviceType
+import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
+import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.shutter.ShutterDevice
 import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
@@ -40,6 +42,20 @@ class TestGatewayFactory {
       .create(new DeviceConfiguration(id, "Switch button ${id}", DeviceType.SWITCH_BUTTON, [
         state: new SimulatedConnector(1)
       ]), [] as Set) as SwitchButtonDevice
+  }
+
+  EmulatedSwitchButtonDevice emulatedSwitchButtonDevice(String id) {
+    return deviceFactoryProvider.getFactory(DeviceType.EMULATED_SWITCH)
+      .create(new DeviceConfiguration(id, "Emulated switch button ${id}", DeviceType.EMULATED_SWITCH, [
+        state: new SimulatedConnector(1)
+      ]), [] as Set) as EmulatedSwitchButtonDevice
+  }
+
+  ReedSwitchDevice reedSwitchDevice(String id) {
+    return deviceFactoryProvider.getFactory(DeviceType.REED_SWITCH)
+      .create(new DeviceConfiguration(id, "Reed switch ${id}", DeviceType.REED_SWITCH, [
+        state: new SimulatedConnector(1)
+      ]), [] as Set) as ReedSwitchDevice
   }
 
   static GatewayConfiguration gateway(List<DeviceConfiguration> devices) {

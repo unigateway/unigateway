@@ -71,7 +71,7 @@ class SingleButtonsGateDevice(
     }
   }
 
-  fun close() {
+  override fun close() {
     if (isClosedForSure()) {
       LOGGER.debug { "Nothing to be done - gate is closed already" }
     } else if (state == State.CLOSING) {
@@ -87,7 +87,7 @@ class SingleButtonsGateDevice(
     }
   }
 
-  fun open() {
+  override fun open() {
     if (isOpenForSure()) {
       LOGGER.debug { "Nothing to be done - gate is open already" }
     } else if (state == State.OPENING) {
@@ -103,7 +103,7 @@ class SingleButtonsGateDevice(
     }
   }
 
-  fun stop() {
+  override fun stop(blocking: Boolean) {
     if (isOpenForSure() || isClosedForSure()) {
       LOGGER.debug { "Nothing to be done - gate is stopped already" }
     } else {

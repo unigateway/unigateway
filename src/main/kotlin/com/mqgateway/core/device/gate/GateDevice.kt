@@ -6,7 +6,7 @@ import com.mqgateway.core.device.DeviceProperty
 import com.mqgateway.core.device.DevicePropertyType.STATE
 import com.mqgateway.core.device.DeviceType
 
-open class GateDevice(
+abstract class GateDevice(
   id: String,
   name: String,
   config: Map<String, String> = emptyMap()
@@ -23,6 +23,12 @@ open class GateDevice(
       field = value
       notify(STATE, value.name)
     }
+
+  abstract fun close()
+
+  abstract fun open()
+
+  abstract fun stop(blocking: Boolean = false)
 
   enum class Command {
     OPEN, CLOSE, STOP

@@ -80,19 +80,19 @@ class ThreeButtonsGateDevice(
     }
   }
 
-  fun close() {
+  override fun close() {
     stop(true)
     closeButton.shortPress()
     state = if (hasClosedReedSwitch()) State.CLOSING else State.CLOSED
   }
 
-  fun open() {
+  override fun open() {
     stop(true)
     openButton.shortPress()
     state = if (hasOpenReedSwitch()) State.OPENING else State.OPEN
   }
 
-  fun stop(blocking: Boolean = false) {
+  override fun stop(blocking: Boolean) {
     stopButton.shortPress(blocking)
     if (state != State.CLOSED && state != State.OPEN) {
       state = State.OPEN
