@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Raspberry Pi connector",
+  "type": "object",
+  "required": [
+    "pin"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "description": "Connector source",
+      "enum": [
+        "HARDWARE"
+      ]
+    },
+    "pin": {
+      "description": "Pin number",
+      "type": "number"
+    }
+  }
+}
