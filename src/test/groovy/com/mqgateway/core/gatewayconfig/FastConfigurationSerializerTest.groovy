@@ -2,6 +2,7 @@ package com.mqgateway.core.gatewayconfig
 
 import static kotlin.jvm.JvmClassMappingKt.getKotlinClass
 
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.hardware.mqgateway.MqGatewayConnector
 import com.mqgateway.core.hardware.mqgateway.WireColor
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
@@ -21,9 +22,9 @@ class FastConfigurationSerializerTest extends Specification {
   def "should serialize and deserialize configuration"() {
     given:
     def config = new GatewayConfiguration("1.0.0", "unigateway-id", "Test config", [
-      new DeviceConfiguration("device_1", "First device", DeviceType.RELAY, ["state": new SimulatedConnector(1)]),
-      new DeviceConfiguration("device_2", "Second device", DeviceType.RELAY, ["state": new SimulatedConnector(2)]),
-      new DeviceConfiguration("device_3", "Third device", DeviceType.RELAY, ["state": new MySensorsConnector(1)]),
+		new DeviceConfiguration("device_1", "First device", DeviceType.RELAY, ["state": new SimulatedConnector(1)]),
+		new DeviceConfiguration("device_2", "Second device", DeviceType.RELAY, ["state": new SimulatedConnector(2)]),
+		new DeviceConfiguration("device_3", "Third device", DeviceType.RELAY, ["state": new MySensorsConnector(1)]),
     ])
 
     when:

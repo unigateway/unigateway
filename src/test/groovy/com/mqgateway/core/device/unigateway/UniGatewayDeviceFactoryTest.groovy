@@ -1,7 +1,7 @@
 package com.mqgateway.core.device.unigateway
 
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import spock.lang.Specification
 import spock.lang.Subject

@@ -1,12 +1,12 @@
 package com.mqgateway.core.device.gate
 
+import static com.mqgateway.core.device.DevicePropertyType.STATE
 import static com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice.PRESSED_STATE_VALUE
 import static com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice.RELEASED_STATE_VALUE
 import static com.mqgateway.core.device.gate.ThreeButtonsGateDevice.CLOSED_STATE_VALUE
 import static com.mqgateway.core.device.gate.ThreeButtonsGateDevice.CLOSING_STATE_VALUE
 import static com.mqgateway.core.device.gate.ThreeButtonsGateDevice.OPENING_STATE_VALUE
 import static com.mqgateway.core.device.gate.ThreeButtonsGateDevice.OPEN_STATE_VALUE
-import static com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
 
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
@@ -21,19 +21,19 @@ import spock.util.concurrent.PollingConditions
 
 class ThreeButtonsGateDeviceTest extends Specification {
   def stopBinaryOutput = new SimulatedBinaryOutput()
-  EmulatedSwitchButtonDevice stopButton = new EmulatedSwitchButtonDevice("stopButton", stopBinaryOutput, 10)
+  EmulatedSwitchButtonDevice stopButton = new EmulatedSwitchButtonDevice("stopButton", "Stop button", stopBinaryOutput, 10, [:])
   def openBinaryOutput = new SimulatedBinaryOutput()
-  EmulatedSwitchButtonDevice openButton = new EmulatedSwitchButtonDevice("openButton", openBinaryOutput, 500)
+  EmulatedSwitchButtonDevice openButton = new EmulatedSwitchButtonDevice("openButton", "Open button", openBinaryOutput, 500, [:])
   def closeBinaryOutput = new SimulatedBinaryOutput()
-  EmulatedSwitchButtonDevice closeButton = new EmulatedSwitchButtonDevice("closeButton", closeBinaryOutput, 500)
+  EmulatedSwitchButtonDevice closeButton = new EmulatedSwitchButtonDevice("closeButton", "Close button", closeBinaryOutput, 500, [:])
 
   def openReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
-  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", openReedSwitchBinaryInput)
+  ReedSwitchDevice openReedSwitch = new ReedSwitchDevice("openReedSwitch", "Open reed switch", openReedSwitchBinaryInput, [:])
   def closedReedSwitchBinaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
-  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", closedReedSwitchBinaryInput)
+  ReedSwitchDevice closedReedSwitch = new ReedSwitchDevice("closedReedSwitch", "Closed reed switch", closedReedSwitchBinaryInput, [:])
 
   @Subject
-  ThreeButtonsGateDevice gateDevice = new ThreeButtonsGateDevice("testGate", stopButton, openButton, closeButton, openReedSwitch, closedReedSwitch)
+  ThreeButtonsGateDevice gateDevice = new ThreeButtonsGateDevice("testGate", "Three buttons gate", stopButton, openButton, closeButton, openReedSwitch, closedReedSwitch, [:])
 
   UpdateListenerStub listenerStub = new UpdateListenerStub()
 
@@ -207,7 +207,7 @@ class ThreeButtonsGateDeviceTest extends Specification {
 
   def "should set state to CLOSED immediately when sent state change to CLOSE and closedReedSwitch is not configured"() {
     given:
-    def gateDevice = new ThreeButtonsGateDevice("testGate", stopButton, openButton, closeButton, openReedSwitch, null)
+    def gateDevice = new ThreeButtonsGateDevice("testGate", "Three buttons gate", stopButton, openButton, closeButton, openReedSwitch, null, [:])
     gateDevice.addListener(listenerStub)
     openReedSwitchBinaryInput.state = BinaryState.LOW // Gate open
     gateDevice.init()
@@ -264,7 +264,7 @@ class ThreeButtonsGateDeviceTest extends Specification {
 
   def "should set state to OPEN immediately when sent state change to OPEN and openReedSwitch is not configured"() {
     given:
-    def gateDevice = new ThreeButtonsGateDevice("testGate", stopButton, openButton, closeButton, null, closedReedSwitch)
+    def gateDevice = new ThreeButtonsGateDevice("testGate", "Three buttons gate", stopButton, openButton, closeButton, null, closedReedSwitch, [:])
     gateDevice.addListener(listenerStub)
     closedReedSwitchBinaryInput.state = BinaryState.LOW // Gate closed
     gateDevice.init()
@@ -304,9 +304,9 @@ class ThreeButtonsGateDeviceTest extends Specification {
   @Unroll
   def "should change gate state when reed switch reports #whenDescription"() {
     given:
-    ThreeButtonsGateDevice gateDevice = new ThreeButtonsGateDevice("testGate", stopButton, openButton, closeButton,
+    ThreeButtonsGateDevice gateDevice = new ThreeButtonsGateDevice("testGate", "Three buttons gate",stopButton, openButton, closeButton,
                                                                    hasOpenReedSwitch ? openReedSwitch : null,
-                                                                   hasClosedReedSwitch ? closedReedSwitch : null)
+                                                                   hasClosedReedSwitch ? closedReedSwitch : null, [:])
     gateDevice.addListener(listenerStub)
     if (initialState == 'OPEN') {
       closedReedSwitchBinaryInput.state = BinaryState.HIGH

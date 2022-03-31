@@ -3,7 +3,7 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import spock.lang.Specification

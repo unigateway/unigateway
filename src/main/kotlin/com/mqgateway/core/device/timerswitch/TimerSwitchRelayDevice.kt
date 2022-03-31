@@ -1,11 +1,14 @@
 package com.mqgateway.core.device.timerswitch
 
+import com.mqgateway.core.device.DataType
+import com.mqgateway.core.device.DataUnit
+import com.mqgateway.core.device.DeviceProperty
+import com.mqgateway.core.device.DevicePropertyType.STATE
+import com.mqgateway.core.device.DevicePropertyType.TIMER
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.DigitalOutputDevice
 import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDevice.TimerSwitchRelayState.CLOSED
 import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDevice.TimerSwitchRelayState.OPEN
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.STATE
-import com.mqgateway.core.gatewayconfig.DevicePropertyType.TIMER
-import com.mqgateway.core.gatewayconfig.DeviceType
 import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.utils.TimersScheduler
@@ -15,8 +18,21 @@ import java.time.temporal.ChronoUnit
 
 private val LOGGER = KotlinLogging.logger {}
 
-class TimerSwitchRelayDevice(id: String, state: BinaryOutput, private val scheduler: TimersScheduler) :
-  DigitalOutputDevice(id, DeviceType.TIMER_SWITCH, state),
+class TimerSwitchRelayDevice(
+  id: String,
+  name: String,
+  state: BinaryOutput,
+  private val scheduler: TimersScheduler,
+  config: Map<String, String> = emptyMap()
+) :
+  DigitalOutputDevice(
+    id, name, DeviceType.TIMER_SWITCH, state,
+    setOf(
+      DeviceProperty(STATE, DataType.ENUM, "ON,OFF", retained = true),
+      DeviceProperty(TIMER, DataType.INTEGER, "0:1440", settable = true, retained = true, unit = DataUnit.SECOND)
+    ),
+    config
+  ),
   TimersScheduler.SchedulableTimer {
 
   private var turnOffTime: LocalDateTime = LocalDateTime.now()

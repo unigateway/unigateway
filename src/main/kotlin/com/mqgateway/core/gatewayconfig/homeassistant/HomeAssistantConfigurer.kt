@@ -1,7 +1,7 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
 import com.mqgateway.configuration.HomeAssistantProperties
-import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
 import mu.KotlinLogging
@@ -15,18 +15,20 @@ class HomeAssistantConfigurer(
   private val mqttClientFactory: MqttClientFactory
 ) {
 
-  fun sendHomeAssistantConfiguration(gatewayConfiguration: GatewayConfiguration) {
+  fun sendHomeAssistantConfiguration(deviceRegistry: DeviceRegistry) {
     LOGGER.info { "Publishing HomeAssistant configuration" }
+
+    val uniGatewayDevice = deviceRegistry.getUniGatewayDevice()
     val mqttClient = mqttClientFactory.create(
-      "${gatewayConfiguration.name}-homeassistant-configurator",
+      "${uniGatewayDevice.id}-homeassistant-configurator",
       { LOGGER.info { "HomeAssistant configurator connected" } },
       { LOGGER.info { "HomeAssistant configurator disconnected" } }
     )
 
     mqttClient.connect(MqttMessage("${properties.rootTopic}/state", "disconnected", 0, false), true)
 
-    val components = converter.convert(gatewayConfiguration)
-    publisher.cleanPublishedConfigurations(mqttClient, properties.rootTopic, gatewayConfiguration.name)
+    val components = converter.convert(deviceRegistry)
+    publisher.cleanPublishedConfigurations(mqttClient, properties.rootTopic, uniGatewayDevice.id)
     publisher.publish(mqttClient, properties.rootTopic, components)
 
     mqttClient.disconnect()
