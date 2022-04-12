@@ -10,7 +10,7 @@ class MqGatewayConnectorFactory : HardwareConnectorFactory<MqGatewayConnector> {
     return MqGatewayConnector(
       config[PORT_NUMBER_KEY] as Int,
       WireColor.valueOf(config[WIRE_COLOR_KEY] as String),
-      config[DEBOUNCE_MS_KEY]?.toString()?.toInt()
+      config[DEBOUNCE_MS_KEY]?.toString()?.toLong()
     )
   }
 

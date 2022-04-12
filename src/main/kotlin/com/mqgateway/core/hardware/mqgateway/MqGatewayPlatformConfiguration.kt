@@ -3,7 +3,7 @@ package com.mqgateway.core.hardware.mqgateway
 data class MqGatewayPlatformConfiguration(
   val expander: ExpanderConfiguration,
   val components: ComponentsConfiguration,
-  val defaultDebounceMs: Int = 50
+  val defaultDebounceMs: Long = 50
 ) {
 
   data class ExpanderConfiguration(

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class MqGatewayConnector(
   val portNumber: Int,
   val wireColor: WireColor,
-  val debounceMs: Int?
+  val debounceMs: Long?
 ) : HardwareConnector
 
 enum class WireColor(val number: Int) {
