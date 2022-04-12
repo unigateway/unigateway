@@ -4,7 +4,7 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 
 import com.mqgateway.core.device.relay.RelayDeviceFactory
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector

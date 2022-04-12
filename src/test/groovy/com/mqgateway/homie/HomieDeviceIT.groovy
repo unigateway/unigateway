@@ -44,7 +44,7 @@ class HomieDeviceIT extends MqttSpecification {
     mqGatewayIsReady.get()
     !receivedMessages.isEmpty()
     gatewayConfiguration.devices.forEach { Map device ->
-      assert receivedMessages.find {it.topic == "homie/simulated_gateway/${device.id}/\$name" }.payload == device.name
+      assert receivedMessages.find { it.topic == "homie/simulated_gateway/${device.id}/\$name" }.payload == device.name
     }
     receivedMessages.contains(new MqttMessage("homie/simulated_gateway/nonExistingDevice1", "", 0, false)) // deleting retained message
 

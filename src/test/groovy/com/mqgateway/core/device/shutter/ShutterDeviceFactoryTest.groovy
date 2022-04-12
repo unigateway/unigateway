@@ -1,7 +1,7 @@
 package com.mqgateway.core.device.shutter
 
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import spock.lang.Ignore
 import spock.lang.Specification

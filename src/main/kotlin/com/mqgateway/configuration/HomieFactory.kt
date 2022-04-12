@@ -1,7 +1,6 @@
 package com.mqgateway.configuration
 
 import com.mqgateway.core.device.DeviceRegistry
-import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.MqttStatusIndicator
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
@@ -25,11 +24,11 @@ class HomieFactory {
     mqttConnectionListeners: List<HomieDevice.MqttConnectionListener>,
     gatewayApplicationProperties: GatewayApplicationProperties,
     gatewaySystemProperties: GatewaySystemProperties,
-    gatewayConfiguration: GatewayConfiguration
+    deviceRegistry: DeviceRegistry
   ): HomieDevice {
 
     val homieDevice = HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)
-      .toHomieDevice(gatewayConfiguration, gatewaySystemProperties.networkAdapter)
+      .toHomieDevice(deviceRegistry, gatewaySystemProperties.networkAdapter)
 
     mqttConnectionListeners.forEach { listener ->
       homieDevice.addMqttConnectedListener(listener)

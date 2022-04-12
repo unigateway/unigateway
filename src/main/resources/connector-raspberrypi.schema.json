@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Raspberry Pi connector",
+  "type": "object",
+  "required": [
+    "gpio"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "description": "Connector source",
+      "enum": [
+        "HARDWARE"
+      ]
+    },
+    "gpio": {
+      "description": "GPIO number",
+      "type": "number"
+    },
+    "debounceMs": {
+      "description": "Debounce in milliseconds",
+      "type": "number",
+      "minimum": 0
+    },
+    "pullUpDown": {
+      "description": "Pull up or down on gpio",
+      "enum": [
+        "PULL_UP",
+        "PULL_DOWN"
+      ]
+    }
+  }
+}

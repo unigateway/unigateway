@@ -1,6 +1,7 @@
 package com.mqgateway.core.gatewayconfig
 
 import com.mqgateway.core.device.DeviceFactoryProvider
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration

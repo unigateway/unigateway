@@ -3,7 +3,7 @@ package com.mqgateway.core.gatewayconfig.validation
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.gatewayconfig.DeviceType
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import spock.lang.Specification
@@ -19,9 +19,10 @@ class ConfigValidatorTest extends Specification {
   ]
 
   GatewaySystemProperties systemProperties = prepareSystemProperties()
+  def jsonSchemaValidator = new JsonSchemaValidator(new ObjectMapper(), systemProperties)
 
   @Subject
-  ConfigValidator configValidator = new ConfigValidator(new ObjectMapper(), systemProperties, validators)
+  ConfigValidator configValidator = new ConfigValidator(jsonSchemaValidator, systemProperties, validators)
 
   def "should validation failed when there are more than one device with the same id"() {
     given:
