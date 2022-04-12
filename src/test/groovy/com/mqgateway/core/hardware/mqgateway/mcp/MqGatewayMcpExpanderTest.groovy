@@ -31,6 +31,10 @@ class MqGatewayMcpExpanderTest extends Specification {
     mcpMock.getBoardPinInfo() >> boardPinInfo
   }
 
+  void cleanup() {
+    expander.stop()
+  }
+
   def "should set pin state based on MCP23017 expander"(byte gpioAValues, byte gpioBValues, List<BinaryState> expectedState) {
     given:
     mcpMock.getValues(GPIOA) >> { clock.plus(Duration.ofMillis(10)); return gpioAValues }
@@ -49,7 +53,7 @@ class MqGatewayMcpExpanderTest extends Specification {
     0b1111_1111 | 0b1111_1111 | [HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH]
     0b0000_0000 | 0b0000_0000 | [LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW]
     0b1010_0101 | 0b0101_1010 | [HIGH, LOW, HIGH, LOW, LOW, HIGH, LOW, HIGH, LOW, HIGH, LOW, HIGH, HIGH, LOW, HIGH, LOW]
-    0b0000_0001 | 0b1000_0000 | [LOW, LOW, LOW, LOW, LOW, LOW, LOW, HIGH, HIGH, LOW, LOW, LOW, LOW, LOW, LOW, LOW]
+    0b1000_0000 | 0b0000_0001 | [LOW, LOW, LOW, LOW, LOW, LOW, LOW, HIGH, HIGH, LOW, LOW, LOW, LOW, LOW, LOW, LOW]
   }
 
   def "should notify listener on pin value changed"(int pin, byte gpioAValues, byte gpioBValues, BinaryState expectedState, byte startGpioAValues, byte startGpioBValues) {
@@ -71,7 +75,7 @@ class MqGatewayMcpExpanderTest extends Specification {
 
     mcpMock.getValues(GPIOB) >> {
       def newValue = getValuesInTime(valuesGpioBInTime, clock.millis())
-      clock.plus(Duration.ofMillis(10))
+      clock.plus(Duration.ofMillis(1))
       return newValue
     }
 
@@ -87,22 +91,22 @@ class MqGatewayMcpExpanderTest extends Specification {
 
     where:
     pin | startGpioAValues | startGpioBValues | gpioAValues | gpioBValues | expectedState
-    0   | 0b1111_1111      | 0b1111_1111      | 0b0111_1111 | 0b1111_1111 | LOW
-    1   | 0b1111_1111      | 0b1111_1111      | 0b1011_1111 | 0b1111_1111 | LOW
-    2   | 0b1111_1111      | 0b1111_1111      | 0b1101_1111 | 0b1111_1111 | LOW
-    3   | 0b1111_1111      | 0b1111_1111      | 0b1110_1111 | 0b1111_1111 | LOW
-    4   | 0b1111_1111      | 0b1111_1111      | 0b1111_0111 | 0b1111_1111 | LOW
-    5   | 0b1111_1111      | 0b1111_1111      | 0b1111_1011 | 0b1111_1111 | LOW
-    6   | 0b1111_1111      | 0b1111_1111      | 0b1111_1101 | 0b1111_1111 | LOW
-    7   | 0b1111_1111      | 0b1111_1111      | 0b1111_1110 | 0b1111_1111 | LOW
-    8   | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b0111_1111 | LOW
-    9   | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1011_1111 | LOW
-    10  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1101_1111 | LOW
-    11  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1110_1111 | LOW
-    12  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_0111 | LOW
-    13  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_1011 | LOW
-    14  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_1101 | LOW
-    15  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_1110 | LOW
+    0   | 0b1111_1111      | 0b1111_1111      | 0b1111_1110 | 0b1111_1111 | LOW
+    1   | 0b1111_1111      | 0b1111_1111      | 0b1111_1101 | 0b1111_1111 | LOW
+    2   | 0b1111_1111      | 0b1111_1111      | 0b1111_1011 | 0b1111_1111 | LOW
+    3   | 0b1111_1111      | 0b1111_1111      | 0b1111_0111 | 0b1111_1111 | LOW
+    4   | 0b1111_1111      | 0b1111_1111      | 0b1110_1111 | 0b1111_1111 | LOW
+    5   | 0b1111_1111      | 0b1111_1111      | 0b1101_1111 | 0b1111_1111 | LOW
+    6   | 0b1111_1111      | 0b1111_1111      | 0b1011_1111 | 0b1111_1111 | LOW
+    7   | 0b1111_1111      | 0b1111_1111      | 0b0111_1111 | 0b1111_1111 | LOW
+    8   | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_1110 | LOW
+    9   | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_1101 | LOW
+    10  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_1011 | LOW
+    11  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1111_0111 | LOW
+    12  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1110_1111 | LOW
+    13  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1101_1111 | LOW
+    14  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b1011_1111 | LOW
+    15  | 0b1111_1111      | 0b1111_1111      | 0b1111_1111 | 0b0111_1111 | LOW
   }
 
   def "should notify listener on pin state change when change took longer than debounce"() {
@@ -110,7 +114,7 @@ class MqGatewayMcpExpanderTest extends Specification {
     long startMillis = clock.millis()
     TreeMap<Long, Byte> valuesInTime = [
       (startMillis): 0b1111_1111 as Byte,
-      (startMillis + 100): 0b0111_1111 as Byte,
+      (startMillis + 100): 0b1111_1110 as Byte,
       (startMillis + 201): 0b1111_1111 as Byte
     ]
 
@@ -121,7 +125,7 @@ class MqGatewayMcpExpanderTest extends Specification {
     }
     mcpMock.getValues(GPIOB) >> 0b1111_1111
     int debounceMs = 100
-    BlockingVariable<BinaryState> readState = new BlockingVariable<>(50000) // TODO change back to 5
+    BlockingVariable<BinaryState> readState = new BlockingVariable<>(5)
 
     when:
     expander.addListener(0, debounceMs) { event -> readState.set(event.newState()) }
@@ -136,8 +140,8 @@ class MqGatewayMcpExpanderTest extends Specification {
     long startMillis = clock.millis()
     TreeMap<Long, Byte> valuesInTime = [
       (startMillis): 0b1111_1111 as Byte,
-      (startMillis + 100): 0b0111_1111 as Byte,
-      (startMillis + 200): 0b1011_1111 as Byte
+      (startMillis + 100): 0b1111_1110 as Byte,
+      (startMillis + 200): 0b1111_1101 as Byte
     ]
 
     mcpMock.getValues(GPIOA) >> {

@@ -20,6 +20,7 @@ class MqGatewayMcpExpander(
 
   private val listeners: MutableMap<Int, MutableList<InputPinStateListener>> = mutableMapOf()
   private val isStarted: AtomicBoolean = AtomicBoolean(false)
+  private var runCheckingThread = true
   private val usedPins: MutableMap<Int, GpioType> = mutableMapOf()
 
   fun getPinState(gpioNumber: Int): BinaryState {
@@ -38,9 +39,8 @@ class MqGatewayMcpExpander(
 
   fun start() {
     if (isStarted.compareAndSet(false, true)) {
-      // TODO Using ThreadPool?
       thread(isDaemon = true, name = "${mcp23017.name}-state-loop") {
-        while (true) {
+        while (runCheckingThread) {
           readState().getPinStates().forEachIndexed { gpioNumber, state ->
             listeners.getOrDefault(gpioNumber, emptyList()).forEach { listener ->
               listener.handle(state, clock.instant())
@@ -50,6 +50,10 @@ class MqGatewayMcpExpander(
         }
       }
     }
+  }
+
+  fun stop() {
+    runCheckingThread = false
   }
 
   fun addListener(gpioNumber: Int, debounceMs: Long, listener: BinaryStateListener) {
@@ -88,7 +92,7 @@ class MqGatewayMcpExpander(
     val gpioBBits = toBits(gpioBValues)
     return ExpanderState(gpioABits, gpioBBits)
   }
-  // TODO how should it set bits? whats the order?
+
   private fun toBits(byte: Byte): List<BinaryState> {
     return (0 until Byte.SIZE_BITS).map {
       getBit(byte, it)

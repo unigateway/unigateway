@@ -11,7 +11,6 @@ class InputPinStateListener(private val debounceMs: Long, private val eventListe
 
   fun handle(newState: BinaryState, currentTime: Instant) {
     if (debouncePinState(newState, currentTime) != knownState) {
-      // TODO handle in separate thread?? To avoid blocking one listener by another? Using ThreadPool?
       eventListener.handle(MqGatewayExpanderPinStateChangeEvent(knownState, newState))
       knownState = newState
     }
