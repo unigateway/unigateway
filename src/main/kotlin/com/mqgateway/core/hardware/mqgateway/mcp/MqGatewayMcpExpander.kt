@@ -8,7 +8,7 @@ import com.mqgateway.core.io.BinaryState.HIGH
 import com.mqgateway.core.io.BinaryState.LOW
 import com.mqgateway.core.io.BinaryStateListener
 import java.time.Clock
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
 
