@@ -11,8 +11,6 @@ import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
 
-// TODO any exception from the listeners causes whole communication failed but application is not stopped
-// TODO this test doesn't work on its own
 @Timeout(30)
 class HomieDeviceIT extends MqttSpecification {
 
