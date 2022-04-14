@@ -1,5 +1,6 @@
 package com.mqgateway.core.device.emulatedswitch
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -14,7 +15,7 @@ class EmulatedSwitchButtonDeviceFactory(
     return DeviceType.EMULATED_SWITCH
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration): EmulatedSwitchButtonDevice {
+  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): EmulatedSwitchButtonDevice {
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryOutput = ioProvider.getBinaryOutput(connector)

@@ -1,8 +1,8 @@
 package com.mqgateway.core.device.emulatedswitch
 
+import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
@@ -25,7 +25,7 @@ class EmulatedSwitchButtonDeviceFactoryTest extends Specification {
                                                ["state": new SimulatedConnector(1)])
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "emulated_button"
@@ -37,7 +37,7 @@ class EmulatedSwitchButtonDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("emulated_button", "Emulated switch button", DeviceType.EMULATED_SWITCH)
 
     when:
-    factory.create(deviceConfig)
+    factory.create(deviceConfig, [] as Set)
 
     then:
     thrown(MissingConnectorInDeviceConfigurationException)

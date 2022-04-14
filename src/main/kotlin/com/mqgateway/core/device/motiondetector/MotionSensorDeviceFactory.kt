@@ -1,5 +1,6 @@
 package com.mqgateway.core.device.motiondetector
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -15,7 +16,7 @@ class MotionSensorDeviceFactory(
     return DeviceType.MOTION_DETECTOR
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration): MotionSensorDevice {
+  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): MotionSensorDevice {
     val motionSignalLevelString = deviceConfiguration.config[MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_KEY]
     val motionSignalLevel = motionSignalLevelString?.let { BinaryState.valueOf(it) } ?: MotionSensorDevice.CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]

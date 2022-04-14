@@ -5,7 +5,6 @@ import static com.mqgateway.utils.TestGatewayFactory.gateway
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.HomeAssistantProperties
 import com.mqgateway.core.device.DeviceFactoryProvider
-import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.DeviceRegistryFactory

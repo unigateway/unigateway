@@ -24,7 +24,7 @@ class MotionSensorDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("myMotionDetector", "Test MotionDetector", DeviceType.MOTION_DETECTOR, ["state": new SimulatedConnector(1)])
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "myMotionDetector"
@@ -36,7 +36,7 @@ class MotionSensorDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("myMotionDetector", "Test MotionDetector", DeviceType.MOTION_DETECTOR)
 
     when:
-    factory.create(deviceConfig)
+    factory.create(deviceConfig, [] as Set)
 
     then:
     thrown(MissingConnectorInDeviceConfigurationException)

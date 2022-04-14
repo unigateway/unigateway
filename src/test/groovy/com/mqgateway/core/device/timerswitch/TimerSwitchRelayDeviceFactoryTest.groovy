@@ -25,7 +25,7 @@ class TimerSwitchRelayDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("myTimerSwitch", "Test timer switch", DeviceType.TIMER_SWITCH, ["state": new SimulatedConnector(1)])
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "myTimerSwitch"
@@ -37,7 +37,7 @@ class TimerSwitchRelayDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("myTimerSwitch", "Test timer switch", DeviceType.TIMER_SWITCH)
 
     when:
-    factory.create(deviceConfig)
+    factory.create(deviceConfig, [] as Set)
 
     then:
     thrown(MissingConnectorInDeviceConfigurationException)

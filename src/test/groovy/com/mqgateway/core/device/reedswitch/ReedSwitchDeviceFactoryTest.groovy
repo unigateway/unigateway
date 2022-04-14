@@ -24,7 +24,7 @@ class ReedSwitchDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("myReedSwitch", "Test ReedSwitch", DeviceType.REED_SWITCH, ["state": new SimulatedConnector(1)])
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "myReedSwitch"
@@ -36,7 +36,7 @@ class ReedSwitchDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("myReedSwitch", "Test ReedSwitch", DeviceType.REED_SWITCH)
 
     when:
-    factory.create(deviceConfig)
+    factory.create(deviceConfig, [] as Set)
 
     then:
     thrown(MissingConnectorInDeviceConfigurationException)

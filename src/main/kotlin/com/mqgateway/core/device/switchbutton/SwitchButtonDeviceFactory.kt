@@ -1,5 +1,6 @@
 package com.mqgateway.core.device.switchbutton
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -14,7 +15,7 @@ class SwitchButtonDeviceFactory(
     return DeviceType.SWITCH_BUTTON
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration): SwitchButtonDevice {
+  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): SwitchButtonDevice {
     val longPressTimeMs =
       deviceConfiguration.config[SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_KEY]?.toLong() ?: SwitchButtonDevice.CONFIG_LONG_PRESS_TIME_MS_DEFAULT
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
