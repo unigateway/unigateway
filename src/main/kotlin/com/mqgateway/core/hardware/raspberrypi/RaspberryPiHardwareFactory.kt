@@ -4,9 +4,9 @@ import com.mqgateway.configuration.HardwareInterfaceFactory
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import kotlin.reflect.KClass
 
-class RaspberryPiHardwareFactory : HardwareInterfaceFactory<RaspberryPiConnector> {
+class RaspberryPiHardwareFactory(platformConfiguration: Map<String, *>) : HardwareInterfaceFactory<RaspberryPiConnector> {
 
-  override fun hardwareInputOutputProvider(platformConfiguration: Map<String, *>): RaspberryPiInputOutputProvider {
+  override fun hardwareInputOutputProvider(): RaspberryPiInputOutputProvider {
     return RaspberryPiInputOutputProvider(RaspberryPiPlatformConfiguration())
   }
 

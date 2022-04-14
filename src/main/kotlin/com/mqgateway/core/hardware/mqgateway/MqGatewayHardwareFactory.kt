@@ -1,16 +1,18 @@
 package com.mqgateway.core.hardware.mqgateway
 
 import com.mqgateway.configuration.HardwareInterfaceFactory
+import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.hardware.mqgateway.mcp.MqGatewayMcpExpanders
 import kotlin.reflect.KClass
 
-class MqGatewayHardwareFactory : HardwareInterfaceFactory<MqGatewayConnector> {
+class MqGatewayHardwareFactory(platformConfiguration: Map<String, *>) : HardwareInterfaceFactory<MqGatewayConnector> {
 
-  override fun hardwareInputOutputProvider(platformConfiguration: Map<String, *>): MqGatewayInputOutputProvider {
-    val configuration = MqGatewayPlatformConfigurationFactory().create(platformConfiguration)
-    val mcpExpanders = MqGatewayMcpExpanders(configuration.components.mcp23017.getPorts())
+  private val platformConfiguration = MqGatewayPlatformConfigurationFactory().create(platformConfiguration)
+
+  override fun hardwareInputOutputProvider(): MqGatewayInputOutputProvider {
+    val mcpExpanders = MqGatewayMcpExpanders(platformConfiguration.components.mcp23017.getPorts())
     mcpExpanders.start()
-    return MqGatewayInputOutputProvider(mcpExpanders, configuration)
+    return MqGatewayInputOutputProvider(mcpExpanders, platformConfiguration)
   }
 
   override fun hardwareConnectorFactory(): MqGatewayConnectorFactory {
@@ -19,5 +21,9 @@ class MqGatewayHardwareFactory : HardwareInterfaceFactory<MqGatewayConnector> {
 
   override fun connectorClass(): KClass<MqGatewayConnector> {
     return MqGatewayConnector::class
+  }
+
+  override fun configurationValidator(): GatewayValidator {
+    return MqGatewayGatewayValidator(platformConfiguration)
   }
 }
