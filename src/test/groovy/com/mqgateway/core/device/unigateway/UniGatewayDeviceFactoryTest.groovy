@@ -16,7 +16,7 @@ class UniGatewayDeviceFactoryTest extends Specification {
     def deviceConfig = new DeviceConfiguration("id", "name", DeviceType.UNIGATEWAY)
 
     when:
-    def device = factory.create(deviceConfig)
+    def device = factory.create(deviceConfig, [] as Set)
 
     then:
     device.id == "id"

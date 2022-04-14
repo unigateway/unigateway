@@ -1,5 +1,6 @@
 package com.mqgateway.core.device.reedswitch
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -14,7 +15,7 @@ class ReedSwitchDeviceFactory(
     return DeviceType.REED_SWITCH
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration): ReedSwitchDevice {
+  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): ReedSwitchDevice {
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryInput = ioProvider.getBinaryInput(connector)

@@ -1,5 +1,6 @@
 package com.mqgateway.core.device.timerswitch
 
+import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceFactory
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -16,7 +17,7 @@ class TimerSwitchRelayDeviceFactory(
     return DeviceType.TIMER_SWITCH
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration): TimerSwitchRelayDevice {
+  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): TimerSwitchRelayDevice {
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateBinaryOutput = ioProvider.getBinaryOutput(connector)

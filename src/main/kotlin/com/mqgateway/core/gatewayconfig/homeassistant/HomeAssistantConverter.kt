@@ -5,7 +5,7 @@ import com.mqgateway.core.device.DevicePropertyType
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
-import com.mqgateway.core.device.gate.SingleButtonsGateDevice
+import com.mqgateway.core.device.gate.GateDevice
 import com.mqgateway.core.device.motiondetector.MotionSensorDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import com.mqgateway.core.device.relay.RelayDevice
@@ -194,15 +194,15 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           null,
           null,
           if (device.config[DEVICE_CONFIG_HA_DEVICE_CLASS].equals(DeviceClass.GATE.name, true)) DeviceClass.GATE else DeviceClass.GARAGE,
-          SingleButtonsGateDevice.Command.OPEN.name,
-          SingleButtonsGateDevice.Command.CLOSE.name,
-          SingleButtonsGateDevice.Command.STOP.name,
+          GateDevice.Command.OPEN.name,
+          GateDevice.Command.CLOSE.name,
+          GateDevice.Command.STOP.name,
           null,
           null,
-          SingleButtonsGateDevice.State.OPEN.name,
-          SingleButtonsGateDevice.State.CLOSED.name,
-          SingleButtonsGateDevice.State.OPENING.name,
-          SingleButtonsGateDevice.State.CLOSING.name,
+          GateDevice.State.OPEN.name,
+          GateDevice.State.CLOSED.name,
+          GateDevice.State.OPENING.name,
+          GateDevice.State.CLOSING.name,
           null,
           false
         )
