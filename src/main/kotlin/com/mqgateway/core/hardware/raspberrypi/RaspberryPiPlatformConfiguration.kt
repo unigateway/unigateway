@@ -18,6 +18,5 @@ data class RaspberryPiPlatformConfiguration(
     private const val DEFAULT_DEBOUNCE_MS = 50
     private const val DEFAULT_PULL_UP_DOWN_KEY = "default-pull-up-down"
     private val DEFAULT_PULL_UP_DOWN = PullUpDown.PULL_UP
-
   }
 }
