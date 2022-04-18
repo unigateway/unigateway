@@ -1,13 +1,8 @@
 package com.mqgateway.core.hardware.raspberrypi
 
-
 import spock.lang.Specification
-import spock.lang.Subject
 
-class RaspberryPiPlatformConfigurationFactoryTest extends Specification {
-
-  @Subject
-  RaspberryPiPlatformConfigurationFactory factory = new RaspberryPiPlatformConfigurationFactory()
+class RaspberryPiPlatformConfigurationTest extends Specification {
 
   def "should create MqGateway platform configuration from Map"() {
     given:
@@ -15,7 +10,7 @@ class RaspberryPiPlatformConfigurationFactoryTest extends Specification {
                      'default-debounce-ms': '70']
 
     when:
-    def platformConfiguration = factory.create(configMap)
+    def platformConfiguration = RaspberryPiPlatformConfiguration.create(configMap)
 
     then:
     platformConfiguration.defaultPullUpDown == PullUpDown.PULL_DOWN
@@ -27,7 +22,7 @@ class RaspberryPiPlatformConfigurationFactoryTest extends Specification {
     Map configMap = [:]
 
     when:
-    def platformConfiguration = factory.create(configMap)
+    def platformConfiguration = RaspberryPiPlatformConfiguration.create(configMap)
 
     then:
     platformConfiguration.defaultDebounceMs == 50
@@ -39,7 +34,7 @@ class RaspberryPiPlatformConfigurationFactoryTest extends Specification {
     Map configMap = [:]
 
     when:
-    def platformConfiguration = factory.create(configMap)
+    def platformConfiguration = RaspberryPiPlatformConfiguration.create(configMap)
 
     then:
     platformConfiguration.defaultPullUpDown == PullUpDown.PULL_UP

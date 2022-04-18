@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 class RaspberryPiHardwareFactory : HardwareInterfaceFactory<RaspberryPiConnector> {
 
   override fun hardwareInputOutputProvider(platformConfiguration: Map<String, *>): RaspberryPiInputOutputProvider {
-    val configuration = RaspberryPiPlatformConfigurationFactory().create(platformConfiguration)
+    val configuration = RaspberryPiPlatformConfiguration.create(platformConfiguration)
     return RaspberryPiInputOutputProvider(configuration)
   }
 
