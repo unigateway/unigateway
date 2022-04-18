@@ -20,19 +20,4 @@ class MqGatewayConnectorFactoryTest extends Specification {
     connector.wireColor == WireColor.GREEN_WHITE
     connector.debounceMs == 11
   }
-
-  def "should fail with exception when required field #missingFieldName is missing from config"(String missingFieldName, Map connectorMap) {
-
-    when:
-    connectorFactory.create(connectorMap)
-
-    then:
-    thrown(MissingConnectorConfigurationException)
-
-    where:
-    missingFieldName || connectorMap
-    "portNumber"     || [wireColor: "GREEN_WHITE"]
-    "wireColor"      || [portNumber: 3]
-
-  }
 }

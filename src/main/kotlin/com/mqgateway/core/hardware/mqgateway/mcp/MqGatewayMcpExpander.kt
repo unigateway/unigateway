@@ -41,9 +41,10 @@ class MqGatewayMcpExpander(
     if (isStarted.compareAndSet(false, true)) {
       thread(isDaemon = true, name = "${mcp23017.name}-state-loop") {
         while (runCheckingThread) {
+          val now = clock.instant()
           readState().getPinStates().forEachIndexed { gpioNumber, state ->
             listeners.getOrDefault(gpioNumber, emptyList()).forEach { listener ->
-              listener.handle(state, clock.instant())
+              listener.handle(state, now)
             }
           }
           threadSleeper.sleep(BUSY_LOOP_SLEEP_TIME_MS)
