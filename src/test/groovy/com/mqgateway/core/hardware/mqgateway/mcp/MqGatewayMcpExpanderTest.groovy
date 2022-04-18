@@ -81,7 +81,7 @@ class MqGatewayMcpExpanderTest extends Specification {
 
     when:
     BlockingVariable<BinaryState> readState = new BlockingVariable<>(5)
-    expander.addListener(pin, 0) { event -> readState.set(event.newState()) }
+    expander.setListener(pin, 0) { event -> readState.set(event.newState()) }
     expander.start()
 
     then:
@@ -128,7 +128,7 @@ class MqGatewayMcpExpanderTest extends Specification {
     BlockingVariable<BinaryState> readState = new BlockingVariable<>(5)
 
     when:
-    expander.addListener(0, debounceMs) { event -> readState.set(event.newState()) }
+    expander.setListener(0, debounceMs) { event -> readState.set(event.newState()) }
     expander.start()
 
     then:
@@ -155,9 +155,9 @@ class MqGatewayMcpExpanderTest extends Specification {
     boolean hasReceivedEvent = false
 
     when:
-    expander.addListener(0, debounceMs) { event -> hasReceivedEvent = true }
+    expander.setListener(0, debounceMs) { event -> hasReceivedEvent = true }
     BlockingVariable<BinaryState> readState = new BlockingVariable<>(5)
-    expander.addListener(1, debounceMs) { event -> readState.set(event.newState()) }
+    expander.setListener(1, debounceMs) { event -> readState.set(event.newState()) }
     expander.start()
 
     then:

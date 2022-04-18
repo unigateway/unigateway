@@ -25,7 +25,7 @@ class MqGatewayMcpExpanderInputPin(
   override fun getState(): BinaryState = mqGatewayMcpExpander.getPinState(expanderGpioNumber)
 
   override fun addListener(listener: BinaryStateListener) {
-    mqGatewayMcpExpander.addListener(expanderGpioNumber, debounceMs, listener)
+    mqGatewayMcpExpander.setListener(expanderGpioNumber, debounceMs, listener)
   }
 }
 
