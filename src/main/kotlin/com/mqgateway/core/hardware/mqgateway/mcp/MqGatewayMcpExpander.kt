@@ -21,7 +21,7 @@ class MqGatewayMcpExpander(
   private val threadSleeper: ThreadSleeper = ThreadSleeper()
 ) {
 
-  private val listeners: MutableMap<Int, InputPinStateListener?> = mutableMapOf()
+  private val listeners: MutableMap<Int, MutableList<InputPinStateListener>> = mutableMapOf()
   private val isStarted: AtomicBoolean = AtomicBoolean(false)
   private var runCheckingThread = true
   private val usedPins: MutableMap<Int, GpioType> = mutableMapOf()
@@ -57,7 +57,9 @@ class MqGatewayMcpExpander(
       while (runCheckingThread) {
         val now = clock.instant()
         readState().getPinStates().forEachIndexed { gpioNumber, state ->
-          listeners[gpioNumber]?.handle(state, now)
+          listeners.getOrDefault(gpioNumber, emptyList()).forEach { listener ->
+              listener.handle(state, now)
+            }
         }
         threadSleeper.sleep(BUSY_LOOP_SLEEP_TIME_MS)
       }
@@ -68,9 +70,9 @@ class MqGatewayMcpExpander(
     runCheckingThread = false
   }
 
-  fun setListener(gpioNumber: Int, debounceMs: Long, listener: BinaryStateListener) {
+  fun addListener(gpioNumber: Int, debounceMs: Long, listener: BinaryStateListener) {
     LOGGER.info { "Listener set for ${mcp23017.name} pin $gpioNumber with debounceMs $debounceMs" }
-    listeners[gpioNumber] = InputPinStateListener(debounceMs, listener)
+    listeners.getOrPut(gpioNumber) { mutableListOf() }.add(InputPinStateListener(debounceMs, listener))
   }
 
   fun getInputPin(gpioNumber: Int, debounceMs: Long): MqGatewayMcpExpanderInputPin {
