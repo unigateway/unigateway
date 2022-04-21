@@ -58,8 +58,8 @@ class MqGatewayMcpExpander(
         val now = clock.instant()
         readState().getPinStates().forEachIndexed { gpioNumber, state ->
           listeners.getOrDefault(gpioNumber, emptyList()).forEach { listener ->
-              listener.handle(state, now)
-            }
+            listener.handle(state, now)
+          }
         }
         threadSleeper.sleep(BUSY_LOOP_SLEEP_TIME_MS)
       }
