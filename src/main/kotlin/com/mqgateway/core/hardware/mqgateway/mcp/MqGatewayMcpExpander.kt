@@ -7,10 +7,13 @@ import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.BinaryState.HIGH
 import com.mqgateway.core.io.BinaryState.LOW
 import com.mqgateway.core.io.BinaryStateListener
+import mu.KotlinLogging
 import java.time.Clock
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
+
+private val LOGGER = KotlinLogging.logger {}
 
 class MqGatewayMcpExpander(
   private val mcp23017: MCP23017,
@@ -24,6 +27,7 @@ class MqGatewayMcpExpander(
   private val usedPins: MutableMap<Int, GpioType> = mutableMapOf()
 
   fun getPinState(gpioNumber: Int): BinaryState {
+    LOGGER.trace { "Getting state of pin $gpioNumber" }
     if (usedPins[gpioNumber] == GpioType.OUTPUT) {
       throw IncorrectGpioTypeException("Cannot read state from OUTPUT pin")
     }
@@ -31,22 +35,31 @@ class MqGatewayMcpExpander(
   }
 
   fun setPinState(gpioNumber: Int, state: BinaryState) {
+    LOGGER.debug { "Setting pin $gpioNumber state to $state" }
     if (usedPins[gpioNumber] == GpioType.INPUT) {
       throw IncorrectGpioTypeException("Cannot set state to INPUT pin")
     }
     mcp23017.setValue(gpioNumber, state == HIGH)
   }
 
+  /**
+   * This class is NOT thread-safe, but this method is secured against creating multiple threads to avoid exceptionally hard to predict behaviour.
+   */
   fun start() {
-    if (isStarted.compareAndSet(false, true)) {
-      thread(isDaemon = true, name = "${mcp23017.name}-state-loop") {
-        while (runCheckingThread) {
-          val now = clock.instant()
-          readState().getPinStates().forEachIndexed { gpioNumber, state ->
-            listeners[gpioNumber]?.handle(state, now)
-          }
-          threadSleeper.sleep(BUSY_LOOP_SLEEP_TIME_MS)
+    LOGGER.info { "Starting listening for changes on expander '${mcp23017.name}'" }
+
+    if (isStarted.getAndSet(true)) {
+      LOGGER.error { "This method cannot be run more than once. It may cause hard to predict behaviour." }
+      throw McpExpanderAlreadyStartedException("This McpExpander has been already started: ${mcp23017.name}")
+    }
+
+    thread(isDaemon = true, name = "${mcp23017.name}-state-loop") {
+      while (runCheckingThread) {
+        val now = clock.instant()
+        readState().getPinStates().forEachIndexed { gpioNumber, state ->
+          listeners[gpioNumber]?.handle(state, now)
         }
+        threadSleeper.sleep(BUSY_LOOP_SLEEP_TIME_MS)
       }
     }
   }
@@ -56,6 +69,7 @@ class MqGatewayMcpExpander(
   }
 
   fun setListener(gpioNumber: Int, debounceMs: Long, listener: BinaryStateListener) {
+    LOGGER.info { "Listener set for ${mcp23017.name} pin $gpioNumber with debounceMs $debounceMs" }
     listeners[gpioNumber] = InputPinStateListener(debounceMs, listener)
   }
 
@@ -139,5 +153,7 @@ enum class GpioType {
 
 class McpExpanderPinAlreadyInUseException(val gpioNumber: Int, val gpioType: GpioType) :
   RuntimeException("Gpio '$gpioNumber' has been already used as ${gpioType.name}")
+
+class McpExpanderAlreadyStartedException(message: String) : RuntimeException(message)
 
 class IncorrectGpioTypeException(message: String) : RuntimeException(message)

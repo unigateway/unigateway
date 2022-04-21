@@ -2,7 +2,10 @@ package com.mqgateway.core.hardware.mqgateway.mcp
 
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.BinaryStateListener
+import mu.KotlinLogging
 import java.time.Instant
+
+private val LOGGER = KotlinLogging.logger {}
 
 class InputPinStateListener(private val debounceMs: Long, private val eventListener: BinaryStateListener) {
 
@@ -11,6 +14,7 @@ class InputPinStateListener(private val debounceMs: Long, private val eventListe
 
   fun handle(newState: BinaryState, currentTime: Instant) {
     if (debouncePinState(newState, currentTime) != knownState) {
+      LOGGER.debug { "State changed from $knownState to $newState (debounced: $debounceMs)" }
       eventListener.handle(MqGatewayExpanderPinStateChangeEvent(knownState, newState))
       knownState = newState
     }

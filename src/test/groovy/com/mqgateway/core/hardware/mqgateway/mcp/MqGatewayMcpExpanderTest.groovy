@@ -209,6 +209,17 @@ class MqGatewayMcpExpanderTest extends Specification {
     thrown(IncorrectGpioTypeException)
   }
 
+  def "should fail with exception when trying to start expander twice"() {
+    given:
+    expander.start()
+
+    when:
+    expander.start()
+
+    then:
+    thrown(McpExpanderAlreadyStartedException)
+  }
+
   private byte getValuesInTime(SortedMap<Long, Byte> valuesByTime, Long currentTimeInMillis) {
     Long timeKeyForCurrentTime
     for (Long timeInMap : valuesByTime.keySet()) {
