@@ -7,9 +7,9 @@ import java.time.Instant
 
 private val LOGGER = KotlinLogging.logger {}
 
-class InputPinStateListener(private val debounceMs: Long, private val eventListener: BinaryStateListener) {
+class InputPinStateListener(private val debounceMs: Long, initialState: BinaryState, private val eventListener: BinaryStateListener) {
 
-  var knownState: BinaryState = BinaryState.HIGH
+  var knownState: BinaryState = initialState
   var ongoingChangeTime: Instant? = null
 
   fun handle(newState: BinaryState, currentTime: Instant) {

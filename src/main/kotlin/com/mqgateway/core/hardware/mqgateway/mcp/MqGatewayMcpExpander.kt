@@ -72,7 +72,7 @@ class MqGatewayMcpExpander(
 
   fun addListener(gpioNumber: Int, debounceMs: Long, listener: BinaryStateListener) {
     LOGGER.info { "Listener set for ${mcp23017.name} pin $gpioNumber with debounceMs $debounceMs" }
-    listeners.getOrPut(gpioNumber) { mutableListOf() }.add(InputPinStateListener(debounceMs, listener))
+    listeners.getOrPut(gpioNumber) { mutableListOf() }.add(InputPinStateListener(debounceMs, PIN_INITIAL_STATE, listener))
   }
 
   fun getInputPin(gpioNumber: Int, debounceMs: Long): MqGatewayMcpExpanderInputPin {
@@ -140,6 +140,7 @@ class MqGatewayMcpExpander(
     const val GPIOA = 0
     const val GPIOB = 1
     const val BUSY_LOOP_SLEEP_TIME_MS = 20L
+    val PIN_INITIAL_STATE = HIGH
   }
 }
 
