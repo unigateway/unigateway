@@ -85,5 +85,13 @@ class InputPinStateListenerTest extends Specification {
     then:
     !notified
   }
+
+  def "should throw exception when trying to create listener with debounce lower than zero"() {
+    when:
+    new InputPinStateListener(-1, HIGH, {})
+
+    then:
+    thrown(IllegalArgumentException)
+  }
 }
 
