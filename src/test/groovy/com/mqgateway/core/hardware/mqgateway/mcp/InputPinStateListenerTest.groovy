@@ -11,20 +11,20 @@ class InputPinStateListenerTest extends Specification {
 
   def "should notify listener on state change instantly when debounce is set to 0"() {
     given:
-    boolean notified = false
-    InputPinStateListener stateListener = new InputPinStateListener(0, HIGH, { BinaryStateChangeEvent it -> notified = true })
+    int notifiedTimes = 0
+    InputPinStateListener stateListener = new InputPinStateListener(0, HIGH, { BinaryStateChangeEvent it -> notifiedTimes++ })
 
     when:
     stateListener.handle(BinaryState.LOW, Instant.now())
 
     then:
-    notified
+    notifiedTimes == 1
   }
 
   def "should notify listener on state change when change took at least as long as debounce is set to"() {
     given:
-    boolean notified = false
-    InputPinStateListener stateListener = new InputPinStateListener(50, HIGH, { BinaryStateChangeEvent it -> notified = true })
+    int notifiedTimes = 0
+    InputPinStateListener stateListener = new InputPinStateListener(50, HIGH, { BinaryStateChangeEvent it -> notifiedTimes++ })
     def startTime = Instant.now()
     def endTime = startTime.plusMillis(50)
 
@@ -34,14 +34,14 @@ class InputPinStateListenerTest extends Specification {
     stateListener.handle(HIGH, endTime.plusMillis(1))
 
     then:
-    notified
+    notifiedTimes == 1
   }
 
   def "should notify the listener on state change when change took longer then debounce and it was checked multiple times in between"() {
     given:
-    boolean notified = false
+    int notifiedTimes = 0
     long debounceMs = 50
-    InputPinStateListener stateListener = new InputPinStateListener(debounceMs, HIGH, { BinaryStateChangeEvent it -> notified = true })
+    InputPinStateListener stateListener = new InputPinStateListener(debounceMs, HIGH, { BinaryStateChangeEvent it -> notifiedTimes++ })
     def startTime = Instant.now()
     def endTime = startTime.plusMillis(debounceMs)
 
@@ -54,7 +54,7 @@ class InputPinStateListenerTest extends Specification {
     stateListener.handle(HIGH, endTime.plusMillis(1))
 
     then:
-    notified
+    notifiedTimes == 1
   }
 
   def "should not notify listener on state change when change took less than debounce is set to"() {
