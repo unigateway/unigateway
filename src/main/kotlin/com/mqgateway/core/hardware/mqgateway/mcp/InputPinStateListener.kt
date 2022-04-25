@@ -9,7 +9,7 @@ private val LOGGER = KotlinLogging.logger {}
 
 class InputPinStateListener(private val debounceMs: Long, initialState: BinaryState, private val eventListener: BinaryStateListener) {
   init {
-      require(debounceMs >= 0) { "Debounce must be non-negative, was $debounceMs" }
+    require(debounceMs >= 0) { "Debounce must be non-negative, was $debounceMs" }
   }
 
   var knownState: BinaryState = initialState
