@@ -1,12 +1,11 @@
 package com.mqgateway.core.gatewayconfig.validation
 
-import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 
 class ShutterAdditionalConfigValidator : GatewayValidator {
-  override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+  override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     val shutters: List<DeviceConfiguration> = gatewayConfiguration.devicesByType(DeviceType.SHUTTER)
 
     return shutters.filter { shutter ->

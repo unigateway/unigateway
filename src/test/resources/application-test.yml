@@ -5,8 +5,8 @@ gateway:
     network-adapter: enp0s25
     mqttHostname: localhost
     platform: SIMULATED
-    expander:
-      enabled: true
+    platform-config:
+      some-config: simulated-prod
 
 homeassistant:
   enabled: true

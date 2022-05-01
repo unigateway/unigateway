@@ -1,17 +1,23 @@
 package com.mqgateway.core.hardware.mqgateway
 
+import com.mqgateway.core.hardware.mqgateway.mcp.MqGatewayMcpExpanders
+import com.mqgateway.core.io.BinaryInput
+import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.FloatInput
 import com.mqgateway.core.io.FloatOutput
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
-class MqGatewayInputOutputProvider(platformConfiguration: MqGatewayPlatformConfiguration) : HardwareInputOutputProvider<MqGatewayConnector> {
+class MqGatewayInputOutputProvider(
+  private val mcpExpanders: MqGatewayMcpExpanders,
+  private val platformConfiguration: MqGatewayPlatformConfiguration
+) : HardwareInputOutputProvider<MqGatewayConnector> {
 
-  override fun getBinaryInput(connector: MqGatewayConnector): MqGatewayDigitalPinInput {
-    TODO("Not yet implemented")
+  override fun getBinaryInput(connector: MqGatewayConnector): BinaryInput {
+    return mcpExpanders.getInputPin(connector.portNumber, connector.wireColor, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
   }
 
-  override fun getBinaryOutput(connector: MqGatewayConnector): MqGatewayDigitalPinOutput {
-    TODO("Not yet implemented")
+  override fun getBinaryOutput(connector: MqGatewayConnector): BinaryOutput {
+    return mcpExpanders.getOutputPin(connector.portNumber, connector.wireColor)
   }
 
   override fun getFloatInput(connector: MqGatewayConnector): FloatInput {
