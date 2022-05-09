@@ -2,7 +2,6 @@ package com.mqgateway.core.hardware.raspberrypi
 
 import static com.mqgateway.utils.TestGatewayFactory.gateway
 
-import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.hardware.raspberrypi.validators.UniqueGpioNumbersValidatorGatewayValidator
@@ -33,7 +32,7 @@ class RaspberryPiGatewayValidatorTest extends Specification {
     ])])
 
     expect:
-    validator.validate(config, systemProperties) == [
+    validator.validate(config) == [
       new UniqueGpioNumbersValidatorGatewayValidator.GpioNumberNotUnique(1, [
         new Pair("device_1", "status"),
         new Pair("device_3", "connector_name")

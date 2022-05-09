@@ -1,6 +1,5 @@
 package com.mqgateway.core.hardware.raspberrypi.validators
 
-import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.gatewayconfig.validation.ValidationFailureReason
@@ -11,7 +10,7 @@ private val LOGGER = KotlinLogging.logger {}
 
 class UniqueGpioNumbersValidatorGatewayValidator : GatewayValidator {
 
-  override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+  override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     LOGGER.debug { "Validating that gpio numbers are unique in all devices" }
 
     return gatewayConfiguration.devices

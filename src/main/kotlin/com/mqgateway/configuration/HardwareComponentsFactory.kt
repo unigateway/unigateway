@@ -22,20 +22,18 @@ class HardwareComponentsFactory {
 
   @Singleton
   fun hardwareInterfaceFactory(gatewaySystemProperties: GatewaySystemProperties): HardwareInterfaceFactory<*> {
+    val platformConfig = gatewaySystemProperties.platformConfig ?: emptyMap()
     return when (gatewaySystemProperties.platform) {
-      "SIMULATED" -> SimulatedHardwareFactory()
-      "MQGATEWAY" -> MqGatewayHardwareFactory()
-      "RASPBERRYPI" -> RaspberryPiHardwareFactory()
+      "SIMULATED" -> SimulatedHardwareFactory(platformConfig)
+      "MQGATEWAY" -> MqGatewayHardwareFactory(platformConfig)
+      "RASPBERRYPI" -> RaspberryPiHardwareFactory(platformConfig)
       else -> throw IllegalStateException()
     }
   }
 
   @Singleton
-  fun hardwareInputOutputProvider(
-    hardwareInterfaceFactory: HardwareInterfaceFactory<*>,
-    gatewaySystemProperties: GatewaySystemProperties
-  ): HardwareInputOutputProvider<*> {
-    return hardwareInterfaceFactory.hardwareInputOutputProvider(gatewaySystemProperties.platformConfig ?: emptyMap<String, Any>())
+  fun hardwareInputOutputProvider(hardwareInterfaceFactory: HardwareInterfaceFactory<*>): HardwareInputOutputProvider<*> {
+    return hardwareInterfaceFactory.hardwareInputOutputProvider()
   }
 
   @Singleton

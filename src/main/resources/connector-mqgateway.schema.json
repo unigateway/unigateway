@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MqGateway connector",
+  "type": "object",
+  "required": [
+    "portNumber", "wireColor"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "description": "Connector source",
+      "enum": [
+        "HARDWARE"
+      ]
+    },
+    "portNumber": {
+      "description": "Number of port in Gateway to which device is connected (1-32)",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "wireColor": {
+      "description": "Color of wire to which device is connected",
+      "enum": [
+        "BLUE",
+        "BLUE_WHITE",
+        "GREEN",
+        "GREEN_WHITE"
+      ]
+    },
+    "debounceMs": {
+      "description": "Debounce in milliseconds to filter flickering (default: 50)",
+      "type": "integer",
+      "minimum": 0,
+      "default": 50
+    }
+  }
+}

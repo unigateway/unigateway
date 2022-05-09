@@ -22,7 +22,7 @@ class ConfigValidatorTest extends Specification {
   def jsonSchemaValidator = new JsonSchemaValidator(new ObjectMapper(), systemProperties)
 
   @Subject
-  ConfigValidator configValidator = new ConfigValidator(jsonSchemaValidator, systemProperties, validators)
+  ConfigValidator configValidator = new ConfigValidator(jsonSchemaValidator, validators)
 
   def "should validation failed when there are more than one device with the same id"() {
     given:

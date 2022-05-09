@@ -1,12 +1,11 @@
 package com.mqgateway.core.gatewayconfig.validation
 
-import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 
 class GateAdditionalConfigValidator : GatewayValidator {
-  override fun validate(gatewayConfiguration: GatewayConfiguration, systemProperties: GatewaySystemProperties): List<ValidationFailureReason> {
+  override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     val gates: List<DeviceConfiguration> = gatewayConfiguration.devicesByType(DeviceType.GATE)
 
     return gates.flatMap { gate ->

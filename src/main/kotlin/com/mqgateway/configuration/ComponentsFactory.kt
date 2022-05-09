@@ -56,7 +56,6 @@ internal class ComponentsFactory {
   @Singleton
   fun configValidator(
     jsonSchemaValidator: JsonSchemaValidator,
-    gatewaySystemProperties: GatewaySystemProperties,
     hardwareInterfaceFactory: HardwareInterfaceFactory<*>
   ): ConfigValidator {
     val validators = listOf(
@@ -65,7 +64,7 @@ internal class ComponentsFactory {
       ShutterAdditionalConfigValidator(),
       UniqueDeviceIdsValidator()
     )
-    return ConfigValidator(jsonSchemaValidator, gatewaySystemProperties, validators + hardwareInterfaceFactory.configurationValidator())
+    return ConfigValidator(jsonSchemaValidator, validators + hardwareInterfaceFactory.configurationValidator())
   }
 
   @Singleton
