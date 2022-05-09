@@ -22,14 +22,20 @@ import com.mqgateway.core.gatewayconfig.validation.JsonSchemaValidator
 import com.mqgateway.core.gatewayconfig.validation.ReferenceDeviceValidator
 import com.mqgateway.core.gatewayconfig.validation.ShutterAdditionalConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.UniqueDeviceIdsValidator
+import com.mqgateway.core.io.JCommSerial
+import com.mqgateway.core.io.provider.DefaultMySensorsInputOutputProvider
+import com.mqgateway.core.io.provider.DisabledMySensorsInputOutputProvider
 import com.mqgateway.core.io.provider.HardwareConnector
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
+import com.mqgateway.core.mysensors.MySensorMessageSerializer
+import com.mqgateway.core.mysensors.MySensorsSerialConnection
 import com.mqgateway.core.utils.OshiSystemInfoProvider
 import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import jakarta.inject.Named
 import jakarta.inject.Singleton
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -140,8 +146,24 @@ internal class ComponentsFactory {
   }
 
   @Singleton
+  @Requires(property = "gateway.system.mysensors.enabled", value = "true")
+  fun mySensorsSerialConnection(gatewaySystemProperties: GatewaySystemProperties): MySensorsSerialConnection {
+    val serial = JCommSerial()
+
+    serial.open(gatewaySystemProperties.mySensors.portDescriptor, gatewaySystemProperties.mySensors.baudRate)
+    return MySensorsSerialConnection(serial, MySensorMessageSerializer())
+  }
+
+  @Singleton
+  @Requires(property = "gateway.system.mysensors.enabled", value = "true")
+  fun mySensorsInputOutputProvider(mySensorsSerialConnection: MySensorsSerialConnection): MySensorsInputOutputProvider {
+    return DefaultMySensorsInputOutputProvider(mySensorsSerialConnection)
+  }
+
+  @Singleton
+  @Requires(property = "gateway.system.mysensors.enabled", value = "false")
   fun mySensorsInputOutputProvider(): MySensorsInputOutputProvider {
-    return MySensorsInputOutputProvider()
+    return DisabledMySensorsInputOutputProvider()
   }
 
   @Singleton

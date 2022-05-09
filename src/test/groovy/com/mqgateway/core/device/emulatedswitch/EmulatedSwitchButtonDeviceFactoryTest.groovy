@@ -4,20 +4,16 @@ import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
-import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
-import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
-import com.mqgateway.core.io.provider.InputOutputProvider
-import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
+import com.mqgateway.utils.TestGatewayFactory
 import spock.lang.Specification
 import spock.lang.Subject
 
 class EmulatedSwitchButtonDeviceFactoryTest extends Specification {
 
-  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(new SimulatedPlatformConfiguration("someValue")),
-                                                           new MySensorsInputOutputProvider())
+  TestGatewayFactory testGatewayFactory = new TestGatewayFactory()
 
   @Subject
-  def factory = new EmulatedSwitchButtonDeviceFactory(ioProvider)
+  def factory = new EmulatedSwitchButtonDeviceFactory(testGatewayFactory.ioProvider)
 
   def "should create emulated switch button"() {
     given:

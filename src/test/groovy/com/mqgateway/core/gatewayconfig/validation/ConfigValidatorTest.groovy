@@ -164,7 +164,7 @@ class ConfigValidatorTest extends Specification {
   }
 
   static GatewaySystemProperties prepareSystemProperties() {
-
-    return new GatewaySystemProperties("eth0", "SIMULATED", [:], "localhost")
+    return new GatewaySystemProperties("eth0", "SIMULATED", [:], "localhost",
+                                       new GatewaySystemProperties.MySensors(false, "", 100))
   }
 }

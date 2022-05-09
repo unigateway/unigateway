@@ -8,6 +8,10 @@ import com.mqgateway.core.hardware.mqgateway.WireColor
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.io.provider.Connector
 import com.mqgateway.core.io.provider.MySensorsConnector
+import com.mqgateway.core.mysensors.InternalType
+import com.mqgateway.core.mysensors.PresentationType
+import com.mqgateway.core.mysensors.SetReqType
+import com.mqgateway.core.mysensors.StreamType
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.SerializersKt
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
@@ -22,9 +26,12 @@ class FastConfigurationSerializerTest extends Specification {
   def "should serialize and deserialize configuration"() {
     given:
     def config = new GatewayConfiguration("1.0.0", "unigateway-id", "Test config", [
-		new DeviceConfiguration("device_1", "First device", DeviceType.RELAY, ["state": new SimulatedConnector(1)]),
-		new DeviceConfiguration("device_2", "Second device", DeviceType.RELAY, ["state": new SimulatedConnector(2)]),
-		new DeviceConfiguration("device_3", "Third device", DeviceType.RELAY, ["state": new MySensorsConnector(1)]),
+      new DeviceConfiguration("device_1", "First device", DeviceType.RELAY, ["state": new SimulatedConnector(1)]),
+      new DeviceConfiguration("device_2", "Second device", DeviceType.RELAY, ["state": new SimulatedConnector(2)]),
+      new DeviceConfiguration("device_3", "Third device", DeviceType.RELAY, ["state": new MySensorsConnector(1, 1, PresentationType.S_TEMP)]),
+      new DeviceConfiguration("device_4", "Fourth device", DeviceType.RELAY, ["state": new MySensorsConnector(1, 1, StreamType.STREAM)]),
+      new DeviceConfiguration("device_5", "Fifth device", DeviceType.RELAY, ["state": new MySensorsConnector(1, 1, InternalType.I_BATTERY_LEVEL)]),
+      new DeviceConfiguration("device_6", "Sixth device", DeviceType.RELAY, ["state": new MySensorsConnector(1, 1, SetReqType.V_ARMED)]),
     ])
 
     when:

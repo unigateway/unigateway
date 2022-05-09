@@ -1,5 +1,6 @@
 package com.mqgateway.core.io.provider
 
+import com.mqgateway.core.mysensors.Type
 import kotlinx.serialization.Serializable
 
 /**
@@ -14,5 +15,7 @@ interface HardwareConnector : Connector
 
 @Serializable
 data class MySensorsConnector(
-  val nodeId: Int
+  val nodeId: Int,
+  val sensorId: Int,
+  val type: Type
 ) : Connector

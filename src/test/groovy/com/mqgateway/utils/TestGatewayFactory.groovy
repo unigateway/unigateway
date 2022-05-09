@@ -5,7 +5,6 @@ import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
 import com.mqgateway.core.device.relay.RelayDevice
-import com.mqgateway.core.device.shutter.ShutterDevice
 import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
 import com.mqgateway.core.device.unigateway.UniGatewayDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -13,8 +12,8 @@ import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
+import com.mqgateway.core.io.provider.DisabledMySensorsInputOutputProvider
 import com.mqgateway.core.io.provider.InputOutputProvider
-import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 
@@ -22,7 +21,7 @@ class TestGatewayFactory {
 
   InputOutputProvider ioProvider = new InputOutputProvider(
     new SimulatedInputOutputProvider(new SimulatedPlatformConfiguration("someValue")),
-    new MySensorsInputOutputProvider())
+    new DisabledMySensorsInputOutputProvider())
   DeviceFactoryProvider deviceFactoryProvider = new DeviceFactoryProvider(ioProvider, new TimersScheduler(), new FakeSystemInfoProvider())
 
   RelayDevice relayDevice(String id) {
