@@ -23,7 +23,7 @@ class MySensorBinaryOutputTest extends Specification {
     output.setState(BinaryState.HIGH)
 
     then:
-    serial.sentMessages == ["${NODE_ID};${SENSOR_ID};${Command.SET.id};0;${PresentationType.S_BINARY.id};ON\n"]
+    serial.sentMessages == ["${NODE_ID};${SENSOR_ID};${Command.SET.id};0;${PresentationType.S_BINARY.id};1\n"]
   }
 
   def "should send message when changing state to low"() {
@@ -35,6 +35,6 @@ class MySensorBinaryOutputTest extends Specification {
     output.setState(BinaryState.LOW)
 
     then:
-    serial.sentMessages == ["${NODE_ID};${SENSOR_ID};${Command.SET.id};0;${PresentationType.S_BINARY.id};OFF\n"]
+    serial.sentMessages == ["${NODE_ID};${SENSOR_ID};${Command.SET.id};0;${PresentationType.S_BINARY.id};0\n"]
   }
 }

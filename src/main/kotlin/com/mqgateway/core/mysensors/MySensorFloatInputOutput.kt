@@ -11,14 +11,12 @@ class MySensorFloatInput(private val serialConnection: MySensorsSerialConnection
   }
 
   override fun getValue(): Float {
-    // todo we can have implementation here, that we add our listener and set last value. do we need it?
-    throw UnsupportedOperationException("Reading value is not supported for MySensors")
+    return 0f
   }
 }
 
 class MySensorFloatOutput(private val serialConnection: MySensorsSerialConnection, private val connector: MySensorsConnector) : FloatOutput {
   override fun setValue(newValue: Float) {
-    // todo what about command and ack?
     serialConnection.publishMessage(
       Message(connector.nodeId, connector.sensorId, Command.SET, false, connector.type, MySensorPayloadConverter.serializeFloat(newValue))
     )

@@ -207,6 +207,30 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           false
         )
       )
+      DeviceType.TEMPERATURE -> listOf(
+        HomeAssistantSensor(
+          basicProperties,
+          device.name,
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.AVAILABILITY),
+          "ONLINE",
+          "OFFLINE",
+          HomeAssistantSensor.DeviceClass.TEMPERATURE,
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.TEMPERATURE),
+          device.getProperty(DevicePropertyType.TEMPERATURE).unit.value
+        )
+      )
+      DeviceType.HUMIDITY -> listOf(
+        HomeAssistantSensor(
+          basicProperties,
+          device.name,
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.AVAILABILITY),
+          "ONLINE",
+          "OFFLINE",
+          HomeAssistantSensor.DeviceClass.HUMIDITY,
+          homieStateTopic(unigatewayId, device.id, DevicePropertyType.HUMIDITY),
+          device.getProperty(DevicePropertyType.HUMIDITY).unit.value
+        )
+      )
       DeviceType.UNIGATEWAY -> throw IllegalArgumentException("MqGateway should not be configured as a device")
     }
 

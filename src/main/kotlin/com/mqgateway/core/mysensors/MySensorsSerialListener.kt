@@ -6,7 +6,6 @@ import com.mqgateway.core.io.BinaryStateListener
 import com.mqgateway.core.io.FloatValueChangeEvent
 import com.mqgateway.core.io.FloatValueListener
 import mu.KotlinLogging
-import java.lang.Float.parseFloat
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -37,8 +36,6 @@ class MySensorMessageToBinaryValueListener(private val binaryListener: BinarySta
   override fun onMessageReceived(message: Message) {
     if (message.type == type) {
       binaryListener.handle(MySensorBinaryValueChangeEvent(message))
-    } else {
-      LOGGER.warn { "Message received, but has incorrect type: $message" }
     }
   }
 }

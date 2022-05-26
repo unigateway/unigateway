@@ -53,7 +53,11 @@ private class DataReceivedEventListener : SerialPortDataListener {
       LOGGER.warn { "No registered listeners for serial port." }
     }
 
-    listeners.forEach { it.dataReceived(SerialDataEvent(data)) }
+    try {
+      listeners.forEach { it.dataReceived(SerialDataEvent(data)) }
+    } catch (e: Exception) {
+      LOGGER.error { "One of listeners thrown an error: $e" }
+    }
   }
 
   fun addListener(listener: SerialDataEventListener) {

@@ -193,7 +193,7 @@ enum class InternalType(private val id: Byte) : Type {
 }
 
 @Serializable
-enum class StreamType : Type { // todo should it be a type?
+enum class StreamType : Type {
   STREAM;
 
   override fun getId(): Byte {

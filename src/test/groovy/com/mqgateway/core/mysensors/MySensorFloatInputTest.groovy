@@ -48,16 +48,13 @@ class MySensorFloatInputTest extends Specification {
     newValue == null
   }
 
-  def "should throw exception when trying to get value"() {
+  def "should getState return 0"() {
     given:
     def connector = new MySensorsConnector(NODE_ID, SENSOR_ID, InternalType.I_DEBUG)
     def input = new MySensorFloatInput(serialConnection, connector)
 
-    when:
-    input.getValue()
-
-    then:
-    thrown(UnsupportedOperationException)
+    expect:
+    input.getValue() == 0f
   }
 
 }

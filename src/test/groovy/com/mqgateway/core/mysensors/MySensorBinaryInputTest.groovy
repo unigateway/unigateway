@@ -24,7 +24,7 @@ class MySensorBinaryInputTest extends Specification {
     })
 
     when:
-    serial.simulateMessageReceived("${NODE_ID};${SENSOR_ID};${Command.PRESENTATION.id};0;${PresentationType.S_BINARY.id};ON\n")
+    serial.simulateMessageReceived("${NODE_ID};${SENSOR_ID};${Command.PRESENTATION.id};0;${PresentationType.S_BINARY.id};1\n")
 
     then:
     newState == BinaryState.HIGH
@@ -40,7 +40,7 @@ class MySensorBinaryInputTest extends Specification {
     })
 
     when:
-    serial.simulateMessageReceived("${NODE_ID};${SENSOR_ID};${Command.PRESENTATION.id};0;${PresentationType.S_BINARY.id};OFF\n")
+    serial.simulateMessageReceived("${NODE_ID};${SENSOR_ID};${Command.PRESENTATION.id};0;${PresentationType.S_BINARY.id};0\n")
 
     then:
     newState == BinaryState.LOW
@@ -62,15 +62,12 @@ class MySensorBinaryInputTest extends Specification {
     newState == null
   }
 
-  def "should throw exception when trying to get value"() {
+  def "should getState return LOW state"() {
     given:
     def connector = new MySensorsConnector(NODE_ID,SENSOR_ID, InternalType.I_DEBUG)
     def input = new MySensorBinaryInput(serialConnection, connector)
 
-    when:
-    input.getState()
-
-    then:
-    thrown(UnsupportedOperationException)
+    expect:
+    input.getState() == BinaryState.LOW
   }
 }

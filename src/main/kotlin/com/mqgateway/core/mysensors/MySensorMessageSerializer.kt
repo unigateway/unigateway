@@ -4,7 +4,7 @@ class MySensorMessageSerializer {
 
   fun deserialize(messageString: String): Message {
     val parts = messageString.split(";")
-    val (nodeIdString, childSensorIdString, commandId, ackString, typeString, payload) = parts // todo check it
+    val (nodeIdString, childSensorIdString, commandId, ackString, typeString, payload) = parts
     val command: Command = Command.byId(commandId.toByte()) ?: throw UnknownCommandException(commandId)
     val type: Type = when (command) {
       Command.PRESENTATION -> PresentationType.byId(typeString.toByte())
@@ -14,7 +14,7 @@ class MySensorMessageSerializer {
       Command.STREAM -> StreamType.STREAM
     } ?: throw UnknownCommandTypeException(command, typeString)
 
-    return Message(nodeIdString.toInt(), childSensorIdString.toInt(), command, ackString == "1", type, payload)
+    return Message(nodeIdString.toInt(), childSensorIdString.toInt(), command, ackString == "1", type, payload.trim())
   }
 
   fun serialize(message: Message): String {

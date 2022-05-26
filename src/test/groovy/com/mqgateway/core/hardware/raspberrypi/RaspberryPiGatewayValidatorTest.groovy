@@ -11,9 +11,6 @@ import spock.lang.Subject
 
 class RaspberryPiGatewayValidatorTest extends Specification {
 
-  def systemProperties = new GatewaySystemProperties("eth0", "RASPBERRYPI", [:], "localhost",
-                                                     new GatewaySystemProperties.MySensors(false, "", 0))
-
   @Subject
   RaspberryPiGatewayValidator validator = new RaspberryPiGatewayValidator()
 
