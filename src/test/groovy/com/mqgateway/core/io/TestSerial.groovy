@@ -1,6 +1,5 @@
 package com.mqgateway.core.io
 
-
 import org.jetbrains.annotations.NotNull
 
 class TestSerial implements Serial {
@@ -24,7 +23,7 @@ class TestSerial implements Serial {
   }
 
   void simulateMessageReceived(String message) {
-    eventListeners.forEach { it.dataReceived(new SerialDataEvent(message))}
+    eventListeners.forEach { it.dataReceived(new SerialDataEvent(message)) }
   }
 
 }

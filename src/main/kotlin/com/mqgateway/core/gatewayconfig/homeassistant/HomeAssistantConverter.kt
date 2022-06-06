@@ -211,9 +211,9 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         HomeAssistantSensor(
           basicProperties,
           device.name,
-          homieStateTopic(unigatewayId, device.id, DevicePropertyType.AVAILABILITY),
-          "ONLINE",
-          "OFFLINE",
+          null,
+          null,
+          null,
           HomeAssistantSensor.DeviceClass.TEMPERATURE,
           homieStateTopic(unigatewayId, device.id, DevicePropertyType.TEMPERATURE),
           device.getProperty(DevicePropertyType.TEMPERATURE).unit.value
@@ -223,9 +223,9 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         HomeAssistantSensor(
           basicProperties,
           device.name,
-          homieStateTopic(unigatewayId, device.id, DevicePropertyType.AVAILABILITY),
-          "ONLINE",
-          "OFFLINE",
+          null,
+          null,
+          null,
           HomeAssistantSensor.DeviceClass.HUMIDITY,
           homieStateTopic(unigatewayId, device.id, DevicePropertyType.HUMIDITY),
           device.getProperty(DevicePropertyType.HUMIDITY).unit.value

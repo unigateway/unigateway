@@ -28,7 +28,6 @@ class DefaultMySensorsInputOutputProvider(private val serialConnection: MySensor
   }
 
   override fun getFloatInput(connector: MySensorsConnector): FloatInput {
-    // todo validate types that can have float
     return MySensorFloatInput(serialConnection, connector)
   }
 
