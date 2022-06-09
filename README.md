@@ -3,7 +3,7 @@
 UniGateway
 =========
 
-This repository contains source code of software for [UniGateway project](https://mqgateway.com). 
+This repository contains source code of software for [UniGateway project](TBD). 
 
 ## What is UniGateway
 UniGateway is gateway device for multiple wired electronic sensors and controllers, which are essential in creating smart home solution.
@@ -22,7 +22,7 @@ like relay modules, PIR motion sensors or just plain wall switches into UniGatew
 
 ![UniGateway diagram](docs/docs/user-guide/images/mqgateway-diagram.png)
 
-Read more in [documentation](https://mqgateway.com).
+Read more in [documentation](TBD).
 
 ## Installation
 

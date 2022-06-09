@@ -4,7 +4,7 @@ endpoints:
 
 micronaut:
   application:
-    name: mqgateway
+    name: unigateway
   metrics:
     enabled: true
   server:
@@ -28,9 +28,6 @@ gateway:
       baudRate: 9600
   websocket:
     enabled: true
-  update:
-    host: https://api.github.com
-    path: /repos/aetas/mqgateway/releases/latest
 
 homeassistant:
   enabled: true

@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: com.mqgateway
+defaultPackage: com.unigateway
 testFramework: spock
 sourceLanguage: kotlin
 buildTool: gradle

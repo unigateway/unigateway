@@ -15,7 +15,7 @@ out/
 ### VS Code ###
 .vscode/
 
-### MqGateway ###
+### uniateway ###
 .previousConfig.cbor
 .previousConfig.MD5
 /logs
