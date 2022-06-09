@@ -9,5 +9,7 @@ enum class DeviceType {
   EMULATED_SWITCH,
   TIMER_SWITCH,
   SHUTTER,
-  GATE
+  GATE,
+  TEMPERATURE,
+  HUMIDITY
 }

@@ -17,10 +17,14 @@ import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
+import com.mqgateway.core.io.provider.DefaultMySensorsInputOutputProvider
+import com.mqgateway.core.io.provider.DisabledMySensorsInputOutputProvider
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
+import com.mqgateway.core.mysensors.MySensorsSerialConnection
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
+import com.mqgateway.utils.TestGatewayFactory
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
@@ -29,12 +33,12 @@ class HomeAssistantConverterTest extends Specification {
 
   String firmwareVersion = "1.2.3-TEST-ONLY"
 
+  TestGatewayFactory testGatewayFactory = new TestGatewayFactory()
+
   @Subject
   HomeAssistantConverter converter = new HomeAssistantConverter(firmwareVersion)
 
-  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(
-    new SimulatedPlatformConfiguration("someValue")), new MySensorsInputOutputProvider())
-  DeviceFactoryProvider deviceFactoryProvider = new DeviceFactoryProvider(ioProvider, new TimersScheduler(), new FakeSystemInfoProvider())
+  DeviceFactoryProvider deviceFactoryProvider = new DeviceFactoryProvider(testGatewayFactory.ioProvider, new TimersScheduler(), new FakeSystemInfoProvider())
   DeviceRegistryFactory deviceRegistryFactory = new DeviceRegistryFactory(deviceFactoryProvider)
 
   def "should convert MqGateway relay to HA light when set explicitly in gateway configuration"() {

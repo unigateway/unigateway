@@ -7,5 +7,9 @@ gateway:
     platform-config:
       some-config: simulated-dev
     mqttHostname: "localhost"
+    mysensors:
+      enabled: false
+      portDescriptor: "/dev/ttys000"
+      baudRate: 38400
   websocket:
     enabled: true

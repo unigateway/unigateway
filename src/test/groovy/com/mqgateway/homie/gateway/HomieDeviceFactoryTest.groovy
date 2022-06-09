@@ -18,8 +18,10 @@ import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
 import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
+import com.mqgateway.core.io.provider.DefaultMySensorsInputOutputProvider
 import com.mqgateway.core.io.provider.InputOutputProvider
 import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
+import com.mqgateway.core.mysensors.MySensorsSerialConnection
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.homie.HomieNode
@@ -27,6 +29,7 @@ import com.mqgateway.homie.HomieProperty
 import com.mqgateway.homie.HomieReceiver
 import com.mqgateway.homie.HomieReceiverStub
 import com.mqgateway.utils.MqttClientFactoryStub
+import com.mqgateway.utils.TestGatewayFactory
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -34,9 +37,8 @@ class HomieDeviceFactoryTest extends Specification {
 
   MqttClientFactoryStub mqttClientFactoryStub = new MqttClientFactoryStub()
   HomieReceiver homieReceiver = new HomieReceiverStub()
-  InputOutputProvider ioProvider = new InputOutputProvider(new SimulatedInputOutputProvider(
-    new SimulatedPlatformConfiguration("someValue")), new MySensorsInputOutputProvider())
-  DeviceFactoryProvider deviceFactoryProvider = new DeviceFactoryProvider(ioProvider, new TimersScheduler(), new FakeSystemInfoProvider())
+  TestGatewayFactory testGatewayFactory = new TestGatewayFactory()
+  DeviceFactoryProvider deviceFactoryProvider = new DeviceFactoryProvider(testGatewayFactory.ioProvider, new TimersScheduler(), new FakeSystemInfoProvider())
   DeviceRegistryFactory deviceRegistryFactory = new DeviceRegistryFactory(deviceFactoryProvider)
 
   @Subject
