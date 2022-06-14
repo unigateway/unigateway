@@ -2,6 +2,7 @@ package com.mqgateway.configuration
 
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.HomieDevice
+import com.mqgateway.homie.HomieLifecycleManager
 import com.mqgateway.homie.MqttStatusIndicator
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
@@ -9,13 +10,20 @@ import com.mqgateway.homie.gateway.HomieDeviceFactory
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import jakarta.inject.Singleton
 
 @Factory
+@Requires(property = "gateway.mqtt.enabled", value = "true")
 class HomieFactory {
 
   @Singleton
-  fun mqttClientFactory(gatewaySystemProperties: GatewaySystemProperties) = HiveMqttClientFactory(gatewaySystemProperties.mqttHostname)
+  fun mqttClientFactory(mqttProperties: MqttProperties) = HiveMqttClientFactory(mqttProperties.hostname, mqttProperties.port)
+
+  @Singleton
+  fun homieLifecycleManager(homieDevice: HomieDevice): HomieLifecycleManager {
+    return HomieLifecycleManager(homieDevice)
+  }
 
   @Singleton
   fun homieDevice(

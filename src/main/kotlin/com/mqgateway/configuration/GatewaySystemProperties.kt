@@ -11,5 +11,4 @@ data class GatewaySystemProperties @ConfigurationInject constructor(
   @NotBlank val networkAdapter: String,
   @NotNull val platform: String,
   @MapFormat(transformation = MapFormat.MapTransformation.NESTED) val platformConfig: Map<String, Any>?,
-  @NotNull val mqttHostname: String
 )

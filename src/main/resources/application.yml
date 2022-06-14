@@ -22,6 +22,9 @@ gateway:
     platform: SIMULATED
     platform-config:
       some-config: simulated-prod
+  mqtt:
+    enabled: false
+    port: 1883
   websocket:
     enabled: true
   update:

@@ -56,7 +56,7 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
   override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
     mqttClient.subscribe(topicFilter) { topic, message ->
       LOGGER.info { "Message received on $topic ${String(message.payload)} (qos: ${message.qos})" }
-      callback(MqttMessage(topic, String(message.payload)))
+      callback(MqttMessage(topic, String(message.payload), message.qos, message.isRetained))
       LOGGER.trace { "Callback on received message processed" }
     }
   }

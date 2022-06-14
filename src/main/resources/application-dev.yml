@@ -6,6 +6,8 @@ gateway:
     platform: SIMULATED
     platform-config:
       some-config: simulated-dev
-    mqttHostname: "localhost"
+  mqtt:
+    enabled: true
+    hostname: "localhost"
   websocket:
     enabled: true

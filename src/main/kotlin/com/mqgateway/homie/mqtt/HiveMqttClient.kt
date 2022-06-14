@@ -55,7 +55,7 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
   override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
     mqttClient.toAsync()
       .subscribeWith().topicFilter(topicFilter)
-      .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes))) }
+      .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes), it.qos.code, it.isRetain)) }
       .send()
   }
 

@@ -16,9 +16,9 @@ class JsonSchemaValidatorTest extends Specification {
 
   YamlSlurper yamlSlurper = new YamlSlurper()
   ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory())
-  def simulatedSystemProperties = new GatewaySystemProperties("eth0", "SIMULATED", [:], "localhost")
-  def raspberryPiSystemProperties = new GatewaySystemProperties("eth0", "RASPBERRYPI", [:], "localhost")
-  def mqGatewaySystemProperties = new GatewaySystemProperties("eth0", "MQGATEWAY", [:], "localhost")
+  def simulatedSystemProperties = new GatewaySystemProperties("eth0", "SIMULATED", [:])
+  def raspberryPiSystemProperties = new GatewaySystemProperties("eth0", "RASPBERRYPI", [:])
+  def mqGatewaySystemProperties = new GatewaySystemProperties("eth0", "MQGATEWAY", [:])
 
   @Subject
   JsonSchemaValidator jsonSchemaValidator
@@ -265,8 +265,7 @@ class JsonSchemaValidatorTest extends Specification {
 
   def "should not validate connector when json schema does not exist for hardware"() {
     given:
-    jsonSchemaValidator = new JsonSchemaValidator(objectMapper, new GatewaySystemProperties(
-      "eth0", "FAKE-NOT-SUPPORTED-PLATFORM", [:], "localhost"))
+    jsonSchemaValidator = new JsonSchemaValidator(objectMapper, new GatewaySystemProperties("eth0", "FAKE-NOT-SUPPORTED-PLATFORM", [:]))
     def device = """
     - id: "example_device"
       name: Example
