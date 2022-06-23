@@ -8,9 +8,11 @@ import com.mqgateway.utils.MqttSpecification
 import groovy.yaml.YamlSlurper
 import io.micronaut.context.ApplicationContext
 import io.micronaut.runtime.server.EmbeddedServer
+import spock.lang.Ignore
 import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
 
+@Ignore
 @Timeout(30)
 class HomieDeviceIT extends MqttSpecification {
 
@@ -33,6 +35,10 @@ class HomieDeviceIT extends MqttSpecification {
     mqttClient.subscribeAsync('homie/simulated_gateway/$state') { if (it.payload == "ready") mqGatewayIsReady.set(true) }
 
     mqttClient.publishSync(new MqttMessage("homie/simulated_gateway/nonExistingDevice1", "something", 1, true))
+  }
+
+  void cleanupSpec() {
+    mqttClient.disconnect()
   }
 
   def "should publish all devices on MQTT and remove old devices when application is starting"() {
