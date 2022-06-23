@@ -1,15 +1,16 @@
 package com.mqgateway.core.gatewayconfig.parser
 
-
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
-import com.mqgateway.utils.MqttSpecification
+import io.micronaut.context.annotation.Property
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Inject
+import spock.lang.Specification
 
 @MicronautTest(startApplication = false)
-class YamlParserTest extends MqttSpecification {
+@Property(name = "gateway.mqtt.enabled", value = "false")
+class YamlParserTest extends Specification {
 
   @Inject
   YamlParser parser
