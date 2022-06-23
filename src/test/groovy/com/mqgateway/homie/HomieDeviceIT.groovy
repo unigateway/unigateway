@@ -8,6 +8,8 @@ import com.mqgateway.utils.MqttSpecification
 import groovy.yaml.YamlSlurper
 import io.micronaut.context.ApplicationContext
 import io.micronaut.runtime.server.EmbeddedServer
+import spock.lang.AutoCleanup
+import spock.lang.Shared
 import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
 
@@ -18,6 +20,10 @@ class HomieDeviceIT extends MqttSpecification {
   YamlSlurper slurper = new YamlSlurper()
 
   static BlockingVariable<Boolean> mqGatewayIsReady = new BlockingVariable<>()
+
+  @Shared
+  @AutoCleanup
+  EmbeddedServer embeddedServer
 
   static MqttClient mqttClient
 
@@ -39,12 +45,22 @@ class HomieDeviceIT extends MqttSpecification {
     mqttClient.disconnect()
   }
 
+  void runServer() {
+    embeddedServer = ApplicationContext.run(EmbeddedServer)
+  }
+
+  void cleanup() {
+    if (embeddedServer.isRunning()) {
+      embeddedServer.stop()
+    }
+  }
+
   def "should publish all devices on MQTT and remove old devices when application is starting"() {
     given:
     def gatewayConfiguration = slurper.parse(HomieDeviceIT.getClassLoader().getResourceAsStream('example.gateway.yaml'))
 
     when:
-    EmbeddedServer server = ApplicationContext.run(EmbeddedServer)
+    runServer()
 
     then:
     mqGatewayIsReady.get()
@@ -53,9 +69,6 @@ class HomieDeviceIT extends MqttSpecification {
       assert receivedMessages.find { it.topic == "homie/simulated_gateway/${device.id}/\$name" }.payload == device.name
     }
     receivedMessages.contains(new MqttMessage("homie/simulated_gateway/nonExistingDevice1", "", 0, false)) // deleting retained message
-
-    cleanup:
-    server.close()
   }
 
   def "should initialize devices properties after UniGateway is connected to MQTT"() {
@@ -64,13 +77,10 @@ class HomieDeviceIT extends MqttSpecification {
     receivedMessages.clear()
 
     when:
-    EmbeddedServer server = ApplicationContext.run(EmbeddedServer)
+    runServer()
 
     then:
     receivedMessages.find { it.topic == "homie/simulated_gateway/workshop_light/state" && it.payload == "ON" }
     noExceptionThrown()
-
-    cleanup:
-    server.close()
   }
 }

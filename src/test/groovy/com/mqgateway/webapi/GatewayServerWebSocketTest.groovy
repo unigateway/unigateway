@@ -5,6 +5,7 @@ import static groovy.json.JsonOutput.toJson
 import com.mqgateway.MqGateway
 import com.mqgateway.utils.MqttSpecification
 import groovy.json.JsonSlurper
+import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
@@ -18,12 +19,14 @@ import jakarta.inject.Inject
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.reactivestreams.Publisher
 import spock.lang.Shared
+import spock.lang.Specification
 import spock.lang.Timeout
 import spock.util.concurrent.PollingConditions
 
 @Timeout(30)
 @MicronautTest
-class GatewayServerWebSocketTest extends MqttSpecification {
+@Property(name = "gateway.mqtt.enabled", value = "false")
+class GatewayServerWebSocketTest extends Specification {
 
   @Inject
   @Client("/")
