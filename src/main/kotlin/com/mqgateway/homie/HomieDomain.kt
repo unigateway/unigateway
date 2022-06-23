@@ -3,6 +3,7 @@ package com.mqgateway.homie
 import com.mqgateway.core.device.PropertyInitializer
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
+import com.mqgateway.homie.mqtt.MqttClientStateException
 import com.mqgateway.homie.mqtt.MqttMessage
 import mu.KotlinLogging
 import java.util.Locale
@@ -207,9 +208,13 @@ data class HomieProperty(
   }
 
   fun onChange(newValue: String) {
-    LOGGER.debug { "$deviceId.$nodeId.$id changed to $newValue" }
-    (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first."))
-      .publishSync(MqttMessage(baseTopic, newValue, 0, retained))
+    try {
+      LOGGER.debug { "$deviceId.$nodeId.$id changed to $newValue" }
+      (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first."))
+        .publishSync(MqttMessage(baseTopic, newValue, 0, retained))
+    } catch (e: MqttClientStateException) {
+      LOGGER.error(e) { "Unable to publish changed value to MQTT" }
+    }
   }
 
   enum class DataType {
