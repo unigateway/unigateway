@@ -8,11 +8,9 @@ import com.mqgateway.utils.MqttSpecification
 import groovy.yaml.YamlSlurper
 import io.micronaut.context.ApplicationContext
 import io.micronaut.runtime.server.EmbeddedServer
-import spock.lang.Ignore
 import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
 
-@Ignore
 @Timeout(30)
 class HomieDeviceIT extends MqttSpecification {
 

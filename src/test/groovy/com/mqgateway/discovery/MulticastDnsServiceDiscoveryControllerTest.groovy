@@ -1,6 +1,6 @@
 package com.mqgateway.discovery
 
-import com.mqgateway.utils.MqttSpecification
+import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
@@ -11,9 +11,11 @@ import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Inject
 import javax.jmdns.JmDNS
+import spock.lang.Specification
 
 @MicronautTest
-class MulticastDnsServiceDiscoveryControllerTest extends MqttSpecification {
+@Property(name = "gateway.mqtt.enabled", value = "false")
+class MulticastDnsServiceDiscoveryControllerTest extends Specification {
 
   @Inject
   JmDNS jmDNS
