@@ -17,4 +17,4 @@ data class MqttMessage(
   val retain: Boolean = false
 )
 
-class MqttClientStateException(message: String, cause: Throwable): RuntimeException(message, cause)
+class MqttClientStateException(message: String, cause: Throwable) : RuntimeException(message, cause)
