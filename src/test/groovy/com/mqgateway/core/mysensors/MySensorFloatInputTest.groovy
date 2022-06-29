@@ -48,7 +48,7 @@ class MySensorFloatInputTest extends Specification {
     newValue == null
   }
 
-  def "should getState return 0"() {
+  def "should return 0 as default"() {
     given:
     def connector = new MySensorsConnector(NODE_ID, SENSOR_ID, InternalType.I_DEBUG)
     def input = new MySensorFloatInput(serialConnection, connector)
@@ -57,4 +57,15 @@ class MySensorFloatInputTest extends Specification {
     input.getValue() == 0f
   }
 
+  def "should return last updated state"() {
+    given:
+    def connector = new MySensorsConnector(NODE_ID, SENSOR_ID, PresentationType.S_TEMP)
+    def input = new MySensorFloatInput(serialConnection, connector)
+
+    when:
+    serial.simulateMessageReceived("${NODE_ID};${SENSOR_ID};${Command.PRESENTATION.id};0;${PresentationType.S_TEMP.id};2.3\n")
+
+    then:
+    input.getValue() == 2.3f
+  }
 }

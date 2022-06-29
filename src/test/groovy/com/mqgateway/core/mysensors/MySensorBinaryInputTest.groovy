@@ -62,12 +62,24 @@ class MySensorBinaryInputTest extends Specification {
     newState == null
   }
 
-  def "should getState return LOW state"() {
+  def "should return LOW state as default"() {
     given:
     def connector = new MySensorsConnector(NODE_ID,SENSOR_ID, InternalType.I_DEBUG)
     def input = new MySensorBinaryInput(serialConnection, connector)
 
     expect:
     input.getState() == BinaryState.LOW
+  }
+
+  def "should return last updated state"() {
+    given:
+    def connector = new MySensorsConnector(NODE_ID,SENSOR_ID, PresentationType.S_BINARY)
+    def input = new MySensorBinaryInput(serialConnection, connector)
+
+    when:
+    serial.simulateMessageReceived("${NODE_ID};${SENSOR_ID};${Command.PRESENTATION.id};0;${PresentationType.S_BINARY.id};1\n")
+
+    then:
+    input.getState() == BinaryState.HIGH
   }
 }
