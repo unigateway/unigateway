@@ -3,7 +3,7 @@ package com.mqgateway
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.device.PropertyInitializer
 import com.mqgateway.core.device.UpdateListener
-import com.mqgateway.core.device.UpdateListenersInitializedEvent
+import com.mqgateway.core.device.UpdateListenersRegisteredEvent
 import com.mqgateway.core.utils.SystemInfoProvider
 import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.context.event.ShutdownEvent
@@ -39,7 +39,7 @@ class MqGateway(
     LOGGER.info { systemInfoProvider.getSummary() }
 
     updateListeners.forEach { deviceRegistry.addUpdateListener(it) }
-    eventPublisher.publishEvent(UpdateListenersInitializedEvent())
+    eventPublisher.publishEvent(UpdateListenersRegisteredEvent())
 
     propertyInitializers.forEach { it.initializeValues() }
     deviceRegistry.initializeDevices()

@@ -2,7 +2,6 @@ package com.mqgateway.configuration
 
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.HomieDevice
-import com.mqgateway.homie.HomieLifecycleManager
 import com.mqgateway.homie.MqttStatusIndicator
 import com.mqgateway.homie.gateway.GatewayHomieReceiver
 import com.mqgateway.homie.gateway.GatewayHomieUpdateListener
@@ -21,8 +20,13 @@ class HomieFactory {
   fun mqttClientFactory(mqttProperties: MqttProperties) = HiveMqttClientFactory(mqttProperties.hostname, mqttProperties.port)
 
   @Singleton
-  fun homieLifecycleManager(homieDevice: HomieDevice): HomieLifecycleManager {
-    return HomieLifecycleManager(homieDevice)
+  fun homieListenersRegisteredEventHandler(homieDevice: HomieDevice): HomieListenersRegisteredEventListener {
+    return HomieListenersRegisteredEventListener(homieDevice)
+  }
+
+  @Singleton
+  fun homieApplicationShutdownEventHandler(homieDevice: HomieDevice): HomieApplicationShutdownEventListener {
+    return HomieApplicationShutdownEventListener(homieDevice)
   }
 
   @Singleton
