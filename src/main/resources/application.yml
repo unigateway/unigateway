@@ -26,6 +26,9 @@ gateway:
       enabled: false
       portDescriptor: "/dev/ttys000"
       baudRate: 9600
+  mqtt:
+    enabled: false
+    port: 1883
   websocket:
     enabled: true
   update:

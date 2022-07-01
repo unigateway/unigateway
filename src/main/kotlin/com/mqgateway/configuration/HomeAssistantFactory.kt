@@ -8,11 +8,15 @@ import com.mqgateway.core.gatewayconfig.homeassistant.HomeAssistantPublisher
 import com.mqgateway.homie.HomieDevice
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requirements
 import io.micronaut.context.annotation.Requires
 import jakarta.inject.Singleton
 
 @Factory
-@Requires(property = "homeassistant.enabled", value = "true")
+@Requirements(
+  Requires(property = "gateway.mqtt.enabled", value = "true"),
+  Requires(property = "homeassistant.enabled", value = "true"),
+)
 internal class HomeAssistantFactory {
 
   @Singleton

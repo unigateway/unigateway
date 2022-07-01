@@ -1,6 +1,7 @@
 package com.mqgateway.homie.mqtt
 
 import com.hivemq.client.mqtt.datatypes.MqttQos
+import com.hivemq.client.mqtt.exceptions.MqttClientStateException as HiveMqttClientStateException
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient
 
 class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
@@ -18,12 +19,16 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
   }
 
   override fun publishSync(mqttMessage: MqttMessage) {
-    mqttClient.publishWith()
-      .topic(mqttMessage.topic)
-      .payload(mqttMessage.payload.toByteArray())
-      .retain(mqttMessage.retain)
-      .qos(MqttQos.fromCode(mqttMessage.qos)!!)
-      .send()
+    try {
+      mqttClient.publishWith()
+        .topic(mqttMessage.topic)
+        .payload(mqttMessage.payload.toByteArray())
+        .retain(mqttMessage.retain)
+        .qos(MqttQos.fromCode(mqttMessage.qos)!!)
+        .send()
+    } catch (e: HiveMqttClientStateException) {
+      throw MqttClientStateException("Failed to publish MQTT message", e)
+    }
   }
 
   override fun publishAsync(mqttMessage: MqttMessage) {
@@ -55,7 +60,7 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
   override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
     mqttClient.toAsync()
       .subscribeWith().topicFilter(topicFilter)
-      .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes))) }
+      .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes), it.qos.code, it.isRetain)) }
       .send()
   }
 

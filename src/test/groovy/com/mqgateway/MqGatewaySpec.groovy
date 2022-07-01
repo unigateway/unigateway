@@ -1,13 +1,15 @@
 package com.mqgateway
 
-import com.mqgateway.utils.MqttSpecification
+import io.micronaut.context.annotation.Property
 import io.micronaut.runtime.EmbeddedApplication
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Inject
+import spock.lang.Specification
 import spock.lang.Timeout
 
 @MicronautTest
-class MqGatewaySpec extends MqttSpecification {
+@Property(name = "gateway.mqtt.enabled", value = "false")
+class MqGatewaySpec extends Specification {
 
 	@Inject
 	EmbeddedApplication application

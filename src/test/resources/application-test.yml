@@ -3,10 +3,13 @@ gateway:
   config-path: "src/test/resources/example.gateway.yaml"
   system:
     network-adapter: enp0s25
-    mqttHostname: localhost
     platform: SIMULATED
     platform-config:
       some-config: simulated-prod
+  mqtt:
+    enabled: true
+    hostname: localhost
+    port: 1883
 
 homeassistant:
   enabled: true

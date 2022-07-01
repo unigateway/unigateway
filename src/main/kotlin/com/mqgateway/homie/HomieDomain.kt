@@ -1,7 +1,9 @@
 package com.mqgateway.homie
 
+import com.mqgateway.core.device.PropertyInitializer
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
+import com.mqgateway.homie.mqtt.MqttClientStateException
 import com.mqgateway.homie.mqtt.MqttMessage
 import mu.KotlinLogging
 import java.util.Locale
@@ -25,7 +27,7 @@ class HomieDevice(
   private val firmwareVersion: String?,
   private val ip: String? = null,
   private val mac: String? = null
-) {
+) : PropertyInitializer {
 
   private val baseTopic = "$HOMIE_PREFIX/$id"
   private var mqttClient: MqttClient? = null
@@ -78,6 +80,10 @@ class HomieDevice(
     LOGGER.debug { "Homie configuration published" }
   }
 
+  override fun initializeValues() {
+    nodes.values.forEach { it.initializeValues(homieReceiver) }
+  }
+
   fun disconnect() {
     disconnectionPlanned = true
     mqttClient?.disconnect()
@@ -122,6 +128,9 @@ data class HomieNode(
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$properties", properties.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
 
     properties.values.forEach { it.setup(mqttClient, homieReceiver) }
+  }
+
+  internal fun initializeValues(homieReceiver: HomieReceiver) {
     properties.values.forEach { it.initializeValue(homieReceiver) }
   }
 }
@@ -199,9 +208,13 @@ data class HomieProperty(
   }
 
   fun onChange(newValue: String) {
-    LOGGER.debug { "$deviceId.$nodeId.$id changed to $newValue" }
-    (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first."))
-      .publishSync(MqttMessage(baseTopic, newValue, 0, retained))
+    try {
+      LOGGER.debug { "$deviceId.$nodeId.$id changed to $newValue" }
+      (mqttClient ?: throw IllegalStateException("MQTT client is not instantiated. Call HomieDevice.connect() first."))
+        .publishSync(MqttMessage(baseTopic, newValue, 0, retained))
+    } catch (e: MqttClientStateException) {
+      LOGGER.error(e) { "Unable to publish changed value to MQTT" }
+    }
   }
 
   enum class DataType {
