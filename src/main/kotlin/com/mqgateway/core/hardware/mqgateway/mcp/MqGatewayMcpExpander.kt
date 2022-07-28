@@ -2,7 +2,7 @@ package com.mqgateway.core.hardware.mqgateway.mcp
 
 import com.diozero.api.GpioEventTrigger
 import com.diozero.api.GpioPullUpDown
-import com.diozero.devices.MCP23017
+import com.mqgateway.core.hardware.diozero.MCP23017
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.BinaryState.HIGH
 import com.mqgateway.core.io.BinaryState.LOW
@@ -90,10 +90,11 @@ class MqGatewayMcpExpander(
 
   fun getOutputPin(gpioNumber: Int): MqGatewayMcpExpanderOutputPin {
     usedPins[gpioNumber]?.let { throw McpExpanderPinAlreadyInUseException(gpioNumber, it) }
+    val currentValue = mcp23017.getValue(gpioNumber)
     mcp23017.createDigitalOutputDevice(
       UUID.randomUUID().toString(),
       mcp23017.boardPinInfo.getByGpioNumberOrThrow(gpioNumber),
-      false
+      currentValue
     )
 
     usedPins[gpioNumber] = GpioType.OUTPUT
