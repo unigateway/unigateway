@@ -1,8 +1,8 @@
 package com.mqgateway.core.hardware.mqgateway.mcp
 
 import com.diozero.api.I2CConstants
-import com.diozero.devices.MCP23017
 import com.diozero.devices.mcp23xxx.MCP23xxx.INTERRUPT_GPIO_NOT_SET
+import com.mqgateway.core.hardware.diozero.MCP23017
 import com.mqgateway.core.hardware.mqgateway.WireColor
 import com.mqgateway.core.io.BinaryInput
 import com.mqgateway.core.io.BinaryOutput

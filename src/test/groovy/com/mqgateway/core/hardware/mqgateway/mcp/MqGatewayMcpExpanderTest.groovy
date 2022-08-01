@@ -5,8 +5,8 @@ import static com.mqgateway.core.hardware.mqgateway.mcp.MqGatewayMcpExpander.GPI
 import static com.mqgateway.core.io.BinaryState.HIGH
 import static com.mqgateway.core.io.BinaryState.LOW
 
-import com.diozero.devices.MCP23017
 import com.diozero.sbc.BoardPinInfo
+import com.mqgateway.core.hardware.diozero.MCP23017
 import com.mqgateway.core.io.BinaryState
 import java.time.Duration
 import spock.lang.Specification
@@ -196,6 +196,20 @@ class MqGatewayMcpExpanderTest extends Specification {
 
     then:
     thrown(IncorrectGpioTypeException)
+  }
+
+  def "should not change pin state when getting output pin"() {
+    given:
+    mcpMock.getValue(1) >> initialPinValue
+
+    when:
+    expander.getOutputPin(1)
+
+    then:
+    1 * mcpMock.createDigitalOutputDevice(_, _, initialPinValue)
+
+    where:
+    initialPinValue << [true, false]
   }
 
   def "should fail with exception when trying to write state from pin set to be INPUT"() {
