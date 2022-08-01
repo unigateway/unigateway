@@ -1,6 +1,7 @@
 package com.mqgateway.core.device.temperature
 
 import com.mqgateway.core.device.DataType
+import com.mqgateway.core.device.DataUnit
 import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceProperty
 import com.mqgateway.core.device.DevicePropertyType
@@ -16,7 +17,7 @@ class TemperatureDevice(
   Device(
     id, name, DeviceType.TEMPERATURE,
     setOf(
-      DeviceProperty(DevicePropertyType.TEMPERATURE, DataType.FLOAT, null)
+      DeviceProperty(DevicePropertyType.TEMPERATURE, DataType.FLOAT, null, unit = DataUnit.CELSIUS)
     ),
     config
   ) {

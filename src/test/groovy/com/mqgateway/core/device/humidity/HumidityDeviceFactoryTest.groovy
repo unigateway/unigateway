@@ -1,10 +1,9 @@
 package com.mqgateway.core.device.humidity
 
+import com.mqgateway.core.device.DataUnit
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
-import com.mqgateway.core.device.relay.RelayDeviceFactory
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
-import com.mqgateway.core.hardware.simulated.SimulatedConnector
 import com.mqgateway.core.io.provider.MySensorsConnector
 import com.mqgateway.core.mysensors.SetReqType
 import com.mqgateway.utils.TestGatewayFactory
@@ -28,6 +27,7 @@ class HumidityDeviceFactoryTest extends Specification {
     then:
     device.id == "id"
     device.type == DeviceType.HUMIDITY
+    device.properties.find { it.name() == "humidity" }.unit == DataUnit.PERCENT
   }
 
   def "should throw exception when state connector configuration is not provided"() {

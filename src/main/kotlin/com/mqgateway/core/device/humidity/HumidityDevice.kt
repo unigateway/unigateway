@@ -1,6 +1,7 @@
 package com.mqgateway.core.device.humidity
 
 import com.mqgateway.core.device.DataType
+import com.mqgateway.core.device.DataUnit
 import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DeviceProperty
 import com.mqgateway.core.device.DevicePropertyType
@@ -16,7 +17,7 @@ class HumidityDevice(
   Device(
     id, name, DeviceType.HUMIDITY,
     setOf(
-      DeviceProperty(DevicePropertyType.HUMIDITY, DataType.FLOAT, null)
+      DeviceProperty(DevicePropertyType.HUMIDITY, DataType.FLOAT, null, unit = DataUnit.PERCENT)
     ),
     config
   ) {
