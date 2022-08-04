@@ -1,6 +1,7 @@
 package com.mqgateway.core.device.temperature
 
 import com.mqgateway.core.device.DataUnit
+import com.mqgateway.core.device.DevicePropertyType
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.MissingConnectorInDeviceConfigurationException
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
@@ -27,7 +28,7 @@ class TemperatureDeviceFactoryTest extends Specification {
     then:
     device.id == "id"
     device.type == DeviceType.TEMPERATURE
-    device.properties.find { it.name() == "temperature" }.unit == DataUnit.CELSIUS
+    device.properties.find { it.name() == DevicePropertyType.TEMPERATURE.toString() }.unit == DataUnit.CELSIUS
   }
 
   def "should throw exception when state connector configuration is not provided"() {
