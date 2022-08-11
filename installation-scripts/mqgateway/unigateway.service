@@ -1,0 +1,14 @@
+[Unit]
+Description=UniGateway Smart Home Solution
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /opt/unigateway/start_unigateway.sh
+WorkingDirectory=/opt/unigateway
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Alias=unigateway.service

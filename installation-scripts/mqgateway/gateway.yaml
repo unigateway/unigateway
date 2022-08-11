@@ -1,0 +1,32 @@
+configVersion: "1.0"
+id: "unigateway-one"
+name: "UniGateway One"
+devices:
+  - id: "workshop_light"
+    type: RELAY
+    name: "Workshop light"
+    connectors:
+      state:
+        portNumber: 1
+        wireColor: "BLUE"
+  - id: "workshop_light_switch"
+    type: SWITCH_BUTTON
+    name: "Workshop light switch"
+    connectors:
+      state:
+        portNumber: 1
+        wireColor: "BLUE_WHITE"
+  - id: "bedroom_light_switch"
+    type: SWITCH_BUTTON
+    name: "Bedroom light switch"
+    connectors:
+      state:
+        portNumber: 16
+        wireColor: "GREEN"
+  - id: "bedroom_light"
+    type: RELAY
+    name: "Bedroom light"
+    connectors:
+      state:
+        portNumber: 16
+        wireColor: "BLUE_WHITE"
