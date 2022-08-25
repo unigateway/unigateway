@@ -16,7 +16,7 @@ data class DeviceProperty(
 enum class DevicePropertyType {
   STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION, MEMORY, IP_ADDRESS, AVAILABILITY;
 
-  override fun toString(): String = this.name.toLowerCase()
+  override fun toString(): String = this.name.lowercase()
 }
 
 enum class DataType {
