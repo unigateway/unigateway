@@ -13,6 +13,12 @@ micronaut:
   caches:
     mq-gateway-latest-release:
       expire-after-write: 5m
+  router:
+    static-resources:
+      default:
+        enabled: true
+        paths: [ "classpath:webapp" ]
+        mapping: "/ui/**"
 
 gateway:
   app-version: <%=version%>

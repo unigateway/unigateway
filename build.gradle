@@ -8,6 +8,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "pl.allegro.tech.build.axion-release" version "1.11.0"
     id "io.micronaut.application" version "3.2.1"
+    id "com.github.node-gradle.node" version "3.4.0"
 }
 
 repositories {
@@ -130,3 +131,25 @@ processResources {
 }
 
 processResources.outputs.upToDateWhen { false }
+
+node {
+    download = true
+    version = "16.13.1"
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+    nodeProjectDir = file("${project.projectDir}/ui")
+    npmInstallCommand = "ci"
+}
+
+task npmBuild(type: NpmTask) {
+    args = ["run", "build"]
+}
+
+task copyWebApp(type: Copy) {
+    from "${project.projectDir}/ui/build"
+    into "${project.buildDir}/resources/main/webapp/."
+}
+
+npmBuild.dependsOn npmInstall
+copyWebApp.dependsOn npmBuild
+shadowJar.dependsOn copyWebApp
