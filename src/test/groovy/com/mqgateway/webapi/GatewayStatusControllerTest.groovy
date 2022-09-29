@@ -1,6 +1,7 @@
 package com.mqgateway.webapi
 
 import com.mqgateway.configuration.GatewayApplicationProperties
+import com.mqgateway.configuration.GatewaySystemProperties
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.homie.MqttStatusIndicator
 import java.time.Duration
@@ -11,9 +12,11 @@ class GatewayStatusControllerTest extends Specification {
   FakeSystemInfoProvider systemInfoProvider = new FakeSystemInfoProvider()
   MqttStatusIndicator mqttStatusIndicator = new MqttStatusIndicator()
   GatewayApplicationProperties gatewayApplicationProperties = new GatewayApplicationProperties("gateway.yaml", "0.543.0-some-test-version")
+  GatewaySystemProperties gatewaySystemProperties = new GatewaySystemProperties("ethAdapter", "SimulatedInTest", [:],
+                                                                                new GatewaySystemProperties.MySensors(true, "/some/port", 9876))
   UpdateChecker updateChecker = Mock(UpdateChecker)
   GatewayStatusController gatewayStatusController = new GatewayStatusController(systemInfoProvider, mqttStatusIndicator, gatewayApplicationProperties,
-                                                                                updateChecker)
+                                                                                gatewaySystemProperties, updateChecker)
 
   def "should return all information about gateway status"() {
     given:
@@ -33,6 +36,7 @@ class GatewayStatusControllerTest extends Specification {
     status.ipAddress == "192.192.192.192"
     status.freeMemoryBytes == 500000
     status.firmwareVersion == "0.543.0-some-test-version"
+    status.mySensorsEnabled
     status.mqttConnected
     status.mqGatewayLatestVersion == new ReleaseInfo("test release", "v0.544.0", "https://mqgateway.com/release/v0.544.0")
   }
