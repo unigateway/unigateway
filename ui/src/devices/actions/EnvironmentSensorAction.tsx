@@ -2,11 +2,11 @@ import {Device} from "../../MqGatewayMutableTypes";
 import {Typography} from "@material-ui/core";
 
 
-interface Bme280ActionProps {
+interface EnvironmentSensorActionProps {
   device: Device
 }
 
-export default function Bme280Action(props: Bme280ActionProps) {
+export default function EnvironmentSensorAction(props: EnvironmentSensorActionProps) {
 
   return (
     <Typography variant="h5" color="textSecondary" align="center">

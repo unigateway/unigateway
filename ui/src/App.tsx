@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import './App.css';
-import {Badge, Box, Link, MuiThemeProvider, Typography} from "@material-ui/core";
+import {Box, Link, MuiThemeProvider, Typography} from "@material-ui/core";
 import {createTheme, makeStyles} from "@material-ui/core/styles";
 import clsx from "clsx";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -16,20 +16,12 @@ import {mainListItems, secondaryListItems} from "./listItems";
 import {BrowserRouter as Router, Route, Switch as RouterSwitch} from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import Devices from "./devices/Devices";
-import Topology from "./topology/Topology";
-import Rules from "./rules/Rules";
 import Logs from "./logs/Logs";
 import PageNameHeader from "./PageNameHeader";
 import yaml from 'js-yaml';
-import YamlConfig from "./yamlconfig/YamlConfig";
 import {GatewayConfiguration as GatewayConfigurationData} from "./communication/MqgatewayTypes";
 import {ConnectionState, DeviceStateUpdate, GatewayWS} from "./communication/GatewayWS";
 import {GatewayConfiguration} from "./MqGatewayMutableTypes";
-import NotificationsMenu from "./notifications/NotificationsMenu";
-import AnnouncementOutlinedIcon from '@material-ui/icons/AnnouncementOutlined';
-import Notification from "./notifications/Notification";
-import SettingsInputComponentIcon from "@material-ui/icons/SettingsInputComponent";
-import ApplyConfigurationDialog from "./configurationchange/ApplyConfigurationDialog";
 import GatewayRest from "./communication/GatewayRest";
 import WebSocketConnectionSnackNotification from "./communication/WebSocketConnectionSnackNotification";
 import GatewayConnection from "./communication/GatewayConnection";
@@ -55,8 +47,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://mqgateway.com/">
-        MqGateway
+      <Link color="inherit" href="https://unigateway.io/">
+        UniGateway
       </Link>{' '}
       {new Date().getFullYear()}
     </Typography>
@@ -187,9 +179,6 @@ function App() {
   const [yamlConfiguration, setYamlConfiguration] = useState("");
   const [gatewayConfiguration, setGatewayConfiguration] = useState(new GatewayConfiguration("", "", "", []))
   const gatewayConfigurationValue = useMemo(() => ({gatewayConfiguration, setGatewayConfiguration, yamlConfiguration, setYamlConfiguration}), [gatewayConfiguration, yamlConfiguration])
-  const [anchorForNotifications, setAnchorForNotifications] = useState<null | HTMLElement>(null);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [applyConfigurationDialogOpen, setApplyConfigurationDialogOpen] = React.useState(false);
   const [webSocketConnectionState, setWebSocketConnectionState] = useState(ConnectionState.DISCONNECTED)
 
 
@@ -203,24 +192,6 @@ function App() {
       setGatewayConfiguration(gatewayConfiguration)
     })
   }, []);
-
-  React.useEffect(() => {
-    if (gatewayConfiguration.hasAnyChanges()) {
-      setNotifications(oldNotifications => {
-        if (!oldNotifications.find(it => it.id === Notification.CONFIGURATION_CHANGED_ID)) {
-          oldNotifications.push(
-            new Notification(Notification.CONFIGURATION_CHANGED_ID, "Devices configuration changed",
-              "Configuration has been changed. Click here to apply or revert changes.", () => { setApplyConfigurationDialogOpen(true) }, (<SettingsInputComponentIcon />)))
-        }
-        return [...oldNotifications]
-      })
-    } else {
-      setNotifications(oldNotifications => {
-        return oldNotifications.filter(it => it.id !== Notification.CONFIGURATION_CHANGED_ID)
-      })
-    }
-    setYamlConfiguration(yaml.dump(gatewayConfiguration.toDataObject()))
-  }, [gatewayConfiguration])
 
   React.useEffect(() => {
     if (!yamlConfiguration) {
@@ -263,30 +234,12 @@ function App() {
       if (device) {
         device.handlePropertyChange(update.propertyId, update.newValue)
       }
-      const newGatewayConfiguration = new GatewayConfiguration(oldGatewayConfiguration.configVersion, oldGatewayConfiguration.name, oldGatewayConfiguration.mqttHostname, oldGatewayConfiguration.rooms);
+      const newGatewayConfiguration = new GatewayConfiguration(oldGatewayConfiguration.configVersion, oldGatewayConfiguration.id, oldGatewayConfiguration.name, oldGatewayConfiguration.devices);
       if (oldGatewayConfiguration.hasAnyChanges()) {
         newGatewayConfiguration.isModified = true
       }
       return newGatewayConfiguration
     })
-  }
-
-  const handleOpenNotifications = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (notifications.length > 0) {
-      setAnchorForNotifications(event.currentTarget);
-    }
-  }
-
-  const handleCloseNotifications = () => {
-    setAnchorForNotifications(null);
-  };
-
-  const handleYamlConfigurationChanged = (newYamlConfiguration: string) => {
-    setYamlConfiguration(newYamlConfiguration);
-  }
-
-  const handleApplyConfigurationDialogClose = () => {
-    setApplyConfigurationDialogOpen(false)
   }
 
   return (
@@ -310,16 +263,6 @@ function App() {
               <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                 <PageNameHeader />
               </Typography>
-              {notifications.length > 0 && (
-                <Box>
-                  <IconButton aria-label="notifications list" color="inherit" aria-haspopup="true" onClick={handleOpenNotifications} >
-                    <Badge badgeContent={notifications.length} color="secondary">
-                      <AnnouncementOutlinedIcon />
-                    </Badge>
-                  </IconButton>
-                  <NotificationsMenu anchor={anchorForNotifications} onClose={handleCloseNotifications} notifications={notifications} />
-                </Box>
-              )}
             </Toolbar>
           </AppBar>
           <Drawer
@@ -330,7 +273,7 @@ function App() {
             open={open}
           >
             <div className={classes.toolbarIcon}>
-              <Typography className={classes.logo}><span className={classes.logoMq}>Mq</span><span className={classes.logoGateway}>Gateway</span></Typography>
+              <Typography className={classes.logo}><span className={classes.logoMq}>Uni</span><span className={classes.logoGateway}>Gateway</span></Typography>
               <IconButton onClick={handleDrawerClose}>
                 <ChevronLeftIcon />
               </IconButton>
@@ -347,26 +290,16 @@ function App() {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <RouterSwitch>
-              <Route path="/topology">
-                <Topology />
-              </Route>
               <Route path="/devices">
                 <Devices />
               </Route>
-              <Route path="/rules">
-                <Rules />
-              </Route>
               <Route path="/logs">
                 <Logs />
-              </Route>
-              <Route path="/yamlconfig">
-                <YamlConfig config={yamlConfiguration} onSave={handleYamlConfigurationChanged} />
               </Route>
               <Route path="/">
                 <Dashboard />
               </Route>
             </RouterSwitch>
-            <ApplyConfigurationDialog open={applyConfigurationDialogOpen} onClose={handleApplyConfigurationDialogClose} />
             <WebSocketConnectionSnackNotification connectionState={webSocketConnectionState} />
             <Box pt={4}>
               <Copyright />

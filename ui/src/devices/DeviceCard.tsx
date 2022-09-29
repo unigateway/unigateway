@@ -1,10 +1,9 @@
 import {makeStyles} from "@material-ui/core/styles";
-import {Box, Button, Card, CardActions, CardContent, Grid, Typography} from "@material-ui/core";
+import {Box, Card, CardContent, Typography} from "@material-ui/core";
 import DeviceCardConfigSide from "./DeviceCardConfigSide";
-import React, {useContext} from "react";
+import React from "react";
 import DeviceCardActionSide from "./DeviceCardActionSide";
 import {Device} from "../MqGatewayMutableTypes";
-import {GatewayConfigurationContext} from "../App";
 import clsx from "clsx";
 
 
@@ -47,15 +46,12 @@ const useStyles = makeStyles({
 interface DeviceCardProps {
   device: Device
   side: "config" | "action"
-  openDeviceDetailsEdit: () => void
 }
 
 export default function DeviceCard(props: DeviceCardProps) {
   const classes = useStyles();
-  const { gatewayConfiguration } = useContext(GatewayConfigurationContext)
 
   const device: Device = props.device;
-  const {room, point} = gatewayConfiguration.deviceLocation(device.uuid)!
 
   let cardContent;
   if (props.side === "config") {
@@ -67,10 +63,6 @@ export default function DeviceCard(props: DeviceCardProps) {
   return (
     <Card className={clsx(classes.card, {[classes.inactiveCard]: device.isModifiedOrNewDevice})}>
       <CardContent>
-        <Box display="flex" className={classes.additional}>
-          <Box flexGrow={1}>{room.name}</Box>
-          <Box>{point.name}</Box>
-        </Box>
         <Typography variant="h5" component="h2" gutterBottom className={classes.deviceName}>
           {device.name}
         </Typography>
@@ -78,11 +70,6 @@ export default function DeviceCard(props: DeviceCardProps) {
           {cardContent}
         </Box>
       </CardContent>
-      <CardActions>
-        <Grid container justifyContent="flex-end"><Button size="small" color="primary" onClick={props.openDeviceDetailsEdit}>Edit configuration</Button></Grid>
-      </CardActions>
     </Card>
   )
-
-
 }

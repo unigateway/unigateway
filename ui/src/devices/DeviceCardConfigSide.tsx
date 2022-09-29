@@ -12,9 +12,7 @@ export default function DeviceCardConfigSide(props: DeviceCardConfigSideProps) {
     <List dense>
       <ListItemText>ID: {device.id}</ListItemText>
       <ListItemText>Type: {device.type}</ListItemText>
-      {device.wires && <ListItemText>Wires: {device.wires.join(", ")}</ListItemText>}
-      {device.internalDevices.size > 0 && <ListItemText>Internal devices</ListItemText>}
-      {device.referencedDeviceId && <ListItemText>Referenced ID: {device.referencedDeviceId}</ListItemText>}
+      {device.connectors && <ListItemText>Connectors configured</ListItemText>}
       {device.config && <ListItemText>Additional config</ListItemText>}
     </List>)
 }

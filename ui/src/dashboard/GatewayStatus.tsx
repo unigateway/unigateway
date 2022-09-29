@@ -56,16 +56,15 @@ export default function GatewayStatus() {
 
   const isUpgradeAvailable = (currentVersion: string, latestVersion: string) => {
     const cleanedVersion = currentVersion.substr(0, currentVersion.indexOf("-"))
-    return "v" + cleanedVersion !== latestVersion
+    return latestVersion && "v" + cleanedVersion !== latestVersion
   }
 
   const statusData = [
     {name: "CPU temperature", value: status?.cpuTemperature + "℃"},
     {name: "Uptime", value: status?.uptimeSeconds + " seconds"},
     {name: "IP address", value: status?.ipAddress},
-    {name: "Free memory", value: status?.freeMemoryBytes ? status.freeMemoryBytes / 1000000 + "MB" : "unknown"},
+    {name: "Free memory", value: status?.freeMemoryBytes ? Math.trunc(status.freeMemoryBytes / 1000000) + "MB" : "unknown"},
     {name: "MQTT status", value: status?.mqttConnected ? "connected" : "disconnected"},
-    {name: "Expander status", value: status?.expanderEnabled ? "connected" : "disabled"},
     {name: "MySensors status", value: status?.mySensorsEnabled ? "enabled" : "disabled"},
     {name: "Firmware version", value: status?.firmwareVersion}
   ]

@@ -1,10 +1,10 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {DeviceType} from "../communication/MqgatewayTypes";
 import RelayAction from "./actions/RelayAction";
-import Bme280Action from "./actions/Bme280Action";
+import TemperatureAction from "./actions/TemperatureAction";
+import HumidityAction from "./actions/HumidityAction";
 import SwitchButtonAction from "./actions/SwitchButtonAction";
 import ReedSwitchAction from "./actions/ReedSwitchAction";
-import Dht22Action from "./actions/Dht22Action";
 import MotionDetectorAction from "./actions/MotionDetectorAction";
 import ShutterAction from "./actions/ShutterAction";
 import GateAction from "./actions/GateAction";
@@ -27,10 +27,10 @@ interface DeviceCardActionSideProps {
 function chooseAction(device: Device) {
   switch (device.type.toString()) {
     case DeviceType[DeviceType.RELAY]: return (<RelayAction device={device} />);
-    case DeviceType[DeviceType.BME280]: return (<Bme280Action device={device} />);
+    case DeviceType[DeviceType.TEMPERATURE]: return (<TemperatureAction device={device} />);
+    case DeviceType[DeviceType.HUMIDITY]: return (<HumidityAction device={device} />);
     case DeviceType[DeviceType.SWITCH_BUTTON]: return (<SwitchButtonAction device={device} />);
     case DeviceType[DeviceType.REED_SWITCH]: return (<ReedSwitchAction device={device} />);
-    case DeviceType[DeviceType.DHT22]: return (<Dht22Action device={device} />);
     case DeviceType[DeviceType.MOTION_DETECTOR]: return (<MotionDetectorAction device={device} />);
     case DeviceType[DeviceType.EMULATED_SWITCH]: return (<EmulatedSwitchAction device={device} />);
     // case DeviceType[DeviceType.TIMER_SWITCH]: return (<TimerSwitchAction device={device} />);
