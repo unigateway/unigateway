@@ -33,7 +33,6 @@ function chooseAction(device: Device) {
     case DeviceType[DeviceType.REED_SWITCH]: return (<ReedSwitchAction device={device} />);
     case DeviceType[DeviceType.MOTION_DETECTOR]: return (<MotionDetectorAction device={device} />);
     case DeviceType[DeviceType.EMULATED_SWITCH]: return (<EmulatedSwitchAction device={device} />);
-    // case DeviceType[DeviceType.TIMER_SWITCH]: return (<TimerSwitchAction device={device} />);
     case DeviceType[DeviceType.SHUTTER]: return (<ShutterAction device={device} />);
     case DeviceType[DeviceType.GATE]: return (<GateAction device={device} />);
     default:

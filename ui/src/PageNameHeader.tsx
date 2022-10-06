@@ -8,11 +8,8 @@ class PageNameHeader extends React.Component<any> {
     let title;
     switch (path) {
       case "": title = "Dashboard"; break;
-      case "topology": title = "Topology"; break;
       case "devices": title = "Devices"; break;
-      case "rules": title = "Rules"; break;
       case "logs": title = "Logs"; break;
-      case "yamlconfig": title = "YAML Configuration"; break;
     }
     return (<span>{title}</span>)
   }

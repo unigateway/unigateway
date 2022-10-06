@@ -6,7 +6,6 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponent';
 import SwapHorizontalCircleIcon from '@material-ui/icons/SwapHorizontalCircle';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import CodeIcon from '@material-ui/icons/Code';
 import {Link as RouterLink} from "react-router-dom";
 
 export const mainListItems = (
@@ -39,12 +38,6 @@ export const secondaryListItems = (
         <AssignmentIcon />
       </ListItemIcon>
       <ListItemText primary="Logs" />
-    </ListItem>
-    <ListItem button component={RouterLink} to="/yamlconfig" style={{display: "none"}}>
-      <ListItemIcon>
-        <CodeIcon />
-      </ListItemIcon>
-      <ListItemText primary="YAML Config" />
     </ListItem>
   </div>
 );
