@@ -60,8 +60,6 @@ class SwitchButtonDevice(
   }
 
   companion object {
-    const val CONFIG_DEBOUNCE_DEFAULT = 50
-
     const val CONFIG_LONG_PRESS_TIME_MS_KEY = "longPressTimeMs"
     const val CONFIG_LONG_PRESS_TIME_MS_DEFAULT = 1000L
 
