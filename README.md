@@ -6,33 +6,31 @@ UniGateway
 This repository contains source code of software for [UniGateway project](https://mqgateway.com). 
 
 ## What is UniGateway
-UniGateway is gateway device for multiple wired electronic sensors and controllers, which are essential in creating smart home solution.
+UniGateway is a software to control automation gateways. When installed on supported hardware, it allows you to control electronic sensors and controllers.
 
-UniGateway has been created to support multi-device, fully wired solution. UniGateway supports MQTT Homie convention and provides easy integration with 
-home automation software like OpenHab and Home Assistant.
+It is designed to be an essential building block of automation systems like the smart home solution.
+UniGateway supports MQTT Homie convention and provides out-of-the-box integration with home automation software like OpenHab and Home Assistant.
 
-![UniGateway with IO/Expander](docs/docs/user-guide/images/cased-mqgateway-with-io-expander-small.jpg)
-
-Both UniGateway hardware and software are freely available under Open Source Licenses.
+Currently, you can install UniGateway on [MqGateway](https://mqgateway.com) or [Raspberry Pi](https://www.raspberrypi.com/).
 
 ## What's the use case?
 
-Typical use case for UniGateway is a house with sensors and controllers distributed all around with wired connections. It is possible to plug in simple and inexpensive devices, 
-like relay modules, PIR motion sensors or just plain wall switches into UniGateway to make fully capable home automation system.
+Typical use case for UniGateway is a house with sensors and controllers distributed all around with wired connections.  
+You can use MqGateway or Raspberry Pi to plug in simple and inexpensive devices, like relay modules, PIR motion sensors or just plain wall switches to make fully capable home automation system.
 
 ![UniGateway diagram](docs/docs/user-guide/images/mqgateway-diagram.png)
 
-Read more in [documentation](https://mqgateway.com).
+Read more in [documentation](https://unigateway.io/docs).
 
 ## Installation
 
-See installation instructions in [the UniGateway documentation](https://mqgateway.com/user-guide/installation).
+See installation instructions in [the UniGateway documentation](https://unigateway.io/docs/user-guide/installation).
 
 ## Development
 
 ### Environment
 
-- JDK 1.8
+- JDK 11
 - MQTT broker (e.g. Mosquitto 1.6.13)
 
 You can run Mosquitto as Docker with command:
@@ -63,13 +61,15 @@ To do that, set environment variables and run with Gradle:
 ```shell
 export MICRONAUT_ENVIRONMENTS=dev
 
-./gradlew run
+./gradlew runShadow
 ```
 
-Example configuration expects the MQTT broker to be running locally. You can run it with Docker:
+Dev profile expects the MQTT broker to be running locally. You can run it with Docker:
 ```shell
 docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:1.6.13
 ```
+
+You can check everything works properly by going to https://localhost:8080/ui
 
 ### Releasing
 
