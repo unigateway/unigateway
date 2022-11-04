@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Prepare SD Card for MqGateway
         run:  |
+          chmod +x installation-scripts/sdcard-image.sh
           sudo installation-scripts/sdcard-image.sh --system mqgateway -w /tmp/mqgateway
         shell: bash
       - name: Store SD card image as artifact
@@ -23,6 +24,7 @@ jobs:
           retention-days: 7
       - name: Prepare SD Card for Raspberry Pi
         run:  |
+          chmod +x installation-scripts/sdcard-image.sh
           sudo installation-scripts/sdcard-image.sh --system raspberrypi -w /tmp/raspberrypi
         shell: bash
       - name: Upload MqGateway SD card to release

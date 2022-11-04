@@ -36,7 +36,20 @@ then
     exit 1
 fi
 
+if ! command -v parted &> /dev/null
+then
+    echo "Error: parted is not installed"
+    exit 1
+fi
+
+if ! command -v kpartx &> /dev/null
+then
+    echo "Error: kpartx is not installed"
+    exit 1
+fi
+
 SYSTEM=mqgateway
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 WORKING_DIR=.
 
 POSITIONAL_ARGS=()
@@ -76,9 +89,9 @@ JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/downl
 
 UNIGATEWAY_JAR_DOWNLOAD_URL="https://github.com/unigateway/unigateway/releases/latest/download/unigateway.jar"
 UNIGATEWAY_JAR_FILE_PATH="unigateway.jar"
-UNIGATEWAY_BASE_CONFIG_FILE_PATH="$SYSTEM/gateway.yaml"
-UNIGATEWAY_START_SCRIPT_FILE_PATH="$SYSTEM/start_unigateway.sh"
-UNIGATEWAY_SERVICE_FILE_PATH="unigateway.service"
+UNIGATEWAY_BASE_CONFIG_FILE_PATH="$SCRIPT_DIR/$SYSTEM/gateway.yaml"
+UNIGATEWAY_START_SCRIPT_FILE_PATH="$SCRIPT_DIR/$SYSTEM/start_unigateway.sh"
+UNIGATEWAY_SERVICE_FILE_PATH="$SCRIPT_DIR/unigateway.service"
 
 MYSENSORS_DOWNLOAD_URL="http://downloads.unigateway.io/$SYSTEM/mysgw"
 MYSENSORS_BINARY_FILE_PATH="mysgw"
@@ -90,7 +103,7 @@ elif [ $SYSTEM = "raspberrypi" ]; then
   OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/rpi4b/Jammy_current"
 fi
 
-
+mkdir -p "$WORKING_DIR"
 cd "$WORKING_DIR" || exit
 echo "Working dir set to: $PWD"
 
