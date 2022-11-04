@@ -1,0 +1,28 @@
+configVersion: "1.0"
+id: "unigateway-one"
+name: "UniGateway One"
+devices:
+  - id: "workshop_light"
+    type: RELAY
+    name: "Workshop light"
+    connectors:
+      state:
+        gpio: 17
+  - id: "workshop_light_switch"
+    type: SWITCH_BUTTON
+    name: "Workshop light switch"
+    connectors:
+      state:
+        gpio: 27
+  - id: "bedroom_light_switch"
+    type: SWITCH_BUTTON
+    name: "Bedroom light switch"
+    connectors:
+      state:
+        gpio: 22
+  - id: "bedroom_light"
+    type: RELAY
+    name: "Bedroom light"
+    connectors:
+      state:
+        gpio: 5
