@@ -21,7 +21,7 @@ jobs:
       - name: Run tests and release
         run: |
           echo "releasing version: $VERSION_TAG"
-          ./gradlew check release -Prelease.disableChecks -Prelease.pushTagsOnly -Prelease.forceVersion=$VERSION_TAG -Prelease.customUsername=$GH_TOKEN
+          ./gradlew check release -Prelease.disableChecks -Prelease.pushTagsOnly -Prelease.forceVersion=$VERSION_TAG -Prelease.customUsername=$GH_TOKEN -Prelease.customPassword=$GH_TOKEN
         env:
           VERSION_TAG: ${{ steps.version_tag_name.outputs.VERSION_TAG }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -114,7 +114,7 @@ shadowJar {
 scmVersion {
     versionIncrementer 'incrementMinor'
     versionCreator { version, position ->
-        return "$version-${position.shortRevision}"
+        return "$version-${position.shortRevision}".toString()
     }
 }
 
