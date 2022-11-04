@@ -20,7 +20,7 @@ jobs:
       - name: Deploy docs to GitHub
         run: |
           cd $GITHUB_WORKSPACE
-          git config --global user.email "ci@mqgateway.com"
+          git config --global user.email "ci@unigateway.io"
           git config --global user.name "CI"
           docker run --rm --name mkdocs \
             -v $PWD:/doc \

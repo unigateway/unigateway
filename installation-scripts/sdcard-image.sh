@@ -7,8 +7,8 @@
 set -euo pipefail
 
 function usage() {
-    echo "Usage: sudo $0 [-w | --working-dir <path:.>] [-o | --os-image-url <os-image-download-url:https://imola.armbian.com/dl/.../...img.xz>]"
-    echo "               [-j | --java-url <jre-download-url:https://...temurin11-binaries/...tar.gz>]"
+    echo "Usage: sudo $0 --system <mqgateway|raspberrypi>"
+    echo "               [-w | --working-dir <path:.>]"
 }
 
 if [[ $UID != 0 ]]; then
@@ -36,41 +36,26 @@ then
     exit 1
 fi
 
+SYSTEM=mqgateway
 WORKING_DIR=.
-OS_IMAGE_DOWNLOAD_URL="https://imola.armbian.com/dl/nanopineo/archive/Armbian_22.05.4_Nanopineo_jammy_current_5.15.48.img.xz"
-IMG_MOUNT_PATH="/mnt/armbian"
-
-JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_arm_linux_hotspot_11.0.16_8.tar.gz"
-
-UNIGATEWAY_JAR_FILE_PATH="unigateway.jar"
-UNIGATEWAY_BASE_CONFIG_FILE_PATH="gateway.yaml"
-UNIGATEWAY_START_SCRIPT_FILE_PATH="start_unigateway.sh"
-UNIGATEWAY_SERVICE_FILE_PATH="unigateway.service"
-
-MYSENSORS_BINARY_FILE_PATH="mysgw"
-MYSENSORS_SERVICE_FILE_PATH="mysgw.service"
 
 POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+    -s|--system)
+      SYSTEM="$2"
+      shift 2
+      ;;
     -w|--working-dir)
       WORKING_DIR="$2"
-      shift 2
-      ;;
-    -o|--os-image-url)
-      OS_IMAGE_DOWNLOAD_URL="$2"
-      shift 2
-      ;;
-    -j|--java-url)
-      JAVA_DOWNLOAD_URL="$2"
       shift 2
       ;;
     -h|--help)
       usage
       exit 0
       ;;
-     -*|--*)
+     -*)
       echo "Unknown option: $1"
       usage
       exit 1
@@ -84,6 +69,26 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
+IMG_MOUNT_PATH="/mnt/armbian"
+PARTITION_SIZE=5000M
+
+JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_arm_linux_hotspot_11.0.16_8.tar.gz"
+
+UNIGATEWAY_JAR_DOWNLOAD_URL="https://github.com/unigateway/unigateway/releases/latest/download/unigateway.jar"
+UNIGATEWAY_JAR_FILE_PATH="unigateway.jar"
+UNIGATEWAY_BASE_CONFIG_FILE_PATH="$SYSTEM/gateway.yaml"
+UNIGATEWAY_START_SCRIPT_FILE_PATH="$SYSTEM/start_unigateway.sh"
+UNIGATEWAY_SERVICE_FILE_PATH="unigateway.service"
+
+MYSENSORS_DOWNLOAD_URL="http://downloads.unigateway.io/$SYSTEM/mysgw"
+MYSENSORS_BINARY_FILE_PATH="mysgw"
+MYSENSORS_SERVICE_FILE_PATH="mysgw.service"
+
+if [ "$SYSTEM" = "mqgateway" ]; then
+  OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/nanopineo/Jammy_current"
+elif [ $SYSTEM = "raspberrypi" ]; then
+  OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/rpi4b/Jammy_current"
+fi
 
 
 cd "$WORKING_DIR" || exit
@@ -96,23 +101,30 @@ echo "Unpacking image"
 unxz armbian.img.xz
 
 echo "Mounting image to /mnt/armbian"
+partition_number="$(parted -ms armbian.img UNIT b print | tail -n 1 | cut -d ':' -f 1)"
 mkdir -p $IMG_MOUNT_PATH
-mount -o loop,offset=4194304 armbian.img $IMG_MOUNT_PATH
+kpartx -v -a armbian.img
+loop_device=$(losetup -J -O name,back-file | jq '.loopdevices[] | select(."back-file"|test("armbian.img")) | .name' -r)
+loop_device_partition="/dev/mapper/${loop_device/\/dev\//}p${partition_number}"
+mount "$loop_device_partition" $IMG_MOUNT_PATH
 
 echo "Resizing image partition"
-loop_device=$(losetup -J -O name,back-file | jq '.loopdevices[] | select(."back-file"|test("armbian.img")) | .name' -r)
 
-fallocate -l 2000M armbian.img
+fallocate -l $PARTITION_SIZE armbian.img
 losetup -c "$loop_device"
 
-parted <<'EOT'
-select ./armbian.img
-resizepart 1 100%FREE
-quit
-EOT
+parted --script ./armbian.img resizepart "$partition_number" 100%FREE
 
 partprobe -s "$loop_device"
-resize2fs "$loop_device"
+
+echo "Re-mounting partition to be sure it is possible to resize partition"
+umount $IMG_MOUNT_PATH
+kpartx -d -v armbian.img
+kpartx -v -a armbian.img
+mount "$loop_device_partition" $IMG_MOUNT_PATH
+
+echo "Resizing partition to maximum image size"
+resize2fs "$loop_device_partition"
 
 echo "Image partition resized"
 df -h | grep $IMG_MOUNT_PATH
@@ -122,6 +134,9 @@ mkdir -p $IMG_MOUNT_PATH/opt/java
 wget "$JAVA_DOWNLOAD_URL" -O jre.tar.gz
 tar -xzvf jre.tar.gz -C $IMG_MOUNT_PATH/opt/java --strip-components=1
 
+echo "Download UniGateway JAR"
+wget "$UNIGATEWAY_JAR_DOWNLOAD_URL" -O "$UNIGATEWAY_JAR_FILE_PATH"
+
 echo "Installing UniGateway"
 mkdir -p $IMG_MOUNT_PATH/opt/unigateway
 mkdir -p $IMG_MOUNT_PATH/opt/unigateway/logs
@@ -129,6 +144,9 @@ cp $UNIGATEWAY_JAR_FILE_PATH $IMG_MOUNT_PATH/opt/unigateway/unigateway.jar
 cp $UNIGATEWAY_BASE_CONFIG_FILE_PATH $IMG_MOUNT_PATH/opt/unigateway/gateway.yaml
 cp $UNIGATEWAY_START_SCRIPT_FILE_PATH $IMG_MOUNT_PATH/opt/unigateway/start_unigateway.sh
 cp $UNIGATEWAY_SERVICE_FILE_PATH $IMG_MOUNT_PATH/etc/systemd/system/unigateway.service
+
+echo "Download MySensors binary"
+wget "$MYSENSORS_DOWNLOAD_URL" -O "$MYSENSORS_BINARY_FILE_PATH"
 
 echo "Installing MySensors"
 cp $MYSENSORS_BINARY_FILE_PATH $IMG_MOUNT_PATH/usr/local/bin/mysgw
@@ -141,11 +159,17 @@ ln -s /etc/systemd/system/unigateway.service /etc/systemd/system/multi-user.targ
 ln -s /etc/systemd/system/mysgw.service /etc/systemd/system/multi-user.target.wants/mysgw.service
 EOT
 
-echo "Enable ports on MqGateway"
-sed -i 's/overlays=.*/overlays=i2c0 uart1 usbhost1 usbhost2/' $IMG_MOUNT_PATH/boot/armbianEnv.txt
+if [ "$SYSTEM" = "mqgateway" ]; then
+  echo "Enable ports on MqGateway"
+  sed -i 's/overlays=.*/overlays=i2c0 uart1 usbhost1 usbhost2/' $IMG_MOUNT_PATH/boot/armbianEnv.txt
+fi
+
+echo "Change hostname to unigateway"
+echo "unigateway" > $IMG_MOUNT_PATH/etc/hostname
 
 echo "Unmounting image"
-umount -l /mnt/armbian
+umount -l $IMG_MOUNT_PATH
+kpartx -d -v armbian.img
 
 echo "Packaging image"
 xz armbian.img
