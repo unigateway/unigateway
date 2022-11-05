@@ -95,7 +95,7 @@ UNIGATEWAY_SERVICE_FILE_PATH="$SCRIPT_DIR/unigateway.service"
 
 MYSENSORS_DOWNLOAD_URL="http://downloads.unigateway.io/$SYSTEM/mysgw"
 MYSENSORS_BINARY_FILE_PATH="mysgw"
-MYSENSORS_SERVICE_FILE_PATH="mysgw.service"
+MYSENSORS_SERVICE_FILE_PATH="$SCRIPT_DIR/mysgw.service"
 
 if [ "$SYSTEM" = "mqgateway" ]; then
   OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/nanopineo/Jammy_current"
