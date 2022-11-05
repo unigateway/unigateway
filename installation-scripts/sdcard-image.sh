@@ -167,10 +167,8 @@ cp $MYSENSORS_SERVICE_FILE_PATH $IMG_MOUNT_PATH/etc/systemd/system/mysgw.service
 
 
 echo "Enable UniGateway and MySensors services"
-chroot $IMG_MOUNT_PATH /bin/bash <<'EOT'
-ln -s /etc/systemd/system/unigateway.service /etc/systemd/system/multi-user.target.wants/unigateway.service
-ln -s /etc/systemd/system/mysgw.service /etc/systemd/system/multi-user.target.wants/mysgw.service
-EOT
+ln -s /etc/systemd/system/unigateway.service $IMG_MOUNT_PATH/etc/systemd/system/multi-user.target.wants/unigateway.service
+ln -s /etc/systemd/system/mysgw.service $IMG_MOUNT_PATH/etc/systemd/system/multi-user.target.wants/mysgw.service
 
 if [ "$SYSTEM" = "mqgateway" ]; then
   echo "Enable ports on MqGateway"
