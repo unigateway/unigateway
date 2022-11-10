@@ -2,12 +2,12 @@ name: Prepare SD card images
 
 on:
   release:
-    types: [released]
+    types: [published]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v2
@@ -16,12 +16,6 @@ jobs:
           chmod +x installation-scripts/sdcard-image.sh
           sudo installation-scripts/sdcard-image.sh --system mqgateway -w /tmp/mqgateway
         shell: bash
-      - name: Store SD card image as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: UniGateway SD Card image for MqGateway
-          path: /tmp/mqgateway/armbian.img.xz
-          retention-days: 7
       - name: Prepare SD Card for Raspberry Pi
         run:  |
           chmod +x installation-scripts/sdcard-image.sh
@@ -32,7 +26,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /tmp/mqgateway/armbian.img.xz
-          asset_name: unigateway-${{ github.ref }}-sdcard-mqgateway.img.xz
+          asset_name: UniGateway_SDCardImage_RaspberryPi.img.xz
           tag: ${{ github.ref }}
           overwrite: true
       - name: Upload Raspberry Pi SD card to release
@@ -40,7 +34,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /tmp/raspberrypi/armbian.img.xz
-          asset_name: unigateway-${{ github.ref }}-sdcard-raspberrypi.img.xz
+          asset_name: UniGateway_SDCardImage_MqGateway.img.xz
           tag: ${{ github.ref }}
           overwrite: true
 

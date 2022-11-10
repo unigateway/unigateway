@@ -18,7 +18,7 @@ Currently, you can install UniGateway on [MqGateway](https://mqgateway.com) or [
 Typical use case for UniGateway is a house with sensors and controllers distributed all around with wired connections.  
 You can use MqGateway or Raspberry Pi to plug in simple and inexpensive devices, like relay modules, PIR motion sensors or just plain wall switches to make fully capable home automation system.
 
-![UniGateway diagram](docs/docs/user-guide/images/mqgateway-diagram.png)
+![UniGateway diagram](docs/docs/user-guide/images/unigateway-diagram.png)
 
 Read more in [documentation](https://unigateway.io/docs).
 
