@@ -27,8 +27,6 @@ class MotionSensorDevice(
   override fun lowStateValue() = if (motionSignalLevel == BinaryState.HIGH) MOVE_STOP_STATE_VALUE else MOVE_START_STATE_VALUE
 
   companion object {
-    const val CONFIG_DEBOUNCE_DEFAULT = 50
-
     const val CONFIG_MOTION_SIGNAL_LEVEL_KEY = "motionSignalLevel"
     val CONFIG_MOTION_SIGNAL_LEVEL_DEFAULT = BinaryState.HIGH
 
