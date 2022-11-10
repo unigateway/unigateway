@@ -85,7 +85,11 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 IMG_MOUNT_PATH="/mnt/armbian"
 PARTITION_SIZE=5000M
 
-JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_arm_linux_hotspot_11.0.16_8.tar.gz"
+if [ "$SYSTEM" = "mqgateway" ]; then
+  JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.17%2B8/OpenJDK11U-jre_arm_linux_hotspot_11.0.17_8.tar.gz"
+elif [ "$SYSTEM" = "raspberrypi" ]; then
+  JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.17%2B8/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.17_8.tar.gz"
+fi
 
 UNIGATEWAY_JAR_DOWNLOAD_URL="https://github.com/unigateway/unigateway/releases/latest/download/unigateway.jar"
 UNIGATEWAY_JAR_FILE_PATH="unigateway.jar"
@@ -99,7 +103,7 @@ MYSENSORS_SERVICE_FILE_PATH="$SCRIPT_DIR/mysgw.service"
 
 if [ "$SYSTEM" = "mqgateway" ]; then
   OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/nanopineo/Jammy_current"
-elif [ $SYSTEM = "raspberrypi" ]; then
+elif [ "$SYSTEM" = "raspberrypi" ]; then
   OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/rpi4b/Jammy_current"
 fi
 
@@ -121,6 +125,10 @@ loop_device=$(losetup -J -O name,back-file | jq '.loopdevices[] | select(."back-
 loop_device_partition="/dev/mapper/${loop_device/\/dev\//}p${partition_number}"
 mount "$loop_device_partition" $IMG_MOUNT_PATH
 
+if [ "$SYSTEM" = "raspberrypi" ]; then
+  mount "/dev/mapper/${loop_device/\/dev\//}p1" $IMG_MOUNT_PATH/boot
+fi
+
 echo "Resizing image partition"
 
 fallocate -l $PARTITION_SIZE armbian.img
@@ -131,6 +139,9 @@ parted --script ./armbian.img resizepart "$partition_number" 100%FREE
 partprobe -s "$loop_device"
 
 echo "Re-mounting partition to be sure it is possible to resize partition"
+if [ "$SYSTEM" = "raspberrypi" ]; then
+  umount $IMG_MOUNT_PATH/boot
+fi
 umount $IMG_MOUNT_PATH
 kpartx -d -v armbian.img
 kpartx -v -a armbian.img

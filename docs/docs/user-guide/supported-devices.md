@@ -1,20 +1,12 @@
 
-This is a list of devices currently supported by MqGateway. That means you can connect a device with digital wires to MqGateway.
-
-All supported devices need to be compatible with 5V power supply.
+This is a list of devices currently supported by UniGateway. That means you can connect a device with wires to UniGateway and control it.
 
 !!! danger
     Electricity can be very harmful!    
     Please do not connect anything to electricity yourself if you don't have enough knowledge, 
     and you are not completely sure what you are doing.   
-    
-!!! warning
-    Information below has been provided as a pointer. I've tried to prepare it as accurately as I was able to. However, it may contain errors.
-    Always check the device manual and do not connect electrical wires if you are not absolutely sure you know what you're doing.
-    
 
-
-### Digital devices
+### Simple devices
 
 #### Relay module
 Relay module which allows turning on/off electrical devices and lights. Controlled with LOW signal by default.
@@ -28,32 +20,22 @@ Relay module which allows turning on/off electrical devices and lights. Controll
 <summary>Example configuration</summary>
 
 ```yaml
-[...]
-rooms:
-- name: "workshop"
-  points:
-  - name: "point with relay"
-    portNumber: 1
-    devices:
-    - name: "workshop light"
-      id: "workshop_light"
-      wires: ["BLUE"]
-      type: RELAY
-      config:
-        triggerLevel: "HIGH"
-        haComponent: "light"
+devices:
+  - id: "workshop_light"
+    type: RELAY
+    name: "Workshop light"
+    connectors:
+      state: # connector configuration example for RaspberryPi
+        gpio: 23
+    config:
+      triggerLevel: "LOW"
+      haComponent: "light"
 ```
 </details>
 
 ??? example "Wiring"
-    Both solid-state (SSR) relay and electromechanical (EMR) relay module working with 5V power can be used. Relay should be controlled with LOW signal.  
-    Any digital wire can be used for communication: blue, blue-white, green, green-white.
-    
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | IN        |
+    Both solid-state (SSR) relay and electromechanical (EMR) relay module, working with correct voltage for used hardware, can be used.  
+    Any digital output pin can be used for communication.
 
 
 #### Switch button
@@ -61,7 +43,6 @@ Switch button or push button.
 
 - configuration type: `SWITCH_BUTTON`
 - additional configuration:
-    - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
     - `longPressTimeMs` [default: 1000] - if switch button is pressed for longer then this value (in milliseconds) then "long press" event is sent from MqGateway 
     - `haComponent` [one of: **binary_sensor**, trigger, sensor] - type of the entity for Home Assistant MQTT discovery
 
@@ -69,27 +50,23 @@ Switch button or push button.
 <summary>Example configuration</summary>
 
 ```yaml
-[...]
-rooms:
-  - name: "workshop"
-    points:
-      - name: "point with relay"
-      portNumber: 1
-      devices:
-        - name: "workshop light switch"
-          id: "workshop_light_switch"
-          wires: ["BLUE_WHITE"]
-          type: SWITCH_BUTTON
-          config:
-            longPressTimeMs: 800
-            debounceMs: 80
-            haComponent: "sensor"
+devices:
+  - id: "workshop_light_switch"
+    type: SWITCH_BUTTON
+    name: "Workshop light switch"
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 1
+        wireColor: "BLUE_WHITE"
+    config:
+      longPressTimeMs: 800
+      haComponent: "sensor"
 ```
 </details>
 
 ??? example "Wiring"
     Any regular switch/push button can be used for that.  
-    Orange-white wire (GND) and one of the digital wires (blue, blue-white, green, green-white) should be used.
+    Any digital input pin can be used for communication.
 
 
 #### Emulated switch
@@ -103,31 +80,21 @@ which has possibility to connect switch button (e.g. garage gate opener).
 <summary>Example configuration</summary>
 
 ```yaml
-[...]
-rooms:
-  - name: "garage"
-    points:
-      - name: "2-channels relay module"
+devices:
+  - id: "garage_gate_switch"
+    type: EMULATED_SWITCH
+    name: "Garage gate switch"
+    connectors:
+      state: # connector configuration example for MqGateway
         portNumber: 1
-        devices:
-          - name: "Right gate"
-            id: "garage_right_gate"
-            wires: ["BLUE_WHITE"]
-            type: EMULATED_SWITCH
+        wires: BLUE_WHITE
 ```
 </details>
 
 ??? example "Wiring"
     Emulated switch is realized using electromechanical relay (EMR - the most common type). 
     
-    Between MqGateway and the relay:
-    
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | IN        |
-    
+    Between UniGateway hardware and the relay any digital output pin can be used for communication.   
     
     Between the relay and gate opener, use COM and NO on the relay. On the gate opener side - connect wires according to your gate opener manual 
     for connecting wall switch button.
@@ -138,68 +105,53 @@ PIR Motion Sensor/Detector.
 
 - configuration type: `MOTION_DETECTOR`
 - additional configuration:
-    - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
     - `motionSignalLevel` [one of: **HIGH**, LOW] - The signal LEVEL which means that motion has been detected
 
 <details>
 <summary>Example configuration</summary>
 
 ```yaml
-[...]
-rooms:
-  - name: "garage"
-    points:
-      - name: "Right garage entry"
-        portNumber: 1
-        devices:
-          - name: "Garage motion"
-            id: "garage_motion"
-            wires: ["GREEN"]
-            type: MOTION_DETECTOR
-            config:
-              debounceMs: 100
-              motionSignalLevel: LOW
+devices:
+  - id: "garage_motion"
+    type: MOTION_DETECTOR
+    name: "Garage motion"
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 4
+        wireColor: GREEN
+        debounceMs: 100
+    config:
+      motionSignalLevel: HIGH
 ```
 </details>
 
 ??? example "Wiring"
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | OUT       |
+    Any digital input pin can be used for communication.
 
 #### Reed switch
 
 A magnetic sensor which might be used to check if door or window is open/closed.
 
 - configuration type: `REED_SWITCH`
-- additional configuration:
-  - `debounceMs` [default: 50] - number of milliseconds for debounce (helps to avoid flickering)
+- additional configuration: NONE
 
 <details>
 <summary>Example configuration</summary>
 
 ```yaml
-[...]
-rooms:
-  - name: "workshop"
-    points:
-      - name: "Workshop over door box"
-        portNumber: 1
-        devices:
-          - name: "Workshop door"
-            id: "workshop_door"
-            wires: ["GREEN"]
-            type: REED_SWITCH
-            config:
-              debounceMs: 100
+devices:
+  - id: "workshop_door"
+    type: REED_SWITCH
+    name: "Workshop door"
+    connectors: 
+      state: # connector configuration example for RaspberryPi
+        gpio: 24
 ```
 </details>
 
 ??? example "Wiring"
     Any reed switch can be used for that.  
-    Orange-white wire (GND) and one of the digital wires (blue, blue-white, green, green-white) should be used.
+    Any of the digital input pins can be used.
 
 
 #### Timer switch
@@ -213,34 +165,77 @@ Switch which can be turned on for a given time and will be automatically turned 
 <summary>Example configuration</summary>
 
 ```yaml
-[...]
-rooms:
-  - name: "garage"
-    points:
-      - name: "sprinklers box"
-        portNumber: 5
-        devices:
-          - name: "Sprinklers zone 1"
-            id: "sprinklers_zone_1"
-            wires: ["GREEN_WHITE"]
-            type: TIMER_SWITCH
+devices:
+  - id: "sprinklers_zone_1"
+    type: TIMER_SWITCH
+    name: "Sprinklers zone 1"
+    connectors:
+      state: # connector configuration example for RaspberryPi
+        gpio: 24
 ```
 </details>
 
 ??? example "Wiring"
-    Both solid-state (SSR) relay and electromechanical (EMR) relay module working with 5V power can be used. Relay should be controlled with LOW signal.  
-    Any digital wire can be used for communication: blue, blue-white, green, green-white.
-    
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | IN        |
+    Both solid-state (SSR) relay and electromechanical (EMR) relay module, working with correct voltage for used hardware, can be used.  
+    Any digital output pin can be used for communication.
+
+#### Temperature sensor
+Temperature sensor. Examples are BME280, DHT22, DS18B20, SHT31.  
+Currently requires MySensors node.
+
+- configuration type: `TEMPERATURE`
+- additional configuration: NONE
+
+<details>
+<summary>Example configuration</summary>
+
+```yaml
+devices:
+  - name: "Workshop temperature"
+    id: "workshop_temperature"
+    type: TEMPERATURE
+    connectors:
+      state:
+        source: MYSENSORS
+        nodeId: 10
+        sensorId: 1
+        type: V_TEMP
+```
+</details>
+
+#### Humidity sensor
+Humidity sensor. Examples are BME280, DHT22, SHT31.  
+Currently requires MySensors node.
+
+- configuration type: `HUMIDITY`
+- additional configuration: NONE
+
+<details>
+<summary>Example configuration</summary>
+
+```yaml
+devices:
+  - name: "Workshop humidity"
+    id: "workshop_humidity"
+    type: HUMIDITY
+    connectors:
+      state:
+        source: MYSENSORS
+        nodeId: 10
+        sensorId: 0
+        type: V_HUM
+```
+</details>
+
+
+### Complex devices
 
 #### Window shutter
 
-Window shutter/roller blind control. Replaces the regular switch button control with 2-channels relay module. 
-Allows to fully open/close shutters and partial opening with percentage (e.g. 30% open). 
+Window shutter/roller blind control. Replaces the regular switch button control with 2-channels relay module.
+Allows to fully open/close shutters and partial opening with percentage (e.g. 30% open).
+
+It is a "complex" devices. That means it is combined with multiple other devices.
 
 - configuration type: `SHUTTER`
 - internal devices:
@@ -254,44 +249,40 @@ Allows to fully open/close shutters and partial opening with percentage (e.g. 30
 <summary>Example configuration</summary>
 
 ```yaml
-rooms:
-  - name: "living room"
-    points:
-      - name: "shutters controller relays"
-        portNumber: 7
-        devices:
-          - name: "living room shutter"
-            id: "living_room_shutter"
-            type: SHUTTER
-            internalDevices:
-              stopRelay:
-                name: "living room shutter stop relay"
-                id: "lr_shutter_stop_relay"
-                type: RELAY
-                wires: [ "GREEN" ]
-              upDownRelay:
-                name: "living room shutter up-down relay"
-                id: "lr_shutter_updown_relay"
-                type: RELAY
-                wires: [ "GREEN_WHITE" ]
-            config:
-              fullCloseTimeMs: 20000
-              fullOpenTimeMs: 27000
+devices:
+  - name: "Living room shutter"
+    id: "living_room_shutter"
+    type: SHUTTER
+    internalDevices:
+      stopRelay:
+        referenceId: lr_shutter_stop_relay
+      upDownRelay:
+        referenceId: lr_shutter_updown_relay
+    config:
+      fullCloseTimeMs: 20000
+      fullOpenTimeMs: 27000
+  # Internal devices used by living_room_shutter
+  - name: "livingroom left shutter stop relay"
+    id: "lr_shutter_stop_relay"
+    type: RELAY
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 14
+        wireColor: GREEN
+  - name: "livingroom left shutter up-down relay"
+    id: "lr_shutter_updown_relay"
+    type: RELAY
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 14
+        wireColor: GREEN_WHITE
 ```
 </details>
 
 ??? example "Wiring"
-    Window roller shutters are realized using 2-channel electromechanical (EMR) relay module (one relay for going up/down and 
-    another one relay for the stop/start). Relays should be controlled with LOW signal.
-    
-    Between MqGateway and the 2-channel relay module:
-    
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | IN1       |
-    | [any-digital](../hardware/wiring.md) | IN2       |
+    Window roller shutters are realized using 2-channel electromechanical (EMR) relay module (one relay for going up/down and another one relay for the stop/start).
+
+    Between UniGateway hardware and the 2-channel relay module any digital output pins can be used.
     
     Connect neutral wire and earth directly to the roller shutter wires.
     Between relay module and roller shutter control:
@@ -330,81 +321,86 @@ Emulated switches are realized with relay modules.
 <details>
 <summary>Example configuration</summary>
 
+Single (open/close/stop) button garage door or gate
 ```yaml
-rooms:
-  - name: "garage"
-    points:
-      - name: "garage door"
-        portNumber: 4
-        devices:
-          - name: "Right garage door"  # single button device example
-            id: "right_garage_door"
-            type: GATE
-            internalDevices:
-              actionButton:
-                name: "Right garage door action button"
-                id: "right_garage_door_action_button"
-                wires: ["BLUE_WHITE"]
-                type: EMULATED_SWITCH
-              openReedSwitch: # optional
-                name: "Right garage door open reed switch"
-                id: "right_garage_door_open_reed"
-                wires: [ "GREEN" ]
-                type: REED_SWITCH
-                config:
-                  debounceMs: 50
-              closedReedSwitch: # optional
-                name: "Right garage door closed reed switch"
-                id: "right_garage_door_closed_reed"
-                wires: [ "GREEN_WHITE" ]
-                type: REED_SWITCH
-                config:
-                  debounceMs: 50
-  - name: outdoor
-    points:
-      - name: "Entrance gate"
+devices:
+  - id: "garage_door"
+    type: GATE
+    name: "Garage door"
+    internalDevices:
+      actionButton:
+        referenceId: "garage_door_action_button"
+      closedReedSwitch:
+        referenceId: "garage_door_closed_reed"
+  # Internal devices used by garage_door
+  - id: "garage_door_action_button"
+    name: "Garage door action button"
+    type: EMULATED_SWITCH
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 1
+        wires: BLUE_WHITE
+  - id: "garage_door_closed_reed"
+    name: "Garage door closed"
+    type: REED_SWITCH
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 3
+        wireColor: GREEN_WHITE
+```
+
+Three buttons (open/close/stop) button garage door or gate
+```yaml
+devices:
+  - name: "Entrance gate"
+    id: "entrance_gate"
+    type: GATE
+    internalDevices:
+      openButton:
+        referenceId: "entrance_gate_open"
+      closeButton:
+        referenceId: "entrance_gate_close"
+      stopButton:
+        referenceId: "entrance_gate_stop"
+      closedReedSwitch:
+        referenceId: "gate_reed_switch"
+    config:
+      haDeviceClass: gate # "garage" by default
+  - name: "Open - entrance gate"
+    id: "entrance_gate_open"
+    type: EMULATED_SWITCH
+    connectors:
+      state:
         portNumber: 20
-        devices:
-          - name: "Entrance gate" # three buttons device example
-            id: "entrance_gate"
-            type: GATE
-            internalDevices:
-              openButton:
-                name: "Open - entrance gate"
-                id: "entrance_gate_open"
-                wires: [ "BLUE_WHITE" ]
-                type: EMULATED_SWITCH
-              closeButton:
-                name: "Close - entrance gate"
-                id: "entrance_gate_close"
-                wires: [ "BLUE" ]
-                type: EMULATED_SWITCH
-              stopButton:
-                name: "Stop - entrance gate"
-                id: "entrance_gate_stop"
-                wires: [ "GREEN" ]
-                type: EMULATED_SWITCH
-              closedReedSwitch: # optional, can be also replaced with openReedSwitch
-                name: "Closed gate reed switch"
-                id: "entrance_gate_closed_reed_switch"
-                wires: ["GREEN_WHITE"]
-                type: REED_SWITCH
-        config:
-          haDeviceClass: gate # "garage" by default
+        wireColor: BLUE_WHITE
+  - name: "Close - entrance gate"
+    id: "entrance_gate_close"
+    type: EMULATED_SWITCH
+    connectors:
+      state:
+        portNumber: 20
+        wireColor: BLUE
+  - name: "Stop - entrance gate"
+    id: "entrance_gate_stop"
+    type: EMULATED_SWITCH
+    connectors:
+      state:
+        portNumber: 20
+        wireColor: GREEN
+  - name: "Gate reed switch"
+    id: "gate_reed_switch"
+    type: REED_SWITCH
+    connectors:
+      state:
+        portNumber: 16
+        wireColor: BLUE_WHITE
 ```
 </details>
 
 ??? example "Wiring"
     Single button gate (garage door) is realized using electromechanical (EMR) relay module to emulate push button.
-    Relay should be controlled with LOW signal.
 
-    Between MqGateway and the relay module:
-    
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | IN        |
+    Between UniGateway hardware and the relay module use any digital output pin for control.
 
     Relay module should be connected with COM and NO to the gate (garage door) opener in the place for connecting push button.  
     
@@ -415,17 +411,8 @@ rooms:
     | NC                   | nothing                |
 
     Three buttons gate (garage door) is realized using 3-channel electromechanical (EMR) relay module to emulate push button for each function. 
-    Relay module should be controlled with LOW signal.
     
-    Between MqGateway and the 3-channel relay module:
-    
-    | WIRE COLOR                           | RELAY PIN |
-    |--------------------------------------|-----------|
-    | orange (5V)                          | VCC / D+  |
-    | orange-white (GND)                   | GND / D-  |
-    | [any-digital](../hardware/wiring.md) | IN1       |
-    | [any-digital](../hardware/wiring.md) | IN2       |
-    | [any-digital](../hardware/wiring.md) | IN3       |
+    Between UniGateway hardware and the 3-channel relay module use three separate digital output pins for control.
 
     Each relay module should be connected with COM and NO to the gate (garage door) opener in the place for connecting push button.
     This connection needs to be repeated for each relay - button.

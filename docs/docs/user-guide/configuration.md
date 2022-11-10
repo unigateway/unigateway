@@ -1,18 +1,18 @@
 
 
-There are two types of the configuration for MqGateway:
+There are two types of the configuration for UniGateway:
 
 - **Devices configuration** (in `gateway.yaml` file)  
-  Configures what and how smart devices are connected to MqGateway and MQTT broker connection.
+  Configures what and how smart devices are connected to UniGateway.
 - **System configuration** (passed by environment variables)   
-  Rarely needs adjustments. Configures stuff related to underlying hardware and features availability.   
+  Configures stuff related to underlying hardware and features availability.   
   
 ## Devices configuration
 
-Configures what and how smart devices are connected to MqGateway and MQTT broker connection.
+Configures what and how smart devices are connected to UniGateway.
 
 !!! hint
-    There is a [JSON schema file](https://raw.githubusercontent.com/aetas/mqgateway/master/src/main/resources/config.schema.json) for this configuration. 
+    There is a [JSON schema file](https://raw.githubusercontent.com/unigateway/unigateway/master/src/main/resources/config.schema.json) for this configuration. 
     Use it with your favourite YAML editor (e.g. IntelliJ or VSCode) for autocompletion and instant validation.
 
 
@@ -21,28 +21,108 @@ Configures what and how smart devices are connected to MqGateway and MQTT broker
 Basic structure of the configuration is like this:
 
 ```yaml
-configVersion: "1.1"  # Version of MqGateway configuration file - defines configuration structure
-name: "MainGateway" # Name of Gateway - unique for MQTT broker (used as part of the MQTT topic) 
-mqttHostname: "192.168.1.100" # Address IP or hostname of MQTT broker
-rooms: # List of rooms managed by this Gateway
-  - name: "living room" # name of the room
-    points: # List of points (each place connected with single UTP cable)
-      - name: "outlet behind TV"
-        portNumber: 10 # Number of port in Gateway to which point is connected (1-16)
-        devices: # List of devices connected to single point/cable
-          - name: "TV power" # Human-readable name of the device
-            id: "tv_power" # Unique identifier for the device across all devices on this Gateway
-            type: RELAY # type of the device (see "Supported devices")
-            [...]  # further configuration structure for the device depends on the type of the device
+configVersion: "1.0" # Version of UniGateway configuration file - defines configuration structure
+name: "MainGateway" # User-friendly name of the UniGateway installation - preferably unique in the network
+id: "MainGateway" # Identifier of Gateway - should be unique for UniGateway installations in the network
+devices: # List of devices configurations
+  - name: "TV power" # User-friendly name of the device - might be visible in integrated system (e.g. Home Assistant) 
+    id: "tv_power" # Unique identifier for the device across all devices on this Gateway
+    type: RELAY # type of the device (see "Supported devices")
+    connectors: # List of connectors which structure is specific for the underlying hardware (example for MqGateway)
+      state: 
+        portNumber: 1
+        wires: BLUE_WHITE
+    config: # contains properties for the device used to adjust device behaviour or integrations 
+      delayMs: 100
+      haComponent: SWITCH
 ```
 
 For the structure of configuration for specific devices see [supported devices examples](supported-devices.md).
 
+### Connectors configuration
+
+There are two types of devices:
+  - simple device - requires connectors in configuration which reference underlying hardware inputs/outputs (e.g. RELAY or SWITCH) 
+  - complex device - composed of other devices (simple or complex), requires "internalDevices" in configuration (e.g. GATE or SHUTTER)
+
+Every **simple device** has one or many connectors in the configuration. Connector references real pins in the hardware (i.e. by GPIO number in Raspberry Pi 
+and by RJ45 port and wire color for MqGateway) or MySensors node sensor. 
+Connector configuration structure depends on the underlying hardware implementation. It will be different for RaspberryPi, MqGateway and MySensors.
+
+#### Raspberry Pi
+
+| NAME       | DEFAULT | DESCRIPTION                                      |
+|------------|---------|--------------------------------------------------|
+| gpio       |         | GPIO number from Raspberry Pi pinout (REQUIRED)  |
+| debounceMs | 50      | debounce for input pin in milliseconds           |
+| pullUpDown | PULL_UP | start state for input pin (PULL_UP or PULL_DOWN) |
+
+ 
+
+??? Example open
+    ```yaml
+    devices:
+    - name: Workshop light switch
+      id: workshop_light_switch
+      type: SWITCH_BUTTON
+      connectors:
+        state:
+          gpio: 17 # GPIO number from Rapberry Pi pinout
+          debounceMs: 70 # optional (default: 50)
+          pullUpDown: PULL_DOWN # optional (default: PULL_UP)
+    ```
+
+#### MqGateway
+
+| NAME       | DEFAULT | DESCRIPTION                                                                                                       |
+|------------|---------|-------------------------------------------------------------------------------------------------------------------|
+| portNumber |         | number of the MqGateway port where device is connected (REQUIRED)                                                 |
+| wireColor  |         | color of the UTP cable wire, the device is connected with (REQUIRED one of: BLUE, BLUE_WHITE, GREEN, GREEN_WHITE) |
+| debounceMs | 50      | debounce for input pin in milliseconds                                                                            |
+
+
+??? Example open
+    ```yaml
+    devices:
+    - name: Workshop light switch
+      id: workshop_light_switch
+      type: SWITCH_BUTTON
+      connectors:
+        state:
+          portNumber: 2 # number of the MqGateway
+          wireColor: BLUE_WHITE # color of the UTP cable wire
+          debounceMs: 70 # optional (default: 50)
+    ```
+
+#### MySensors
+
+| NAME     | DEFAULT | DESCRIPTION                                                                                                                                               |
+|----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| source   |         | specifies that connector is using MySensors (REQUIRED: "MYSENSORS")                                                                                       |
+| nodeId   |         | MySensors node identifier (REQUIRED)                                                                                                                      |
+| sensorId |         | MySensors child sensor identifier (REQUIRED)                                                                                                              |
+| type     | 50      | Type of the value returned from the sensor, in line with [MySensors documentation](https://www.mysensors.org/download/serial_api_20) (e.g. V_TEMP, V_HUM) |
+
+
+??? Example open
+    ```yaml
+    devices:
+      - name: "Workshop temperature"
+        id: "workshop_temperature"
+        type: TEMPERATURE
+        connectors:
+          state:
+            source: MYSENSORS
+            nodeId: 10
+            sensorId: 1
+            type: V_TEMP
+    ```
+
 
 ### Loading devices configuration
 
-By default, MqGateway expects devices configuration file to be named `gateway.yaml` and to be available in the current working directory. 
-It means, it should be available in the directory from where MqGateway application is started on NanoPi NEO.
+By default, UniGateway expects devices configuration file to be named `gateway.yaml` and to be available in the current working directory. 
+It means, it should be available in the directory from where UniGateway application is started.
 
 You can change the path by specifying other path in environment variable `GATEWAY.CONFIGPATH` like this:
 
@@ -50,65 +130,118 @@ You can change the path by specifying other path in environment variable `GATEWA
 export GATEWAY_CONFIGPATH="/opt/gateway-configuration.yaml"
 ```
 
-Remember to add this command to `~/.bashrc` if you want it to survive MqGateway reboot.
+Remember to add this command to `~/.bashrc` if you want it to survive operating system reboot.
 
 ### Internal device reference
 
-In the case when you need to configure some device with "internalDevices" and this 
-internal device is connected in another _point_ (to a different MqGateway port) you need 
-to use REFERENCE device type to configure it.  
+When you need to configure complex device with "internalDevices" you have to "reference" the internal devices.
+It means you have to configure the simple device and then use its `id` value in `referenceId` property of "internalDevices" entry.
 
-See the example below which configures garage door (GATE device) with reed switch 
-configured as REFERENCE device, because it is connected to different port than 
-the garage door opener.
+See the example below which configures garage door (GATE device) with reed switch configured as referenced device.
 
 ??? Example
     ```yaml
-    configVersion: "1.1"
-    name: "MainGateway"
-    mqttHostname: "192.168.1.100"
-    rooms:
-      - name: "garage"
-        points:
-          - name: "Garage door opener"
+    name: "GarageGateway"
+    id: "GarageGateway"
+    devices:
+      - name: "Right garage door action button"
+        id: "right_garage_door_action_button" # <-- value used for "referenceId" 
+        type: EMULATED_SWITCH
+        connectors:
+          state:
             portNumber: 1
-            devices:
-              - name: "Right garage door"
-                id: "right_garage_door"
-                type: GATE
-                internalDevices:
-                  actionButton:
-                    name: "Right garage door action button"
-                    id: "right_garage_door_action_button"
-                    wires: [ "BLUE_WHITE" ]
-                    type: EMULATED_SWITCH
-                  closedReedSwitch:
-                    name: "Right garage door closed reed switch reference"
-                    id: "right_garage_door_closed_ref"
-                    type: REFERENCE
-                    referencedDeviceId: "right_garage_door_closed_reed" # <-- it references to the device below on point with portNumber 2
-          - name: "Garage door reed switch"
-            portNumber: 2
-            devices:
-              - name: "Right garage door"
-                id: "right_garage_door_closed_reed"
-                wires: ["GREEN_WHITE"]
-                type: REED_SWITCH
-    
+            wires: BLUE_WHITE
+      - name: "Right garage door reed switch"
+        id: "right_garage_door_closed_reed"
+        type: REED_SWITCH
+        connectors:
+          state:
+            portNumber: 3
+            wireColor: GREEN_WHITE
+      - name: "Right garage door"
+        id: "right_garage_door"
+        type: GATE
+        internalDevices:
+          actionButton:
+            referenceId: "right_garage_door_action_button"  # <-- it references to the EMULATED_SWITCH defined earlier
+          closedReedSwitch:
+            referenceId: "right_garage_door_closed_reed"    # <-- it references to the REED_SWITCH defined earlier   
     ```
 
 
 ## System configuration
 
-Rarely needs adjustments. Configures stuff related to underlying hardware and features availability.
+Configures stuff related to underlying hardware and features availability.
+
+This configurations can be set as environment variables like this:
+
+```shell
+export GATEWAY_MQTT_ENABLED=true
+```
+
+Add this commands to UniGateway start script, `.bashrc` or `.zshrc` so they survive operating system restart.
+
+### Basic configuration
+
+| NAME                          | DEFAULT      | DESCRIPTION                                                        |
+|-------------------------------|--------------|--------------------------------------------------------------------|
+| GATEWAY_CONFIGPATH            | gateway.yaml | path to the devices configuration file                             |
+| GATEWAY_SYSTEM_NETWORKADAPTER | eth0         | name of the ethernet interface used to connect to MQTT / WebSocket |
+| GATEWAY_SYSTEM_PLATFORM       | SIMULATED    | type of the underlying hardware (RASPBERRYPI or MQGATEWAY)         |
 
 
-| NAME                                              | DEFAULT               | DESCRIPTION                                                                       |
-|---------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------|
-| GATEWAY_CONFIGPATH                                | gateway.yaml          | path to the devices configuration file                                            |
-| GATEWAY_SYSTEM_NETWORKADAPTER                     | eth0                  | name of the ethernet interface used to connect to MQTT                            |
-| GATEWAY_SYSTEM_PLATFORM                           | NANOPI                | name of the controller used on MqGateway (currently only NANOPI)                  |
-| GATEWAY_SYSTEM_EXPANDER_ENABLED                   | false                 | should be "true" if you have _I/O Expander board_ connected                       |
-| GATEWAY_SYSTEM_COMPONENTS_MCP23017_PORTS          | (depends on I/O expander enablement) | I2C addresses of MCP23017 expanders                                |
+### Protocols and integrations
+
+#### MQTT
+
+| NAME                  | DEFAULT   | DESCRIPTION                                             |
+|-----------------------|-----------|---------------------------------------------------------|
+| GATEWAY_MQTT_ENABLED  | false     | Enable control through MQTT communication               |
+| GATEWAY_MQTT_HOSTNAME | (not set) | MQTT broker hostname or ip address (e.g. 192.168.1.100) |
+| GATEWAY_MQTT_PORT     | 1883      | MQTT port number                                        |
+
+#### MySensors
+
+UniGateway communicates with the MySensors gateway in one of two ways:
+
+- by the virtual serial when MySensors gateway is installed on the same hardware (default)
+- by the real serial when MySensors gateway is installed on the separate hardware
+
+UniGateway installation SD cards have MySensors gateway already installed and configured to use UART and RS485 communication to nodes.  
+
+More about how to connect and use MySensors devices with RS485 can be found on specific hardware documentation and [MySensors page](https://www.mysensors.org/).
+
+| NAME                                    | DEFAULT        | DESCRIPTION                                               |
+|-----------------------------------------|----------------|-----------------------------------------------------------|
+| GATEWAY_SYSTEM_MYSENSORS_ENABLED        | false          | Enable communication with MySensors gateway               |
+| GATEWAY_SYSTEM_MYSENSORS_PORTDESCRIPTOR | "/dev/ttys000" | Serial port address to communicate with MySensors gateway |
+| GATEWAY_SYSTEM_MYSENSORS_BAUDRATE       | 9600           | Baud rate for serial communication with MySensors gateway |
+
+
+#### Home Assistant
+
+| NAME                    | DEFAULT       | DESCRIPTION                                                                       |
+|-------------------------|---------------|-----------------------------------------------------------------------------------|
+| HOMEASSISTANT_ENABLED   | true          | Enable integration with Home Assistant through MQTT (requires MQTT to be enabled) |
+| HOMEASSISTANT_ROOTTOPIC | homeassistant | Root topic for Home Assistant MQTT discovery                                      |
+
+
+
+### Hardware specific
+
+#### Raspberry Pi
+
+| NAME                                            | DEFAULT | DESCRIPTION                                         |
+|-------------------------------------------------|---------|-----------------------------------------------------|
+| GATEWAY_SYSTEM_PLATFORMCONFIG_DEFAULTDEBOUNCEMS | 50      | default debounce for input pins in milliseconds     |
+| GATEWAY_SYSTEM_PLATFORMCONFIG_DEFAULTPULLUPDOWN | PULL_UP | default state for input pins (PULL_UP or PULL_DOWN) |
+
+#### MqGateway
+
+| NAME                                                    | DEFAULT                              | DESCRIPTION                                                 |
+|---------------------------------------------------------|--------------------------------------|-------------------------------------------------------------|
+| GATEWAY_SYSTEM_PLATFORMCONFIG_EXPANDER_ENABLED          | false                                | should be "true" if you have _I/O Expander board_ connected |
+| GATEWAY_SYSTEM_PLATFORMCONFIG_DEFAULTDEBOUNCEMS         | 50                                   | default debounce for input pins in milliseconds             |
+| GATEWAY_SYSTEM_PLATFORMCONFIG_COMPONENTS_MCP23017_PORTS | (depends on I/O expander enablement) | I2C addresses of MCP23017 expanders                         |
 
 
