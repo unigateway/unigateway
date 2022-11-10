@@ -10,6 +10,6 @@ export default function HumidityAction(props: HumidityActionProps) {
 
   return (
     <Typography variant="h5" color="textSecondary">
-      <div>Temperature: {props.device.properties.get("humidity") || "-" }°C</div>
+      <div>Humidity: {props.device.properties.get("humidity") || "-" }%</div>
     </Typography>)
 }
