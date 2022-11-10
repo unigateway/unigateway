@@ -3,9 +3,11 @@
 There are two types of the configuration for UniGateway:
 
 - **Devices configuration** (in `gateway.yaml` file)  
-  Configures what and how smart devices are connected to UniGateway.
+  Configures what and how smart devices are connected to UniGateway.  
+  Typically stored in `/opt/unigateway/gateway.yaml`.
 - **System configuration** (passed by environment variables)   
-  Configures stuff related to underlying hardware and features availability.   
+  Configures stuff related to underlying hardware and features availability.  
+  Typically stored in `/opt/unigateway/start_unigateway.sh`.
   
 ## Devices configuration
 

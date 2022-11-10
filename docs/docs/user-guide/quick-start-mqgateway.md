@@ -36,7 +36,8 @@ This way is much safer, and you still will be able to know it works correctly, b
      | control/IN | blue         |
 
 6. Connect the module to MqGateway port number 1 ([ports](images/mqgateway-ports-numbers.jpg))
-7. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui)
+7. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui)  
+   _Take into account that it may take a few minutes for Unigateway to start after booting MqGateway._
 8. Go to "Devices" 
 9. Change the switch for "Workshop light"
 
@@ -50,6 +51,7 @@ Congratulation! You have just configured your first device with UniGateway on Mq
 
 ## What's next?
 
+- [What to do after installation](installation.md#after-installation)
 - [Find out all supported devices](supported-devices.md)
 - [Enable MQTT and Home Assistant integrations](integration.md)
 

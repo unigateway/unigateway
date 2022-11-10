@@ -15,25 +15,19 @@ This way is much safer, and you still will be able to know it works correctly, b
 ## Connect and configure device
 
 [//]: # (TODO Test whole procedure when ready)
-[//]: # (TODO correct link)
 1. Download UniGateway SD card image for RaspberryPi from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_RaspberryPi.img.xz)
-
 2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/))
-
 3. Insert SD card to Raspberry Pi and power it up
-
-    [//]: # (TODO add image of connected Raspberry Pi)
-
-[//]: # (TODO add photo and correct link) 
 4. Connect relay module to RaspberryPi ([photo](images/relay-connected-to-raspberrypi.jpg))
 
-     | Raspberry Pi | module pin |
-     |--------------|------------|
-     | 5V           | VCC/DC+    |
-     | Ground       | ground/DC- |
-     | GPIO23       | control/IN |
+     | Raspberry Pi | Relay module |
+     |--------------|--------------|
+     | 5V           | VCC/DC+      |
+     | Ground       | ground/DC-   |
+     | GPIO17       | control/IN   |
 
-5. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui)
+5. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui)  
+   _Take into account that it may take a few minutes for Unigateway to start after booting MqGateway._
 6. Go to "Devices"
 7. Change the switch for "Workshop light"
 
@@ -47,6 +41,7 @@ Congratulation! You have just configured your first device with UniGateway on Ra
 
 ## What's next?
 
+- [What to do after installation](installation.md#after-installation)
 - [Find out all supported devices](supported-devices.md)
 - [Enable MQTT and Home Assistant integrations](integration.md)
 
