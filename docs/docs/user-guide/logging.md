@@ -1,8 +1,9 @@
-In case of any problems it is worth to look into MqGateway logs. This page describes where to find logs.
+In case of any problems it is worth to look into UniGateway logs. This page describes where to find logs.
 
 ## Current log file
 
-Current logs of MqGateway application can be found in `logs/application.log` file. Path is relative from where MqGateway is started. 
+Current logs of UniGateway application can be found in `logs/application.log` file. Path is relative from where UniGateway is started.
+Default location is `/opt/unigateway/logs/application.log`.
 
 
 ## Logs rotation

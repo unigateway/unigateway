@@ -1,51 +1,34 @@
 
-1. Connect to NanoPi NEO with SSH
-2. Download installation script: 
-   ```shell
-   curl -o mqgateway-install.sh -L https://raw.githubusercontent.com/aetas/mqgateway/master/installation-scripts/mqgateway-install.sh
-   ```
+## What do you need
+- Raspberry Pi or [MqGateway](https://mqgateway.com) with NanoPI NEO
+- SD card (minimum 8GB)
 
-3. Make script executable and run it:
-   ```shell
-   chmod +x mqgateway-install.sh
-   ./mqgateway-install.sh
-   ```
+## Installation steps
 
-    Installation script will:
-   
-    - Enable I<sup>2</sup>C and UART ports
-    - Download and build WiringNP library
-    - Install Java JRE
-    - Download the latest version of MqGateway
-    - Prepare basic configuration for MqGateway (requires adjustments before running MqGateway)
-    - Prepare and enable a service which will ensure MqGateway is running all the time, even in case of device restart
-   
-    In case of problems with installation - see logs in file  `/opt/mqgateway/mqgateway-install.log`
+1. Download latest UniGateway SD card image for your hardware: 
+    - [MqGateway](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_MqGateway.img.xz)
+    - [Raspberry Pi](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_RaspberryPi.img.xz)
 
-4. Edit MqGateway configuration with an editor of your choice (e.g. nano or vim) to change address of MQTT server:
+2. Flash SD card with downloaded image (you can use [Balena Etcher](https://www.balena.io/etcher/))
+3. Power up your hardware and wait until it has started  
+   _Take into account that it may take a few minutes for Unigateway to start after booting._
+4. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui) to check it works
 
-    ```yaml
-    configVersion: "1.1"
-    name: "TestGateway"
-    mqttHostname: "192.168.1.150" # set IP of your MQTT broker
-    rooms: # change devices configuration
-    - name: "workshop"
-      points:
-        - name: "point with test relay"
-          portNumber: 1
-          devices:
-            - name: "test relay"
-              id: "my-relay"
-              wires: ["BLUE"]
-              type: RELAY
-    ```
+## After installation
 
-    For more details on configuration files see [configuration page](configuration.md#devices-configuration) and examples for [supported devices](supported-devices.md). 
+You can configure UniGateway and add devices by changing the configuration file on the device.  
+Configuration file with the devices is stored in `/opt/unigateway/gateway.yaml` by default.
 
-3. Reboot your NanoPI NEO to enable I<sup>2</sup>C and serial ports.   
-   MqGateway always starts automatically on start of NanoPi NEO.
+You can use SSH to connect to the device as a **root** with default password **1234**.  
+You'll be asked to change the password and set regular user credentials on the first SSH connection.
+
+On Raspberry Pi you can also connect the display to change the credentials.
+
+You can now read more about [what kind of devices you can configure](supported-devices.md) and [how the configuration works](configuration.md).
 
 
 ## What's next?
 
+- [Quick start on Raspberry Pi](quick-start-raspberrypi.md)
+- [Quick start on MqGateway](quick-start-mqgateway.md)
 - [Supported devices and configuration](supported-devices.md)

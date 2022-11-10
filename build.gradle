@@ -6,7 +6,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.serialization" version "${kotlinVersion}"
     id "org.jlleitschuh.gradle.ktlint" version "10.0.0"
     id "com.github.johnrengelman.shadow" version "6.1.0"
-    id "pl.allegro.tech.build.axion-release" version "1.11.0"
+    id "pl.allegro.tech.build.axion-release" version "1.14.2"
     id "io.micronaut.application" version "3.2.1"
     id "com.github.node-gradle.node" version "3.4.0"
 }
@@ -114,7 +114,7 @@ shadowJar {
 scmVersion {
     versionIncrementer 'incrementMinor'
     versionCreator { version, position ->
-        return "$version-${position.shortRevision}"
+        return "$version-${position.shortRevision}".toString()
     }
 }
 
