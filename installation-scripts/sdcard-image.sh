@@ -175,6 +175,7 @@ wget "$MYSENSORS_DOWNLOAD_URL" -O "$MYSENSORS_BINARY_FILE_PATH"
 echo "Installing MySensors"
 cp $MYSENSORS_BINARY_FILE_PATH $IMG_MOUNT_PATH/usr/local/bin/mysgw
 cp $MYSENSORS_SERVICE_FILE_PATH $IMG_MOUNT_PATH/etc/systemd/system/mysgw.service
+chmod +x $IMG_MOUNT_PATH/usr/local/bin/mysgw
 
 
 echo "Enable UniGateway and MySensors services"
