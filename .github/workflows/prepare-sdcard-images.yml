@@ -26,7 +26,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /tmp/mqgateway/armbian.img.xz
-          asset_name: UniGateway_SDCardImage_RaspberryPi.img.xz
+          asset_name: UniGateway_SDCardImage_MqGateway.img.xz
           tag: ${{ github.ref }}
           overwrite: true
       - name: Upload Raspberry Pi SD card to release
@@ -34,7 +34,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /tmp/raspberrypi/armbian.img.xz
-          asset_name: UniGateway_SDCardImage_MqGateway.img.xz
+          asset_name: UniGateway_SDCardImage_RaspberryPi.img.xz
           tag: ${{ github.ref }}
           overwrite: true
 
