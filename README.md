@@ -3,7 +3,7 @@
 UniGateway
 =========
 
-This repository contains source code of software for [UniGateway project](https://unigateway.io/docs). 
+This repository contains source code of software for [UniGateway project](https://docs.unigateway.io). 
 
 ## What is UniGateway
 UniGateway is a software to control automation gateways. When installed on supported hardware, it allows you to control electronic sensors and controllers.

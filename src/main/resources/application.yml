@@ -39,7 +39,7 @@ gateway:
     enabled: true
   update:
     host: https://api.github.com
-    path: /repos/aetas/mqgateway/releases/latest
+    path: /repos/unigateway/unigateway/releases/latest
 
 homeassistant:
   enabled: true
