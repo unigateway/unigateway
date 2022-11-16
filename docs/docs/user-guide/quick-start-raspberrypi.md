@@ -14,7 +14,6 @@ This way is much safer, and you still will be able to know it works correctly, b
 
 ## Connect and configure device
 
-[//]: # (TODO Test whole procedure when ready)
 1. Download UniGateway SD card image for RaspberryPi from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_RaspberryPi.img.xz)
 2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/))
 3. Insert SD card to Raspberry Pi and power it up

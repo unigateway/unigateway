@@ -17,7 +17,6 @@ This way is much safer, and you still will be able to know it works correctly, b
 !!! warning 
     Make sure MqGateway is never connected to power supply and micro USB port at the same time. This will destroy the device and may damage your computer.
 
-[//]: # (TODO Test whole procedure when ready)
 1. Download UniGateway SD card image for MqGateway from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_MqGateway.img.xz) 
 
 2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/))

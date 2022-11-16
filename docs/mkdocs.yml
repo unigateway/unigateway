@@ -21,7 +21,3 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.details
 
-
-# TODO read whole documentation to check
-# TODO prepare PR
-
