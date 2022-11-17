@@ -233,17 +233,17 @@ More about how to connect and use MySensors devices with RS485 can be found on s
 
 #### Raspberry Pi
 
-| NAME                                            | DEFAULT | DESCRIPTION                                         |
-|-------------------------------------------------|---------|-----------------------------------------------------|
-| GATEWAY_SYSTEM_PLATFORMCONFIG_DEFAULTDEBOUNCEMS | 50      | default debounce for input pins in milliseconds     |
-| GATEWAY_SYSTEM_PLATFORMCONFIG_DEFAULTPULLUPDOWN | PULL_UP | default state for input pins (PULL_UP or PULL_DOWN) |
+| NAME                                             | DEFAULT | DESCRIPTION                                         |
+|--------------------------------------------------|---------|-----------------------------------------------------|
+| GATEWAY_SYSTEM_PLATFORM_CONFIG_DEFAULTDEBOUNCEMS | 50      | default debounce for input pins in milliseconds     |
+| GATEWAY_SYSTEM_PLATFORM_CONFIG_DEFAULTPULLUPDOWN | PULL_UP | default state for input pins (PULL_UP or PULL_DOWN) |
 
 #### MqGateway
 
-| NAME                                                    | DEFAULT                              | DESCRIPTION                                                 |
-|---------------------------------------------------------|--------------------------------------|-------------------------------------------------------------|
-| GATEWAY_SYSTEM_PLATFORMCONFIG_EXPANDER_ENABLED          | false                                | should be "true" if you have _I/O Expander board_ connected |
-| GATEWAY_SYSTEM_PLATFORMCONFIG_DEFAULTDEBOUNCEMS         | 50                                   | default debounce for input pins in milliseconds             |
-| GATEWAY_SYSTEM_PLATFORMCONFIG_COMPONENTS_MCP23017_PORTS | (depends on I/O expander enablement) | I2C addresses of MCP23017 expanders                         |
+| NAME                                                     | DEFAULT                              | DESCRIPTION                                                 |
+|----------------------------------------------------------|--------------------------------------|-------------------------------------------------------------|
+| GATEWAY_SYSTEM_PLATFORM_CONFIG_EXPANDER_ENABLED          | false                                | should be "true" if you have _I/O Expander board_ connected |
+| GATEWAY_SYSTEM_PLATFORM_CONFIG_DEFAULTDEBOUNCEMS         | 50                                   | default debounce for input pins in milliseconds             |
+| GATEWAY_SYSTEM_PLATFORM_CONFIG_COMPONENTS_MCP23017_PORTS | (depends on I/O expander enablement) | I2C addresses of MCP23017 expanders                         |
 
 
