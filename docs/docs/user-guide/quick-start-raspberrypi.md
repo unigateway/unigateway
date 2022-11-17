@@ -14,10 +14,11 @@ This way is much safer, and you still will be able to know it works correctly, b
 
 ## Connect and configure device
 
-1. Download UniGateway SD card image for RaspberryPi from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_RaspberryPi.img.xz)
-2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/))
-3. Insert SD card to Raspberry Pi and power it up
-4. Connect relay module to RaspberryPi ([photo](images/relay-connected-to-raspberrypi.jpg))
+1. Download UniGateway SD card image for RaspberryPi from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_RaspberryPi.img.xz).
+2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/)).
+3. Insert SD card to Raspberry Pi.
+4. Connect Raspberry Pi to your router with ethernet cable and power up Raspberry Pi.
+5. Connect relay module to RaspberryPi (see table below and [photo](images/relay-connected-to-raspberrypi.jpg)).
 
      | Raspberry Pi | Relay module |
      |--------------|--------------|
@@ -25,10 +26,10 @@ This way is much safer, and you still will be able to know it works correctly, b
      | Ground       | ground/DC-   |
      | GPIO17       | control/IN   |
 
-5. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui)  
-   _Take into account that it may take a few minutes for Unigateway to start after booting MqGateway._
-6. Go to "Devices"
-7. Change the switch for "Workshop light"
+6. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui).  
+   _Take into account that it may take a few minutes for Unigateway to start after booting Raspberry Pi._
+7. Go to "Devices"/.
+8. Change the switch for "Workshop light".
 
 ![UniGateway devices UI](images/unigateway-quick-start-ui.png)
 

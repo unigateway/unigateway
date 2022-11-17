@@ -17,16 +17,18 @@ This way is much safer, and you still will be able to know it works correctly, b
 !!! warning 
     Make sure MqGateway is never connected to power supply and micro USB port at the same time. This will destroy the device and may damage your computer.
 
-1. Download UniGateway SD card image for MqGateway from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_MqGateway.img.xz) 
+1. Download UniGateway SD card image for MqGateway from [here](https://github.com/unigateway/unigateway/releases/latest/download/UniGateway_SDCardImage_MqGateway.img.xz). 
 
-2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/))
+2. Flash SD card with UniGateway (you can use [Balena Etcher](https://www.balena.io/etcher/)).
 
-3. Insert SD card to NanoPi NEO in MqGateway and power up MqGateway
+3. Insert SD card to NanoPi NEO in MqGateway and power up MqGateway.
 
-4. Prepare ethernet cable with the connector on one side (according to standard T568B)
+4. Connect MqGateway to your router with ethernet cable and power up MqGateway.
+
+5. Prepare ethernet cable with the connector on one side (according to standard T568B).
    [![cable termination](images/T568B.png){: style="height:150px; display: block; margin: 0 auto;transform: rotate(90deg)"}](images/T568B.png)
 
-5. Connect relay module to ethernet cable ([photo](images/relay-connected-1.jpg))
+6. Connect relay module to ethernet cable (see table below and [photo](images/relay-connected-1.jpg)).
 
      | module pin | wire color   |
      |------------|--------------|
@@ -34,11 +36,11 @@ This way is much safer, and you still will be able to know it works correctly, b
      | ground/DC- | orange-white |
      | control/IN | blue         |
 
-6. Connect the module to MqGateway port number 1 ([ports](images/mqgateway-ports-numbers.jpg))
-7. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui)  
+7. Connect the module to MqGateway port number 1 ([ports](images/mqgateway-ports-numbers.jpg)).
+8. Open browser and go to [http://unigateway.local:8080/ui](http://unigateway.local:8080/ui).
    _Take into account that it may take a few minutes for Unigateway to start after booting MqGateway._
-8. Go to "Devices" 
-9. Change the switch for "Workshop light"
+9. Go to "Devices".
+10. Change the switch for "Workshop light".
 
 ![UniGateway devices UI](images/unigateway-quick-start-ui.png)
 

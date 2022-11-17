@@ -6,7 +6,7 @@ Typical smart home solution is based on multiple sensors and controllers distrib
 Central component of the system is home automation application like OpenHab or Home Assistant which allows you to set rules and control devices with graphical interface and mobile application.  
 Binding those elements is usually done either with some vendor gateway (e.g. Z-Wave Gateway) or by connecting sensors to microcontroller (e.g. ESP8266, Arduino) which communicates with home automation application.
 
-The problem with the vendor gateway solution is these are mostly only wireless and often closed solution. This unfortunately means - monitoring and changing batteries (plus a lot of radio waves around the house). Additionally, vendor sensors are relatively expensive comparing to the bare modules which can be used with Arduino.  
+The problem with the vendor gateway solution is these are mostly wireless and often closed solution. This unfortunately means - monitoring and changing batteries (plus a lot of radio waves around the house). Additionally, vendor sensors are relatively expensive comparing to the bare modules which are usually used with Raspberry Pi or Arduino.  
 Connecting a sensor to Arduino or similar microcontroller will save a lot of money on sensors, because you can use cheap, ready-to-use modules, but you still need to send data from microcontroller to home automation application. This can be done wireless (WiFi or RF), but it gets us back to the problem with batteries and radio noise. Even if you add wired connection (e.g. ethernet) to microcontroller, having single microcontroller for each one or two sensors is not very cost-effective.
 
 Problems described above are the ones UniGateway is trying to solve.
