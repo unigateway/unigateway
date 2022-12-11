@@ -43,7 +43,8 @@ class GateDeviceFactory : DeviceFactory<GateDevice> {
       openButton,
       closeButton,
       openReedSwitch,
-      closedReedSwitch
+      closedReedSwitch,
+      deviceConfiguration.config
     )
   }
 
@@ -58,7 +59,8 @@ class GateDeviceFactory : DeviceFactory<GateDevice> {
       deviceConfiguration.name,
       actionButton,
       openReedSwitch,
-      closedReedSwitch
+      closedReedSwitch,
+      deviceConfiguration.config
     )
   }
 }

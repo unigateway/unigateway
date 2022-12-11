@@ -100,4 +100,44 @@ class GateDeviceFactoryTest extends Specification {
     exception.message == "Unexpected device configuration for device: my_gate. Gate device should have either three buttons defined (stopButton, openButton, closeButton) or single (actionButton)"
   }
 
+  def "should pass configuration to single button gate device when any config entries are set on configuration"() {
+    given:
+    def config = new DeviceConfiguration("my_gate", "Test gate device", DeviceType.GATE, [:], [
+      actionButton    : new InternalDeviceConfiguration("action_button"),
+      closedReedSwitch: new InternalDeviceConfiguration("closed_reed_switch")
+    ], [someConfig: "someValue"])
+    def devices = [
+      gatewayFactory.emulatedSwitchButtonDevice("action_button"),
+      gatewayFactory.reedSwitchDevice("open_reed_switch"),
+      gatewayFactory.reedSwitchDevice("closed_reed_switch")
+    ] as Set
+
+    when:
+    def device = factory.create(config, devices)
+
+    then:
+    device.config == [someConfig: "someValue"]
+  }
+
+  def "should pass configuration to three buttons gate device when any config entries are set on configuration"() {
+    given:
+    def config = new DeviceConfiguration("my_gate", "Test gate device", DeviceType.GATE, [:], [
+      stopButton      : new InternalDeviceConfiguration("stop_button"),
+      openButton      : new InternalDeviceConfiguration("open_button"),
+      closeButton     : new InternalDeviceConfiguration("close_button"),
+      closedReedSwitch: new InternalDeviceConfiguration("closed_reed_switch")
+    ], [someConfig: "someValue"])
+    def devices = [
+      gatewayFactory.emulatedSwitchButtonDevice("stop_button"),
+      gatewayFactory.emulatedSwitchButtonDevice("open_button"),
+      gatewayFactory.emulatedSwitchButtonDevice("close_button"),
+      gatewayFactory.reedSwitchDevice("closed_reed_switch")
+    ] as Set
+
+    when:
+    def device = factory.create(config, devices)
+
+    then:
+    device.config == [someConfig: "someValue"]
+  }
 }

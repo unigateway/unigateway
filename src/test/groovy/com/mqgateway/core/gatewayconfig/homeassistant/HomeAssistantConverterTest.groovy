@@ -14,18 +14,11 @@ import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.DeviceRegistryFactory
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
+import com.mqgateway.core.gatewayconfig.InternalDeviceConfiguration
 import com.mqgateway.core.hardware.simulated.SimulatedConnector
-import com.mqgateway.core.hardware.simulated.SimulatedInputOutputProvider
-import com.mqgateway.core.hardware.simulated.SimulatedPlatformConfiguration
-import com.mqgateway.core.io.provider.DefaultMySensorsInputOutputProvider
-import com.mqgateway.core.io.provider.DisabledMySensorsInputOutputProvider
-import com.mqgateway.core.io.provider.InputOutputProvider
-import com.mqgateway.core.io.provider.MySensorsInputOutputProvider
-import com.mqgateway.core.mysensors.MySensorsSerialConnection
 import com.mqgateway.core.utils.FakeSystemInfoProvider
 import com.mqgateway.core.utils.TimersScheduler
 import com.mqgateway.utils.TestGatewayFactory
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -256,22 +249,23 @@ class HomeAssistantConverterTest extends Specification {
     assertHomeAssistantDevice(switchComponent, gateway, emulatedSwitchDeviceConfig)
   }
 
-  @Ignore("Requires implementation of ShutterDevice factory")
   def "should convert MqGateway SHUTTER to HA cover"() {
     given:
-    def shutterDevice = new DeviceConfiguration("myShutter", "Test shutter device", DeviceType.SHUTTER,
-                                                [state: new SimulatedConnector(1)], [:],
-                                                [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"])
-    GatewayConfiguration gateway = gateway([shutterDevice])
+    def shutterDevice = new DeviceConfiguration("myShutter", "Test shutter device", DeviceType.SHUTTER, [:], [
+      stopRelay  : new InternalDeviceConfiguration("stop_relay"),
+      upDownRelay: new InternalDeviceConfiguration("up_down_relay")
+    ], [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"])
+    def stopRelay = new DeviceConfiguration("stop_relay", "Stop Relay", DeviceType.RELAY, [state: new SimulatedConnector(1)])
+    def upDownRelay = new DeviceConfiguration("up_down_relay", "UpDown Relay", DeviceType.RELAY, [state: new SimulatedConnector(1)])
+    GatewayConfiguration gateway = gateway([shutterDevice, stopRelay, upDownRelay])
     def deviceRegistry = deviceRegistryFactory.create(gateway)
 
     when:
     def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
 
     then:
-    components.size() == 1
-    HomeAssistantCover cover = components.first() as HomeAssistantCover
-    cover.componentType == HomeAssistantComponentType.COVER
+    components.size() == 3
+    HomeAssistantCover cover = components.find { it.componentType == HomeAssistantComponentType.COVER }
     cover.deviceClass == HomeAssistantCover.DeviceClass.SHUTTER
     cover.name == "Test shutter device"
     cover.properties.nodeId == gateway.id
@@ -295,21 +289,32 @@ class HomeAssistantConverterTest extends Specification {
     assertHomeAssistantDevice(cover, gateway, shutterDevice)
   }
 
-  @Ignore("Requires implementation of GateDevice factory")
   def "should convert MqGateway GATE to HA cover"() {
     given:
-    def gateDevice = new DeviceConfiguration("myGate", "Test gate device", DeviceType.GATE, [state: new SimulatedConnector(1)], [:])
-    GatewayConfiguration gateway = gateway([gateDevice])
+    def gateDevice = new DeviceConfiguration("myGate", "Test gate device", DeviceType.GATE, [:], [
+      stopButton      : new InternalDeviceConfiguration("stop_button"),
+      openButton      : new InternalDeviceConfiguration("open_button"),
+      closeButton     : new InternalDeviceConfiguration("close_button"),
+      closedReedSwitch: new InternalDeviceConfiguration("closed_reed_switch")
+    ], [haDeviceClass: "gate"])
+    def stopEmulatedSwitchDevice = new DeviceConfiguration("stop_button", "Gate stop", DeviceType.EMULATED_SWITCH,
+                                                           [state: new SimulatedConnector(1)])
+    def openEmulatedSwitchDevice = new DeviceConfiguration("open_button", "Gate open", DeviceType.EMULATED_SWITCH,
+                                                           [state: new SimulatedConnector(2)])
+    def closeEmulatedSwitchDevice = new DeviceConfiguration("close_button", "Gate close", DeviceType.EMULATED_SWITCH,
+                                                           [state: new SimulatedConnector(3)])
+    def closedReedSwitchDevice = new DeviceConfiguration("closed_reed_switch", "Closed gate reed switch", DeviceType.REED_SWITCH,
+                                                         [state: new SimulatedConnector(4)])
+    GatewayConfiguration gateway = gateway([gateDevice, stopEmulatedSwitchDevice, openEmulatedSwitchDevice, closeEmulatedSwitchDevice, closedReedSwitchDevice])
     def deviceRegistry = deviceRegistryFactory.create(gateway)
 
     when:
     def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
 
     then:
-    components.size() == 1
-    HomeAssistantCover cover = components.first() as HomeAssistantCover
-    cover.componentType == HomeAssistantComponentType.COVER
-    cover.deviceClass == HomeAssistantCover.DeviceClass.GARAGE
+    components.size() == 5
+    HomeAssistantCover cover = components.find { it.componentType == HomeAssistantComponentType.COVER } as HomeAssistantCover
+    cover.deviceClass == HomeAssistantCover.DeviceClass.GATE
     cover.name == "Test gate device"
     cover.properties.nodeId == gateway.id
     cover.properties.objectId == "myGate"

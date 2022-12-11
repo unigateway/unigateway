@@ -21,7 +21,8 @@ class ShutterDeviceFactory : DeviceFactory<ShutterDevice> {
       stopRelay,
       upDownRelay,
       deviceConfiguration.config.getValue("fullOpenTimeMs").toLong(),
-      deviceConfiguration.config.getValue("fullCloseTimeMs").toLong()
+      deviceConfiguration.config.getValue("fullCloseTimeMs").toLong(),
+      deviceConfiguration.config
     )
   }
 }

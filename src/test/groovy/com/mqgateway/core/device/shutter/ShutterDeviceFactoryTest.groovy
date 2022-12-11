@@ -64,4 +64,21 @@ class ShutterDeviceFactoryTest extends Specification {
     exception.message == "Reference device not found (upDownRelay:up_down_relay) for device: shutter_device"
   }
 
+  def "should pass configuration to shutter device when any config entries are set on configuration"() {
+    given:
+    def config = new DeviceConfiguration("shutter_device", "Shutter device", DeviceType.SHUTTER, [:], [
+      stopRelay  : new InternalDeviceConfiguration("stop_relay"),
+      upDownRelay: new InternalDeviceConfiguration("up_down_relay")
+    ], [fullOpenTimeMs: "100", fullCloseTimeMs: "100", someConfig: "someValue"])
+    def devices = [gatewayFactory.relayDevice("stop_relay"), gatewayFactory.relayDevice("up_down_relay")] as Set
+
+    when:
+    def shutterDevice = factory.create(config, devices)
+
+    then:
+    shutterDevice.id == "shutter_device"
+    shutterDevice.name == "Shutter device"
+    shutterDevice.type == DeviceType.SHUTTER
+    shutterDevice.config == [fullOpenTimeMs: "100", fullCloseTimeMs: "100", someConfig: "someValue"]
+  }
 }
