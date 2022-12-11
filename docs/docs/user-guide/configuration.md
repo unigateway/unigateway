@@ -185,11 +185,11 @@ Add this commands to UniGateway start script, `.bashrc` or `.zshrc` so they surv
 
 ### Basic configuration
 
-| NAME                          | DEFAULT      | DESCRIPTION                                                        |
-|-------------------------------|--------------|--------------------------------------------------------------------|
-| GATEWAY_CONFIGPATH            | gateway.yaml | path to the devices configuration file                             |
-| GATEWAY_SYSTEM_NETWORKADAPTER | eth0         | name of the ethernet interface used to connect to MQTT / WebSocket |
-| GATEWAY_SYSTEM_PLATFORM       | SIMULATED    | type of the underlying hardware (RASPBERRYPI or MQGATEWAY)         |
+| NAME                           | DEFAULT      | DESCRIPTION                                                        |
+|--------------------------------|--------------|--------------------------------------------------------------------|
+| GATEWAY_CONFIG_PATH            | gateway.yaml | path to the devices configuration file                             |
+| GATEWAY_SYSTEM_NETWORK_ADAPTER | eth0         | name of the ethernet interface used to connect to MQTT / WebSocket |
+| GATEWAY_SYSTEM_PLATFORM        | SIMULATED    | type of the underlying hardware (RASPBERRYPI or MQGATEWAY)         |
 
 
 ### Protocols and integrations
@@ -213,19 +213,19 @@ UniGateway installation SD cards have MySensors gateway already installed and co
 
 More about how to connect and use MySensors devices with RS485 can be found on specific hardware documentation and [MySensors page](https://www.mysensors.org/).
 
-| NAME                                    | DEFAULT        | DESCRIPTION                                               |
-|-----------------------------------------|----------------|-----------------------------------------------------------|
-| GATEWAY_SYSTEM_MYSENSORS_ENABLED        | false          | Enable communication with MySensors gateway               |
-| GATEWAY_SYSTEM_MYSENSORS_PORTDESCRIPTOR | "/dev/ttys000" | Serial port address to communicate with MySensors gateway |
-| GATEWAY_SYSTEM_MYSENSORS_BAUDRATE       | 9600           | Baud rate for serial communication with MySensors gateway |
+| NAME                                     | DEFAULT        | DESCRIPTION                                               |
+|------------------------------------------|----------------|-----------------------------------------------------------|
+| GATEWAY_SYSTEM_MYSENSORS_ENABLED         | false          | Enable communication with MySensors gateway               |
+| GATEWAY_SYSTEM_MYSENSORS_PORT_DESCRIPTOR | "/dev/ttys000" | Serial port address to communicate with MySensors gateway |
+| GATEWAY_SYSTEM_MYSENSORS_BAUD_RATE       | 9600           | Baud rate for serial communication with MySensors gateway |
 
 
 #### Home Assistant
 
-| NAME                    | DEFAULT       | DESCRIPTION                                                                       |
-|-------------------------|---------------|-----------------------------------------------------------------------------------|
-| HOMEASSISTANT_ENABLED   | true          | Enable integration with Home Assistant through MQTT (requires MQTT to be enabled) |
-| HOMEASSISTANT_ROOTTOPIC | homeassistant | Root topic for Home Assistant MQTT discovery                                      |
+| NAME                     | DEFAULT       | DESCRIPTION                                                                       |
+|--------------------------|---------------|-----------------------------------------------------------------------------------|
+| HOMEASSISTANT_ENABLED    | true          | Enable integration with Home Assistant through MQTT (requires MQTT to be enabled) |
+| HOMEASSISTANT_ROOT_TOPIC | homeassistant | Root topic for Home Assistant MQTT discovery                                      |
 
 
 
