@@ -108,7 +108,8 @@
         "SHUTTER",
         "GATE",
         "TEMPERATURE",
-        "HUMIDITY"
+        "HUMIDITY",
+        "LIGHT"
       ]
     },
     "connector": {

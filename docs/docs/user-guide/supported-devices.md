@@ -230,12 +230,71 @@ devices:
 
 ### Complex devices
 
+Complex devices are composed of multiple other devices.
+
+#### Light
+
+Light (controlled by the relay) with one or more switches to toggle it.
+Allows to control the light with physical wall switches/buttons even if external automation controller 
+(e.g. Home Assistant or OpenHab) is not working.
+
+- configuration type: `LIGHT`
+- internal devices:
+    - `relay` ([relay](#relay-module)) [required]
+    - `switch1` ([switch button](#switch-button)) [optional]
+    - `switch2` ([switch button](#switch-button)) [optional]
+    - `switch3` ([switch button](#switch-button)) [optional]
+
+<details>
+<summary>Example configuration</summary>
+
+```yaml
+devices:
+  - name: "Living room light"
+    id: "living_room_light"
+    type: LIGHT
+    internalDevices:
+      relay:
+        referenceId: lr_light_relay
+      switch1:
+        referenceId: lr_light_switch1
+      switch2:
+        referenceId: lr_light_switch2
+  # Internal devices used by living_room_shutter
+  - name: "Living room light relay"
+    id: "lr_light_relay"
+    type: RELAY
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 11
+        wireColor: BLUE
+  - name: "Living Room light switch near entrance"
+    id: "lr_light_switch1"
+    type: RELAY
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 11
+        wireColor: BLUE_WHITE
+  - name: "Living Room light switch near kitchen"
+    id: "lr_light_switch2"
+    type: RELAY
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 12
+        wireColor: BLUE_WHITE
+```
+</details>
+
+??? example "Wiring"
+    Light is realized using electromechanical (EMR) relay module and optional switch buttons.
+
+    See [relay](#relay-module) and [switch button](#switch-button) devices descriptions to learn how to connect them.
+
+
 #### Window shutter
 
 Window shutter/roller blind control. Replaces the regular switch button control with 2-channels relay module.
 Allows to fully open/close shutters and partial opening with percentage (e.g. 30% open).
-
-It is a "complex" devices. That means it is combined with multiple other devices.
 
 - configuration type: `SHUTTER`
 - internal devices:

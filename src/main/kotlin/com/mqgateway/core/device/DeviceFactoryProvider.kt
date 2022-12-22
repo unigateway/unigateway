@@ -8,6 +8,7 @@ import com.mqgateway.core.device.relay.RelayDeviceFactory
 import com.mqgateway.core.device.shutter.ShutterDeviceFactory
 import com.mqgateway.core.device.switchbutton.SwitchButtonDeviceFactory
 import com.mqgateway.core.device.humidity.HumidityDeviceFactory
+import com.mqgateway.core.device.light.LightDeviceFactory
 import com.mqgateway.core.device.temperature.TemperatureDeviceFactory
 import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDeviceFactory
 import com.mqgateway.core.device.unigateway.UniGatewayDeviceFactory
@@ -34,6 +35,7 @@ class DeviceFactoryProvider(
     TimerSwitchRelayDeviceFactory(ioProvider, timersScheduler),
     TemperatureDeviceFactory(ioProvider),
     HumidityDeviceFactory(ioProvider),
+    LightDeviceFactory(),
   ).associateBy { it.deviceType() }
 
   fun getFactory(deviceType: DeviceType): DeviceFactory<*> {

@@ -11,5 +11,6 @@ enum class DeviceType {
   SHUTTER,
   GATE,
   TEMPERATURE,
-  HUMIDITY
+  HUMIDITY,
+  LIGHT
 }
