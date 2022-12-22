@@ -231,6 +231,11 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
           device.getProperty(DevicePropertyType.HUMIDITY).unit.value
         )
       )
+      DeviceType.LIGHT -> {
+        val stateTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE)
+        val commandTopic = homieCommandTopic(unigatewayId, device.id, DevicePropertyType.STATE)
+        listOf(HomeAssistantLight(basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
+      }
       DeviceType.UNIGATEWAY -> throw IllegalArgumentException("MqGateway should not be configured as a device")
     }
 

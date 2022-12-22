@@ -385,6 +385,37 @@ class HomeAssistantConverterTest extends Specification {
     ipAddress.uniqueId == gateway.id + "_" + gateway.id + "_IP_ADDRESS"
   }
 
+  def "should convert UniGateway light to HA light"() {
+    given:
+    def lightDeviceConfig = new DeviceConfiguration("myLight", "Test light", DeviceType.LIGHT, [:], [
+      relay: new InternalDeviceConfiguration("light_relay"),
+      switch1: new InternalDeviceConfiguration("switch_light_1"),
+      switch2: new InternalDeviceConfiguration("switch_light_2"),
+    ])
+    def relay = new DeviceConfiguration("light_relay", "Light Relay", DeviceType.RELAY,[state: new SimulatedConnector(1)])
+    def switch1 = new DeviceConfiguration("switch_light_1", "Switch 1", DeviceType.SWITCH_BUTTON, [state: new SimulatedConnector(2)])
+    def switch2 = new DeviceConfiguration("switch_light_2", "Switch 2", DeviceType.SWITCH_BUTTON, [state: new SimulatedConnector(3)])
+    GatewayConfiguration gateway = gateway([lightDeviceConfig, relay, switch1, switch2])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 4
+    HomeAssistantLight lightComponent = components.find { it.componentType == HomeAssistantComponentType.LIGHT } as HomeAssistantLight
+    lightComponent.name == "Test light"
+    lightComponent.properties.nodeId == gateway.id
+    lightComponent.properties.objectId == "myLight"
+    lightComponent.stateTopic == expectedStateTopic(gateway.id, lightDeviceConfig.id, STATE.toString())
+    lightComponent.commandTopic == expectedCommandTopic(gateway.id, lightDeviceConfig.id, STATE.toString())
+    lightComponent.retain
+    lightComponent.payloadOn == "ON"
+    lightComponent.payloadOff == "OFF"
+    lightComponent.uniqueId == gateway.id + "_" + lightDeviceConfig.id
+    assertHomeAssistantDevice(lightComponent, gateway, lightDeviceConfig)
+  }
+
   private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, GatewayConfiguration gateway, DeviceConfiguration deviceConfig) {
     assert haComponent.properties.device.firmwareVersion == firmwareVersion
     assert haComponent.properties.device.identifiers == [gateway.id + "_" + deviceConfig.id]
