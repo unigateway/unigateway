@@ -55,7 +55,7 @@ dependencies {
     compileOnly 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2'
 
     // Avahi / ZeroConf / Multicast DNS
-    implementation 'org.jmdns:jmdns:3.5.7'
+    implementation 'org.jmdns:jmdns:3.5.8'
 
     // Tests
     testImplementation(enforcedPlatform("io.micronaut:micronaut-bom:$micronautVersion"))
