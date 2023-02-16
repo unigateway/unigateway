@@ -46,8 +46,8 @@ private class DataReceivedEventListener : SerialPortDataListener {
   }
 
   override fun serialEvent(event: SerialPortEvent) {
-    val data = String(event.receivedData)
-    LOGGER.info { "Handling serial event: $event, serial data: $data." }
+    val data = String(event.receivedData).trimEnd()
+    LOGGER.info { "Handling serial event: $event, serial data: $data" }
 
     if (listeners.isEmpty()) {
       LOGGER.warn { "No registered listeners for serial port." }

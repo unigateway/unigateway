@@ -19,13 +19,35 @@
     </encoder>
   </appender>
 
+  <appender name="jsonRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/json/application.log.json</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/json/app-%d{yyyy-MM-dd}.log.json</fileNamePattern>
+      <maxHistory>7</maxHistory>
+    </rollingPolicy>
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+      <providers>
+        <timestamp/>
+        <message />
+        <loggerName/>
+        <threadName/>
+        <logLevel />
+        <stackTrace/>
+      </providers>
+    </encoder>
+  </appender>
+
+  <logger name="com.mqgateway.discovery" level="WARN" />
+
   <root level="info">
     <appender-ref ref="rollingFile" />
     <appender-ref ref="stdout" />
+    <appender-ref ref="jsonRollingFile" />
   </root>
 
   <logger name="com.gateway" level="DEBUG">
     <appender-ref ref="rollingFile" />
     <appender-ref ref="stdout" />
+    <appender-ref ref="jsonRollingFile" />
   </logger>
 </configuration>
