@@ -35,7 +35,6 @@ class MonitoringUpdateListener(private val meterRegistry: MeterRegistry, private
           TimeGauge.builder("unigateway.uptime", uptimeInSeconds!!, TimeUnit.SECONDS, { it.toDouble() }).register(meterRegistry)
         }
       }
-
     }
   }
 }
