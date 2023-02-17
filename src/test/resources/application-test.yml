@@ -10,6 +10,8 @@ gateway:
     enabled: true
     hostname: localhost
     port: 1883
+    username: testuser
+    password: testpass
 
 homeassistant:
   enabled: true

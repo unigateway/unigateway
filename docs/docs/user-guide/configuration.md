@@ -201,6 +201,8 @@ Add this commands to UniGateway start script, `.bashrc` or `.zshrc` so they surv
 | GATEWAY_MQTT_ENABLED  | false     | Enable control through MQTT communication               |
 | GATEWAY_MQTT_HOSTNAME | (not set) | MQTT broker hostname or ip address (e.g. 192.168.1.100) |
 | GATEWAY_MQTT_PORT     | 1883      | MQTT port number                                        |
+| GATEWAY_MQTT_USERNAME | (not set) | MQTT user name (optional)                               |
+| GATEWAY_MQTT_PASSWORD | (not set) | MQTT user password (optional)                           |
 
 #### MySensors
 

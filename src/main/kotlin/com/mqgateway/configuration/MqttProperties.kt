@@ -7,5 +7,7 @@ import io.micronaut.context.annotation.ConfigurationProperties
 data class MqttProperties @ConfigurationInject constructor(
   val enabled: Boolean,
   val hostname: String,
-  val port: Int
+  val port: Int,
+  val username: String?,
+  val password: String?
 )

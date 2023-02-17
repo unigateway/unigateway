@@ -1,6 +1,7 @@
 package com.mqgateway.homie
 
 import com.mqgateway.homie.mqtt.HiveMqttClientFactory
+import com.mqgateway.homie.mqtt.HiveMqttClientIT
 import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
@@ -29,7 +30,7 @@ class HomieDeviceIT extends MqttSpecification {
 
   void setupSpec() {
     cleanupMqtt()
-    MqttClientFactory mqttClientFactory = new HiveMqttClientFactory("localhost", mosquittoPort())
+    MqttClientFactory mqttClientFactory = new HiveMqttClientFactory("localhost", mosquittoPort(), HiveMqttClientIT.MQTT_USERNAME, HiveMqttClientIT.MQTT_PASSWORD)
 
     mqttClient = mqttClientFactory.create("testClient") {} {}
     mqttClient.connect(new MqttMessage("test", "disconnected", 0, false), true)

@@ -17,7 +17,8 @@ import jakarta.inject.Singleton
 class HomieFactory {
 
   @Singleton
-  fun mqttClientFactory(mqttProperties: MqttProperties) = HiveMqttClientFactory(mqttProperties.hostname, mqttProperties.port)
+  fun mqttClientFactory(mqttProperties: MqttProperties) =
+    HiveMqttClientFactory(mqttProperties.hostname, mqttProperties.port, mqttProperties.username, mqttProperties.password)
 
   @Singleton
   fun homieListenersRegisteredEventHandler(homieDevice: HomieDevice): HomieListenersRegisteredEventListener {
