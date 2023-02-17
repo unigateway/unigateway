@@ -1,6 +1,7 @@
 package com.mqgateway.homie.mqtt
 
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client
+import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth
 import com.mqgateway.utils.MqttSpecification
 import java.util.concurrent.TimeUnit
 import spock.lang.Subject
@@ -8,6 +9,9 @@ import spock.lang.Timeout
 
 @Timeout(30)
 class HiveMqttClientIT extends MqttSpecification {
+
+  public static final String MQTT_USERNAME = "testuser"
+  public static final String MQTT_PASSWORD = "testpass"
 
 	@Subject
 	HiveMqttClient mqttClient
@@ -18,6 +22,7 @@ class HiveMqttClientIT extends MqttSpecification {
 			.identifier("testMqttClient")
 			.serverHost("localhost")
 			.serverPort(mosquittoPort())
+      .simpleAuth(Mqtt3SimpleAuth.builder().username(MQTT_USERNAME).password(MQTT_PASSWORD.bytes).build())
 			.buildBlocking()
 		hiveClient.connectWith().cleanSession(true).send()
 		mqttClient = new HiveMqttClient(hiveClient)
