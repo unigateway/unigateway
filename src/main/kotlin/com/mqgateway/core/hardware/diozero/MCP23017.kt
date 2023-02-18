@@ -97,6 +97,7 @@ open class MCP23017(private val controller: Int, private val address: Int, inter
     writeByte(getIODirReg(port), directions[port].value)
   }
 
+  @Synchronized
   override fun setValue(gpio: Int, value: Boolean) {
     require(!(gpio < 0 || gpio >= NUM_GPIOS)) {
       ("Invalid GPIO: " + gpio + ". " + deviceName() + " has " + NUM_GPIOS + " GPIOs; must be 0.." + (NUM_GPIOS - 1))
