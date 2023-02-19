@@ -9,13 +9,18 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.TimeGauge
 import jakarta.inject.Singleton
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 @Singleton
 class MonitoringUpdateListener(private val meterRegistry: MeterRegistry, private val gatewayConfiguration: GatewayConfiguration) : UpdateListener {
 
-  private var uptimeInSeconds: Int? = null
+  private var uptimeInSeconds: AtomicInteger = AtomicInteger()
   private var freeMemory: Float? = null
   private var cpuTemperature: Float? = null
+
+  init {
+    TimeGauge.builder("unigateway.uptime", uptimeInSeconds, TimeUnit.SECONDS, { it.toDouble() }).register(meterRegistry)
+  }
 
   override fun valueUpdated(deviceId: String, propertyId: String, newValue: String) {
     meterRegistry.counter("unigateway.device.value.update", "device.id", deviceId, "property.id", propertyId).increment()
@@ -31,8 +36,7 @@ class MonitoringUpdateListener(private val meterRegistry: MeterRegistry, private
           meterRegistry.gauge("unigateway.memory.free", freeMemory!!)
         }
         UPTIME.toString().lowercase() -> {
-          uptimeInSeconds = newValue.toInt()
-          TimeGauge.builder("unigateway.uptime", uptimeInSeconds!!, TimeUnit.SECONDS, { it.toDouble() }).register(meterRegistry)
+          uptimeInSeconds.set(newValue.toInt())
         }
       }
     }
