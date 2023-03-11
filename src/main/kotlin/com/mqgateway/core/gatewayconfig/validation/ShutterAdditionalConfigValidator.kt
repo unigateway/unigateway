@@ -28,7 +28,9 @@ class ShutterAdditionalConfigValidator : GatewayValidator {
   }
 
   class NonRelayShutterInternalDevice(
-    val device: DeviceConfiguration, val referenceName: String, val referencedDeviceId: String
+    val device: DeviceConfiguration,
+    val referenceName: String,
+    val referencedDeviceId: String
   ) : ValidationFailureReason() {
 
     override fun getDescription(): String {
@@ -37,7 +39,9 @@ class ShutterAdditionalConfigValidator : GatewayValidator {
   }
 
   class NonButtonShutterInternalDevice(
-    val device: DeviceConfiguration, val referenceName: String, val referencedDeviceId: String
+    val device: DeviceConfiguration,
+    val referenceName: String,
+    val referencedDeviceId: String
   ) : ValidationFailureReason() {
 
     override fun getDescription(): String {
