@@ -1,9 +1,7 @@
 package com.mqgateway.core.device.light
 
-
 import com.mqgateway.core.device.relay.RelayDevice
-import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
-import com.mqgateway.core.hardware.simulated.SimulatedBinaryInput
+import com.mqgateway.core.device.switchbutton.TestWrappingSwitchButtonDevice
 import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
@@ -87,28 +85,4 @@ class LightDeviceTest extends Specification {
     thrown(LightDevice.UnknownLightStateException)
   }
 
-  static final class TestWrappingSwitchButtonDevice {
-
-    final SwitchButtonDevice device
-    private final SimulatedBinaryInput binaryInput
-
-    private TestWrappingSwitchButtonDevice(SwitchButtonDevice device, SimulatedBinaryInput binaryInput) {
-      this.device = device
-      this.binaryInput = binaryInput
-    }
-
-    static TestWrappingSwitchButtonDevice create(String id, String name) {
-      SimulatedBinaryInput binaryInput = new SimulatedBinaryInput(BinaryState.HIGH)
-      SwitchButtonDevice device = new SwitchButtonDevice(id, name, binaryInput, 100, [:])
-      return new TestWrappingSwitchButtonDevice(device, binaryInput)
-    }
-
-    void press() {
-      binaryInput.low()
-    }
-
-    void release() {
-      binaryInput.high()
-    }
-  }
 }
