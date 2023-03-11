@@ -17,8 +17,9 @@ interface DeviceFactory<out T : Device> {
 
   fun getOptionalReferenceDevice(deviceConfiguration: DeviceConfiguration, connectorName: String, devices: Set<Device>): Device? {
     val referenceId = deviceConfiguration.internalDevices[connectorName]?.referenceId ?: return null
-    return devices.find { it.id == referenceId }
-        ?: throw ReferenceDeviceNotFoundException(deviceConfiguration.id, connectorName, referenceId)
+    return devices
+      .find { it.id == referenceId }
+      ?: throw ReferenceDeviceNotFoundException(deviceConfiguration.id, connectorName, referenceId)
   }
 }
 
