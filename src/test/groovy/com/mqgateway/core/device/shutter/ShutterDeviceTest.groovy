@@ -4,6 +4,7 @@ import static com.mqgateway.core.device.DevicePropertyType.POSITION
 import static com.mqgateway.core.device.DevicePropertyType.STATE
 
 import com.mqgateway.core.device.relay.RelayDevice
+import com.mqgateway.core.device.switchbutton.TestWrappingSwitchButtonDevice
 import com.mqgateway.core.hardware.simulated.SimulatedBinaryOutput
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.utils.UpdateListenerStub
@@ -20,11 +21,15 @@ class ShutterDeviceTest extends Specification {
   def upDownBinaryOutput = new SimulatedBinaryOutput()
   RelayDevice upDownRelay = new RelayDevice("upDownRelay", "Up down relay", upDownBinaryOutput, BinaryState.LOW, [:])
 
+  TestWrappingSwitchButtonDevice upButton = TestWrappingSwitchButtonDevice.create("upButton", "Up button")
+  TestWrappingSwitchButtonDevice downButton = TestWrappingSwitchButtonDevice.create("downButton", "Down button")
+
   static int FULL_OPEN_MS = 2000
   static int FULL_CLOSE_MS = 1000
 
   @Subject
-  ShutterDevice shutterDevice = new ShutterDevice("testShutter", "Test shutter", stopRelay, upDownRelay, FULL_OPEN_MS, FULL_CLOSE_MS, [:])
+  ShutterDevice shutterDevice = new ShutterDevice("testShutter", "Test shutter", stopRelay, upDownRelay, FULL_OPEN_MS, FULL_CLOSE_MS,
+                                                  upButton.device, downButton.device, [:])
 
   UpdateListenerStub listenerStub = new UpdateListenerStub()
   TimerFake stoppingTimer = new TimerFake()
@@ -197,7 +202,7 @@ class ShutterDeviceTest extends Specification {
     listenerStub.getReceivedUpdates() == [
       new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80"),
       new UpdateListenerStub.Update(shutterDevice.id, STATE.toString(), "OPEN")]
-    notThrown()
+    noExceptionThrown()
   }
 
   def "should not change anything and not throw when trying to set STATE to unknown value"() {
@@ -213,7 +218,7 @@ class ShutterDeviceTest extends Specification {
     listenerStub.getReceivedUpdates() == [
       new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80"),
       new UpdateListenerStub.Update(shutterDevice.id, STATE.toString(), "OPEN")]
-    notThrown()
+    noExceptionThrown()
   }
 
   def "should not change anything and not throw when trying to set POSITION to non-numeric value"() {
@@ -229,7 +234,7 @@ class ShutterDeviceTest extends Specification {
     listenerStub.getReceivedUpdates() == [
       new UpdateListenerStub.Update(shutterDevice.id, POSITION.toString(), "80"),
       new UpdateListenerStub.Update(shutterDevice.id, STATE.toString(), "OPEN")]
-    notThrown()
+    noExceptionThrown()
   }
 
   def "should update current position when stopped during movement"() {
@@ -348,6 +353,64 @@ class ShutterDeviceTest extends Specification {
     positionDesc | startPosition | aimPosition
     "open"       | "100"         | "100"
     "closed"     | "0"           | "0"
+  }
+
+  def "should start opening shutter when upButton is pressed and shutter is in closed position"() {
+    given:
+    shutterDevice.addListener(listenerStub)
+    shutterDevice.initProperty(POSITION.toString(), "0")
+    shutterDevice.init()
+
+    when:
+    upButton.press()
+
+    then:
+    listenerStub.updatesByPropertyId(STATE.toString()).last().newValue == ShutterDevice.State.OPENING.name()
+  }
+
+  def "should start closing shutter when downButton is pressed and shutter is in open position"() {
+    given:
+    shutterDevice.addListener(listenerStub)
+    shutterDevice.initProperty(POSITION.toString(), "100")
+    shutterDevice.init()
+
+    when:
+    downButton.press()
+
+    then:
+    listenerStub.updatesByPropertyId(STATE.toString()).last().newValue == ShutterDevice.State.CLOSING.name()
+  }
+
+  def "should stop shutter when upButton is pressed and shutter is in closing position"() {
+    given:
+    shutterDevice.clockForTests = clock
+    shutterDevice.addListener(listenerStub)
+    shutterDevice.initProperty(POSITION.toString(), "100")
+    shutterDevice.init()
+    shutterDevice.change(STATE.toString(), "CLOSE")
+
+    when:
+    clock.plus(Duration.ofMillis((FULL_OPEN_MS * 0.1).toLong()))
+    upButton.press()
+
+    then:
+    listenerStub.updatesByPropertyId(STATE.toString()).last().newValue == ShutterDevice.State.OPEN.name()
+  }
+
+  def "should stop shutter when downButton is pressed and shutter is in opening position"() {
+    given:
+    shutterDevice.clockForTests = clock
+    shutterDevice.addListener(listenerStub)
+    shutterDevice.initProperty(POSITION.toString(), "0")
+    shutterDevice.init()
+    shutterDevice.change(STATE.toString(), "OPEN")
+
+    when:
+    clock.plus(Duration.ofMillis((FULL_OPEN_MS * 0.1).toLong()))
+    downButton.press()
+
+    then:
+    listenerStub.updatesByPropertyId(STATE.toString()).last().newValue == ShutterDevice.State.OPEN.name()
   }
 }
 

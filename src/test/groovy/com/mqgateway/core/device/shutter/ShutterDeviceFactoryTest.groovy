@@ -32,6 +32,26 @@ class ShutterDeviceFactoryTest extends Specification {
     shutterDevice.type == DeviceType.SHUTTER
   }
 
+  def "should create shutter device with optional up and down buttons"() {
+    given:
+    def config = new DeviceConfiguration("shutter_device", "Shutter device", DeviceType.SHUTTER, [:], [
+      stopRelay  : new InternalDeviceConfiguration("stop_relay"),
+      upDownRelay: new InternalDeviceConfiguration("up_down_relay"),
+      upButton: new InternalDeviceConfiguration("up_button"),
+      downButton: new InternalDeviceConfiguration("down_button"),
+    ], [fullOpenTimeMs: "100", fullCloseTimeMs: "100"])
+    def devices = [gatewayFactory.relayDevice("stop_relay"), gatewayFactory.relayDevice("up_down_relay"),
+                   gatewayFactory.switchButtonDevice("up_button"), gatewayFactory.switchButtonDevice("down_button")] as Set
+
+    when:
+    def shutterDevice = factory.create(config, devices)
+
+    then:
+    shutterDevice.id == "shutter_device"
+    shutterDevice.name == "Shutter device"
+    shutterDevice.type == DeviceType.SHUTTER
+  }
+
   def "should throw exception when stop_relay is not created"() {
     given:
     def config = new DeviceConfiguration("shutter_device", "Shutter device", DeviceType.SHUTTER, [:], [
@@ -62,6 +82,44 @@ class ShutterDeviceFactoryTest extends Specification {
     then:
     def exception = thrown(ReferenceDeviceNotFoundException)
     exception.message == "Reference device not found (upDownRelay:up_down_relay) for device: shutter_device"
+  }
+
+  def "should throw exception when upButton is defined but is not created"() {
+    given:
+    def config = new DeviceConfiguration("shutter_device", "Shutter device", DeviceType.SHUTTER, [:], [
+      stopRelay  : new InternalDeviceConfiguration("stop_relay"),
+      upDownRelay: new InternalDeviceConfiguration("up_down_relay"),
+      upButton: new InternalDeviceConfiguration("up_button"),
+      downButton: new InternalDeviceConfiguration("down_button"),
+    ], [fullOpenTimeMs: "100", fullCloseTimeMs: "100"])
+    def devices = [gatewayFactory.relayDevice("stop_relay"), gatewayFactory.relayDevice("up_down_relay"),
+                   gatewayFactory.switchButtonDevice("down_button")] as Set
+
+    when:
+    factory.create(config, devices)
+
+    then:
+    def exception = thrown(ReferenceDeviceNotFoundException)
+    exception.message == "Reference device not found (upButton:up_button) for device: shutter_device"
+  }
+
+  def "should throw exception when downButton is defined but is not created"() {
+    given:
+    def config = new DeviceConfiguration("shutter_device", "Shutter device", DeviceType.SHUTTER, [:], [
+      stopRelay  : new InternalDeviceConfiguration("stop_relay"),
+      upDownRelay: new InternalDeviceConfiguration("up_down_relay"),
+      upButton: new InternalDeviceConfiguration("up_button"),
+      downButton: new InternalDeviceConfiguration("down_button"),
+    ], [fullOpenTimeMs: "100", fullCloseTimeMs: "100"])
+    def devices = [gatewayFactory.relayDevice("stop_relay"), gatewayFactory.relayDevice("up_down_relay"),
+                   gatewayFactory.switchButtonDevice("up_button")] as Set
+
+    when:
+    factory.create(config, devices)
+
+    then:
+    def exception = thrown(ReferenceDeviceNotFoundException)
+    exception.message == "Reference device not found (downButton:down_button) for device: shutter_device"
   }
 
   def "should pass configuration to shutter device when any config entries are set on configuration"() {

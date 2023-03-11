@@ -10,6 +10,7 @@ import com.mqgateway.core.device.DevicePropertyType.STATE
 import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.relay.RelayDevice.RelayState
+import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
 import mu.KotlinLogging
 import java.time.Clock
 import java.time.Duration
@@ -30,6 +31,8 @@ class ShutterDevice(
   private val upDownRelay: RelayDevice,
   private val fullOpenTimeMs: Long,
   private val fullCloseTimeMs: Long,
+  private val upButton: SwitchButtonDevice?,
+  private val downButton: SwitchButtonDevice?,
   config: Map<String, String> = emptyMap()
 ) : Device(
   id, name, DeviceType.SHUTTER,
@@ -63,6 +66,7 @@ class ShutterDevice(
       LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
       return
     }
+    LOGGER.info { "Initializing shutter '$id.$propertyId' with value '$value'" }
     currentPosition = value.toInt()
     state = currentState(currentPosition!!)
   }
@@ -74,6 +78,32 @@ class ShutterDevice(
     if (currentPosition == null) {
       LOGGER.warn { "Shutter position is unknown. It will be initialized now by closing the shutter." }
       initializeCurrentPositionToClosed()
+    }
+    upButton?.addListener { _, _, value ->
+      if (value == SwitchButtonDevice.PRESSED_STATE_VALUE) {
+        onUpButtonPressed()
+      }
+    }
+    downButton?.addListener { _, _, value ->
+      if (value == SwitchButtonDevice.PRESSED_STATE_VALUE) {
+        onDownButtonPressed()
+      }
+    }
+  }
+
+  private fun onUpButtonPressed() {
+    if (state == State.CLOSING) {
+      change(STATE.toString(), Command.STOP.name)
+    } else {
+      change(STATE.toString(), Command.OPEN.name)
+    }
+  }
+
+  private fun onDownButtonPressed() {
+    if (state == State.OPENING) {
+      change(STATE.toString(), Command.STOP.name)
+    } else {
+      change(STATE.toString(), Command.CLOSE.name)
     }
   }
 
@@ -225,6 +255,8 @@ class ShutterDevice(
   companion object {
     const val POSITION_CLOSED = 0
     const val POSITION_OPEN = 100
+    const val UP_BUTTON_REFERENCE_NAME = "upButton"
+    const val DOWN_BUTTON_REFERENCE_NAME = "downButton"
   }
 
   enum class Command {

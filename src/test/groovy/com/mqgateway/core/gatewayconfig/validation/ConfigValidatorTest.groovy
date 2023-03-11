@@ -44,7 +44,7 @@ class ConfigValidatorTest extends Specification {
     reason2.duplicates*.name.toSet() == ["duplicate 2_A", "duplicate 2_B"].toSet()
   }
 
-  def "should fail validation of shutter device when any internal device is not of RELAY type"() {
+  def "should fail validation of shutter device when 'stopRelay' or 'upDownRelay' internal device is not of RELAY type"() {
     given:
     def devices = [
       someDevice("1", "relay1", DeviceType.RELAY),
@@ -69,6 +69,41 @@ class ConfigValidatorTest extends Specification {
     List<ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice> reasons =
       result.failureReasons.findAll { it instanceof ShutterAdditionalConfigValidator.NonRelayShutterInternalDevice }
     reasons*.device.id == ["withWrongInternalDevice"]
+    reasons*.referenceName == ["upDownRelay"]
+    reasons*.referencedDeviceId == ["2"]
+  }
+
+  def "should fail validation of shutter device when 'upButton' or 'downButton' internal device is not of SWITCH_BUTTON type"() {
+    given:
+    def devices = [
+      someDevice("1", "relay1", DeviceType.RELAY),
+      someDevice("2", "relay2", DeviceType.RELAY),
+      someDevice("btn", "switchButton1", DeviceType.SWITCH_BUTTON),
+      someDevice("nonBtn", "motionDetector1", DeviceType.MOTION_DETECTOR),
+      someDevice(
+        "withWrongInternalDevice", "shutter1", DeviceType.SHUTTER, [
+        stopRelay  : new InternalDeviceConfiguration("1"),
+        upDownRelay: new InternalDeviceConfiguration("2"),
+        upButton   : new InternalDeviceConfiguration("btn"),
+        downButton : new InternalDeviceConfiguration("nonBtn"),
+      ],
+        [fullOpenTimeMs: "1000", fullCloseTimeMs: "800"]
+      ),
+    ]
+    def gateway = gatewayWith(*devices)
+
+    when:
+    def result = configValidator.validateGateway(gateway)
+
+    then:
+    !result.succeeded
+    result.failureReasons*.class.every { it == ShutterAdditionalConfigValidator.NonButtonShutterInternalDevice }
+
+    List<ShutterAdditionalConfigValidator.NonButtonShutterInternalDevice> reasons =
+      result.failureReasons.findAll { it instanceof ShutterAdditionalConfigValidator.NonButtonShutterInternalDevice }
+    reasons*.device.id == ["withWrongInternalDevice"]
+    reasons*.referenceName == ["downButton"]
+    reasons*.referencedDeviceId == ["nonBtn"]
   }
 
   def "should fail validation of gate device when button internal device is not of type EMULATED_BUTTON"() {
