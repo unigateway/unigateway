@@ -87,6 +87,25 @@ class HomeAssistantConverterTest extends Specification {
     assertHomeAssistantDevice(switchComponent, gateway, relayDeviceConfig)
   }
 
+  def "should convert MqGateway RELAY to HA binary switch with chosen HA device class"(HomeAssistantSwitch.DeviceClass haDeviceClass) {
+    given:
+    def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [state: new SimulatedConnector(1)], [:], [haDeviceClass: haDeviceClass.value])
+    GatewayConfiguration gateway = gateway([relayDeviceConfig])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 1
+    HomeAssistantSwitch switchComponent = components[0] as HomeAssistantSwitch
+    switchComponent.componentType == HomeAssistantComponentType.SWITCH
+    switchComponent.deviceClass == haDeviceClass
+
+    where:
+    haDeviceClass << HomeAssistantSwitch.DeviceClass.values()
+  }
+
   def "should convert MqGateway SWITCH_BUTTON to 4 HA triggers when haComponent is set to 'device_automation'"() {
     given:
     def switchButtonDeviceConfig = new DeviceConfiguration("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON,
@@ -142,7 +161,7 @@ class HomeAssistantConverterTest extends Specification {
     sensorComponent.properties.objectId == "mySwitchButton"
     sensorComponent.stateTopic == expectedStateTopic(gateway.id, switchButtonDeviceConfig.id, STATE.toString())
     sensorComponent.unitOfMeasurement == null
-    sensorComponent.deviceClass == HomeAssistantSensor.DeviceClass.NONE
+    sensorComponent.deviceClass == HomeAssistantSensor.DeviceClass.ENUM
     sensorComponent.uniqueId == gateway.id + "_" + switchButtonDeviceConfig.id
     assertHomeAssistantDevice(sensorComponent, gateway, switchButtonDeviceConfig)
   }
@@ -198,6 +217,26 @@ class HomeAssistantConverterTest extends Specification {
     assertHomeAssistantDevice(binarySensorComponent, gateway, reedSwitchDeviceConfig)
   }
 
+  def "should convert MqGateway REED_SWITCH to HA binary sensor with chosen HA device class"(HomeAssistantBinarySensor.DeviceClass haDeviceClass) {
+    given:
+    def reedSwitchDeviceConfig = new DeviceConfiguration("myReedSwitch", "Test reed switch", DeviceType.REED_SWITCH,
+                                                         [state: new SimulatedConnector(1)], [:], [haDeviceClass: haDeviceClass.value])
+    GatewayConfiguration gateway = gateway([reedSwitchDeviceConfig])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 1
+    HomeAssistantBinarySensor binarySensorComponent = components[0] as HomeAssistantBinarySensor
+    binarySensorComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
+    binarySensorComponent.deviceClass == haDeviceClass
+
+    where:
+    haDeviceClass << HomeAssistantBinarySensor.DeviceClass.values()
+  }
+
   def "should convert MqGateway MOTION_DETECTOR to HA binary sensor"() {
     given:
     def motionDetectorDeviceConfig = new DeviceConfiguration("myMotionDetector", "Test motion detector", DeviceType.MOTION_DETECTOR,
@@ -226,7 +265,7 @@ class HomeAssistantConverterTest extends Specification {
   def "should convert MqGateway EMULATED_SWITCH to HA switch"() {
     given:
     def emulatedSwitchDeviceConfig = new DeviceConfiguration("myEmulatedSwitch", "Test emulated switch", DeviceType.EMULATED_SWITCH,
-                                                             [state: new SimulatedConnector(1)])
+                                                             [state: new SimulatedConnector(1)], [:], [haDeviceClass: "switch"])
     GatewayConfiguration gateway = gateway([emulatedSwitchDeviceConfig])
     def deviceRegistry = deviceRegistryFactory.create(gateway)
 
@@ -246,6 +285,7 @@ class HomeAssistantConverterTest extends Specification {
     switchComponent.payloadOn == "PRESSED"
     switchComponent.payloadOff == "RELEASED"
     switchComponent.uniqueId == gateway.id + "_" + emulatedSwitchDeviceConfig.id
+    switchComponent.deviceClass == HomeAssistantSwitch.DeviceClass.SWITCH
     assertHomeAssistantDevice(switchComponent, gateway, emulatedSwitchDeviceConfig)
   }
 

@@ -61,7 +61,13 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         if (device.config[DEVICE_CONFIG_HA_COMPONENT].equals(LIGHT.value, true)) {
           listOf(HomeAssistantLight(basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
         } else {
-          listOf(HomeAssistantSwitch(basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF))
+          val deviceClass = device.config[DEVICE_CONFIG_HA_DEVICE_CLASS]?.let { HomeAssistantSwitch.DeviceClass.fromValue(it) }
+            ?: HomeAssistantSwitch.DeviceClass.SWITCH
+          listOf(
+            HomeAssistantSwitch(
+              basicProperties, device.name, stateTopic, commandTopic, true, RelayDevice.STATE_ON, RelayDevice.STATE_OFF, deviceClass
+            )
+          )
         }
       }
       DeviceType.SWITCH_BUTTON -> {
@@ -105,7 +111,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
                 basicProperties = basicProperties,
                 name = device.name,
                 stateTopic = homieStateTopic,
-                deviceClass = HomeAssistantSensor.DeviceClass.NONE
+                deviceClass = HomeAssistantSensor.DeviceClass.ENUM
               )
             )
           }
@@ -131,7 +137,8 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
             homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE),
             ReedSwitchDevice.OPEN_STATE_VALUE,
             ReedSwitchDevice.CLOSED_STATE_VALUE,
-            HomeAssistantBinarySensor.DeviceClass.OPENING
+            device.config[DEVICE_CONFIG_HA_DEVICE_CLASS]?.let { HomeAssistantBinarySensor.DeviceClass.fromValue(it) }
+              ?: HomeAssistantBinarySensor.DeviceClass.OPENING
           )
         )
       }
@@ -158,7 +165,8 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
             commandTopic,
             false,
             EmulatedSwitchButtonDevice.PRESSED_STATE_VALUE,
-            EmulatedSwitchButtonDevice.RELEASED_STATE_VALUE
+            EmulatedSwitchButtonDevice.RELEASED_STATE_VALUE,
+            HomeAssistantSwitch.DeviceClass.SWITCH
           )
         )
       }
@@ -274,7 +282,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
         availabilityTopic,
         availabilityOnline,
         availabilityOffline,
-        HomeAssistantSensor.DeviceClass.NONE,
+        HomeAssistantSensor.DeviceClass.DATA_SIZE,
         homieStateTopic(unigatewayId, unigatewayId, DevicePropertyType.MEMORY),
         unigatewayDevice.getProperty(DevicePropertyType.MEMORY).unit.value
       ),

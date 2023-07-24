@@ -33,7 +33,7 @@ class JCommSerial : Serial {
 
   override fun write(message: String) {
     val bytes = message.toByteArray()
-    serialPort!!.writeBytes(bytes, bytes.size.toLong())
+    serialPort!!.writeBytes(bytes, bytes.size)
   }
 }
 

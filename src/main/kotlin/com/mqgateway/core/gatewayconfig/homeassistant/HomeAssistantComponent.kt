@@ -56,9 +56,23 @@ data class HomeAssistantSwitch(
   @field:JsonProperty("command_topic") val commandTopic: String,
   @field:JsonProperty("retain") val retain: Boolean,
   @field:JsonProperty("payload_on") val payloadOn: String,
-  @field:JsonProperty("payload_off") val payloadOff: String
+  @field:JsonProperty("payload_off") val payloadOff: String,
+  @field:JsonIgnore val deviceClass: DeviceClass
 ) : HomeAssistantComponent(HomeAssistantComponentType.SWITCH, basicProperties) {
   @field:JsonProperty("unique_id") val uniqueId: String = uniqueId()
+  @field:JsonProperty("device_class") val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
+
+  enum class DeviceClass(val value: String) {
+    NONE("None"),
+    OUTLET("outlet"),
+    SWITCH("switch");
+
+    companion object {
+      fun fromValue(value: String): DeviceClass? {
+        return DeviceClass.values().find { it.value == value }
+      }
+    }
+  }
 }
 
 data class HomeAssistantBinarySensor(
@@ -75,9 +89,40 @@ data class HomeAssistantBinarySensor(
 
   enum class DeviceClass(val value: String) {
     NONE("None"),
-    MOTION("motion"),
-    OPENING("opening"),
+    BATTERY("battery"),
+    BATTERY_CHARGING("battery_charging"),
+    CARBON_MONOXIDE("carbon_monoxide"),
+    COLD("cold"),
+    CONNECTIVITY("connectivity"),
+    DOOR("door"),
+    GARAGE_DOOR("garage_door"),
     GAS("gas"),
+    HEAT("heat"),
+    LIGHT("light"),
+    LOCK("lock"),
+    MOISTURE("moisture"),
+    MOTION("motion"),
+    MOVING("moving"),
+    OCCUPANCY("occupancy"),
+    OPENING("opening"),
+    PLUG("plug"),
+    POWER("power"),
+    PRESENCE("presence"),
+    PROBLEM("problem"),
+    RUNNING("running"),
+    SAFETY("safety"),
+    SMOKE("smoke"),
+    SOUND("sound"),
+    TAMPER("tamper"),
+    UPDATE("update"),
+    VIBRATION("vibration"),
+    WINDOW("window");
+
+    companion object {
+      fun fromValue(value: String): DeviceClass? {
+        return DeviceClass.values().find { it.value == value }
+      }
+    }
   }
 }
 
@@ -97,18 +142,55 @@ data class HomeAssistantSensor(
 
   enum class DeviceClass(val value: String) {
     NONE("None"),
+    APPARENT_POWER("apparent_power"),
+    AQI("aqi"),
+    ATMOSPHERIC_PRESSURE("atmospheric_pressure"),
     BATTERY("battery"),
+    CARBON_DIOXIDE("carbon_dioxide"),
+    CARBON_MONOXIDE("carbon_monoxide"),
+    CURRENT("current"),
+    DATA_RATE("data_rate"),
+    DATA_SIZE("data_size"),
+    DATE("date"),
+    DISTANCE("distance"),
+    DURATION("duration"),
+    ENERGY("energy"),
+    ENERGY_STORAGE("energy_storage"),
+    ENUM("enum"),
+    FREQUENCY("frequency"),
+    GAS("gas"),
     HUMIDITY("humidity"),
     ILLUMINANCE("illuminance"),
-    SIGNAL_STRENGTH("signal_strength"),
-    TEMPERATURE("temperature"),
-    POWER("power"),
-    PRESSURE("pressure"),
-    TIMESTAMP("timestamp"),
-    CURRENT("current"),
-    ENERGY("energy"),
+    IRRADIANCE("irradiance"),
+    MOISTURE("moisture"),
+    MONETARY("monetary"),
+    NITROGEN_DIOXIDE("nitrogen_dioxide"),
+    NITROGEN_MONOXIDE("nitrogen_monoxide"),
+    NITROUS_OXIDE("nitrous_oxide"),
+    OZONE("ozone"),
+    PM1("pm1"),
+    PM25("pm25"),
+    PM10("pm10"),
     POWER_FACTOR("power_factor"),
-    VOLTAGE("voltage");
+    POWER("power"),
+    PRECIPITATION("precipitation"),
+    PRECIPITATION_INTENSITY("precipitation_intensity"),
+    PRESSURE("pressure"),
+    REACTIVE_POWER("reactive_power"),
+    SIGNAL_STRENGTH("signal_strength"),
+    SOUND_PRESSURE("sound_pressure"),
+    SPEED("speed"),
+    SULPHUR_DIOXIDE("sulphur_dioxide"),
+    TEMPERATURE("temperature"),
+    TIMESTAMP("timestamp"),
+    VOLATILE_ORGANIC_COMPOUNDS("volatile_organic_compounds"),
+    VOLATILE_ORGANIC_COMPOUNDS_PARTS("volatile_organic_compounds_parts"),
+    VOLTAGE("voltage"),
+    VOLUME("volume"),
+    VOLUME_STORAGE("volume_storage"),
+    WATER("water"),
+    WEIGHT("weight"),
+    WIND_SPEED("wind_speed");
 
     override fun toString(): String {
       return value
