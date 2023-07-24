@@ -18,6 +18,8 @@ jobs:
         java-version: 11
     - name: Run tests
       run: ./gradlew check shadowJar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Store tests results as artifact
       uses: actions/upload-artifact@v2-preview
       if: failure()
