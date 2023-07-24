@@ -1,0 +1,1175 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.2.11">
+    
+    
+      
+        <title>Configuration - UniGateway</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8c5ef100.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.9647289d.min.css">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#devices-configuration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="UniGateway" class="md-header__button md-logo" aria-label="UniGateway" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            UniGateway
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/unigateway/unigateway/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="UniGateway" class="md-nav__button md-logo" aria-label="UniGateway" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    UniGateway
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/unigateway/unigateway/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Start
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start-raspberrypi/" class="md-nav__link">
+        Quick Start (Raspberry Pi)
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start-mqgateway/" class="md-nav__link">
+        Quick Start (MqGateway)
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration/" class="md-nav__link">
+        Integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-devices/" class="md-nav__link">
+        Supported devices
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Configuration
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#devices-configuration" class="md-nav__link">
+    Devices configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Devices configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    Structure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectors-configuration" class="md-nav__link">
+    Connectors configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectors configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raspberry-pi" class="md-nav__link">
+    Raspberry Pi
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqgateway" class="md-nav__link">
+    MqGateway
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysensors" class="md-nav__link">
+    MySensors
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-devices-configuration" class="md-nav__link">
+    Loading devices configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-device-reference" class="md-nav__link">
+    Internal device reference
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-configuration" class="md-nav__link">
+    System configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="System configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-configuration" class="md-nav__link">
+    Basic configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocols-and-integrations" class="md-nav__link">
+    Protocols and integrations
+  </a>
+  
+    <nav class="md-nav" aria-label="Protocols and integrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mqtt" class="md-nav__link">
+    MQTT
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysensors_1" class="md-nav__link">
+    MySensors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home-assistant" class="md-nav__link">
+    Home Assistant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-specific" class="md-nav__link">
+    Hardware specific
+  </a>
+  
+    <nav class="md-nav" aria-label="Hardware specific">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raspberry-pi_1" class="md-nav__link">
+    Raspberry Pi
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqgateway_1" class="md-nav__link">
+    MqGateway
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logging/" class="md-nav__link">
+        Logging
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#devices-configuration" class="md-nav__link">
+    Devices configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Devices configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    Structure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connectors-configuration" class="md-nav__link">
+    Connectors configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectors configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raspberry-pi" class="md-nav__link">
+    Raspberry Pi
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqgateway" class="md-nav__link">
+    MqGateway
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysensors" class="md-nav__link">
+    MySensors
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-devices-configuration" class="md-nav__link">
+    Loading devices configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-device-reference" class="md-nav__link">
+    Internal device reference
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-configuration" class="md-nav__link">
+    System configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="System configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-configuration" class="md-nav__link">
+    Basic configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocols-and-integrations" class="md-nav__link">
+    Protocols and integrations
+  </a>
+  
+    <nav class="md-nav" aria-label="Protocols and integrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mqtt" class="md-nav__link">
+    MQTT
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysensors_1" class="md-nav__link">
+    MySensors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home-assistant" class="md-nav__link">
+    Home Assistant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-specific" class="md-nav__link">
+    Hardware specific
+  </a>
+  
+    <nav class="md-nav" aria-label="Hardware specific">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raspberry-pi_1" class="md-nav__link">
+    Raspberry Pi
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqgateway_1" class="md-nav__link">
+    MqGateway
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/unigateway/unigateway/edit/master/docs/user-guide/configuration.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+  <h1>Configuration</h1>
+
+<p>There are two types of the configuration for UniGateway:</p>
+<ul>
+<li><strong>Devices configuration</strong> (in <code>gateway.yaml</code> file)<br />
+  Configures what and how smart devices are connected to UniGateway.<br />
+  Typically stored in <code>/opt/unigateway/gateway.yaml</code>.</li>
+<li><strong>System configuration</strong> (passed by environment variables) <br />
+  Configures stuff related to underlying hardware and features availability.<br />
+  Typically stored in <code>/opt/unigateway/start_unigateway.sh</code>.</li>
+</ul>
+<h2 id="devices-configuration">Devices configuration</h2>
+<p>Configures what and how smart devices are connected to UniGateway.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>There is a <a href="https://raw.githubusercontent.com/unigateway/unigateway/master/src/main/resources/config.schema.json">JSON schema file</a> for this configuration. 
+Use it with your favourite YAML editor (e.g. IntelliJ or VSCode) for autocompletion and instant validation.</p>
+</div>
+<h3 id="structure">Structure</h3>
+<p>Basic structure of the configuration is like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">configVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span><span class="w"> </span><span class="c1"># Version of UniGateway configuration file - defines configuration structure</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MainGateway&quot;</span><span class="w"> </span><span class="c1"># User-friendly name of the UniGateway installation - preferably unique in the network</span><span class="w"></span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MainGateway&quot;</span><span class="w"> </span><span class="c1"># Identifier of Gateway - should be unique for UniGateway installations in the network</span><span class="w"></span>
+<span class="nt">devices</span><span class="p">:</span><span class="w"> </span><span class="c1"># List of devices configurations</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;TV</span><span class="nv"> </span><span class="s">power&quot;</span><span class="w"> </span><span class="c1"># User-friendly name of the device - might be visible in integrated system (e.g. Home Assistant) </span><span class="w"></span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tv_power&quot;</span><span class="w"> </span><span class="c1"># Unique identifier for the device across all devices on this Gateway</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RELAY</span><span class="w"> </span><span class="c1"># type of the device (see &quot;Supported devices&quot;)</span><span class="w"></span>
+<span class="w">    </span><span class="nt">connectors</span><span class="p">:</span><span class="w"> </span><span class="c1"># List of connectors which structure is specific for the underlying hardware (example for MqGateway)</span><span class="w"></span>
+<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">portNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">wires</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BLUE_WHITE</span><span class="w"></span>
+<span class="w">    </span><span class="nt">config</span><span class="p">:</span><span class="w"> </span><span class="c1"># contains properties for the device used to adjust device behaviour or integrations </span><span class="w"></span>
+<span class="w">      </span><span class="nt">delayMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
+<span class="w">      </span><span class="nt">haComponent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SWITCH</span><span class="w"></span>
+</code></pre></div>
+<p>For the structure of configuration for specific devices see <a href="../supported-devices/">supported devices examples</a>.</p>
+<h3 id="connectors-configuration">Connectors configuration</h3>
+<p>There are two types of devices:
+  - simple device - requires connectors in configuration which reference underlying hardware inputs/outputs (e.g. RELAY or SWITCH) 
+  - complex device - composed of other devices (simple or complex), requires "internalDevices" in configuration (e.g. GATE or SHUTTER)</p>
+<p>Every <strong>simple device</strong> has one or many connectors in the configuration. Connector references real pins in the hardware (i.e. by GPIO number in Raspberry Pi 
+and by RJ45 port and wire color for MqGateway) or MySensors node sensor. 
+Connector configuration structure depends on the underlying hardware implementation. It will be different for RaspberryPi, MqGateway and MySensors.</p>
+<h4 id="raspberry-pi">Raspberry Pi</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gpio</td>
+<td></td>
+<td>GPIO number from Raspberry Pi pinout (REQUIRED)</td>
+</tr>
+<tr>
+<td>debounceMs</td>
+<td>50</td>
+<td>debounce for input pin in milliseconds</td>
+</tr>
+<tr>
+<td>pullUpDown</td>
+<td>PULL_UP</td>
+<td>start state for input pin (PULL_UP or PULL_DOWN)</td>
+</tr>
+</tbody>
+</table>
+<details class="example open">
+<summary>Example</summary>
+<div class="highlight"><pre><span></span><code><span class="nt">devices</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Workshop light switch</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workshop_light_switch</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SWITCH_BUTTON</span><span class="w"></span>
+<span class="w">  </span><span class="nt">connectors</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">gpio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">17</span><span class="w"> </span><span class="c1"># GPIO number from Rapberry Pi pinout</span><span class="w"></span>
+<span class="w">      </span><span class="nt">debounceMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span><span class="w"> </span><span class="c1"># optional (default: 50)</span><span class="w"></span>
+<span class="w">      </span><span class="nt">pullUpDown</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PULL_DOWN</span><span class="w"> </span><span class="c1"># optional (default: PULL_UP)</span><span class="w"></span>
+</code></pre></div>
+</details>
+<h4 id="mqgateway">MqGateway</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>portNumber</td>
+<td></td>
+<td>number of the MqGateway port where device is connected (REQUIRED)</td>
+</tr>
+<tr>
+<td>wireColor</td>
+<td></td>
+<td>color of the UTP cable wire, the device is connected with (REQUIRED one of: BLUE, BLUE_WHITE, GREEN, GREEN_WHITE)</td>
+</tr>
+<tr>
+<td>debounceMs</td>
+<td>50</td>
+<td>debounce for input pin in milliseconds</td>
+</tr>
+</tbody>
+</table>
+<details class="example open">
+<summary>Example</summary>
+<div class="highlight"><pre><span></span><code><span class="nt">devices</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Workshop light switch</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workshop_light_switch</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SWITCH_BUTTON</span><span class="w"></span>
+<span class="w">  </span><span class="nt">connectors</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">portNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># number of the MqGateway</span><span class="w"></span>
+<span class="w">      </span><span class="nt">wireColor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BLUE_WHITE</span><span class="w"> </span><span class="c1"># color of the UTP cable wire</span><span class="w"></span>
+<span class="w">      </span><span class="nt">debounceMs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span><span class="w"> </span><span class="c1"># optional (default: 50)</span><span class="w"></span>
+</code></pre></div>
+</details>
+<h4 id="mysensors">MySensors</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>source</td>
+<td></td>
+<td>specifies that connector is using MySensors (REQUIRED: "MYSENSORS")</td>
+</tr>
+<tr>
+<td>nodeId</td>
+<td></td>
+<td>MySensors node identifier (REQUIRED)</td>
+</tr>
+<tr>
+<td>sensorId</td>
+<td></td>
+<td>MySensors child sensor identifier (REQUIRED)</td>
+</tr>
+<tr>
+<td>type</td>
+<td>50</td>
+<td>Type of the value returned from the sensor, in line with <a href="https://www.mysensors.org/download/serial_api_20">MySensors documentation</a> (e.g. V_TEMP, V_HUM)</td>
+</tr>
+</tbody>
+</table>
+<details class="example open">
+<summary>Example</summary>
+<div class="highlight"><pre><span></span><code><span class="nt">devices</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Workshop</span><span class="nv"> </span><span class="s">temperature&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;workshop_temperature&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TEMPERATURE</span><span class="w"></span>
+<span class="w">    </span><span class="nt">connectors</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MYSENSORS</span><span class="w"></span>
+<span class="w">        </span><span class="nt">nodeId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
+<span class="w">        </span><span class="nt">sensorId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V_TEMP</span><span class="w"></span>
+</code></pre></div>
+</details>
+<h3 id="loading-devices-configuration">Loading devices configuration</h3>
+<p>By default, UniGateway expects devices configuration file to be named <code>gateway.yaml</code> and to be available in the current working directory. 
+It means, it should be available in the directory from where UniGateway application is started.</p>
+<p>You can change the path by specifying other path in environment variable <code>GATEWAY.CONFIGPATH</code> like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GATEWAY_CONFIGPATH</span><span class="o">=</span><span class="s2">&quot;/opt/gateway-configuration.yaml&quot;</span>
+</code></pre></div>
+<p>Remember to add this command to <code>~/.bashrc</code> if you want it to survive operating system reboot.</p>
+<h3 id="internal-device-reference">Internal device reference</h3>
+<p>When you need to configure complex device with "internalDevices" you have to "reference" the internal devices.
+It means you have to configure the simple device and then use its <code>id</code> value in <code>referenceId</code> property of "internalDevices" entry.</p>
+<p>See the example below which configures garage door (GATE device) with reed switch configured as referenced device.</p>
+<details class="example">
+<summary>Example</summary>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;GarageGateway&quot;</span><span class="w"></span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;GarageGateway&quot;</span><span class="w"></span>
+<span class="nt">devices</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Right</span><span class="nv"> </span><span class="s">garage</span><span class="nv"> </span><span class="s">door</span><span class="nv"> </span><span class="s">action</span><span class="nv"> </span><span class="s">button&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;right_garage_door_action_button&quot;</span><span class="w"> </span><span class="c1"># &lt;-- value used for &quot;referenceId&quot; </span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EMULATED_SWITCH</span><span class="w"></span>
+<span class="w">    </span><span class="nt">connectors</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">portNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">wires</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BLUE_WHITE</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Right</span><span class="nv"> </span><span class="s">garage</span><span class="nv"> </span><span class="s">door</span><span class="nv"> </span><span class="s">reed</span><span class="nv"> </span><span class="s">switch&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;right_garage_door_closed_reed&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">REED_SWITCH</span><span class="w"></span>
+<span class="w">    </span><span class="nt">connectors</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">portNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
+<span class="w">        </span><span class="nt">wireColor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GREEN_WHITE</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Right</span><span class="nv"> </span><span class="s">garage</span><span class="nv"> </span><span class="s">door&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;right_garage_door&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GATE</span><span class="w"></span>
+<span class="w">    </span><span class="nt">internalDevices</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">actionButton</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">referenceId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;right_garage_door_action_button&quot;</span><span class="w">  </span><span class="c1"># &lt;-- it references to the EMULATED_SWITCH defined earlier</span><span class="w"></span>
+<span class="w">      </span><span class="nt">closedReedSwitch</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">referenceId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;right_garage_door_closed_reed&quot;</span><span class="w">    </span><span class="c1"># &lt;-- it references to the REED_SWITCH defined earlier   </span><span class="w"></span>
+</code></pre></div>
+</details>
+<h2 id="system-configuration">System configuration</h2>
+<p>Configures stuff related to underlying hardware and features availability.</p>
+<p>This configurations can be set as environment variables like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GATEWAY_MQTT_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+<p>Add this commands to UniGateway start script, <code>.bashrc</code> or <code>.zshrc</code> so they survive operating system restart.</p>
+<h3 id="basic-configuration">Basic configuration</h3>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GATEWAY_CONFIG_PATH</td>
+<td>gateway.yaml</td>
+<td>path to the devices configuration file</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_NETWORK_ADAPTER</td>
+<td>eth0</td>
+<td>name of the ethernet interface used to connect to MQTT / WebSocket</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_PLATFORM</td>
+<td>SIMULATED</td>
+<td>type of the underlying hardware (RASPBERRYPI or MQGATEWAY)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="protocols-and-integrations">Protocols and integrations</h3>
+<h4 id="mqtt">MQTT</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GATEWAY_MQTT_ENABLED</td>
+<td>false</td>
+<td>Enable control through MQTT communication</td>
+</tr>
+<tr>
+<td>GATEWAY_MQTT_HOSTNAME</td>
+<td>(not set)</td>
+<td>MQTT broker hostname or ip address (e.g. 192.168.1.100)</td>
+</tr>
+<tr>
+<td>GATEWAY_MQTT_PORT</td>
+<td>1883</td>
+<td>MQTT port number</td>
+</tr>
+<tr>
+<td>GATEWAY_MQTT_USERNAME</td>
+<td>(not set)</td>
+<td>MQTT user name (optional)</td>
+</tr>
+<tr>
+<td>GATEWAY_MQTT_PASSWORD</td>
+<td>(not set)</td>
+<td>MQTT user password (optional)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="mysensors_1">MySensors</h4>
+<p>UniGateway communicates with the MySensors gateway in one of two ways:</p>
+<ul>
+<li>by the virtual serial when MySensors gateway is installed on the same hardware (default)</li>
+<li>by the real serial when MySensors gateway is installed on the separate hardware</li>
+</ul>
+<p>UniGateway installation SD cards have MySensors gateway already installed and configured to use UART and RS485 communication to nodes.  </p>
+<p>More about how to connect and use MySensors devices with RS485 can be found on specific hardware documentation and <a href="https://www.mysensors.org/">MySensors page</a>.</p>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GATEWAY_SYSTEM_MYSENSORS_ENABLED</td>
+<td>false</td>
+<td>Enable communication with MySensors gateway</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_MYSENSORS_PORT_DESCRIPTOR</td>
+<td>"/dev/ttys000"</td>
+<td>Serial port address to communicate with MySensors gateway</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_MYSENSORS_BAUD_RATE</td>
+<td>9600</td>
+<td>Baud rate for serial communication with MySensors gateway</td>
+</tr>
+</tbody>
+</table>
+<h4 id="home-assistant">Home Assistant</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HOMEASSISTANT_ENABLED</td>
+<td>true</td>
+<td>Enable integration with Home Assistant through MQTT (requires MQTT to be enabled)</td>
+</tr>
+<tr>
+<td>HOMEASSISTANT_ROOT_TOPIC</td>
+<td>homeassistant</td>
+<td>Root topic for Home Assistant MQTT discovery</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hardware-specific">Hardware specific</h3>
+<h4 id="raspberry-pi_1">Raspberry Pi</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GATEWAY_SYSTEM_PLATFORM_CONFIG_DEFAULTDEBOUNCEMS</td>
+<td>50</td>
+<td>default debounce for input pins in milliseconds</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_PLATFORM_CONFIG_DEFAULTPULLUPDOWN</td>
+<td>PULL_UP</td>
+<td>default state for input pins (PULL_UP or PULL_DOWN)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="mqgateway_1">MqGateway</h4>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GATEWAY_SYSTEM_PLATFORM_CONFIG_EXPANDER_ENABLED</td>
+<td>false</td>
+<td>should be "true" if you have <em>I/O Expander board</em> connected</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_PLATFORM_CONFIG_DEFAULTDEBOUNCEMS</td>
+<td>50</td>
+<td>default debounce for input pins in milliseconds</td>
+</tr>
+<tr>
+<td>GATEWAY_SYSTEM_PLATFORM_CONFIG_COMPONENTS_MCP23017_PORTS</td>
+<td>(depends on I/O expander enablement)</td>
+<td>I2C addresses of MCP23017 expanders</td>
+</tr>
+</tbody>
+</table>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Installation
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../logging/" class="md-footer__link md-footer__link--next" aria-label="Next: Logging" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Logging
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.748e2769.min.js"></script>
+      
+    
+  </body>
+</html>
