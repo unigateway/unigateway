@@ -2,7 +2,7 @@ package com.mqgateway.core.hardware.mqgateway.mcp
 
 import com.diozero.api.GpioEventTrigger
 import com.diozero.api.GpioPullUpDown
-import com.mqgateway.core.hardware.diozero.MCP23017
+import com.diozero.devices.MCP23017
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.BinaryState.HIGH
 import com.mqgateway.core.io.BinaryState.LOW
@@ -140,7 +140,7 @@ class MqGatewayMcpExpander(
   companion object {
     const val GPIOA = 0
     const val GPIOB = 1
-    const val BUSY_LOOP_SLEEP_TIME_MS = 20L
+    const val BUSY_LOOP_SLEEP_TIME_MS = 50L
     val PIN_INITIAL_STATE = HIGH
   }
 }

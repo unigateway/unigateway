@@ -1,12 +1,13 @@
 package com.mqgateway.core.hardware.mqgateway.mcp
 
+import com.diozero.devices.MCP23017
+
 import static com.mqgateway.core.hardware.mqgateway.mcp.MqGatewayMcpExpander.GPIOA
 import static com.mqgateway.core.hardware.mqgateway.mcp.MqGatewayMcpExpander.GPIOB
 import static com.mqgateway.core.io.BinaryState.HIGH
 import static com.mqgateway.core.io.BinaryState.LOW
 
 import com.diozero.sbc.BoardPinInfo
-import com.mqgateway.core.hardware.diozero.MCP23017
 import com.mqgateway.core.io.BinaryState
 import java.time.Duration
 import spock.lang.Specification
