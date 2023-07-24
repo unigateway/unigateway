@@ -15,6 +15,7 @@ Relay module which allows turning on/off electrical devices and lights. Controll
 - additional configuration:
     - `triggerLevel` [one of: **LOW**, HIGH] - The signal LEVEL which triggers the relay and closes the circuit
     - `haComponent` [one of: **switch**, light] - type of the entity for Home Assistant MQTT discovery
+    - `haDeviceClass` [one of: **switch**, outlet] - only if `haComponent` is `switch`, [device class of switch](https://www.home-assistant.io/integrations/switch/#device-class) for Home Assistant MQTT discovery
   
 <details>
 <summary>Example configuration</summary>
@@ -133,7 +134,8 @@ devices:
 A magnetic sensor which might be used to check if door or window is open/closed.
 
 - configuration type: `REED_SWITCH`
-- additional configuration: NONE
+- additional configuration:
+    - `haDeviceClass` [one of: **opening**, window, door, garage_door, ...] - choose from [device class of binary sensor](https://www.home-assistant.io/integrations/binary_sensor/#device-class) for Home Assistant MQTT discovery
 
 <details>
 <summary>Example configuration</summary>
@@ -146,6 +148,8 @@ devices:
     connectors: 
       state: # connector configuration example for RaspberryPi
         gpio: 24
+    config:
+      haDeviceClass: "door"
 ```
 </details>
 
@@ -375,7 +379,7 @@ Emulated switches are realized with relay modules.
     - `openReedSwitch` ([reed switch](#reed-switch))
     - `closedReedSwitch` ([reed switch](#reed-switch))
 - additional configuration:
-    - `haDeviceClass` [one of: **garage**, gate]  - [device class of cover](https://www.home-assistant.io/integrations/cover/#device-class) for Home Assistant MQTT discovery
+    - `haDeviceClass` [one of: **garage**, gate] - [device class of cover](https://www.home-assistant.io/integrations/cover/#device-class) for Home Assistant MQTT discovery
 
 <details>
 <summary>Example configuration</summary>
