@@ -102,7 +102,7 @@ MYSENSORS_BINARY_FILE_PATH="mysgw"
 MYSENSORS_SERVICE_FILE_PATH="$SCRIPT_DIR/mysgw.service"
 
 if [ "$SYSTEM" = "mqgateway" ]; then
-  OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/nanopineo/Jammy_current"
+  OS_IMAGE_DOWNLOAD_URL="http://imola.armbian.com/archive/nanopineo/archive/Armbian_23.8.1_Nanopineo_jammy_current_6.1.47.img.xz"
 elif [ "$SYSTEM" = "raspberrypi" ]; then
   OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/rpi4b/Jammy_current"
 fi
