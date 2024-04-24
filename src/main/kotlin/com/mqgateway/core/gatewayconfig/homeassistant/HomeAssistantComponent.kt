@@ -1,6 +1,7 @@
 package com.mqgateway.core.gatewayconfig.homeassistant
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 
@@ -11,10 +12,12 @@ abstract class HomeAssistantComponent(
   protected fun uniqueId() = properties.uniqueId()
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class HomeAssistantComponentBasicProperties(
   @field:JsonProperty("device") val device: HomeAssistantDevice? = null,
   @JsonIgnore val nodeId: String,
-  @JsonIgnore val objectId: String
+  @field:JsonProperty("object_id") val objectId: String,
+  @field:JsonProperty("name") val name: String? = null,
 ) {
   fun uniqueId() = "${nodeId}_$objectId"
 }
@@ -39,7 +42,6 @@ enum class HomeAssistantComponentType(val value: String) {
 
 data class HomeAssistantLight(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @field:JsonProperty("name") val name: String,
   @field:JsonProperty("state_topic") val stateTopic: String,
   @field:JsonProperty("command_topic") val commandTopic: String,
   @field:JsonProperty("retain") val retain: Boolean,
@@ -51,7 +53,6 @@ data class HomeAssistantLight(
 
 data class HomeAssistantSwitch(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @field:JsonProperty("name") val name: String,
   @field:JsonProperty("state_topic") val stateTopic: String,
   @field:JsonProperty("command_topic") val commandTopic: String,
   @field:JsonProperty("retain") val retain: Boolean,
@@ -77,7 +78,6 @@ data class HomeAssistantSwitch(
 
 data class HomeAssistantBinarySensor(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @field:JsonProperty("name") val name: String,
   @field:JsonProperty("state_topic") val stateTopic: String,
   @field:JsonProperty("payload_on") val payloadOn: String,
   @field:JsonProperty("payload_off") val payloadOff: String,
@@ -128,7 +128,6 @@ data class HomeAssistantBinarySensor(
 
 data class HomeAssistantSensor(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @field:JsonProperty("name") val name: String,
   @field:JsonProperty("availability_topic") val availabilityTopic: String? = null,
   @field:JsonProperty("payload_available") val payloadAvailable: String? = null,
   @field:JsonProperty("payload_not_available") val payloadNotAvailable: String? = null,
@@ -222,7 +221,6 @@ data class HomeAssistantTrigger(
 
 data class HomeAssistantCover(
   @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
-  @field:JsonProperty("name") val name: String,
   @field:JsonProperty("state_topic") val stateTopic: String?,
   @field:JsonProperty("command_topic") val commandTopic: String,
   @field:JsonProperty("position_topic") val positionTopic: String?,

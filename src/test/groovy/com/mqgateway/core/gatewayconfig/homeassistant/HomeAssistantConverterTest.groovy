@@ -50,7 +50,7 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantLight lightComponent = components[0] as HomeAssistantLight
     lightComponent.componentType == HomeAssistantComponentType.LIGHT
-    lightComponent.name == "Test relay"
+    lightComponent.properties.name == ""
     lightComponent.properties.nodeId == gateway.id
     lightComponent.properties.objectId == "myRelay"
     lightComponent.stateTopic == expectedStateTopic(gateway.id, relayDeviceConfig.id, STATE.toString())
@@ -75,7 +75,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantSwitch switchComponent = components[0] as HomeAssistantSwitch
     switchComponent.componentType == HomeAssistantComponentType.SWITCH
-    switchComponent.name == "Test relay"
     switchComponent.properties.nodeId == gateway.id
     switchComponent.properties.objectId == "myRelay"
     switchComponent.stateTopic == expectedStateTopic(gateway.id, relayDeviceConfig.id, STATE.toString())
@@ -156,7 +155,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantSensor sensorComponent = components[0] as HomeAssistantSensor
     sensorComponent.componentType == HomeAssistantComponentType.SENSOR
-    sensorComponent.name == "Test button"
     sensorComponent.properties.nodeId == gateway.id
     sensorComponent.properties.objectId == "mySwitchButton"
     sensorComponent.stateTopic == expectedStateTopic(gateway.id, switchButtonDeviceConfig.id, STATE.toString())
@@ -180,7 +178,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantBinarySensor binarySensorComponent = components[0] as HomeAssistantBinarySensor
     binarySensorComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
-    binarySensorComponent.name == "Test button"
     binarySensorComponent.properties.nodeId == gateway.id
     binarySensorComponent.properties.objectId == switchButtonDeviceConfig.id
     binarySensorComponent.stateTopic == expectedStateTopic(gateway.id, switchButtonDeviceConfig.id, STATE.toString())
@@ -206,7 +203,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantBinarySensor binarySensorComponent = components[0] as HomeAssistantBinarySensor
     binarySensorComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
-    binarySensorComponent.name == "Test reed switch"
     binarySensorComponent.properties.nodeId == gateway.id
     binarySensorComponent.properties.objectId == "myReedSwitch"
     binarySensorComponent.stateTopic == expectedStateTopic(gateway.id, reedSwitchDeviceConfig.id, STATE.toString())
@@ -251,7 +247,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantBinarySensor binarySensorComponent = components[0] as HomeAssistantBinarySensor
     binarySensorComponent.componentType == HomeAssistantComponentType.BINARY_SENSOR
-    binarySensorComponent.name == "Test motion detector"
     binarySensorComponent.properties.nodeId == gateway.id
     binarySensorComponent.properties.objectId == "myMotionDetector"
     binarySensorComponent.stateTopic == expectedStateTopic(gateway.id, motionDetectorDeviceConfig.id, STATE.toString())
@@ -276,7 +271,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 1
     HomeAssistantSwitch switchComponent = components[0] as HomeAssistantSwitch
     switchComponent.componentType == HomeAssistantComponentType.SWITCH
-    switchComponent.name == "Test emulated switch"
     switchComponent.properties.nodeId == gateway.id
     switchComponent.properties.objectId == "myEmulatedSwitch"
     switchComponent.stateTopic == expectedStateTopic(gateway.id, emulatedSwitchDeviceConfig.id, STATE.toString())
@@ -307,7 +301,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 3
     HomeAssistantCover cover = components.find { it.componentType == HomeAssistantComponentType.COVER }
     cover.deviceClass == HomeAssistantCover.DeviceClass.SHUTTER
-    cover.name == "Test shutter device"
     cover.properties.nodeId == gateway.id
     cover.properties.objectId == "myShutter"
     cover.stateTopic == expectedStateTopic(gateway.id, shutterDevice.id, STATE.toString())
@@ -355,7 +348,6 @@ class HomeAssistantConverterTest extends Specification {
     components.size() == 5
     HomeAssistantCover cover = components.find { it.componentType == HomeAssistantComponentType.COVER } as HomeAssistantCover
     cover.deviceClass == HomeAssistantCover.DeviceClass.GATE
-    cover.name == "Test gate device"
     cover.properties.nodeId == gateway.id
     cover.properties.objectId == "myGate"
     cover.stateTopic == expectedStateTopic(gateway.id, gateDevice.id, STATE.toString())
@@ -403,22 +395,22 @@ class HomeAssistantConverterTest extends Specification {
       assert sensorComponent.payloadNotAvailable == "lost"
     }
 
-    temperature.name == "CPU temperature"
+    temperature.properties.name == "CPU temperature"
     temperature.stateTopic == expectedStateTopic(gateway.id, gateway.id, TEMPERATURE.toString())
     temperature.unitOfMeasurement == DataUnit.CELSIUS.value
     temperature.properties.objectId == gateway.id + "_CPU_TEMPERATURE"
     temperature.uniqueId == gateway.id + "_" + gateway.id + "_CPU_TEMPERATURE"
-    freeMemory.name == "Free memory"
+    freeMemory.properties.name == "Free memory"
     freeMemory.stateTopic == expectedStateTopic(gateway.id, gateway.id, MEMORY.toString())
     freeMemory.unitOfMeasurement == DataUnit.BYTES.value
     freeMemory.properties.objectId == gateway.id + "_MEMORY_FREE"
     freeMemory.uniqueId == gateway.id + "_" + gateway.id + "_MEMORY_FREE"
-    uptime.name == "Uptime"
+    uptime.properties.name == "Uptime"
     uptime.stateTopic == expectedStateTopic(gateway.id, gateway.id, UPTIME.toString())
     uptime.unitOfMeasurement == DataUnit.SECOND.value
     uptime.properties.objectId == gateway.id + "_UPTIME"
     uptime.uniqueId == gateway.id + "_" + gateway.id + "_UPTIME"
-    ipAddress.name == "IP address"
+    ipAddress.properties.name == "IP address"
     ipAddress.stateTopic == expectedStateTopic(gateway.id, gateway.id, IP_ADDRESS.toString())
     ipAddress.unitOfMeasurement == DataUnit.NONE.value
     ipAddress.properties.objectId == gateway.id + "_IP_ADDRESS"
@@ -444,7 +436,6 @@ class HomeAssistantConverterTest extends Specification {
     then:
     components.size() == 4
     HomeAssistantLight lightComponent = components.find { it.componentType == HomeAssistantComponentType.LIGHT } as HomeAssistantLight
-    lightComponent.name == "Test light"
     lightComponent.properties.nodeId == gateway.id
     lightComponent.properties.objectId == "myLight"
     lightComponent.stateTopic == expectedStateTopic(gateway.id, lightDeviceConfig.id, STATE.toString())
@@ -454,6 +445,25 @@ class HomeAssistantConverterTest extends Specification {
     lightComponent.payloadOff == "OFF"
     lightComponent.uniqueId == gateway.id + "_" + lightDeviceConfig.id
     assertHomeAssistantDevice(lightComponent, gateway, lightDeviceConfig)
+  }
+
+  def "should convert MqGateway device to HA entity with given entity name when entity name is set explicitly in gateway configuration"() {
+    given:
+    def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [state: new SimulatedConnector(1)],
+      [:], ["haComponent": "light", "haEntityName": "Special Entity Name"])
+    GatewayConfiguration gateway = new GatewayConfiguration("1.0", "unigateway-id", "Gateway name", [
+      relayDeviceConfig
+    ])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 1
+    HomeAssistantLight lightComponent = components[0] as HomeAssistantLight
+    lightComponent.componentType == HomeAssistantComponentType.LIGHT
+    lightComponent.properties.name == "Special Entity Name"
   }
 
   private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, GatewayConfiguration gateway, DeviceConfiguration deviceConfig) {
