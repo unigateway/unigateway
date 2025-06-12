@@ -31,11 +31,11 @@ See installation instructions in [the UniGateway documentation](https://unigatew
 ### Environment
 
 - JDK 11
-- MQTT broker (e.g. Mosquitto 2.0.15)
+- MQTT broker (e.g. Mosquitto 2.0.21)
 
 You can run Mosquitto as Docker with command:
 ```shell
-docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:2.0.15 mosquitto -c /mosquitto-no-auth.conf
+docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:2.0.21 mosquitto -c /mosquitto-no-auth.conf
 ```
 
 ### Code style
@@ -66,10 +66,10 @@ export MICRONAUT_ENVIRONMENTS=dev
 
 Dev profile expects the MQTT broker to be running locally. You can run it with Docker:
 ```shell
-docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:2.0.15 mosquitto -c /mosquitto-no-auth.conf
+docker run -d -p 1883:1883 --name mosquitto eclipse-mosquitto:2.0.21 mosquitto -c /mosquitto-no-auth.conf
 ```
 
-You can check everything works properly by going to https://localhost:8080/ui
+You can check everything works properly by going to http://localhost:8080/ui
 
 ### Releasing
 

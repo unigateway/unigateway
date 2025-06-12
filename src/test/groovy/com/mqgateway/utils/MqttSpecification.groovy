@@ -9,7 +9,7 @@ class MqttSpecification extends Specification {
 
   private static final int MOSQUITTO_INTERNAL_PORT = 1883
 
-  static GenericContainer mosquittoContainer = new GenericContainer(DockerImageName.parse("eclipse-mosquitto:2.0.15"))
+  static GenericContainer mosquittoContainer = new GenericContainer(DockerImageName.parse("eclipse-mosquitto:2.0.21"))
 
   static {
     mosquittoContainer.setPortBindings(["1883:$MOSQUITTO_INTERNAL_PORT".toString()])
