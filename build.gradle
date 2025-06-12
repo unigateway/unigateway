@@ -5,24 +5,15 @@ plugins {
     id "org.jetbrains.kotlin.plugin.allopen" version "${kotlinVersion}"
     id "org.jetbrains.kotlin.plugin.serialization" version "${kotlinVersion}"
     id "org.jlleitschuh.gradle.ktlint" version "10.0.0"
-    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
     id "pl.allegro.tech.build.axion-release" version "1.14.2"
     id "io.micronaut.application" version "3.2.1"
-    id "com.github.node-gradle.node" version "3.4.0"
+    id "com.github.node-gradle.node" version "7.1.0"
 }
 
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
-
-    // This is a temporary workaround until new version of diozero (1.4.0) will be officially released - fix from this version is required
-    maven {
-        url "https://maven.pkg.github.com/unigateway/unigateway"
-        credentials {
-            username = System.getenv("GITHUB_TOKEN")
-            password = System.getenv("GITHUB_TOKEN")
-        }
-    }
 }
 
 dependencies {
@@ -53,7 +44,7 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
     // DioZero
-    implementation 'com.diozero:diozero-core:1.4.0'
+    implementation 'com.diozero:diozero-core:1.4.1'
 
     // Oshi - Library for SystemInfoProvider
     implementation 'com.github.oshi:oshi-core-java11:6.1.4'
@@ -71,9 +62,9 @@ dependencies {
     // Tests
     testImplementation(enforcedPlatform("io.micronaut:micronaut-bom:$micronautVersion"))
     testImplementation("io.micronaut:micronaut-inject-groovy")
-    testImplementation('org.codehaus.groovy:groovy:3.0.8')
-    testImplementation('org.codehaus.groovy:groovy-json:3.0.8')
-    testImplementation('org.codehaus.groovy:groovy-yaml:3.0.8')
+    testImplementation('org.codehaus.groovy:groovy:3.0.25')
+    testImplementation('org.codehaus.groovy:groovy-json:3.0.25')
+    testImplementation('org.codehaus.groovy:groovy-yaml:3.0.25')
     testImplementation(platform("org.spockframework:spock-bom:2.0-M5-groovy-3.0"))
     testImplementation("org.spockframework:spock-core") {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
@@ -90,10 +81,11 @@ test {
     useJUnitPlatform()
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
+    jvmArgs('--add-opens', 'java.base/java.util=ALL-UNNAMED')
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion('1.8')
+    sourceCompatibility = JavaVersion.VERSION_11
 }
 
 tasks {
@@ -153,15 +145,24 @@ node {
     npmInstallCommand = "ci"
 }
 
-task npmBuild(type: NpmTask) {
+tasks.register('npmBuild', NpmTask) {
     args = ["run", "build"]
 }
 
-task copyWebApp(type: Copy) {
+tasks.register('copyWebApp', Copy) {
     from "${project.projectDir}/ui/build"
     into "${project.buildDir}/resources/main/webapp/."
 }
 
-npmBuild.dependsOn npmInstall
-copyWebApp.dependsOn npmBuild
-shadowJar.dependsOn copyWebApp
+tasks.whenTaskAdded {
+    if (name == "kaptTestKotlin") {
+        dependsOn("copyWebApp")
+    }
+}
+
+tasks.jar.dependsOn tasks.copyWebApp
+tasks.buildLayers.dependsOn tasks.copyWebApp
+tasks.compileTestGroovy.dependsOn tasks.copyWebApp
+tasks.npmBuild.dependsOn tasks.npmInstall
+tasks.copyWebApp.dependsOn tasks.npmBuild
+tasks.shadowJar.dependsOn tasks.copyWebApp
