@@ -1,7 +1,7 @@
 package com.mqgateway.core.io
 
 /**
- * Numerical output which can be set with float value
+ * Numerical input which can be set with float value
  * Depending on implementation, may represent hardware analog pin, process communication, external communication, etc.
  */
 interface FloatInput {

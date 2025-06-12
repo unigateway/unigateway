@@ -19,7 +19,13 @@ class HumidityDeviceFactory(
     val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
       ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateInput = ioProvider.getFloatInput(connector)
-    return HumidityDevice(deviceConfiguration.id, deviceConfiguration.name, stateInput, deviceConfiguration.config)
+    return HumidityDevice(
+      id = deviceConfiguration.id,
+      name = deviceConfiguration.name,
+      input = stateInput,
+      minUpdateIntervalMillis = deviceConfiguration.config.getOrDefault("minUpdateIntervalMs", "0").toLong(),
+      config = deviceConfiguration.config
+    )
   }
 
   companion object {

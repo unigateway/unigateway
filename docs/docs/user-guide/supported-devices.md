@@ -188,7 +188,8 @@ Temperature sensor. Examples are BME280, DHT22, DS18B20, SHT31.
 Currently requires MySensors node.
 
 - configuration type: `TEMPERATURE`
-- additional configuration: NONE
+- additional configuration:
+    - `minUpdateIntervalMs` [default: 0] - minimum interval (in milliseconds) between two consecutive updates of temperature. Any additional updates from the sensor will be ignored.
 
 <details>
 <summary>Example configuration</summary>
@@ -204,6 +205,8 @@ devices:
         nodeId: 10
         sensorId: 1
         type: V_TEMP
+    config:
+      minUpdateIntervalMs: 60000 # optional - it will send updates with the maximum frequency of 1 minute
 ```
 </details>
 
@@ -212,7 +215,8 @@ Humidity sensor. Examples are BME280, DHT22, SHT31.
 Currently requires MySensors node.
 
 - configuration type: `HUMIDITY`
-- additional configuration: NONE
+- additional configuration:
+    - `minUpdateIntervalMs` [default: 0] - minimum interval (in milliseconds) between two consecutive updates of temperature. Any additional updates from the sensor will be ignored.
 
 <details>
 <summary>Example configuration</summary>
@@ -228,6 +232,8 @@ devices:
         nodeId: 10
         sensorId: 0
         type: V_HUM
+    config:
+      minUpdateIntervalMs: 60000 # optional - it will send updates with the maximum frequency of 1 minute
 ```
 </details>
 
