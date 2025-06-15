@@ -18,7 +18,6 @@ import jakarta.inject.Singleton
   Requires(property = "homeassistant.enabled", value = "true"),
 )
 internal class HomeAssistantFactory {
-
   @Singleton
   fun homeAssistantConverter(gatewayApplicationProperties: GatewayApplicationProperties): HomeAssistantConverter {
     return HomeAssistantConverter(gatewayApplicationProperties.appVersion)
@@ -34,16 +33,15 @@ internal class HomeAssistantFactory {
     properties: HomeAssistantProperties,
     converter: HomeAssistantConverter,
     publisher: HomeAssistantPublisher,
-    mqttClientFactory: MqttClientFactory
+    mqttClientFactory: MqttClientFactory,
   ): HomeAssistantConfigurer {
-
     return HomeAssistantConfigurer(properties, converter, publisher, mqttClientFactory)
   }
 
   @Singleton
   fun homeAssistantMqttListener(
     homeAssistantConfigurer: HomeAssistantConfigurer,
-    deviceRegistry: DeviceRegistry
+    deviceRegistry: DeviceRegistry,
   ): HomieDevice.MqttConnectionListener {
     return object : HomieDevice.MqttConnectionListener {
       override fun onConnected() {

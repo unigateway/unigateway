@@ -6,7 +6,6 @@ import com.mqgateway.core.hardware.mqgateway.mcp.MqGatewayMcpExpanders
 import kotlin.reflect.KClass
 
 class MqGatewayHardwareFactory(platformConfiguration: Map<String, *>) : HardwareInterfaceFactory<MqGatewayConnector> {
-
   private val platformConfiguration = MqGatewayPlatformConfigurationFactory().create(platformConfiguration)
 
   override fun hardwareInputOutputProvider(): MqGatewayInputOutputProvider {

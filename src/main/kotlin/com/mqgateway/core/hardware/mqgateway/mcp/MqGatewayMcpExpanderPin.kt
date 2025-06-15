@@ -8,9 +8,8 @@ import com.mqgateway.core.io.BinaryStateListener
 
 class MqGatewayMcpExpanderOutputPin(
   private val mqGatewayMcpExpander: MqGatewayMcpExpander,
-  private val expanderGpioNumber: Int
+  private val expanderGpioNumber: Int,
 ) : BinaryOutput {
-
   override fun setState(newState: BinaryState) {
     mqGatewayMcpExpander.setPinState(expanderGpioNumber, newState)
   }
@@ -19,9 +18,8 @@ class MqGatewayMcpExpanderOutputPin(
 class MqGatewayMcpExpanderInputPin(
   private val mqGatewayMcpExpander: MqGatewayMcpExpander,
   private val expanderGpioNumber: Int,
-  private val debounceMs: Long
+  private val debounceMs: Long,
 ) : BinaryInput {
-
   override fun getState(): BinaryState = mqGatewayMcpExpander.getPinState(expanderGpioNumber)
 
   override fun addListener(listener: BinaryStateListener) {

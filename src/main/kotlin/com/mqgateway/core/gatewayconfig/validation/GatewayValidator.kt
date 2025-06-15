@@ -1,7 +1,7 @@
 package com.mqgateway.core.gatewayconfig.validation
 
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 

@@ -24,5 +24,5 @@ class DisabledMySensorsInputOutputProvider : MySensorsInputOutputProvider {
 }
 
 class MySensorsIsDisabledException : Exception(
-  "MySensors is disabled in gateway configuration. If you want to use MySensors, you need to enable it in gateway.system.mysensors.enabled"
+  "MySensors is disabled in gateway configuration. If you want to use MySensors, you need to enable it in gateway.system.mysensors.enabled",
 )

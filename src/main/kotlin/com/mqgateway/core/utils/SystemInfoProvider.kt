@@ -5,9 +5,13 @@ import java.time.Duration
 
 interface SystemInfoProvider {
   fun getCpuTemperature(): Float
+
   fun getMemoryFree(): Long
+
   fun getUptime(): Duration
+
   fun getIPAddresses(): String
+
   fun getSummary(): String
 }
 
@@ -39,6 +43,6 @@ class OshiSystemInfoProvider : SystemInfoProvider {
       Free memory: ${getMemoryFree()}
       Uptime: ${getUptime()}
       IP address: ${getIPAddresses()}
-    """.trimIndent()
+      """.trimIndent()
   }
 }

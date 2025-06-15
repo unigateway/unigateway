@@ -9,15 +9,16 @@ import com.mqgateway.core.device.DeviceType
 abstract class GateDevice(
   id: String,
   name: String,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) : Device(
-  id, name, DeviceType.GATE,
-  setOf(
-    DeviceProperty(STATE, DataType.ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
-  ),
-  config
-) {
-
+    id,
+    name,
+    DeviceType.GATE,
+    setOf(
+      DeviceProperty(STATE, DataType.ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true),
+    ),
+    config,
+  ) {
   protected var state: State = State.UNKNOWN
     protected set(value) {
       field = value
@@ -31,10 +32,16 @@ abstract class GateDevice(
   abstract fun stop(blocking: Boolean = false)
 
   enum class Command {
-    OPEN, CLOSE, STOP
+    OPEN,
+    CLOSE,
+    STOP,
   }
 
   enum class State {
-    OPENING, CLOSING, OPEN, CLOSED, UNKNOWN
+    OPENING,
+    CLOSING,
+    OPEN,
+    CLOSED,
+    UNKNOWN,
   }
 }

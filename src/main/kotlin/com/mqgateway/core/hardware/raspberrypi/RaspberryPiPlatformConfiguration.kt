@@ -2,11 +2,9 @@ package com.mqgateway.core.hardware.raspberrypi
 
 data class RaspberryPiPlatformConfiguration(
   val defaultDebounceMs: Int = 50,
-  val defaultPullUpDown: PullUpDown = PullUpDown.PULL_UP
+  val defaultPullUpDown: PullUpDown = PullUpDown.PULL_UP,
 ) {
-
   companion object Factory {
-
     @JvmStatic
     fun create(configMap: Map<String, *>): RaspberryPiPlatformConfiguration {
       val defaultDebounceMs: Int? = configMap[DEFAULT_DEBOUNCE_MS_KEY]?.toString()?.toInt()

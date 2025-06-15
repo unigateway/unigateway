@@ -10,7 +10,6 @@ import com.mqgateway.core.io.BinaryStateChangeEvent
 import com.mqgateway.core.io.BinaryStateListener
 
 class RaspberryPiDigitalPinInput(private val digitalInputDevice: DigitalInputDevice) : BinaryInput {
-
   override fun addListener(listener: BinaryStateListener) {
     digitalInputDevice.addListener { event -> listener.handle(RaspberryPiBinaryStateChangeEvent(event)) }
   }

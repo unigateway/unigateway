@@ -6,7 +6,6 @@ import io.micronaut.websocket.WebSocketSession
 import java.util.LinkedList
 
 class LogsWebSocketPublisher(private val broadcaster: WebSocketBroadcaster) {
-
   private val lastLogs: LinkedList<GatewayLogsServerWebSocket.Log> = LinkedList()
 
   fun sendLastLogs(session: WebSocketSession) {
@@ -20,7 +19,7 @@ class LogsWebSocketPublisher(private val broadcaster: WebSocketBroadcaster) {
     val log = GatewayLogsServerWebSocket.Log(event.message, event.timeStamp, event.level.toString(), event.loggerName)
     lastLogs.offer(log)
     broadcaster.broadcastSync(
-      GatewayLogsServerWebSocket.LogMessage(log)
+      GatewayLogsServerWebSocket.LogMessage(log),
     ) { it.attributes.getValue("type") == "logs" }
   }
 

@@ -10,17 +10,21 @@ import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 class LightDeviceFactory : DeviceFactory<LightDevice> {
   override fun deviceType() = DeviceType.LIGHT
 
-  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): LightDevice {
+  override fun create(
+    deviceConfiguration: DeviceConfiguration,
+    devices: Set<Device>,
+  ): LightDevice {
     val relay = getReferenceDevice(deviceConfiguration, "relay", devices) as RelayDevice
-    val switches: List<SwitchButtonDevice> = deviceConfiguration.internalDevices
-      .filterKeys { it.startsWith("switch") }
-      .map { getReferenceDevice(deviceConfiguration, it.key, devices) as SwitchButtonDevice }
+    val switches: List<SwitchButtonDevice> =
+      deviceConfiguration.internalDevices
+        .filterKeys { it.startsWith("switch") }
+        .map { getReferenceDevice(deviceConfiguration, it.key, devices) as SwitchButtonDevice }
 
     return LightDevice(
       deviceConfiguration.id,
       deviceConfiguration.name,
       relay,
-      switches
+      switches,
     )
   }
 }

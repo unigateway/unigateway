@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.mqgateway.configuration.GatewaySystemProperties
+import com.networknt.schema.JsonNodePath
 import com.networknt.schema.ValidationMessage
 import com.networknt.schema.ValidatorTypeCode
 import groovy.yaml.YamlSlurper
 import spock.lang.Specification
 import spock.lang.Subject
+
+import static com.networknt.schema.PathType.JSON_PATH
 
 class JsonSchemaValidatorTest extends Specification {
 
@@ -60,21 +63,20 @@ class JsonSchemaValidatorTest extends Specification {
         status:
           source: HARDWARE
           pin: 1
-          theTruthIsThat: "js is better than kotlin"
+          theTruthIsThat: "js is better than kotlin for very specific use cases"
 		""".stripIndent()
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
     JsonNode jsonNode = objectMapper.readTree(configWithDevice)
+    JsonNodePath expectedFailingPath = new JsonNodePath(JSON_PATH).append("devices").append(0).append("connectors").append("status")
 
     when:
     Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(jsonNode)
 
     then:
-    validationMessages == [ValidationMessage.of(
-      ValidatorTypeCode.ADDITIONAL_PROPERTIES.value,
-      ValidatorTypeCode.ADDITIONAL_PROPERTIES,
-      "\$.devices[0].connectors.status",
-      "theTruthIsThat")].toSet()
+    assertValidationMessages(validationMessages, [
+      new ExpectedValidationMessage(ValidatorTypeCode.ADDITIONAL_PROPERTIES, expectedFailingPath, "theTruthIsThat")
+    ])
   }
 
   def "should validate raspberry pi connector"() {
@@ -109,21 +111,20 @@ class JsonSchemaValidatorTest extends Specification {
       connectors:
         status:
           gpio: 1
-          theTruthIsThat: "js is better than kotlin"
+          theTruthIsThat: "it depends"
 		""".stripIndent()
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
     JsonNode jsonNode = objectMapper.readTree(configWithDevice)
+    JsonNodePath expectedFailingPath = new JsonNodePath(JSON_PATH).append("devices").append(0).append("connectors").append("status")
 
     when:
     Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(jsonNode)
 
     then:
-    validationMessages == [ValidationMessage.of(
-      ValidatorTypeCode.ADDITIONAL_PROPERTIES.value,
-      ValidatorTypeCode.ADDITIONAL_PROPERTIES,
-      "\$.devices[0].connectors.status",
-      "theTruthIsThat")].toSet()
+    assertValidationMessages(validationMessages, [
+      new ExpectedValidationMessage(ValidatorTypeCode.ADDITIONAL_PROPERTIES, expectedFailingPath, "theTruthIsThat")
+    ])
   }
 
   def "should validate MqGateway connector"() {
@@ -166,19 +167,18 @@ class JsonSchemaValidatorTest extends Specification {
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
     JsonNode jsonNode = objectMapper.readTree(configWithDevice)
+    JsonNodePath expectedFailingPath = new JsonNodePath(JSON_PATH).append("devices").append(0).append("connectors").append("status")
 
     when:
     Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(jsonNode)
 
     then:
-    validationMessages == [ValidationMessage.of(
-      ValidatorTypeCode.ADDITIONAL_PROPERTIES.value,
-      ValidatorTypeCode.ADDITIONAL_PROPERTIES,
-      "\$.devices[0].connectors.status",
-      "theTruthIsThat")].toSet()
+    assertValidationMessages(validationMessages, [
+      new ExpectedValidationMessage(ValidatorTypeCode.ADDITIONAL_PROPERTIES, expectedFailingPath, "theTruthIsThat")
+    ])
   }
 
-  def "should not allow values outside of [1-32] for portNumber on MqGateway connector"(int portNumber, ValidatorTypeCode validatorTypeCode, int limitNumber) {
+  def "should not allow values outside of [1-32] for portNumber on MqGateway connector"(int portNumber, ValidatorTypeCode validatorTypeCode) {
     given:
     jsonSchemaValidator = new JsonSchemaValidator(objectMapper, mqGatewaySystemProperties)
     def device = """
@@ -193,22 +193,22 @@ class JsonSchemaValidatorTest extends Specification {
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
     JsonNode jsonNode = objectMapper.readTree(configWithDevice)
+    JsonNodePath expectedFailingPath =
+      new JsonNodePath(JSON_PATH).append("devices").append(0).append("connectors").append("status").append("portNumber")
 
     when:
     Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(jsonNode)
 
     then:
-    validationMessages == [ValidationMessage.of(
-      validatorTypeCode.value,
-      validatorTypeCode,
-      "\$.devices[0].connectors.status.portNumber",
-      limitNumber.toString())].toSet()
+    assertValidationMessages(validationMessages, [
+      new ExpectedValidationMessage(validatorTypeCode, expectedFailingPath)
+    ])
 
     where:
-    portNumber | validatorTypeCode         | limitNumber
-    -1         | ValidatorTypeCode.MINIMUM | 1
-    0          | ValidatorTypeCode.MINIMUM | 1
-    33         | ValidatorTypeCode.MAXIMUM | 32
+    portNumber | validatorTypeCode
+    -1         | ValidatorTypeCode.MINIMUM
+    0          | ValidatorTypeCode.MINIMUM
+    33         | ValidatorTypeCode.MAXIMUM
   }
 
   def "should not allow incorrect values for wireColor on MqGateway connector"() {
@@ -226,16 +226,16 @@ class JsonSchemaValidatorTest extends Specification {
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
     JsonNode jsonNode = objectMapper.readTree(configWithDevice)
+    JsonNodePath expectedFailingPath =
+      new JsonNodePath(JSON_PATH).append("devices").append(0).append("connectors").append("status").append("wireColor")
 
     when:
     Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(jsonNode)
 
     then:
-    validationMessages == [ValidationMessage.of(
-      ValidatorTypeCode.ENUM.value,
-      ValidatorTypeCode.ENUM,
-      "\$.devices[0].connectors.status.wireColor",
-      "[BLUE, BLUE_WHITE, GREEN, GREEN_WHITE]")].toSet()
+    assertValidationMessages(validationMessages, [
+      new ExpectedValidationMessage(ValidatorTypeCode.ENUM, expectedFailingPath)
+    ])
   }
 
   def "should not allow negative numbers as value for debounceMs on MqGateway connector"() {
@@ -254,16 +254,16 @@ class JsonSchemaValidatorTest extends Specification {
     def configWithDevice = configWithDevice(device)
     checkYamlCorrectness(configWithDevice)
     JsonNode jsonNode = objectMapper.readTree(configWithDevice)
+    JsonNodePath expectedFailingPath =
+      new JsonNodePath(JSON_PATH).append("devices").append(0).append("connectors").append("status").append("debounceMs")
 
     when:
     Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(jsonNode)
 
     then:
-    validationMessages == [ValidationMessage.of(
-      ValidatorTypeCode.MINIMUM.value,
-      ValidatorTypeCode.MINIMUM,
-      "\$.devices[0].connectors.status.debounceMs",
-      "0")].toSet()
+    assertValidationMessages(validationMessages, [
+      new ExpectedValidationMessage(ValidatorTypeCode.MINIMUM, expectedFailingPath)
+    ])
   }
 
   def "should not validate connector when json schema does not exist for hardware"() {
@@ -304,4 +304,61 @@ ${device.readLines().collect { "    $it" }.join(System.lineSeparator())}
   private void checkYamlCorrectness(String yamlString) {
     yamlSlurper.parseText(yamlString)
   }
+
+  private void assertValidationMessages(Set<ValidationMessage> actual, Collection<ExpectedValidationMessage> expected) {
+    def actualToExpectedFormat= actual.collect {
+      new ExpectedValidationMessage(
+        ValidatorTypeCode.fromValue(it.type),
+        it.instanceLocation,
+        it.property,
+      )
+    }
+
+    assert actualToExpectedFormat.toSet() == expected.toSet()
+  }
+
+  class ExpectedValidationMessage {
+    ValidatorTypeCode type
+    JsonNodePath instanceLocation
+    String property
+
+    ExpectedValidationMessage(ValidatorTypeCode type, JsonNodePath instanceLocation, String property = null) {
+      this.type = type
+      this.instanceLocation = instanceLocation
+      this.property = property
+    }
+
+    boolean equals(o) {
+      if (this.is(o)) return true
+      if (o == null || getClass() != o.class) return false
+
+      ExpectedValidationMessage that = (ExpectedValidationMessage) o
+
+      if (instanceLocation != that.instanceLocation) return false
+      if (property != that.property) return false
+      if (type != that.type) return false
+
+      return true
+    }
+
+    int hashCode() {
+      int result
+      result = (type != null ? type.hashCode() : 0)
+      result = 31 * result + (instanceLocation != null ? instanceLocation.hashCode() : 0)
+      result = 31 * result + (property != null ? property.hashCode() : 0)
+      return result
+    }
+
+
+    @Override
+    String toString() {
+      return "ExpectedValidationMessage{" +
+        "type=" + type +
+        ", instanceLocation=" + instanceLocation +
+        ", property='" + property + '\'' +
+        '}';
+    }
+  }
+
+
 }

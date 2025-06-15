@@ -12,7 +12,10 @@ import com.mqgateway.core.io.FloatOutput
  */
 interface HardwareInputOutputProvider<T : HardwareConnector> {
   fun getBinaryInput(connector: T): BinaryInput
+
   fun getBinaryOutput(connector: T): BinaryOutput
+
   fun getFloatInput(connector: T): FloatInput
+
   fun getFloatOutput(connector: T): FloatOutput
 }

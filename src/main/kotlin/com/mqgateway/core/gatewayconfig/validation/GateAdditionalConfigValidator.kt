@@ -18,9 +18,8 @@ class GateAdditionalConfigValidator : GatewayValidator {
     gateDevice: DeviceConfiguration,
     internalDevicesNamesToCheck: List<String>,
     expectedType: DeviceType,
-    gatewayConfiguration: GatewayConfiguration
+    gatewayConfiguration: GatewayConfiguration,
   ): List<UnexpectedGateInternalDevice> {
-
     return gateDevice.internalDevices
       .filter { internalDeviceEntry ->
         val (key, internalDevice) = internalDeviceEntry
@@ -33,9 +32,8 @@ class GateAdditionalConfigValidator : GatewayValidator {
   class UnexpectedGateInternalDevice(
     val device: DeviceConfiguration,
     private val internalDeviceName: String,
-    private val expectedInternalDeviceType: DeviceType
+    private val expectedInternalDeviceType: DeviceType,
   ) : ValidationFailureReason() {
-
     override fun getDescription(): String {
       return "Incorrect internal device for gate: '${device.name}'. Internal device '$internalDeviceName' should be $expectedInternalDeviceType."
     }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
 import com.mqgateway.core.gatewayconfig.validation.ValidationFailureReason
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -18,13 +18,11 @@ private val LOGGER = KotlinLogging.logger {}
 class GatewayConfigurationService(
   private val configValidator: ConfigValidator,
   private val gatewayConfigPath: String,
-  private val yamlObjectMapper: ObjectMapper
+  private val yamlObjectMapper: ObjectMapper,
 ) {
-
   fun readConfigurationFromFile(): String = File(gatewayConfigPath).readText()
 
   fun replaceConfiguration(newConfigurationString: String): GatewayConfigurationReplacementResult {
-
     val newConfigurationJsonNode: JsonNode = yamlObjectMapper.readTree(newConfigurationString)
     if (!configValidator.validateAgainstJsonSchema(newConfigurationJsonNode)) {
       LOGGER.warn { "New Gateway configuration is invalid (against JSON schema)" }
@@ -45,7 +43,7 @@ class GatewayConfigurationService(
       return GatewayConfigurationReplacementResult(
         success = false,
         jsonValidationSucceeded = true,
-        validationFailures = validationResult.failureReasons
+        validationFailures = validationResult.failureReasons,
       )
     }
 
@@ -70,5 +68,5 @@ class GatewayConfigurationService(
 data class GatewayConfigurationReplacementResult(
   val success: Boolean,
   val jsonValidationSucceeded: Boolean = true,
-  val validationFailures: List<ValidationFailureReason> = emptyList()
+  val validationFailures: List<ValidationFailureReason> = emptyList(),
 )

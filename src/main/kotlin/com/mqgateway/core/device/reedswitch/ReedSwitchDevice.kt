@@ -12,20 +12,25 @@ class ReedSwitchDevice(
   id: String,
   name: String,
   state: BinaryInput,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) : DigitalInputDevice(
-  id, name, DeviceType.REED_SWITCH, state,
-  setOf(
-    DeviceProperty(STATE, ENUM, "OPEN,CLOSED", retained = true)
-  ),
-  config
-) {
-
+    id,
+    name,
+    DeviceType.REED_SWITCH,
+    state,
+    setOf(
+      DeviceProperty(STATE, ENUM, "OPEN,CLOSED", retained = true),
+    ),
+    config,
+  ) {
   override fun updatableProperty() = STATE
+
   override fun highStateValue() = OPEN_STATE_VALUE
+
   override fun lowStateValue() = CLOSED_STATE_VALUE
 
   fun isClosed() = state == BinaryState.LOW
+
   fun isOpen() = !isClosed()
 
   companion object {

@@ -3,7 +3,6 @@ package com.mqgateway.webapi
 import static groovy.json.JsonOutput.toJson
 
 import com.mqgateway.MqGateway
-import com.mqgateway.utils.MqttSpecification
 import groovy.json.JsonSlurper
 import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpRequest
@@ -46,7 +45,7 @@ class GatewayServerWebSocketTest extends Specification {
   }
 
   void cleanup() {
-    webSocketClient.close()
+    client.close()
   }
 
   def "should receive current devices states when connecting to websocket"() {

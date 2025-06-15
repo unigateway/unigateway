@@ -9,7 +9,6 @@ import com.mqgateway.core.io.FloatValueChangeEvent
 import com.mqgateway.core.io.FloatValueListener
 
 class RaspberryPiAnalogPinInput(private val analogInputDevice: AnalogInputDevice) : FloatInput {
-
   override fun addListener(listener: FloatValueListener) {
     analogInputDevice.addListener { event -> listener.handle(RaspberryPiAnalogStateChangeEvent(event)) }
   }

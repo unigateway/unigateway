@@ -17,5 +17,5 @@ interface HardwareConnector : Connector
 data class MySensorsConnector(
   val nodeId: Int,
   val sensorId: Int,
-  val type: Type
+  val type: Type,
 ) : Connector

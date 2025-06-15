@@ -2,12 +2,11 @@ package com.mqgateway.core.mysensors
 
 import com.mqgateway.core.io.Serial
 import com.mqgateway.core.io.SerialDataEvent
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class MySensorsSerialConnection(private val serial: Serial, private val messageParser: MySensorMessageSerializer) {
-
   private val listeners: MutableMap<Int, MutableMap<Int, MutableList<MySensorsSerialListener>>> = mutableMapOf()
 
   init {
@@ -24,7 +23,11 @@ class MySensorsSerialConnection(private val serial: Serial, private val messageP
     }
   }
 
-  fun registerDeviceListener(nodeId: Int, sensorId: Int, listener: MySensorsSerialListener) {
+  fun registerDeviceListener(
+    nodeId: Int,
+    sensorId: Int,
+    listener: MySensorsSerialListener,
+  ) {
     listeners
       .getOrPut(nodeId) { mutableMapOf() }
       .getOrPut(sensorId) { mutableListOf() }

@@ -14,16 +14,17 @@ class TemperatureDevice(
   name: String,
   private val input: FloatInput,
   minUpdateIntervalMillis: Long,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) :
   Device(
-    id, name, DeviceType.TEMPERATURE,
-    setOf(
-      DeviceProperty(DevicePropertyType.TEMPERATURE, DataType.FLOAT, null, unit = DataUnit.CELSIUS)
-    ),
-    config
-  ) {
-
+      id,
+      name,
+      DeviceType.TEMPERATURE,
+      setOf(
+        DeviceProperty(DevicePropertyType.TEMPERATURE, DataType.FLOAT, null, unit = DataUnit.CELSIUS),
+      ),
+      config,
+    ) {
   private val callThrottler = CallThrottler(minUpdateIntervalMillis)
 
   override fun initDevice() {

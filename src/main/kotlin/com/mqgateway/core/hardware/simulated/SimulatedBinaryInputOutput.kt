@@ -7,7 +7,6 @@ import com.mqgateway.core.io.BinaryStateChangeEvent
 import com.mqgateway.core.io.BinaryStateListener
 
 class SimulatedBinaryInput(initialState: BinaryState) : BinaryInput {
-
   private var state: BinaryState = initialState
   private val listeners: MutableList<BinaryStateListener> = mutableListOf()
 
@@ -34,7 +33,6 @@ class SimulatedBinaryInput(initialState: BinaryState) : BinaryInput {
 }
 
 class SimulatedBinaryOutput : BinaryOutput {
-
   private var state: BinaryState? = null
 
   override fun setState(newState: BinaryState) {

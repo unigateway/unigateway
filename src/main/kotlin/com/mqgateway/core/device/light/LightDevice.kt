@@ -9,7 +9,7 @@ import com.mqgateway.core.device.light.LightDevice.LightState.OFF
 import com.mqgateway.core.device.light.LightDevice.LightState.ON
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -18,15 +18,16 @@ class LightDevice(
   name: String,
   private val relay: RelayDevice,
   private val switches: List<SwitchButtonDevice>,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) : Device(
-  id, name, DeviceType.LIGHT,
-  setOf(
-    DeviceProperty(STATE, DataType.ENUM, "ON,OFF", settable = true, retained = true)
-  ),
-  config
-) {
-
+    id,
+    name,
+    DeviceType.LIGHT,
+    setOf(
+      DeviceProperty(STATE, DataType.ENUM, "ON,OFF", settable = true, retained = true),
+    ),
+    config,
+  ) {
   private var currentState: LightState? = null
     private set(value) {
       field = value
@@ -35,7 +36,10 @@ class LightDevice(
       }
     }
 
-  override fun initProperty(propertyId: String, value: String) {
+  override fun initProperty(
+    propertyId: String,
+    value: String,
+  ) {
     if (propertyId != STATE.toString()) {
       LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
       return
@@ -55,7 +59,10 @@ class LightDevice(
     }
   }
 
-  override fun change(propertyId: String, newValue: String) {
+  override fun change(
+    propertyId: String,
+    newValue: String,
+  ) {
     LOGGER.debug { "Changing state on light $id to $newValue" }
     when (newValue) {
       ON.name -> turnOn()
@@ -83,7 +90,8 @@ class LightDevice(
   }
 
   enum class LightState {
-    ON, OFF
+    ON,
+    OFF,
   }
 
   class UnknownLightStateException(unknownState: String) : RuntimeException("Trying to change light state to unknown value '$unknownState'")

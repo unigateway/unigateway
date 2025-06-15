@@ -18,22 +18,24 @@ import kotlinx.serialization.modules.subclass
 
 @ExperimentalSerializationApi
 class FastConfigurationSerializer(
-  private val customConnectorSerializerModule: SerializersModule
+  private val customConnectorSerializerModule: SerializersModule,
 ) {
-  private val baseConnectorModule = SerializersModule {
-    polymorphic(Connector::class) {
-      subclass(MySensorsConnector::class)
+  private val baseConnectorModule =
+    SerializersModule {
+      polymorphic(Connector::class) {
+        subclass(MySensorsConnector::class)
+      }
+      polymorphic(Type::class) {
+        subclass(PresentationType::class)
+        subclass(SetReqType::class)
+        subclass(InternalType::class)
+        subclass(StreamType::class)
+      }
     }
-    polymorphic(Type::class) {
-      subclass(PresentationType::class)
-      subclass(SetReqType::class)
-      subclass(InternalType::class)
-      subclass(StreamType::class)
+  private val format =
+    Cbor {
+      serializersModule = baseConnectorModule + customConnectorSerializerModule
     }
-  }
-  private val format = Cbor {
-    serializersModule = baseConnectorModule + customConnectorSerializerModule
-  }
 
   fun encode(gatewayConfiguration: GatewayConfiguration): ByteArray {
     return format.encodeToByteArray(gatewayConfiguration)

@@ -22,19 +22,20 @@ class UniGatewayDevice(
   name: String,
   private val periodBetweenUpdates: Duration,
   private val systemInfoProvider: SystemInfoProvider,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) :
   Device(
-    id, name, DeviceType.UNIGATEWAY,
-    setOf(
-      DeviceProperty(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
-      DeviceProperty(MEMORY, INTEGER, null, retained = true, unit = BYTES),
-      DeviceProperty(UPTIME, INTEGER, null, retained = true, unit = SECOND),
-      DeviceProperty(IP_ADDRESS, STRING, null, retained = true)
-    ),
-    config
-  ) {
-
+      id,
+      name,
+      DeviceType.UNIGATEWAY,
+      setOf(
+        DeviceProperty(TEMPERATURE, FLOAT, null, retained = true, unit = CELSIUS),
+        DeviceProperty(MEMORY, INTEGER, null, retained = true, unit = BYTES),
+        DeviceProperty(UPTIME, INTEGER, null, retained = true, unit = SECOND),
+        DeviceProperty(IP_ADDRESS, STRING, null, retained = true),
+      ),
+      config,
+    ) {
   override fun initDevice() {
     super.initDevice()
 

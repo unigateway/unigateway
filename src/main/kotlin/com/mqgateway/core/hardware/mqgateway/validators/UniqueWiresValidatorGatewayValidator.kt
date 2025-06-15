@@ -5,12 +5,11 @@ import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.gatewayconfig.validation.ValidationFailureReason
 import com.mqgateway.core.hardware.mqgateway.MqGatewayConnector
 import com.mqgateway.core.hardware.mqgateway.WireColor
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class UniqueWiresValidatorGatewayValidator : GatewayValidator {
-
   override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     LOGGER.debug { "Validating that connectors use unique wires among all devices" }
 
@@ -31,9 +30,8 @@ class UniqueWiresValidatorGatewayValidator : GatewayValidator {
   data class MqGatewayWiresNotUnique(
     val portNumber: Int,
     val wireColor: WireColor,
-    private val connectorsOnDevices: List<Pair<String, String>>
+    private val connectorsOnDevices: List<Pair<String, String>>,
   ) : ValidationFailureReason() {
-
     override fun getDescription(): String {
       val connectorsListString = connectorsOnDevices.joinToString(", ") { "<deviceId: ${it.first}, connector: ${it.second}>" }
       return "Configuration contains the same portNumber and wireColor ($portNumber, $wireColor) on the following connectors: $connectorsListString"

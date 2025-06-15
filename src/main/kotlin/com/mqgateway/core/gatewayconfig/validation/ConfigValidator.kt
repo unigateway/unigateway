@@ -2,7 +2,7 @@ package com.mqgateway.core.gatewayconfig.validation
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -10,7 +10,6 @@ class ConfigValidator(
   private val jsonSchemaValidator: JsonSchemaValidator,
   private val validators: List<GatewayValidator>,
 ) {
-
   fun validateGateway(gatewayConfiguration: GatewayConfiguration): ValidationResult {
     val validationFailureReasons = validators.flatMap { it.validate(gatewayConfiguration) }
 

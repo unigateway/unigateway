@@ -4,7 +4,6 @@ import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 
 class UniqueDeviceIdsValidator : GatewayValidator {
-
   override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     return gatewayConfiguration.devices
       .groupBy { device -> device.id }

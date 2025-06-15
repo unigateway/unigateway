@@ -15,7 +15,6 @@ import jakarta.inject.Singleton
 @Factory
 @Requires(property = "gateway.mqtt.enabled", value = "true")
 class HomieFactory {
-
   @Singleton
   fun mqttClientFactory(mqttProperties: MqttProperties) =
     HiveMqttClientFactory(mqttProperties.hostname, mqttProperties.port, mqttProperties.username, mqttProperties.password)
@@ -37,11 +36,11 @@ class HomieFactory {
     mqttConnectionListeners: List<HomieDevice.MqttConnectionListener>,
     gatewayApplicationProperties: GatewayApplicationProperties,
     gatewaySystemProperties: GatewaySystemProperties,
-    deviceRegistry: DeviceRegistry
+    deviceRegistry: DeviceRegistry,
   ): HomieDevice {
-
-    val homieDevice = HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)
-      .toHomieDevice(deviceRegistry, gatewaySystemProperties.networkAdapter)
+    val homieDevice =
+      HomieDeviceFactory(mqttClientFactory, homieReceiver, gatewayApplicationProperties.appVersion)
+        .toHomieDevice(deviceRegistry, gatewaySystemProperties.networkAdapter)
 
     mqttConnectionListeners.forEach { listener ->
       homieDevice.addMqttConnectedListener(listener)
@@ -54,10 +53,7 @@ class HomieFactory {
   fun homieReceiver(deviceRegistry: DeviceRegistry) = GatewayHomieReceiver(deviceRegistry)
 
   @Singleton
-  fun gatewayHomieUpdateListener(
-    homieDevice: HomieDevice
-  ): GatewayHomieUpdateListener {
-
+  fun gatewayHomieUpdateListener(homieDevice: HomieDevice): GatewayHomieUpdateListener {
     return GatewayHomieUpdateListener(homieDevice)
   }
 

@@ -8,12 +8,12 @@ import java.util.Optional
 
 @Controller("/ui")
 class FrontendClientForwardController(private val environment: Environment) {
-
   /**
    * Forwards any unmapped paths (except those containing a period) to the client {@code index.html}.
    * @return forward to client {@code index.html}.
    */
   @Get("/{path:[^\\.]*}")
+  @Suppress("UNUSED_PARAMETER")
   fun forward(path: String): Optional<StreamedFile> {
     return environment.getResource("classpath:webapp/index.html").map { StreamedFile(it) }
   }

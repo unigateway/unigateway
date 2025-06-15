@@ -5,7 +5,6 @@ import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import kotlin.reflect.KClass
 
 class RaspberryPiHardwareFactory(platformConfiguration: Map<String, *>) : HardwareInterfaceFactory<RaspberryPiConnector> {
-
   private val platformConfiguration = RaspberryPiPlatformConfiguration.create(platformConfiguration)
 
   override fun hardwareInputOutputProvider(): RaspberryPiInputOutputProvider {

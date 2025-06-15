@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped
 
 abstract class HomeAssistantComponent(
   @JsonIgnore val componentType: HomeAssistantComponentType,
-  @field:JsonUnwrapped val properties: HomeAssistantComponentBasicProperties
+  @field:JsonUnwrapped val properties: HomeAssistantComponentBasicProperties,
 ) {
   protected fun uniqueId() = properties.uniqueId()
 }
@@ -28,7 +28,7 @@ data class HomeAssistantDevice(
   @field:JsonProperty("model") val model: String? = null,
   @field:JsonProperty("name") val name: String? = null,
   @field:JsonProperty("sw_version") val firmwareVersion: String? = null,
-  @field:JsonProperty("via_device") val viaDevice: String? = null
+  @field:JsonProperty("via_device") val viaDevice: String? = null,
 )
 
 enum class HomeAssistantComponentType(val value: String) {
@@ -46,9 +46,10 @@ data class HomeAssistantLight(
   @field:JsonProperty("command_topic") val commandTopic: String,
   @field:JsonProperty("retain") val retain: Boolean,
   @field:JsonProperty("payload_on") val payloadOn: String,
-  @field:JsonProperty("payload_off") val payloadOff: String
+  @field:JsonProperty("payload_off") val payloadOff: String,
 ) : HomeAssistantComponent(HomeAssistantComponentType.LIGHT, basicProperties) {
-  @field:JsonProperty("unique_id") val uniqueId: String = uniqueId()
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = uniqueId()
 }
 
 data class HomeAssistantSwitch(
@@ -58,15 +59,19 @@ data class HomeAssistantSwitch(
   @field:JsonProperty("retain") val retain: Boolean,
   @field:JsonProperty("payload_on") val payloadOn: String,
   @field:JsonProperty("payload_off") val payloadOff: String,
-  @field:JsonIgnore val deviceClass: DeviceClass
+  @field:JsonIgnore val deviceClass: DeviceClass,
 ) : HomeAssistantComponent(HomeAssistantComponentType.SWITCH, basicProperties) {
-  @field:JsonProperty("unique_id") val uniqueId: String = uniqueId()
-  @field:JsonProperty("device_class") val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = uniqueId()
+
+  @field:JsonProperty("device_class")
+  val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
 
   enum class DeviceClass(val value: String) {
     NONE("None"),
     OUTLET("outlet"),
-    SWITCH("switch");
+    SWITCH("switch"),
+    ;
 
     companion object {
       fun fromValue(value: String): DeviceClass? {
@@ -81,11 +86,13 @@ data class HomeAssistantBinarySensor(
   @field:JsonProperty("state_topic") val stateTopic: String,
   @field:JsonProperty("payload_on") val payloadOn: String,
   @field:JsonProperty("payload_off") val payloadOff: String,
-  @field:JsonIgnore val deviceClass: DeviceClass
+  @field:JsonIgnore val deviceClass: DeviceClass,
 ) : HomeAssistantComponent(HomeAssistantComponentType.BINARY_SENSOR, basicProperties) {
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = "${properties.nodeId}_${properties.objectId}"
 
-  @field:JsonProperty("unique_id") val uniqueId: String = "${properties.nodeId}_${properties.objectId}"
-  @field:JsonProperty("device_class") val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
+  @field:JsonProperty("device_class")
+  val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
 
   enum class DeviceClass(val value: String) {
     NONE("None"),
@@ -116,7 +123,8 @@ data class HomeAssistantBinarySensor(
     TAMPER("tamper"),
     UPDATE("update"),
     VIBRATION("vibration"),
-    WINDOW("window");
+    WINDOW("window"),
+    ;
 
     companion object {
       fun fromValue(value: String): DeviceClass? {
@@ -133,11 +141,13 @@ data class HomeAssistantSensor(
   @field:JsonProperty("payload_not_available") val payloadNotAvailable: String? = null,
   @field:JsonIgnore val deviceClass: DeviceClass,
   @field:JsonProperty("state_topic") val stateTopic: String,
-  @field:JsonProperty("unit_of_measurement") val unitOfMeasurement: String? = null
+  @field:JsonProperty("unit_of_measurement") val unitOfMeasurement: String? = null,
 ) : HomeAssistantComponent(HomeAssistantComponentType.SENSOR, basicProperties) {
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = "${properties.nodeId}_${properties.objectId}"
 
-  @field:JsonProperty("unique_id") val uniqueId: String = "${properties.nodeId}_${properties.objectId}"
-  @field:JsonProperty("device_class") val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
+  @field:JsonProperty("device_class")
+  val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.value else null
 
   enum class DeviceClass(val value: String) {
     NONE("None"),
@@ -189,7 +199,8 @@ data class HomeAssistantSensor(
     VOLUME_STORAGE("volume_storage"),
     WATER("water"),
     WEIGHT("weight"),
-    WIND_SPEED("wind_speed");
+    WIND_SPEED("wind_speed"),
+    ;
 
     override fun toString(): String {
       return value
@@ -202,9 +213,8 @@ data class HomeAssistantTrigger(
   @field:JsonProperty("topic") val topic: String,
   @field:JsonProperty("payload") val payload: String,
   @field:JsonProperty("type") val type: TriggerType,
-  @field:JsonProperty("subtype") val subtype: String
+  @field:JsonProperty("subtype") val subtype: String,
 ) : HomeAssistantComponent(HomeAssistantComponentType.TRIGGER, basicProperties) {
-
   @JsonProperty("automation_type")
   val automationType = "trigger"
 
@@ -236,12 +246,13 @@ data class HomeAssistantCover(
   @field:JsonProperty("state_opening") val stateOpening: String?,
   @field:JsonProperty("state_closing") val stateClosing: String?,
   @field:JsonProperty("state_stopped") val stateStopped: String?,
-  @field:JsonProperty("retain") val retain: Boolean
-
+  @field:JsonProperty("retain") val retain: Boolean,
 ) : HomeAssistantComponent(HomeAssistantComponentType.COVER, basicProperties) {
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = uniqueId()
 
-  @field:JsonProperty("unique_id") val uniqueId: String = uniqueId()
-  @field:JsonProperty("device_class") val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.name else null
+  @field:JsonProperty("device_class")
+  val deviceClassOutput: String? = if (deviceClass != DeviceClass.NONE) deviceClass.name else null
 
   enum class DeviceClass {
     NONE,
@@ -254,6 +265,6 @@ data class HomeAssistantCover(
     GATE,
     SHADE,
     SHUTTER,
-    WINDOW
+    WINDOW,
   }
 }

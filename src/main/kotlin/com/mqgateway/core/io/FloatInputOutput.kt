@@ -6,6 +6,7 @@ package com.mqgateway.core.io
  */
 interface FloatInput {
   fun addListener(listener: FloatValueListener)
+
   fun getValue(): Float
 }
 

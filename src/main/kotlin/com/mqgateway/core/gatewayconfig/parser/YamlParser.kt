@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 
 class YamlParser(private val objectMapper: ObjectMapper) {
-
   fun toJsonNode(byteArray: ByteArray): JsonNode {
     return objectMapper.readTree(byteArray)
   }

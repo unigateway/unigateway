@@ -1,7 +1,6 @@
 package com.mqgateway.homie
 
 class MqttStatusIndicator : HomieDevice.MqttConnectionListener {
-
   var isConnected = false
     private set
 

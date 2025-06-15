@@ -14,11 +14,14 @@ interface BinaryOutput {
  */
 interface BinaryInput {
   fun addListener(listener: BinaryStateListener)
+
   fun getState(): BinaryState
 }
 
 enum class BinaryState {
-  HIGH, LOW;
+  HIGH,
+  LOW,
+  ;
 
   /**
    * @return inverted state, i.e. HIGH to LOW, LOW to HIGH

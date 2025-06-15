@@ -3,11 +3,10 @@ package com.mqgateway.core.hardware.mqgateway
 data class MqGatewayPlatformConfiguration(
   val expander: ExpanderConfiguration,
   val components: ComponentsConfiguration,
-  val defaultDebounceMs: Long = 50
+  val defaultDebounceMs: Long = 50,
 ) {
-
   data class ExpanderConfiguration(
-    val enabled: Boolean = false
+    val enabled: Boolean = false,
   ) {
     fun getMcp23017DefaultPorts(): List<Int> {
       return if (enabled) {
@@ -19,14 +18,12 @@ data class MqGatewayPlatformConfiguration(
   }
 
   data class ComponentsConfiguration(
-    val mcp23017: Mcp23017Configuration
+    val mcp23017: Mcp23017Configuration,
   ) {
-
     data class Mcp23017Configuration(
       private val expander: ExpanderConfiguration,
-      private val ports: List<Int>? = null
+      private val ports: List<Int>? = null,
     ) {
-
       fun getPorts(): List<Int> = ports ?: expander.getMcp23017DefaultPorts()
     }
   }

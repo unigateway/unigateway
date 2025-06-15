@@ -3,7 +3,7 @@ package com.mqgateway.core.device.gate
 import com.mqgateway.core.device.DevicePropertyType.STATE
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.reedswitch.ReedSwitchDevice
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.Locale
 
 private val LOGGER = KotlinLogging.logger {}
@@ -16,12 +16,16 @@ class ThreeButtonsGateDevice(
   private val closeButton: EmulatedSwitchButtonDevice,
   private val openReedSwitch: ReedSwitchDevice?,
   private val closedReedSwitch: ReedSwitchDevice?,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) : GateDevice(
-  id, name, config
-) {
-
-  override fun initProperty(propertyId: String, value: String) {
+    id,
+    name,
+    config,
+  ) {
+  override fun initProperty(
+    propertyId: String,
+    value: String,
+  ) {
     if (propertyId != STATE.toString()) {
       LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
       return
@@ -66,7 +70,10 @@ class ThreeButtonsGateDevice(
     }
   }
 
-  override fun change(propertyId: String, newValue: String) {
+  override fun change(
+    propertyId: String,
+    newValue: String,
+  ) {
     if (propertyId != STATE.toString()) {
       LOGGER.error { "Unexpected property change received for device '$id': $propertyId" }
       return
@@ -100,6 +107,7 @@ class ThreeButtonsGateDevice(
   }
 
   private fun hasClosedReedSwitch() = closedReedSwitch != null
+
   private fun hasOpenReedSwitch() = openReedSwitch != null
 
   companion object {

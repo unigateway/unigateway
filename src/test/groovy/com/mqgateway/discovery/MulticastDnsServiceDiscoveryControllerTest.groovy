@@ -1,6 +1,7 @@
 package com.mqgateway.discovery
 
 import io.micronaut.context.annotation.Property
+import io.micronaut.core.type.Argument
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
@@ -38,7 +39,7 @@ class MulticastDnsServiceDiscoveryControllerTest extends Specification {
 
     when:
     HttpRequest request = HttpRequest.GET("/discovery")
-    def response = client.toBlocking().exchange(request, List<Map>)
+    def response = client.toBlocking().exchange(request, Argument.listOf(Map))
 
     then:
     response.status == HttpStatus.OK

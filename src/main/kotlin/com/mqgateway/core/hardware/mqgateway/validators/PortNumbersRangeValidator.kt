@@ -5,12 +5,11 @@ import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.gatewayconfig.validation.ValidationFailureReason
 import com.mqgateway.core.hardware.mqgateway.MqGatewayConnector
 import com.mqgateway.core.hardware.mqgateway.MqGatewayPlatformConfiguration
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class PortNumbersRangeValidator(private val platformConfiguration: MqGatewayPlatformConfiguration) : GatewayValidator {
-
   override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     LOGGER.debug { "Validating that connectors port numbers are in range" }
 
@@ -33,9 +32,8 @@ class PortNumbersRangeValidator(private val platformConfiguration: MqGatewayPlat
     val deviceId: String,
     val connectorName: String,
     val portNumber: Int,
-    val expanderEnabled: Boolean
+    val expanderEnabled: Boolean,
   ) : ValidationFailureReason() {
-
     override fun getDescription(): String {
       val expanderDisabledInfo = if (!expanderEnabled) " It may be because expander is disabled in system configuration." else ""
       return "Device '$deviceId' has port number '$portNumber' which is out of range [1, ${maxPortNumber(expanderEnabled)}]." + expanderDisabledInfo

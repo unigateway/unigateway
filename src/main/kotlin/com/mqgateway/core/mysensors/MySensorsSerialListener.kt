@@ -5,7 +5,7 @@ import com.mqgateway.core.io.BinaryStateChangeEvent
 import com.mqgateway.core.io.BinaryStateListener
 import com.mqgateway.core.io.FloatValueChangeEvent
 import com.mqgateway.core.io.FloatValueListener
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -14,7 +14,6 @@ interface MySensorsSerialListener {
 }
 
 class MySensorMessageToFloatValueListener(private val floatListener: FloatValueListener, private val type: Type) : MySensorsSerialListener {
-
   override fun onMessageReceived(message: Message) {
     if (message.type == type) {
       floatListener.handle(MySensorFloatValueChangeEvent(message))
@@ -25,14 +24,12 @@ class MySensorMessageToFloatValueListener(private val floatListener: FloatValueL
 }
 
 class MySensorFloatValueChangeEvent(private val message: Message) : FloatValueChangeEvent {
-
   override fun newValue(): Float {
     return MySensorPayloadConverter.parseFloat(message.payload)
   }
 }
 
 class MySensorMessageToBinaryValueListener(private val binaryListener: BinaryStateListener, private val type: Type) : MySensorsSerialListener {
-
   override fun onMessageReceived(message: Message) {
     if (message.type == type) {
       binaryListener.handle(MySensorBinaryValueChangeEvent(message))

@@ -7,7 +7,6 @@ import com.mqgateway.core.io.FloatValueListener
 import com.mqgateway.core.io.provider.MySensorsConnector
 
 class MySensorFloatInput(private val serialConnection: MySensorsSerialConnection, private val connector: MySensorsConnector) : FloatInput {
-
   private val valueListener = LastFloatValueListener()
 
   init {
@@ -26,13 +25,12 @@ class MySensorFloatInput(private val serialConnection: MySensorsSerialConnection
 class MySensorFloatOutput(private val serialConnection: MySensorsSerialConnection, private val connector: MySensorsConnector) : FloatOutput {
   override fun setValue(newValue: Float) {
     serialConnection.publishMessage(
-      Message(connector.nodeId, connector.sensorId, Command.SET, false, connector.type, MySensorPayloadConverter.serializeFloat(newValue))
+      Message(connector.nodeId, connector.sensorId, Command.SET, false, connector.type, MySensorPayloadConverter.serializeFloat(newValue)),
     )
   }
 }
 
 class LastFloatValueListener : FloatValueListener {
-
   var value: Float = 0f
 
   override fun handle(event: FloatValueChangeEvent) {

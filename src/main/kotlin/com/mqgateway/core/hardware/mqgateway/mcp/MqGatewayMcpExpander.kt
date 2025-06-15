@@ -7,7 +7,7 @@ import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.io.BinaryState.HIGH
 import com.mqgateway.core.io.BinaryState.LOW
 import com.mqgateway.core.io.BinaryStateListener
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.Clock
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
@@ -18,9 +18,8 @@ private val LOGGER = KotlinLogging.logger {}
 class MqGatewayMcpExpander(
   private val mcp23017: MCP23017,
   private val clock: Clock = Clock.systemDefaultZone(),
-  private val threadSleeper: ThreadSleeper = ThreadSleeper()
+  private val threadSleeper: ThreadSleeper = ThreadSleeper(),
 ) {
-
   private val listeners: MutableMap<Int, MutableList<InputPinStateListener>> = mutableMapOf()
   private val isStarted: AtomicBoolean = AtomicBoolean(false)
   private var runCheckingThread = true
@@ -34,7 +33,10 @@ class MqGatewayMcpExpander(
     return readState().getState(gpioNumber)
   }
 
-  fun setPinState(gpioNumber: Int, state: BinaryState) {
+  fun setPinState(
+    gpioNumber: Int,
+    state: BinaryState,
+  ) {
     LOGGER.debug { "Setting pin $gpioNumber state to $state" }
     if (usedPins[gpioNumber] == GpioType.INPUT) {
       throw IncorrectGpioTypeException("Cannot set state to INPUT pin")
@@ -70,18 +72,25 @@ class MqGatewayMcpExpander(
     runCheckingThread = false
   }
 
-  fun addListener(gpioNumber: Int, debounceMs: Long, listener: BinaryStateListener) {
+  fun addListener(
+    gpioNumber: Int,
+    debounceMs: Long,
+    listener: BinaryStateListener,
+  ) {
     LOGGER.info { "Listener set for ${mcp23017.name} pin $gpioNumber with debounceMs $debounceMs" }
     listeners.getOrPut(gpioNumber) { mutableListOf() }.add(InputPinStateListener(debounceMs, PIN_INITIAL_STATE, listener))
   }
 
-  fun getInputPin(gpioNumber: Int, debounceMs: Long): MqGatewayMcpExpanderInputPin {
+  fun getInputPin(
+    gpioNumber: Int,
+    debounceMs: Long,
+  ): MqGatewayMcpExpanderInputPin {
     usedPins[gpioNumber]?.let { throw McpExpanderPinAlreadyInUseException(gpioNumber, it) }
     mcp23017.createDigitalInputDevice(
       UUID.randomUUID().toString(),
       mcp23017.boardPinInfo.getByGpioNumberOrThrow(gpioNumber),
       GpioPullUpDown.PULL_UP,
-      GpioEventTrigger.NONE
+      GpioEventTrigger.NONE,
     )
 
     usedPins[gpioNumber] = GpioType.INPUT
@@ -94,7 +103,7 @@ class MqGatewayMcpExpander(
     mcp23017.createDigitalOutputDevice(
       UUID.randomUUID().toString(),
       mcp23017.boardPinInfo.getByGpioNumberOrThrow(gpioNumber),
-      currentValue
+      currentValue,
     )
 
     usedPins[gpioNumber] = GpioType.OUTPUT
@@ -115,7 +124,10 @@ class MqGatewayMcpExpander(
     }
   }
 
-  private fun getBit(byte: Byte, position: Int): BinaryState {
+  private fun getBit(
+    byte: Byte,
+    position: Int,
+  ): BinaryState {
     return if ((byte.toInt() shl position.inv()) < 0) {
       HIGH
     } else {
@@ -152,7 +164,8 @@ open class ThreadSleeper {
 }
 
 enum class GpioType {
-  INPUT, OUTPUT
+  INPUT,
+  OUTPUT,
 }
 
 class McpExpanderPinAlreadyInUseException(val gpioNumber: Int, val gpioType: GpioType) :

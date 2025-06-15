@@ -6,7 +6,6 @@ import com.mqgateway.core.io.FloatValueChangeEvent
 import com.mqgateway.core.io.FloatValueListener
 
 class SimulatedFloatInput(initialValue: Float) : FloatInput {
-
   private var value: Float = initialValue
   private val listeners: MutableList<FloatValueListener> = mutableListOf()
 
@@ -24,7 +23,6 @@ class SimulatedFloatInput(initialValue: Float) : FloatInput {
 }
 
 class SimulatedFloatOutput : FloatOutput {
-
   private var value: Float? = null
 
   override fun setValue(newValue: Float) {

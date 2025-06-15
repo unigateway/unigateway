@@ -9,9 +9,8 @@ import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
 class MqGatewayInputOutputProvider(
   private val mcpExpanders: MqGatewayMcpExpanders,
-  private val platformConfiguration: MqGatewayPlatformConfiguration
+  private val platformConfiguration: MqGatewayPlatformConfiguration,
 ) : HardwareInputOutputProvider<MqGatewayConnector> {
-
   override fun getBinaryInput(connector: MqGatewayConnector): BinaryInput {
     return mcpExpanders.getInputPin(connector.portNumber, connector.wireColor, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
   }

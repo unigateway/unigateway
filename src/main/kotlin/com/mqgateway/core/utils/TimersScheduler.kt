@@ -1,12 +1,11 @@
 package com.mqgateway.core.utils
 
 import io.micronaut.scheduling.annotation.Scheduled
-import java.time.LocalDateTime
 import jakarta.inject.Singleton
+import java.time.LocalDateTime
 
 @Singleton
 class TimersScheduler {
-
   private val timers: MutableSet<SchedulableTimer> = mutableSetOf()
 
   fun registerTimer(timer: SchedulableTimer) {

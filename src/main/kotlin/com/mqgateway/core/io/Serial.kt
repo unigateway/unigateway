@@ -1,8 +1,13 @@
 package com.mqgateway.core.io
 
 interface Serial {
-  fun open(portDescriptor: String, baudRate: Int)
+  fun open(
+    portDescriptor: String,
+    baudRate: Int,
+  )
+
   fun addListener(serialDataEventListener: SerialDataEventListener)
+
   fun write(message: String)
 }
 

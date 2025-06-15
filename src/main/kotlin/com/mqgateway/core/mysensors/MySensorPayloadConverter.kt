@@ -3,7 +3,6 @@ package com.mqgateway.core.mysensors
 import com.mqgateway.core.io.BinaryState
 
 object MySensorPayloadConverter {
-
   @JvmStatic
   fun parseFloat(payload: String): Float {
     return payload.toFloat()

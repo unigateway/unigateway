@@ -4,12 +4,11 @@ import com.mqgateway.core.gatewayconfig.GatewayConfiguration
 import com.mqgateway.core.gatewayconfig.validation.GatewayValidator
 import com.mqgateway.core.gatewayconfig.validation.ValidationFailureReason
 import com.mqgateway.core.hardware.raspberrypi.RaspberryPiConnector
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class UniqueGpioNumbersValidatorGatewayValidator : GatewayValidator {
-
   override fun validate(gatewayConfiguration: GatewayConfiguration): List<ValidationFailureReason> {
     LOGGER.debug { "Validating that gpio numbers are unique in all devices" }
 
@@ -25,7 +24,6 @@ class UniqueGpioNumbersValidatorGatewayValidator : GatewayValidator {
   }
 
   data class GpioNumberNotUnique(private val gpio: Int, private val connectorsOnDevices: List<Pair<String, String>>) : ValidationFailureReason() {
-
     override fun getDescription(): String {
       return "Configuration contains the same gpio number '$gpio' on the following connectors: ${connectorsOnDevices
         .map { "<deviceId: ${it.first}, connector: ${it.second}>" }}"

@@ -6,24 +6,57 @@ data class DeviceProperty(
   val format: String?,
   val settable: Boolean = false,
   val retained: Boolean = false,
-  val unit: DataUnit = DataUnit.NONE
+  val unit: DataUnit = DataUnit.NONE,
 ) {
-
   fun name() = type.toString()
+
   override fun toString() = name()
 }
 
 enum class DevicePropertyType {
-  STATE, POWER, TEMPERATURE, HUMIDITY, PRESSURE, UPTIME, LAST_PING, TIMER, POSITION, MEMORY, IP_ADDRESS, AVAILABILITY;
+  STATE,
+  POWER,
+  TEMPERATURE,
+  HUMIDITY,
+  PRESSURE,
+  UPTIME,
+  LAST_PING,
+  TIMER,
+  POSITION,
+  MEMORY,
+  IP_ADDRESS,
+  AVAILABILITY,
+  ;
 
   override fun toString(): String = this.name.lowercase()
 }
 
 enum class DataType {
-  INTEGER, FLOAT, BOOLEAN, STRING, ENUM, COLOR, DATETIME
+  INTEGER,
+  FLOAT,
+  BOOLEAN,
+  STRING,
+  ENUM,
+  COLOR,
+  DATETIME,
 }
 
 enum class DataUnit(val value: String?) {
-  CELSIUS("°C"), FAHRENHEIT("°F"), DEGREE("°"), LITER("L"), GALON("gal"), VOLTS("V"), WATT("W"), AMPERE("A"), PERCENT("%"),
-  METER("m"), FEET("ft"), PASCAL("Pa"), PSI("psi"), COUNT("#"), SECOND("s"), BYTES("B"), NONE(null)
+  CELSIUS("°C"),
+  FAHRENHEIT("°F"),
+  DEGREE("°"),
+  LITER("L"),
+  GALON("gal"),
+  VOLTS("V"),
+  WATT("W"),
+  AMPERE("A"),
+  PERCENT("%"),
+  METER("m"),
+  FEET("ft"),
+  PASCAL("Pa"),
+  PSI("psi"),
+  COUNT("#"),
+  SECOND("s"),
+  BYTES("B"),
+  NONE(null),
 }

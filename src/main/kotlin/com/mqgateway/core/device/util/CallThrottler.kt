@@ -4,7 +4,6 @@ import java.time.Clock
 import java.time.Instant
 
 class CallThrottler(private val minIntervalMillis: Long) {
-
   private var clock = Clock.systemDefaultZone()
   private var lastUpdateTimestamp: Instant = Instant.MIN
 

@@ -1,6 +1,6 @@
 package com.mqgateway.homie.mqtt
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
@@ -9,8 +9,10 @@ import org.eclipse.paho.client.mqttv3.MqttClient as PahoClient
 private val LOGGER = KotlinLogging.logger {}
 
 class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
-
-  override fun connect(willMessage: MqttMessage, cleanSession: Boolean) {
+  override fun connect(
+    willMessage: MqttMessage,
+    cleanSession: Boolean,
+  ) {
     val options = MqttConnectOptions()
     options.maxInflight = 100
     options.isCleanSession = cleanSession
@@ -53,7 +55,10 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
     mqttClient.disconnect()
   }
 
-  override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
+  override fun subscribeAsync(
+    topicFilter: String,
+    callback: (MqttMessage) -> Unit,
+  ) {
     mqttClient.subscribe(topicFilter) { topic, message ->
       LOGGER.info { "Message received on $topic ${String(message.payload)} (qos: ${message.qos})" }
       callback(MqttMessage(topic, String(message.payload), message.qos, message.isRetained))
@@ -64,16 +69,21 @@ class PahoMqttClient(private val mqttClient: PahoClient) : MqttClient {
 
 class PahoMqttCallback(
   private val onConnectComplete: (reconnected: Boolean) -> Unit = {},
-  private val onConnectionLost: (cause: Throwable?) -> Unit = {}
+  private val onConnectionLost: (cause: Throwable?) -> Unit = {},
 ) : MqttCallbackExtended {
-
-  override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+  override fun connectComplete(
+    reconnect: Boolean,
+    serverURI: String?,
+  ) {
     LOGGER.debug { "Connect complete. Calling onConnectComplete." }
     onConnectComplete(reconnect)
     LOGGER.debug { "onConnectComplete finished" }
   }
 
-  override fun messageArrived(topic: String?, message: org.eclipse.paho.client.mqttv3.MqttMessage?) {
+  override fun messageArrived(
+    topic: String?,
+    message: org.eclipse.paho.client.mqttv3.MqttMessage?,
+  ) {
     // not needed
   }
 

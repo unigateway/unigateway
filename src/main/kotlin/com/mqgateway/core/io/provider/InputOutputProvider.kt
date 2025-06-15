@@ -12,9 +12,8 @@ import com.mqgateway.core.io.FloatOutput
  */
 class InputOutputProvider<T : HardwareConnector>(
   private val hardwareInputOutputProvider: HardwareInputOutputProvider<T>,
-  private val mySensorsInputOutputProvider: MySensorsInputOutputProvider
+  private val mySensorsInputOutputProvider: MySensorsInputOutputProvider,
 ) {
-
   @Suppress("UNCHECKED_CAST")
   fun getBinaryInput(connector: Connector): BinaryInput {
     return when (connector) {

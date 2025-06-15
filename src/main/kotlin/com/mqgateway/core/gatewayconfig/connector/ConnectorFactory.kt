@@ -11,9 +11,8 @@ import com.mqgateway.core.io.provider.HardwareConnector
  */
 class ConnectorFactory<T : HardwareConnector>(
   private val mySensorsConnectorFactory: MySensorsConnectorFactory,
-  private val hardwareConnectorFactory: HardwareConnectorFactory<T>
+  private val hardwareConnectorFactory: HardwareConnectorFactory<T>,
 ) {
-
   /**
    * @param config connector config read from device config section
    */
@@ -30,6 +29,7 @@ class ConnectorFactory<T : HardwareConnector>(
   }
 
   private enum class Source {
-    HARDWARE, MYSENSORS
+    HARDWARE,
+    MYSENSORS,
   }
 }

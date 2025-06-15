@@ -12,13 +12,15 @@ import com.mqgateway.core.mysensors.MySensorsSerialConnection
 
 interface MySensorsInputOutputProvider {
   fun getBinaryInput(connector: MySensorsConnector): BinaryInput
+
   fun getBinaryOutput(connector: MySensorsConnector): BinaryOutput
+
   fun getFloatInput(connector: MySensorsConnector): FloatInput
+
   fun getFloatOutput(connector: MySensorsConnector): FloatOutput
 }
 
 class DefaultMySensorsInputOutputProvider(private val serialConnection: MySensorsSerialConnection) : MySensorsInputOutputProvider {
-
   override fun getBinaryInput(connector: MySensorsConnector): BinaryInput {
     return MySensorBinaryInput(serialConnection, connector)
   }

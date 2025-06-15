@@ -5,7 +5,6 @@ import com.mqgateway.core.mysensors.SetReqType
 import com.mqgateway.core.mysensors.Type
 
 class MySensorsConnectorFactory {
-
   /**
    * @param config connector config read from device config section
    */
@@ -13,7 +12,7 @@ class MySensorsConnectorFactory {
     return MySensorsConnector(
       config["nodeId"] as Int,
       config["sensorId"] as Int,
-      parseType(config["type"] as String)
+      parseType(config["type"] as String),
     )
   }
 

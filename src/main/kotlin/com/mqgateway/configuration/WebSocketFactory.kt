@@ -12,7 +12,6 @@ import jakarta.inject.Singleton
 @Factory
 @Requires(property = "gateway.websocket.enabled", value = "true")
 internal class WebSocketFactory {
-
   @Singleton
   fun logsWebSocketPublisher(broadcaster: WebSocketBroadcaster): LogsWebSocketPublisher {
     return LogsWebSocketPublisher(broadcaster)

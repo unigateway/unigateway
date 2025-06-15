@@ -4,25 +4,28 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mqgateway.configuration.GatewaySystemProperties
 import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.SchemaValidatorsConfig
 import com.networknt.schema.SpecVersion
 import com.networknt.schema.ValidationMessage
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class JsonSchemaValidator(
   private val yamlObjectMapper: ObjectMapper,
-  private val gatewaySystemProperties: GatewaySystemProperties
+  private val gatewaySystemProperties: GatewaySystemProperties,
 ) {
   fun validate(gatewayJsonNode: JsonNode): Set<ValidationMessage> {
     LOGGER.trace { "Reading JSON schema from file" }
     val schemaNode = yamlObjectMapper.readTree(javaClass.getResourceAsStream(JSON_SCHEMA_RESOURCE_NAME))
 
-    val factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
-    val schemaValidatorsConfig = SchemaValidatorsConfig()
-    schemaValidatorsConfig.uriMappings = createConnectorMapping(gatewaySystemProperties.platform)
-    val jsonSchema = factory.getSchema(schemaNode, schemaValidatorsConfig)
+    val factory =
+      JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7, { builder: JsonSchemaFactory.Builder ->
+        builder.schemaMappers { schemaMappers ->
+          schemaMappers.mappings(createConnectorMapping(gatewaySystemProperties.platform))
+        }
+      })
+
+    val jsonSchema = factory.getSchema(schemaNode)
 
     LOGGER.trace { "Running validation" }
     return jsonSchema.validate(gatewayJsonNode)

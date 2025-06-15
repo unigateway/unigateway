@@ -7,11 +7,13 @@ import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
 import com.mqgateway.core.io.provider.Connector
 
 class ConnectorDeserializer(
-  private val connectorFactory: ConnectorFactory<*>
+  private val connectorFactory: ConnectorFactory<*>,
 ) : StdDeserializer<Connector>(Connector::class.java) {
-
   @Suppress("UNCHECKED_CAST")
-  override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Connector {
+  override fun deserialize(
+    p: JsonParser,
+    ctxt: DeserializationContext,
+  ): Connector {
     val parsedMap = (p.codec.readValue(p, Map::class.java)) as Map<String, *>
     return connectorFactory.create(parsedMap)
   }

@@ -3,13 +3,16 @@ package com.mqgateway.homie.gateway
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.HomieMqttTopic
 import com.mqgateway.homie.HomieReceiver
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : HomieReceiver {
-
-  override fun initProperty(nodeId: String, propertyId: String, value: String) {
+  override fun initProperty(
+    nodeId: String,
+    propertyId: String,
+    value: String,
+  ) {
     LOGGER.debug { "Initializing property ($propertyId $value)" }
     val gatewayDevice = gatewayDeviceRegistry.getById(nodeId) ?: throw DeviceNotFoundException(nodeId)
     LOGGER.trace { "Device found in registry (${gatewayDevice.id})" }
@@ -17,7 +20,10 @@ class GatewayHomieReceiver(private val gatewayDeviceRegistry: DeviceRegistry) : 
     gatewayDevice.initProperty(propertyId, value)
   }
 
-  override fun propertySet(mqttTopic: String, payload: String) {
+  override fun propertySet(
+    mqttTopic: String,
+    payload: String,
+  ) {
     LOGGER.debug { "Setting property command received from MQTT ($mqttTopic $payload)" }
     val homieTopic = HomieMqttTopic.fromString(mqttTopic)
     val gatewayDevice = gatewayDeviceRegistry.getById(homieTopic.nodeId!!) ?: throw DeviceNotFoundException(homieTopic.nodeId)

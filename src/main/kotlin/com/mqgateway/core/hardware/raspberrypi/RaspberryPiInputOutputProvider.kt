@@ -9,33 +9,36 @@ import com.diozero.api.GpioPullUpDown
 import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
 class RaspberryPiInputOutputProvider(
-  private val platformConfiguration: RaspberryPiPlatformConfiguration
+  private val platformConfiguration: RaspberryPiPlatformConfiguration,
 ) : HardwareInputOutputProvider<RaspberryPiConnector> {
-
   override fun getBinaryInput(connector: RaspberryPiConnector): RaspberryPiDigitalPinInput {
     val pullUpDown = convert(connector.pullUpDown ?: platformConfiguration.defaultPullUpDown)
-    val digitalInputDevice: DigitalInputDevice = DebouncedDigitalInputDevice.Builder
-      .builder(connector.gpio, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
-      .setPullUpDown(pullUpDown)
-      .build()
+    val digitalInputDevice: DigitalInputDevice =
+      DebouncedDigitalInputDevice.Builder
+        .builder(connector.gpio, connector.debounceMs ?: platformConfiguration.defaultDebounceMs)
+        .setPullUpDown(pullUpDown)
+        .build()
     return RaspberryPiDigitalPinInput(digitalInputDevice)
   }
 
   override fun getBinaryOutput(connector: RaspberryPiConnector): RaspberryPiDigitalPinOutput {
-    val digitalOutputDevice = DigitalOutputDevice.Builder.builder(connector.gpio)
-      .build()
+    val digitalOutputDevice =
+      DigitalOutputDevice.Builder.builder(connector.gpio)
+        .build()
     return RaspberryPiDigitalPinOutput(digitalOutputDevice)
   }
 
   override fun getFloatInput(connector: RaspberryPiConnector): RaspberryPiAnalogPinInput {
-    val analogInputDevice = AnalogInputDevice.Builder.builder(connector.gpio)
-      .build()
+    val analogInputDevice =
+      AnalogInputDevice.Builder.builder(connector.gpio)
+        .build()
     return RaspberryPiAnalogPinInput(analogInputDevice)
   }
 
   override fun getFloatOutput(connector: RaspberryPiConnector): RaspberryPiAnalogPinOutput {
-    val analogOutputDevice = AnalogOutputDevice.Builder.builder(connector.gpio)
-      .build()
+    val analogOutputDevice =
+      AnalogOutputDevice.Builder.builder(connector.gpio)
+        .build()
     return RaspberryPiAnalogPinOutput(analogOutputDevice)
   }
 

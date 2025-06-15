@@ -7,12 +7,14 @@ import com.mqgateway.core.gatewayconfig.ConnectorDeserializer
 import com.mqgateway.core.gatewayconfig.connector.ConnectorFactory
 import com.mqgateway.core.io.provider.Connector
 
-val VERSION: Version = VersionUtil.parseVersion(
-  "1.0.0", "io.unigateway", "unigateway"
-)
+val VERSION: Version =
+  VersionUtil.parseVersion(
+    "1.0.0",
+    "io.unigateway",
+    "unigateway",
+  )
 
 class ConfigurationJacksonModule(connectorFactory: ConnectorFactory<*>) : SimpleModule("UniGatewayModule", VERSION) {
-
   init {
     addDeserializer(Connector::class.java, ConnectorDeserializer(connectorFactory))
   }

@@ -8,11 +8,16 @@ data class Message(
   val command: Command,
   val ack: Boolean,
   val type: Type,
-  val payload: String
+  val payload: String,
 )
 
 enum class Command(val id: Byte) {
-  PRESENTATION(0), SET(1), REQ(2), INTERNAL(3), STREAM(4);
+  PRESENTATION(0),
+  SET(1),
+  REQ(2),
+  INTERNAL(3),
+  STREAM(4),
+  ;
 
   companion object {
     fun byId(id: Byte): Command? {
@@ -66,7 +71,8 @@ enum class PresentationType(private val id: Byte) : Type {
   S_INFO(36),
   S_GAS(37),
   S_GPS(38),
-  S_WATER_QUALITY(39);
+  S_WATER_QUALITY(39),
+  ;
 
   override fun getId() = id
 
@@ -135,7 +141,8 @@ enum class SetReqType(private val id: Byte) : Type {
   V_EC(53),
   V_VAR(54),
   V_VA(55),
-  V_POWER_FACTOR(56);
+  V_POWER_FACTOR(56),
+  ;
 
   override fun getId() = id
 
@@ -181,7 +188,8 @@ enum class InternalType(private val id: Byte) : Type {
   I_SIGNAL_REPORT_REVERSE(30),
   I_SIGNAL_REPORT_RESPONSE(31),
   I_PRE_SLEEP_NOTIFICATION(32),
-  I_POST_SLEEP_NOTIFICATION(33);
+  I_POST_SLEEP_NOTIFICATION(33),
+  ;
 
   override fun getId() = id
 
@@ -194,7 +202,8 @@ enum class InternalType(private val id: Byte) : Type {
 
 @Serializable
 enum class StreamType : Type {
-  STREAM;
+  STREAM,
+  ;
 
   override fun getId(): Byte {
     return 0

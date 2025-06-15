@@ -1,17 +1,16 @@
 import com.github.gradle.node.npm.task.NpmTask
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
   groovy
   kotlin("jvm") version libs.versions.kotlin
-  kotlin("kapt") version libs.versions.kotlin
   kotlin("plugin.allopen") version libs.versions.kotlin
   kotlin("plugin.serialization") version libs.versions.kotlin
-  id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
-  id("com.github.johnrengelman.shadow") version "7.1.2"
-  id("pl.allegro.tech.build.axion-release") version "1.14.2"
-  id("io.micronaut.application") version "3.2.1"
+  id("com.google.devtools.ksp") version "1.9.25-1.0.20"
+  id("com.gradleup.shadow") version "8.3.6"
+  id("io.micronaut.minimal.application") version "4.5.3"
+  id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
+  id("pl.allegro.tech.build.axion-release") version "1.18.18"
   id("com.github.node-gradle.node") version "7.1.0"
 }
 
@@ -22,65 +21,62 @@ repositories {
 
 dependencies {
   // Micronaut
+  ksp("io.micronaut:micronaut-http-validation")
+  ksp("io.micronaut.serde:micronaut-serde-processor")
   implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
-  implementation("io.micronaut:micronaut-runtime")
-  implementation("io.micronaut:micronaut-http-server-netty")
+  implementation("io.micronaut.serde:micronaut-serde-jackson")
+  annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
+  implementation("io.micronaut.validation:micronaut-validation")
+  implementation("io.micronaut:micronaut-websocket")
   implementation("io.micronaut:micronaut-http-client")
   implementation("io.micronaut:micronaut-management")
   implementation("io.micronaut.micrometer:micronaut-micrometer-core")
   implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
-  implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
   implementation("io.micronaut.cache:micronaut-cache-caffeine")
 
   // Kotlin
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.3.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3") // need to stay on 1.6.x until kotlin 2.x
 
   // YAML parsing
-  implementation("com.networknt:json-schema-validator:1.0.65")
+  implementation("com.networknt:json-schema-validator:1.5.7")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
   // Logging
-  implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+  implementation("io.github.oshai:kotlin-logging-jvm:6.0.9") // need to stay on 6.x until kotlin 2.x
   implementation("ch.qos.logback:logback-classic")
-  implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+  implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
   // DioZero
   implementation("com.diozero:diozero-core:1.4.1")
 
   // Oshi - Library for SystemInfoProvider
-  implementation("com.github.oshi:oshi-core-java11:6.1.4")
+  implementation("com.github.oshi:oshi-core-java11:6.8.2")
 
   // Serial library for my sensors
   implementation("com.fazecast:jSerialComm:[2.0.0,3.0.0)")
 
   // MQTT
-  implementation("com.hivemq:hivemq-mqtt-client:1.3.0")
-  compileOnly("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2")
+  implementation("com.hivemq:hivemq-mqtt-client:1.3.7")
+  compileOnly("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
 
   // Avahi / ZeroConf / Multicast DNS
-  implementation("org.jmdns:jmdns:3.5.8")
+  implementation("org.jmdns:jmdns:3.6.1")
 
   // Tests
-  testImplementation(enforcedPlatform(libs.micronaut.bom))
-  testImplementation("io.micronaut:micronaut-inject-groovy")
-  testImplementation("org.codehaus.groovy:groovy:3.0.25")
-  testImplementation("org.codehaus.groovy:groovy-json:3.0.25")
-  testImplementation("org.codehaus.groovy:groovy-yaml:3.0.25")
-  testImplementation(platform("org.spockframework:spock-bom:2.0-M5-groovy-3.0"))
-  testImplementation("org.spockframework:spock-core") {
-    exclude(group = "org.codehaus.groovy", module = "groovy-all")
-  }
-  testImplementation("io.micronaut.test:micronaut-test-spock")
-  testImplementation("net.bytebuddy:byte-buddy:1.12.8")
-  testImplementation(platform("org.testcontainers:testcontainers-bom:1.15.3"))
+  testImplementation("org.apache.groovy:groovy-json")
+  testImplementation("org.apache.groovy:groovy-yaml")
+  testImplementation("org.objenesis:objenesis:3.4")
+  testImplementation("net.bytebuddy:byte-buddy:1.17.5")
+  testImplementation(platform("org.testcontainers:testcontainers-bom:1.21.1"))
   testImplementation("org.testcontainers:spock")
+  testImplementation("io.micronaut:micronaut-http-client")
 }
 
 application {
-  mainClass.set("com.mqgateway.ApplicationKt")
+  mainClass = "com.mqgateway.ApplicationKt"
 }
 
 tasks.withType<Test> {
@@ -93,20 +89,7 @@ tasks.withType<Test> {
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_11
-}
-
-tasks {
-  compileKotlin {
-    kotlinOptions {
-      jvmTarget = "11"
-    }
-  }
-  compileTestKotlin {
-    kotlinOptions {
-      jvmTarget = "11"
-    }
-  }
+  sourceCompatibility = JavaVersion.VERSION_21
 }
 
 micronaut {
@@ -119,7 +102,8 @@ micronaut {
   }
 }
 
-tasks.withType<ShadowJar> {
+tasks.shadowJar {
+  dependsOn("copyWebApp")
   mergeServiceFiles()
 }
 
@@ -144,49 +128,30 @@ tasks.processResources {
 }
 
 node {
-  download.set(true)
-  version.set("16.13.1")
-  workDir.set(project.layout.buildDirectory.dir("nodejs").get().asFile)
-  npmWorkDir.set(project.layout.buildDirectory.dir("npm").get().asFile)
-  nodeProjectDir.set(project.layout.projectDirectory.dir("ui").asFile)
-  npmInstallCommand.set("ci")
+  download = true
+  version = "22.16.0"
+  workDir = project.layout.buildDirectory.dir("nodejs").get().asFile
+  npmWorkDir = project.layout.buildDirectory.dir("npm").get().asFile
+  nodeProjectDir = project.layout.projectDirectory.dir("ui").asFile
+  npmInstallCommand = "ci"
 }
 
 tasks.register<NpmTask>("npmBuild") {
+  dependsOn("npmInstall")
   args.set(listOf("run", "build"))
+  environment.put("NODE_OPTIONS", "--openssl-legacy-provider")
 }
 
 tasks.register<Copy>("copyWebApp") {
+  dependsOn("npmBuild")
   from(project.layout.projectDirectory.dir("ui").dir("build"))
   into(project.layout.buildDirectory.get().dir("resources").dir("main").dir("webapp"))
-}
-
-tasks.whenTaskAdded {
-  if (name == "kaptTestKotlin") {
-    dependsOn("copyWebApp")
-  }
 }
 
 tasks.jar {
   dependsOn("copyWebApp")
 }
 
-tasks.named("buildLayers") {
-  dependsOn("copyWebApp")
-}
-
 tasks.compileTestGroovy {
-  dependsOn("copyWebApp")
-}
-
-tasks.named("npmBuild") {
-  dependsOn("npmInstall")
-}
-
-tasks.named("copyWebApp") {
-  dependsOn("npmBuild")
-}
-
-tasks.shadowJar {
   dependsOn("copyWebApp")
 }

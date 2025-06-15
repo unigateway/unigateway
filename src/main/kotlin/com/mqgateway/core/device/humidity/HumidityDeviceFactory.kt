@@ -8,23 +8,26 @@ import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 import com.mqgateway.core.io.provider.InputOutputProvider
 
 class HumidityDeviceFactory(
-  private val ioProvider: InputOutputProvider<*>
+  private val ioProvider: InputOutputProvider<*>,
 ) : DeviceFactory<HumidityDevice> {
-
   override fun deviceType(): DeviceType {
     return DeviceType.HUMIDITY
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): HumidityDevice {
-    val connector = deviceConfiguration.connectors[STATE_CONNECTOR]
-      ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
+  override fun create(
+    deviceConfiguration: DeviceConfiguration,
+    devices: Set<Device>,
+  ): HumidityDevice {
+    val connector =
+      deviceConfiguration.connectors[STATE_CONNECTOR]
+        ?: throw MissingConnectorInDeviceConfigurationException(deviceConfiguration.id, STATE_CONNECTOR)
     val stateInput = ioProvider.getFloatInput(connector)
     return HumidityDevice(
       id = deviceConfiguration.id,
       name = deviceConfiguration.name,
       input = stateInput,
       minUpdateIntervalMillis = deviceConfiguration.config.getOrDefault("minUpdateIntervalMs", "0").toLong(),
-      config = deviceConfiguration.config
+      config = deviceConfiguration.config,
     )
   }
 

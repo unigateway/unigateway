@@ -11,7 +11,7 @@ import com.mqgateway.core.device.DeviceType
 import com.mqgateway.core.device.relay.RelayDevice
 import com.mqgateway.core.device.relay.RelayDevice.RelayState
 import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -33,16 +33,17 @@ class ShutterDevice(
   private val fullCloseTimeMs: Long,
   private val upButton: SwitchButtonDevice?,
   private val downButton: SwitchButtonDevice?,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) : Device(
-  id, name, DeviceType.SHUTTER,
-  setOf(
-    DeviceProperty(POSITION, INTEGER, "0:100", settable = true, retained = true, unit = PERCENT),
-    DeviceProperty(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true)
-  ),
-  config
-) {
-
+    id,
+    name,
+    DeviceType.SHUTTER,
+    setOf(
+      DeviceProperty(POSITION, INTEGER, "0:100", settable = true, retained = true, unit = PERCENT),
+      DeviceProperty(STATE, ENUM, "OPEN,CLOSE,STOP", retained = true, settable = true),
+    ),
+    config,
+  ) {
   private var currentPosition: Int? = null
     private set(value) {
       field = value
@@ -61,7 +62,10 @@ class ShutterDevice(
   private var scheduledStopTimerTask: TimerTask? = null
   private var clock = Clock.systemDefaultZone()
 
-  override fun initProperty(propertyId: String, value: String) {
+  override fun initProperty(
+    propertyId: String,
+    value: String,
+  ) {
     if (propertyId != POSITION.toString()) {
       LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
       return
@@ -114,7 +118,10 @@ class ShutterDevice(
     }
   }
 
-  override fun change(propertyId: String, newValue: String) {
+  override fun change(
+    propertyId: String,
+    newValue: String,
+  ) {
     if (currentPosition == null) {
       LOGGER.warn {
         "Current position in device $id is unknown. It is currently in state '$state'. " +
@@ -148,35 +155,45 @@ class ShutterDevice(
       return
     }
 
-    scheduledStopTimerTask = stoppingTimer.schedule(requiredMove.time.toMillis()) {
-      LOGGER.info { "Stopping shutter $id after move" }
-      stop(targetPosition)
-    }
+    scheduledStopTimerTask =
+      stoppingTimer.schedule(requiredMove.time.toMillis()) {
+        LOGGER.info { "Stopping shutter $id after move" }
+        stop(targetPosition)
+      }
   }
 
-  private fun calculateRequiredMove(currentPosition: Int, targetPosition: Int): Move {
+  private fun calculateRequiredMove(
+    currentPosition: Int,
+    targetPosition: Int,
+  ): Move {
     val positionDifferenceToMove = targetPosition - currentPosition
-    val requiredDirection = when {
-      positionDifferenceToMove > 0 -> Direction.UP
-      positionDifferenceToMove < 0 -> Direction.DOWN
-      else -> Direction.STAY
-    }
-    val goUpOrDownTimeMs = when (requiredDirection) {
-      Direction.UP -> fullOpenTimeMs
-      Direction.DOWN -> fullCloseTimeMs
-      Direction.STAY -> 0
-    }
+    val requiredDirection =
+      when {
+        positionDifferenceToMove > 0 -> Direction.UP
+        positionDifferenceToMove < 0 -> Direction.DOWN
+        else -> Direction.STAY
+      }
+    val goUpOrDownTimeMs =
+      when (requiredDirection) {
+        Direction.UP -> fullOpenTimeMs
+        Direction.DOWN -> fullCloseTimeMs
+        Direction.STAY -> 0
+      }
 
-    val timeMs = if (requiredDirection != Direction.STAY && (targetPosition == POSITION_OPEN || targetPosition == POSITION_CLOSED)) {
-      goUpOrDownTimeMs
-    } else {
-      (goUpOrDownTimeMs * (positionDifferenceToMove.absoluteValue.toFloat() / 100)).toLong()
-    }
+    val timeMs =
+      if (requiredDirection != Direction.STAY && (targetPosition == POSITION_OPEN || targetPosition == POSITION_CLOSED)) {
+        goUpOrDownTimeMs
+      } else {
+        (goUpOrDownTimeMs * (positionDifferenceToMove.absoluteValue.toFloat() / 100)).toLong()
+      }
 
     return Move(requiredDirection, Duration.ofMillis(timeMs))
   }
 
-  private fun calculateTargetPosition(propertyId: String, newValue: String): Int? {
+  private fun calculateTargetPosition(
+    propertyId: String,
+    newValue: String,
+  ): Int? {
     return when (propertyId) {
       STATE.toString() -> {
         when (newValue) {
@@ -260,16 +277,24 @@ class ShutterDevice(
   }
 
   enum class Command {
-    OPEN, CLOSE, STOP
+    OPEN,
+    CLOSE,
+    STOP,
   }
 
   enum class State {
-    OPENING, CLOSING, OPEN, CLOSED, UNKNOWN
+    OPENING,
+    CLOSING,
+    OPEN,
+    CLOSED,
+    UNKNOWN,
   }
 
   data class Move(val direction: Direction, val time: Duration)
 
   enum class Direction {
-    UP, DOWN, STAY
+    UP,
+    DOWN,
+    STAY,
   }
 }

@@ -12,7 +12,7 @@ import com.mqgateway.core.device.timerswitch.TimerSwitchRelayDevice.TimerSwitchR
 import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.BinaryState
 import com.mqgateway.core.utils.TimersScheduler
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -23,18 +23,20 @@ class TimerSwitchRelayDevice(
   name: String,
   state: BinaryOutput,
   private val scheduler: TimersScheduler,
-  config: Map<String, String> = emptyMap()
+  config: Map<String, String> = emptyMap(),
 ) :
   DigitalOutputDevice(
-    id, name, DeviceType.TIMER_SWITCH, state,
-    setOf(
-      DeviceProperty(STATE, DataType.ENUM, "ON,OFF", retained = true),
-      DeviceProperty(TIMER, DataType.INTEGER, "0:1440", settable = true, retained = true, unit = DataUnit.SECOND)
+      id,
+      name,
+      DeviceType.TIMER_SWITCH,
+      state,
+      setOf(
+        DeviceProperty(STATE, DataType.ENUM, "ON,OFF", retained = true),
+        DeviceProperty(TIMER, DataType.INTEGER, "0:1440", settable = true, retained = true, unit = DataUnit.SECOND),
+      ),
+      config,
     ),
-    config
-  ),
-  TimersScheduler.SchedulableTimer {
-
+    TimersScheduler.SchedulableTimer {
   private var turnOffTime: LocalDateTime = LocalDateTime.now()
 
   private fun changeRelayState(newState: TimerSwitchRelayState) {
@@ -47,7 +49,10 @@ class TimerSwitchRelayDevice(
     }
   }
 
-  override fun change(propertyId: String, newValue: String) {
+  override fun change(
+    propertyId: String,
+    newValue: String,
+  ) {
     if (propertyId != TIMER.toString()) return
 
     val timerInMinutes = newValue.toLong()
@@ -72,7 +77,8 @@ class TimerSwitchRelayDevice(
   }
 
   enum class TimerSwitchRelayState {
-    OPEN, CLOSED
+    OPEN,
+    CLOSED,
   }
 
   companion object {

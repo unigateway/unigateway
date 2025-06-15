@@ -5,7 +5,6 @@ import com.mqgateway.core.io.provider.HardwareInputOutputProvider
 
 class SimulatedInputOutputProvider(private val platformConfiguration: SimulatedPlatformConfiguration) :
   HardwareInputOutputProvider<SimulatedConnector> {
-
   override fun getBinaryInput(connector: SimulatedConnector): SimulatedBinaryInput {
     return SimulatedBinaryInput(connector.initialValue?.let { BinaryState.valueOf(it) } ?: BinaryState.HIGH)
   }

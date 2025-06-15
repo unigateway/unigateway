@@ -19,7 +19,6 @@ import kotlinx.serialization.serializer
 
 @Factory
 class HardwareComponentsFactory {
-
   @Singleton
   fun hardwareInterfaceFactory(gatewaySystemProperties: GatewaySystemProperties): HardwareInterfaceFactory<*> {
     val platformConfig = gatewaySystemProperties.platformConfig ?: emptyMap()

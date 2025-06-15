@@ -6,16 +6,19 @@ import com.mqgateway.core.utils.SystemInfoProvider
 import com.mqgateway.homie.MqttStatusIndicator
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.micronaut.scheduling.TaskExecutors
+import io.micronaut.scheduling.annotation.ExecuteOn
+import io.micronaut.serde.annotation.Serdeable
 
+@ExecuteOn(TaskExecutors.BLOCKING)
 @Controller("/status")
 open class GatewayStatusController(
   private val systemInfoProvider: SystemInfoProvider,
   private val mqttStatusIndicator: MqttStatusIndicator?,
   private val gatewayApplicationProperties: GatewayApplicationProperties,
   private val gatewaySystemProperties: GatewaySystemProperties,
-  private val updateChecker: UpdateChecker
+  private val updateChecker: UpdateChecker,
 ) {
-
   @Get
   fun getStatus(): GatewayStatusResource {
     return GatewayStatusResource(
@@ -26,11 +29,12 @@ open class GatewayStatusController(
       mqttConnected = mqttStatusIndicator?.isConnected ?: false,
       mySensorsEnabled = gatewaySystemProperties.mySensors.enabled,
       firmwareVersion = gatewayApplicationProperties.appVersion,
-      mqGatewayLatestVersion = updateChecker.getLatestVersionInfo()
+      mqGatewayLatestVersion = updateChecker.getLatestVersionInfo(),
     )
   }
 }
 
+@Serdeable
 data class GatewayStatusResource(
   val cpuTemperature: Float,
   val freeMemoryBytes: Long,
@@ -39,5 +43,5 @@ data class GatewayStatusResource(
   val mqttConnected: Boolean,
   val mySensorsEnabled: Boolean,
   val firmwareVersion: String,
-  val mqGatewayLatestVersion: ReleaseInfo?
+  val mqGatewayLatestVersion: ReleaseInfo?,
 )

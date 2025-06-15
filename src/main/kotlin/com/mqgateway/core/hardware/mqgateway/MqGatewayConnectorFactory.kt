@@ -3,12 +3,11 @@ package com.mqgateway.core.hardware.mqgateway
 import com.mqgateway.core.gatewayconfig.connector.HardwareConnectorFactory
 
 class MqGatewayConnectorFactory : HardwareConnectorFactory<MqGatewayConnector> {
-
   override fun create(config: Map<String, *>): MqGatewayConnector {
     return MqGatewayConnector(
       config[PORT_NUMBER_KEY] as Int,
       WireColor.valueOf(config[WIRE_COLOR_KEY] as String),
-      config[DEBOUNCE_MS_KEY]?.toString()?.toLong()
+      config[DEBOUNCE_MS_KEY]?.toString()?.toLong(),
     )
   }
 

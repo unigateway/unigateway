@@ -1,6 +1,6 @@
 package com.mqgateway.core.device
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -12,9 +12,8 @@ abstract class Device(
   val name: String,
   val type: DeviceType,
   val properties: Set<DeviceProperty>,
-  val config: Map<String, String> = emptyMap()
+  val config: Map<String, String> = emptyMap(),
 ) {
-
   private val updateListeners: MutableList<UpdateListener> = mutableListOf()
   private var initialized: Boolean = false
 
@@ -22,7 +21,10 @@ abstract class Device(
    * Set device property to the specific value on the initialization
    * This should be done before initDevice()
    */
-  open fun initProperty(propertyId: String, value: String) {
+  open fun initProperty(
+    propertyId: String,
+    value: String,
+  ) {
     LOGGER.info { "Initializing of property '$id.$propertyId' not implemented." }
     // To be implemented by devices extending this class if needed
   }
@@ -50,11 +52,17 @@ abstract class Device(
     // To be implemented by devices extending this class if needed
   }
 
-  fun notify(propertyId: DevicePropertyType, newValue: Number) {
+  fun notify(
+    propertyId: DevicePropertyType,
+    newValue: Number,
+  ) {
     notify(propertyId, newValue.toString())
   }
 
-  fun notify(propertyId: DevicePropertyType, newValue: String) {
+  fun notify(
+    propertyId: DevicePropertyType,
+    newValue: String,
+  ) {
     LOGGER.trace { "Notifying listeners about property value change ($id.$propertyId = $newValue)" }
     updateListeners.forEach {
       it.valueUpdated(id, propertyId.toString(), newValue)
@@ -65,7 +73,10 @@ abstract class Device(
     updateListeners.add(updateListener)
   }
 
-  open fun change(propertyId: String, newValue: String) {
+  open fun change(
+    propertyId: String,
+    newValue: String,
+  ) {
     throw UnsupportedStateChangeException(id, propertyId)
   }
 

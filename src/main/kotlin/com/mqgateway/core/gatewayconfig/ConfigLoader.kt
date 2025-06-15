@@ -3,8 +3,8 @@ package com.mqgateway.core.gatewayconfig
 import com.fasterxml.jackson.databind.JsonNode
 import com.mqgateway.core.gatewayconfig.parser.YamlParser
 import com.mqgateway.core.gatewayconfig.validation.ConfigValidator
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.ExperimentalSerializationApi
-import mu.KotlinLogging
 import java.io.File
 import java.security.MessageDigest
 
@@ -14,9 +14,8 @@ private val LOGGER = KotlinLogging.logger {}
 class ConfigLoader(
   private val yamlParser: YamlParser,
   private val fastConfigurationSerializer: FastConfigurationSerializer,
-  private val configValidator: ConfigValidator
+  private val configValidator: ConfigValidator,
 ) {
-
   companion object {
     private const val HASH_ALGORITHM = "MD5"
     private const val CONFIGURATION_HASH_PATH = ".previousConfig.$HASH_ALGORITHM"
@@ -27,7 +26,7 @@ class ConfigLoader(
     val gatewayConfigBytes = File(gatewayConfigPath).readBytes()
     val currentConfigurationFileHash = calculateHash(gatewayConfigBytes)
     val storedConfigurationFileHash = loadStoredConfigurationFileHash()
-    LOGGER.trace("previousConfigHash=$storedConfigurationFileHash newConfigHash=$currentConfigurationFileHash")
+    LOGGER.trace { "previousConfigHash=$storedConfigurationFileHash newConfigHash=$currentConfigurationFileHash" }
     if (currentConfigurationFileHash == storedConfigurationFileHash) {
       LOGGER.debug { "Configuration file has not changed. Loading configuration from binary store." }
       return fastConfigurationSerializer.decode(File(CONFIGURATION_FILE_QUICK_PATH).readBytes())

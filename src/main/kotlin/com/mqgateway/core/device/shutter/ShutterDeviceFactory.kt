@@ -10,12 +10,14 @@ import com.mqgateway.core.device.switchbutton.SwitchButtonDevice
 import com.mqgateway.core.gatewayconfig.DeviceConfiguration
 
 class ShutterDeviceFactory : DeviceFactory<ShutterDevice> {
-
   override fun deviceType(): DeviceType {
     return DeviceType.SHUTTER
   }
 
-  override fun create(deviceConfiguration: DeviceConfiguration, devices: Set<Device>): ShutterDevice {
+  override fun create(
+    deviceConfiguration: DeviceConfiguration,
+    devices: Set<Device>,
+  ): ShutterDevice {
     val stopRelay = getReferenceDevice(deviceConfiguration, "stopRelay", devices) as RelayDevice
     val upDownRelay = getReferenceDevice(deviceConfiguration, "upDownRelay", devices) as RelayDevice
     val upButton = getOptionalReferenceDevice(deviceConfiguration, UP_BUTTON_REFERENCE_NAME, devices) as SwitchButtonDevice?
@@ -29,7 +31,7 @@ class ShutterDeviceFactory : DeviceFactory<ShutterDevice> {
       deviceConfiguration.config.getValue("fullCloseTimeMs").toLong(),
       upButton,
       downButton,
-      deviceConfiguration.config
+      deviceConfiguration.config,
     )
   }
 }

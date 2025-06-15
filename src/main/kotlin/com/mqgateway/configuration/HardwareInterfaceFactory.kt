@@ -9,7 +9,9 @@ import kotlin.reflect.KClass
 
 interface HardwareInterfaceFactory<T : HardwareConnector> {
   fun hardwareInputOutputProvider(): HardwareInputOutputProvider<T>
+
   fun hardwareConnectorFactory(): HardwareConnectorFactory<T>
+
   fun connectorClass(): KClass<T>
 
   fun configurationValidator(): GatewayValidator {

@@ -9,20 +9,25 @@ import com.mqgateway.core.device.relay.RelayDevice.RelayState.CLOSED
 import com.mqgateway.core.device.relay.RelayDevice.RelayState.OPEN
 import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.BinaryState
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
 class RelayDevice(id: String, name: String, state: BinaryOutput, private val closedState: BinaryState, config: Map<String, String> = emptyMap()) :
   DigitalOutputDevice(
-    id, name, DeviceType.RELAY, state,
+    id,
+    name,
+    DeviceType.RELAY,
+    state,
     setOf(
-      DeviceProperty(STATE, ENUM, "ON,OFF", settable = true, retained = true)
+      DeviceProperty(STATE, ENUM, "ON,OFF", settable = true, retained = true),
     ),
-    config
+    config,
   ) {
-
-  override fun initProperty(propertyId: String, value: String) {
+  override fun initProperty(
+    propertyId: String,
+    value: String,
+  ) {
     if (propertyId != STATE.toString()) {
       LOGGER.warn { "Trying to initialize unsupported property '$id.$propertyId'" }
       return
@@ -40,7 +45,10 @@ class RelayDevice(id: String, name: String, state: BinaryOutput, private val clo
     }
   }
 
-  override fun change(propertyId: String, newValue: String) {
+  override fun change(
+    propertyId: String,
+    newValue: String,
+  ) {
     LOGGER.debug { "Changing state on relay $id to $newValue" }
     if (newValue == STATE_ON) {
       changeState(CLOSED)
@@ -50,10 +58,12 @@ class RelayDevice(id: String, name: String, state: BinaryOutput, private val clo
   }
 
   private fun closedState(): BinaryState = closedState
+
   private fun openState(): BinaryState = closedState().invert()
 
   enum class RelayState {
-    OPEN, CLOSED
+    OPEN,
+    CLOSED,
   }
 
   companion object {

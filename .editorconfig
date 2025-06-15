@@ -4,8 +4,6 @@ insert_final_newline=true
 max_line_length=150
 indent_style = space
 
-disabled_rules=import-ordering
-
 ij_continuation_indent_size = 4
 ij_kotlin_align_in_columns_case_branch = false
 ij_kotlin_align_multiline_binary_operation = false

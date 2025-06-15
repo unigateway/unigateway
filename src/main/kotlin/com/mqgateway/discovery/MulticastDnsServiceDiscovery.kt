@@ -1,8 +1,9 @@
 package com.mqgateway.discovery
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.runtime.server.event.ServerStartupEvent
-import mu.KotlinLogging
+import io.micronaut.serde.annotation.Serdeable
 import java.net.InetAddress
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceEvent
@@ -12,7 +13,6 @@ import javax.jmdns.ServiceListener
 private val LOGGER = KotlinLogging.logger {}
 
 class MulticastDnsServiceDiscovery(private val jmDns: JmDNS, private val gatewayName: String) : ApplicationEventListener<ServerStartupEvent> {
-
   private val gateways: MutableMap<String, MqGateway> = mutableMapOf()
   private var portNumber: Int? = null
 
@@ -50,4 +50,5 @@ class MulticastDnsServiceDiscovery(private val jmDns: JmDNS, private val gateway
   }
 }
 
+@Serdeable
 data class MqGateway(val name: String, val ipAddress: InetAddress, val portNumber: Int)

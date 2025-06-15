@@ -3,18 +3,20 @@ package com.mqgateway.core.io
 import com.fazecast.jSerialComm.SerialPort
 import com.fazecast.jSerialComm.SerialPortDataListener
 import com.fazecast.jSerialComm.SerialPortEvent
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.concurrent.atomic.AtomicBoolean
 
 private val LOGGER = KotlinLogging.logger {}
 
 class JCommSerial : Serial {
-
   private var serialPort: SerialPort? = null
   private val isOpen: AtomicBoolean = AtomicBoolean(false)
   private val dataReceivedEventListener = DataReceivedEventListener()
 
-  override fun open(portDescriptor: String, baudRate: Int) {
+  override fun open(
+    portDescriptor: String,
+    baudRate: Int,
+  ) {
     if (isOpen.getAndSet(true)) {
       throw IllegalStateException("Serial port is already open")
     }
@@ -38,7 +40,6 @@ class JCommSerial : Serial {
 }
 
 private class DataReceivedEventListener : SerialPortDataListener {
-
   private val listeners = mutableListOf<SerialDataEventListener>()
 
   override fun getListeningEvents(): Int {

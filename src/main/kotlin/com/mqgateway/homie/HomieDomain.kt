@@ -5,7 +5,7 @@ import com.mqgateway.homie.mqtt.MqttClient
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttClientStateException
 import com.mqgateway.homie.mqtt.MqttMessage
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.Locale
 
 const val HOMIE_PREFIX = "homie"
@@ -26,9 +26,8 @@ class HomieDevice(
   private val firmwareName: String?,
   private val firmwareVersion: String?,
   private val ip: String? = null,
-  private val mac: String? = null
+  private val mac: String? = null,
 ) : PropertyInitializer {
-
   private val baseTopic = "$HOMIE_PREFIX/$id"
   private var mqttClient: MqttClient? = null
   private val mqttConnectionListeners: MutableList<MqttConnectionListener> = mutableListOf()
@@ -103,11 +102,17 @@ class HomieDevice(
   }
 
   enum class State(val value: String) {
-    INIT("init"), READY("ready"), DISCONNECTED("disconnected"), SLEEPING("sleeping"), LOST("lost"), ALERT("alert")
+    INIT("init"),
+    READY("ready"),
+    DISCONNECTED("disconnected"),
+    SLEEPING("sleeping"),
+    LOST("lost"),
+    ALERT("alert"),
   }
 
   interface MqttConnectionListener {
     fun onConnected()
+
     fun onDisconnect()
   }
 }
@@ -117,12 +122,14 @@ data class HomieNode(
   val id: String,
   val name: String,
   val type: String,
-  val properties: Map<String, HomieProperty>
+  val properties: Map<String, HomieProperty>,
 ) {
-
   private val baseTopic = "$HOMIE_PREFIX/$deviceId/$id"
 
-  internal fun setup(mqttClient: MqttClient, homieReceiver: HomieReceiver) {
+  internal fun setup(
+    mqttClient: MqttClient,
+    homieReceiver: HomieReceiver,
+  ) {
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$type", type, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$properties", properties.keys.joinToString(), HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
@@ -144,14 +151,15 @@ data class HomieProperty(
   val format: String? = null,
   val settable: Boolean = false,
   val retained: Boolean = false,
-  val unit: Unit = Unit.NONE
+  val unit: Unit = Unit.NONE,
 ) {
-
   private val baseTopic = "$HOMIE_PREFIX/$deviceId/$nodeId/$id"
   private var mqttClient: MqttClient? = null
 
-  internal fun setup(mqttClient: MqttClient, homieReceiver: HomieReceiver) {
-
+  internal fun setup(
+    mqttClient: MqttClient,
+    homieReceiver: HomieReceiver,
+  ) {
     this.mqttClient = mqttClient
 
     mqttClient.publishAsync(MqttMessage("$baseTopic/\$name", name, HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS, true))
@@ -160,24 +168,24 @@ data class HomieProperty(
         "$baseTopic/\$settable",
         settable.toString().lowercase(Locale.getDefault()),
         HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
-        true
-      )
+        true,
+      ),
     )
     mqttClient.publishAsync(
       MqttMessage(
         "$baseTopic/\$retained",
         retained.toString().lowercase(Locale.getDefault()),
         HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
-        true
-      )
+        true,
+      ),
     )
     mqttClient.publishAsync(
       MqttMessage(
         "$baseTopic/\$datatype",
         datatype.toString().lowercase(Locale.getDefault()),
         HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
-        true
-      )
+        true,
+      ),
     )
     if (format != null) {
       mqttClient.publishAsync(
@@ -185,8 +193,8 @@ data class HomieProperty(
           "$baseTopic/\$format",
           format.toString().lowercase(Locale.getDefault()),
           HOMIE_CONFIGURATION_MQTT_MESSAGES_QOS,
-          true
-        )
+          true,
+        ),
       )
     }
     if (unit != Unit.NONE) {
@@ -218,11 +226,29 @@ data class HomieProperty(
   }
 
   enum class DataType {
-    INTEGER, FLOAT, BOOLEAN, STRING, ENUM, COLOR
+    INTEGER,
+    FLOAT,
+    BOOLEAN,
+    STRING,
+    ENUM,
+    COLOR,
   }
 
   enum class Unit(val value: String) {
-    CELSIUS("°C"), FAHRENHEIT("°F"), DEGREE("°"), LITER("L"), GALON("gal"), VOLTS("V"), WATT("W"), AMPERE("A"), PERCENT("%"),
-    METER("m"), FEET("ft"), PASCAL("Pa"), PSI("psi"), COUNT("#"), NONE("_")
+    CELSIUS("°C"),
+    FAHRENHEIT("°F"),
+    DEGREE("°"),
+    LITER("L"),
+    GALON("gal"),
+    VOLTS("V"),
+    WATT("W"),
+    AMPERE("A"),
+    PERCENT("%"),
+    METER("m"),
+    FEET("ft"),
+    PASCAL("Pa"),
+    PSI("psi"),
+    COUNT("#"),
+    NONE("_"),
   }
 }

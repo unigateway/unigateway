@@ -4,7 +4,7 @@ import com.mqgateway.configuration.HomeAssistantProperties
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.homie.mqtt.MqttClientFactory
 import com.mqgateway.homie.mqtt.MqttMessage
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -12,18 +12,18 @@ class HomeAssistantConfigurer(
   private val properties: HomeAssistantProperties,
   private val converter: HomeAssistantConverter,
   private val publisher: HomeAssistantPublisher,
-  private val mqttClientFactory: MqttClientFactory
+  private val mqttClientFactory: MqttClientFactory,
 ) {
-
   fun sendHomeAssistantConfiguration(deviceRegistry: DeviceRegistry) {
     LOGGER.info { "Publishing HomeAssistant configuration" }
 
     val uniGatewayDevice = deviceRegistry.getUniGatewayDevice()
-    val mqttClient = mqttClientFactory.create(
-      "${uniGatewayDevice.id}-homeassistant-configurator",
-      { LOGGER.info { "HomeAssistant configurator connected" } },
-      { LOGGER.info { "HomeAssistant configurator disconnected" } }
-    )
+    val mqttClient =
+      mqttClientFactory.create(
+        "${uniGatewayDevice.id}-homeassistant-configurator",
+        { LOGGER.info { "HomeAssistant configurator connected" } },
+        { LOGGER.info { "HomeAssistant configurator disconnected" } },
+      )
 
     mqttClient.connect(MqttMessage("${properties.rootTopic}/state", "disconnected", 0, false), true)
 

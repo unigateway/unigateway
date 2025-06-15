@@ -44,7 +44,6 @@ import kotlinx.serialization.modules.SerializersModule
 @ExperimentalSerializationApi
 @Factory
 internal class ComponentsFactory {
-
   @Singleton
   fun configValidator(
     @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
@@ -56,19 +55,22 @@ internal class ComponentsFactory {
   @Singleton
   fun configValidator(
     jsonSchemaValidator: JsonSchemaValidator,
-    hardwareInterfaceFactory: HardwareInterfaceFactory<*>
+    hardwareInterfaceFactory: HardwareInterfaceFactory<*>,
   ): ConfigValidator {
-    val validators = listOf(
-      GateAdditionalConfigValidator(),
-      ReferenceDeviceValidator(),
-      ShutterAdditionalConfigValidator(),
-      UniqueDeviceIdsValidator()
-    )
+    val validators =
+      listOf(
+        GateAdditionalConfigValidator(),
+        ReferenceDeviceValidator(),
+        ShutterAdditionalConfigValidator(),
+        UniqueDeviceIdsValidator(),
+      )
     return ConfigValidator(jsonSchemaValidator, validators + hardwareInterfaceFactory.configurationValidator())
   }
 
   @Singleton
-  fun yamlParser(@Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper): YamlParser {
+  fun yamlParser(
+    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
+  ): YamlParser {
     return YamlParser(yamlObjectMapper)
   }
 
@@ -81,7 +83,7 @@ internal class ComponentsFactory {
   fun gatewayConfigLoader(
     yamlParser: YamlParser,
     fastConfigurationSerializer: FastConfigurationSerializer,
-    configValidator: ConfigValidator
+    configValidator: ConfigValidator,
   ): ConfigLoader {
     return ConfigLoader(yamlParser, fastConfigurationSerializer, configValidator)
   }
@@ -90,7 +92,7 @@ internal class ComponentsFactory {
   @Named("yamlObjectMapper")
   fun yamlObjectMapper(connectorFactory: ConnectorFactory<*>): ObjectMapper {
     val mapper = ObjectMapper(YAMLFactory())
-    mapper.registerModule(KotlinModule())
+    mapper.registerModule(KotlinModule.Builder().build())
     mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
 
     mapper.registerModule(ConfigurationJacksonModule(connectorFactory))
@@ -101,7 +103,7 @@ internal class ComponentsFactory {
   @Singleton
   fun gatewayConfiguration(
     gatewayApplicationProperties: GatewayApplicationProperties,
-    gatewayConfigLoader: ConfigLoader
+    gatewayConfigLoader: ConfigLoader,
   ): GatewayConfiguration {
     return gatewayConfigLoader.load(gatewayApplicationProperties.configPath)
   }
@@ -110,7 +112,7 @@ internal class ComponentsFactory {
   fun gatewayConfigurationService(
     configValidator: ConfigValidator,
     gatewayApplicationProperties: GatewayApplicationProperties,
-    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper
+    @Named("yamlObjectMapper") yamlObjectMapper: ObjectMapper,
   ): GatewayConfigurationService {
     return GatewayConfigurationService(configValidator, gatewayApplicationProperties.configPath, yamlObjectMapper)
   }
@@ -119,22 +121,20 @@ internal class ComponentsFactory {
   fun deviceFactoryProvider(
     inputOutputProvider: InputOutputProvider<*>,
     timersScheduler: TimersScheduler,
-    systemInfoProvider: SystemInfoProvider
+    systemInfoProvider: SystemInfoProvider,
   ): DeviceFactoryProvider {
     return DeviceFactoryProvider(inputOutputProvider, timersScheduler, systemInfoProvider)
   }
 
   @Singleton
-  fun deviceRegistryFactory(
-    deviceFactoryProvider: DeviceFactoryProvider
-  ): DeviceRegistryFactory {
+  fun deviceRegistryFactory(deviceFactoryProvider: DeviceFactoryProvider): DeviceRegistryFactory {
     return DeviceRegistryFactory(deviceFactoryProvider)
   }
 
   @Singleton
   fun deviceRegistry(
     deviceRegistryFactory: DeviceRegistryFactory,
-    gatewayConfiguration: GatewayConfiguration
+    gatewayConfiguration: GatewayConfiguration,
   ): DeviceRegistry {
     return deviceRegistryFactory.create(gatewayConfiguration)
   }
@@ -168,7 +168,7 @@ internal class ComponentsFactory {
   @Singleton
   fun <T : HardwareConnector> connectorFactory(
     mySensorsConnectorFactory: MySensorsConnectorFactory,
-    hardwareConnectorFactory: HardwareConnectorFactory<T>
+    hardwareConnectorFactory: HardwareConnectorFactory<T>,
   ): ConnectorFactory<T> {
     return ConnectorFactory(mySensorsConnectorFactory, hardwareConnectorFactory)
   }
@@ -176,7 +176,7 @@ internal class ComponentsFactory {
   @Singleton
   fun <T : HardwareConnector> inputOutputProvider(
     hardwareInputOutputProvider: HardwareInputOutputProvider<T>,
-    mySensorsInputOutputProvider: MySensorsInputOutputProvider
+    mySensorsInputOutputProvider: MySensorsInputOutputProvider,
   ): InputOutputProvider<T> {
     return InputOutputProvider(hardwareInputOutputProvider, mySensorsInputOutputProvider)
   }

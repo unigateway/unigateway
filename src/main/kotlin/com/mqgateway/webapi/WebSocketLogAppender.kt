@@ -6,12 +6,11 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.context.event.StartupEvent
+import jakarta.annotation.PreDestroy
 import org.slf4j.LoggerFactory
-import javax.annotation.PreDestroy
 
 class WebSocketLogAppender(private val logsWebSocketPublisher: LogsWebSocketPublisher) :
   AppenderBase<ILoggingEvent>(), ApplicationEventListener<StartupEvent> {
-
   override fun append(eventObject: ILoggingEvent) {
     logsWebSocketPublisher.onLogEvent(eventObject)
   }

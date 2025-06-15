@@ -1,12 +1,14 @@
 package com.mqgateway.homie.mqtt
 
 import com.hivemq.client.mqtt.datatypes.MqttQos
-import com.hivemq.client.mqtt.exceptions.MqttClientStateException as HiveMqttClientStateException
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient
+import com.hivemq.client.mqtt.exceptions.MqttClientStateException as HiveMqttClientStateException
 
 class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
-
-  override fun connect(willMessage: MqttMessage, cleanSession: Boolean) {
+  override fun connect(
+    willMessage: MqttMessage,
+    cleanSession: Boolean,
+  ) {
     mqttClient.connectWith()
       .cleanSession(cleanSession)
       .willPublish()
@@ -57,7 +59,10 @@ class HiveMqttClient(private val mqttClient: Mqtt3BlockingClient) : MqttClient {
     return topics
   }
 
-  override fun subscribeAsync(topicFilter: String, callback: (MqttMessage) -> Unit) {
+  override fun subscribeAsync(
+    topicFilter: String,
+    callback: (MqttMessage) -> Unit,
+  ) {
     mqttClient.toAsync()
       .subscribeWith().topicFilter(topicFilter)
       .callback { callback(MqttMessage(it.topic.toString(), String(it.payloadAsBytes), it.qos.code, it.isRetain)) }

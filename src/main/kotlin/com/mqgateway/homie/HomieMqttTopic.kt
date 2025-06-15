@@ -8,9 +8,8 @@ data class HomieMqttTopic(
   val nodeId: String? = null,
   val nodeAttribute: String? = null,
   val propertyId: String? = null,
-  val propertyAttribute: String? = null
+  val propertyAttribute: String? = null,
 ) {
-
   companion object {
     fun fromString(topicString: String): HomieMqttTopic {
       val segments: List<String> = topicString.split('/')

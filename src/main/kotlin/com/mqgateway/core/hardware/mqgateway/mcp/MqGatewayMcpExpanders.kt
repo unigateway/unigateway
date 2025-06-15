@@ -13,25 +13,36 @@ import com.mqgateway.core.io.BinaryOutput
  * @param expanderAddresses list of MCP23017 expanders addresses ORDERED in the same way they are connected with ports
  */
 class MqGatewayMcpExpanders(expanderAddresses: List<Int>) {
-
-  private val expanders: List<MqGatewayMcpExpander> = expanderAddresses.map {
-    MqGatewayMcpExpander(MCP23017(I2CConstants.CONTROLLER_0, it, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET))
-  }
+  private val expanders: List<MqGatewayMcpExpander> =
+    expanderAddresses.map {
+      MqGatewayMcpExpander(MCP23017(I2CConstants.CONTROLLER_0, it, INTERRUPT_GPIO_NOT_SET, INTERRUPT_GPIO_NOT_SET))
+    }
 
   fun start() {
     expanders.forEach { it.start() }
   }
 
-  fun getInputPin(portNumber: Int, wireColor: WireColor, debounceMs: Long): BinaryInput {
+  fun getInputPin(
+    portNumber: Int,
+    wireColor: WireColor,
+    debounceMs: Long,
+  ): BinaryInput {
     return getByPort(portNumber).getInputPin(gpioNumberOnMcp(portNumber, wireColor), debounceMs)
   }
 
-  fun getOutputPin(portNumber: Int, wireColor: WireColor): BinaryOutput {
+  fun getOutputPin(
+    portNumber: Int,
+    wireColor: WireColor,
+  ): BinaryOutput {
     return getByPort(portNumber).getOutputPin(gpioNumberOnMcp(portNumber, wireColor))
   }
 
   private fun getByPort(portNumber: Int) = expanders[(portNumber - 1) / 4]
-  private fun gpioNumberOnMcp(portNumber: Int, wireColor: WireColor): Int {
+
+  private fun gpioNumberOnMcp(
+    portNumber: Int,
+    wireColor: WireColor,
+  ): Int {
     return ((portNumber - 1) % 4) * 4 + (wireColor.number - 3)
   }
 }

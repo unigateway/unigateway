@@ -15,7 +15,6 @@ class ReferenceDeviceValidator : GatewayValidator {
   }
 
   class IncorrectReferencedDevice(val referencingDevice: DeviceConfiguration, val referencedDeviceId: String) : ValidationFailureReason() {
-
     override fun getDescription(): String {
       return "Device: '${referencingDevice.id}' has reference to device '$referencedDeviceId', but no such device exists"
     }
