@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Read version from tag
         id: version_tag_name
         run: |
@@ -27,7 +27,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Store tests results as artifact
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: tests-results
@@ -37,7 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Store JAR file as artifact
-        uses: actions/upload-artifact@v2-preview
+        uses: actions/upload-artifact@v4
         with:
           name: application
           path: build/libs/*.jar
