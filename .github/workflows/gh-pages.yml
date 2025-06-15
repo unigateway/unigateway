@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'docs/**'
+  workflow_dispatch: null
 
 jobs:
   build:
