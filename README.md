@@ -30,7 +30,7 @@ See installation instructions in [the UniGateway documentation](https://unigatew
 
 ### Environment
 
-- JDK 11
+- JDK 21
 - MQTT broker (e.g. Mosquitto 2.0.21)
 
 You can run Mosquitto as Docker with command:

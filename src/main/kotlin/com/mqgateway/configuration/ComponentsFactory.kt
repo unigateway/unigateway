@@ -89,6 +89,15 @@ internal class ComponentsFactory {
   }
 
   @Singleton
+  @Named("jsonObjectMapper")
+  fun jsonObjectMapper(): ObjectMapper {
+    val mapper = ObjectMapper()
+    mapper.registerModule(KotlinModule.Builder().build())
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+    return mapper
+  }
+
+  @Singleton
   @Named("yamlObjectMapper")
   fun yamlObjectMapper(connectorFactory: ConnectorFactory<*>): ObjectMapper {
     val mapper = ObjectMapper(YAMLFactory())

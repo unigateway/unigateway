@@ -10,6 +10,7 @@ import com.mqgateway.homie.mqtt.MqttClientFactory
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requirements
 import io.micronaut.context.annotation.Requires
+import jakarta.inject.Named
 import jakarta.inject.Singleton
 
 @Factory
@@ -24,7 +25,9 @@ internal class HomeAssistantFactory {
   }
 
   @Singleton
-  fun homeAssistantPublisher(objectMapper: ObjectMapper): HomeAssistantPublisher {
+  fun homeAssistantPublisher(
+    @Named("jsonObjectMapper") objectMapper: ObjectMapper,
+  ): HomeAssistantPublisher {
     return HomeAssistantPublisher(objectMapper)
   }
 
