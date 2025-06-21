@@ -3,7 +3,12 @@ name: Prepare SD card images
 on:
   release:
     types: [published]
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'The tag/ref to use (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
   build:
@@ -29,7 +34,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /tmp/mqgateway/armbian.img.xz
           asset_name: UniGateway_SDCardImage_MqGateway.img.xz
-          tag: ${{ github.ref }}
+          tag: ${{ github.event.inputs.ref || github.ref }}
           overwrite: true
       - name: Upload Raspberry Pi SD card to release
         if: false # disabled because of the issue #81
@@ -38,6 +43,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /tmp/raspberrypi/armbian.img.xz
           asset_name: UniGateway_SDCardImage_RaspberryPi.img.xz
-          tag: ${{ github.ref }}
+          tag: ${{ github.event.inputs.ref || github.ref }}
           overwrite: true
 
