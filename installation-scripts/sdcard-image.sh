@@ -86,9 +86,9 @@ IMG_MOUNT_PATH="/mnt/armbian"
 PARTITION_SIZE=5000M
 
 if [ "$SYSTEM" = "mqgateway" ]; then
-  JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.17%2B8/OpenJDK11U-jre_arm_linux_hotspot_11.0.17_8.tar.gz"
+  JAVA_DOWNLOAD_URL="https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-arm32-vfp-hflt.tar.gz"
 elif [ "$SYSTEM" = "raspberrypi" ]; then
-  JAVA_DOWNLOAD_URL="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.17%2B8/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.17_8.tar.gz"
+  JAVA_DOWNLOAD_URL="https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-aarch64.tar.gz"
 fi
 
 UNIGATEWAY_JAR_DOWNLOAD_URL="https://github.com/unigateway/unigateway/releases/latest/download/unigateway.jar"
@@ -102,9 +102,9 @@ MYSENSORS_BINARY_FILE_PATH="mysgw"
 MYSENSORS_SERVICE_FILE_PATH="$SCRIPT_DIR/mysgw.service"
 
 if [ "$SYSTEM" = "mqgateway" ]; then
-  OS_IMAGE_DOWNLOAD_URL="http://imola.armbian.com/archive/nanopineo/archive/Armbian_23.8.1_Nanopineo_jammy_current_6.1.47.img.xz"
+  OS_IMAGE_DOWNLOAD_URL="https://github.com/armbian/community/releases/download/25.8.0-trunk.245/Armbian_community_25.8.0-trunk.245_Nanopineo_noble_current_6.12.30.img.xz"
 elif [ "$SYSTEM" = "raspberrypi" ]; then
-  OS_IMAGE_DOWNLOAD_URL="https://redirect.armbian.com/rpi4b/Jammy_current"
+  OS_IMAGE_DOWNLOAD_URL="https://dl.armbian.com/rpi4b/Noble_current_server"
 fi
 
 mkdir -p "$WORKING_DIR"
