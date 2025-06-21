@@ -2,7 +2,7 @@
 
 ### This script changes clean Armbian image to include UniGateway and other required applications (JRE, MySensors Gateway)
 ### It should be run on Linux machine with sudo
-### Tested on Ubuntu 20.04 LTS
+### Tested on Ubuntu 22.04 LTS
 
 set -euo pipefail
 
@@ -97,7 +97,7 @@ UNIGATEWAY_BASE_CONFIG_FILE_PATH="$SCRIPT_DIR/$SYSTEM/gateway.yaml"
 UNIGATEWAY_START_SCRIPT_FILE_PATH="$SCRIPT_DIR/$SYSTEM/start_unigateway.sh"
 UNIGATEWAY_SERVICE_FILE_PATH="$SCRIPT_DIR/unigateway.service"
 
-MYSENSORS_DOWNLOAD_URL="http://downloads.unigateway.io/$SYSTEM/mysgw"
+MYSENSORS_DOWNLOAD_URL="https://fileserver.aetas.pl/$SYSTEM/mysgw"
 MYSENSORS_BINARY_FILE_PATH="mysgw"
 MYSENSORS_SERVICE_FILE_PATH="$SCRIPT_DIR/mysgw.service"
 
