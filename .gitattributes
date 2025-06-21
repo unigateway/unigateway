@@ -1,0 +1,3 @@
+*.kt linguist-language=Kotlin
+*.kts linguist-language=Kotlin
+*.groovy linguist-documentation=true
