@@ -1,5 +1,6 @@
 package com.mqgateway.core.device
 
+import com.mqgateway.core.device.buzzer.BuzzerDeviceFactory
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDeviceFactory
 import com.mqgateway.core.device.gate.GateDeviceFactory
 import com.mqgateway.core.device.humidity.HumidityDeviceFactory
@@ -29,6 +30,7 @@ class DeviceFactoryProvider(
       MotionSensorDeviceFactory(ioProvider),
       ReedSwitchDeviceFactory(ioProvider),
       RelayDeviceFactory(ioProvider),
+      BuzzerDeviceFactory(ioProvider),
       ShutterDeviceFactory(),
       SwitchButtonDeviceFactory(ioProvider),
       TimerSwitchRelayDeviceFactory(ioProvider, timersScheduler),

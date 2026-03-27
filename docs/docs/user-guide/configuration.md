@@ -41,11 +41,31 @@ devices: # List of devices configurations
 
 For the structure of configuration for specific devices see [supported devices examples](supported-devices.md).
 
+### Runtime control example (buzzer)
+
+`BUZZER` exposes runtime properties that can be changed at any moment:
+
+- `state` (`ON` / `OFF`) - start or stop beeping
+- `mode` (`CONTINUOUS` / `INTERVAL`) - choose beep type in runtime
+- `timer` (seconds) - run buzzer in selected mode for given duration
+
+Using Homie topic convention (`homie/<gatewayId>/<deviceId>/<property>/set`), buzzer commands are:
+
+- `homie/<gatewayId>/<buzzerId>/state/set`
+- `homie/<gatewayId>/<buzzerId>/mode/set`
+- `homie/<gatewayId>/<buzzerId>/timer/set`
+
+In Home Assistant MQTT discovery, buzzer is exposed as:
+
+- `switch` entity for `state`
+- `select` entity for `mode`
+
 ### Connectors configuration
 
 There are two types of devices:
+
   - simple device - requires connectors in configuration which reference underlying hardware inputs/outputs (e.g. RELAY or SWITCH) 
-  - complex device - composed of other devices (simple or complex), requires "internalDevices" in configuration (e.g. GATE or SHUTTER)
+  - complex device - composed of other devices (simple or complex), requires "internalDevices" in configuration (e.g. GATE, SHUTTER or LIGHT)
 
 Every **simple device** has one or many connectors in the configuration. Connector references real pins in the hardware (i.e. by GPIO number in Raspberry Pi 
 and by RJ45 port and wire color for MqGateway) or MySensors node sensor. 
