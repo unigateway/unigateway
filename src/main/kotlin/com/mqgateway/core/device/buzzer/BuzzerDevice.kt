@@ -27,17 +27,17 @@ class BuzzerDevice(
   config: Map<String, String> = emptyMap(),
 ) :
   DigitalOutputDevice(
-    id,
-    name,
-    DeviceType.BUZZER,
-    state,
-    setOf(
-      DeviceProperty(STATE, ENUM, "ON,OFF", settable = true, retained = true),
-      DeviceProperty(MODE, ENUM, "$MODE_CONTINUOUS,$MODE_INTERVAL", settable = true, retained = true),
-      DeviceProperty(TIMER, INTEGER, "0:3600", settable = true, unit = SECOND),
-    ),
-    config,
-  ) {
+      id,
+      name,
+      DeviceType.BUZZER,
+      state,
+      setOf(
+        DeviceProperty(STATE, ENUM, "ON,OFF", settable = true, retained = true),
+        DeviceProperty(MODE, ENUM, "$MODE_CONTINUOUS,$MODE_INTERVAL", settable = true, retained = true),
+        DeviceProperty(TIMER, INTEGER, "0:3600", settable = true, unit = SECOND),
+      ),
+      config,
+    ) {
   private var timer = Timer("Buzzer_$id", false)
   private var intervalTimerTask: TimerTask? = null
   private var stopTimerTask: TimerTask? = null

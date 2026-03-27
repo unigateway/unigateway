@@ -1,5 +1,6 @@
 package com.mqgateway.core.device
 
+import com.mqgateway.core.device.buzzer.BuzzerDeviceFactory
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDeviceFactory
 import com.mqgateway.core.device.gate.GateDeviceFactory
 import com.mqgateway.core.device.humidity.HumidityDeviceFactory
@@ -7,7 +8,6 @@ import com.mqgateway.core.device.light.LightDeviceFactory
 import com.mqgateway.core.device.motiondetector.MotionSensorDeviceFactory
 import com.mqgateway.core.device.reedswitch.ReedSwitchDeviceFactory
 import com.mqgateway.core.device.relay.RelayDeviceFactory
-import com.mqgateway.core.device.buzzer.BuzzerDeviceFactory
 import com.mqgateway.core.device.shutter.ShutterDeviceFactory
 import com.mqgateway.core.device.switchbutton.SwitchButtonDeviceFactory
 import com.mqgateway.core.device.temperature.TemperatureDeviceFactory
