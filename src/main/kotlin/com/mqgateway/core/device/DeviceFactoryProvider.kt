@@ -7,6 +7,7 @@ import com.mqgateway.core.device.light.LightDeviceFactory
 import com.mqgateway.core.device.motiondetector.MotionSensorDeviceFactory
 import com.mqgateway.core.device.reedswitch.ReedSwitchDeviceFactory
 import com.mqgateway.core.device.relay.RelayDeviceFactory
+import com.mqgateway.core.device.buzzer.BuzzerDeviceFactory
 import com.mqgateway.core.device.shutter.ShutterDeviceFactory
 import com.mqgateway.core.device.switchbutton.SwitchButtonDeviceFactory
 import com.mqgateway.core.device.temperature.TemperatureDeviceFactory
@@ -29,6 +30,7 @@ class DeviceFactoryProvider(
       MotionSensorDeviceFactory(ioProvider),
       ReedSwitchDeviceFactory(ioProvider),
       RelayDeviceFactory(ioProvider),
+      BuzzerDeviceFactory(ioProvider),
       ShutterDeviceFactory(),
       SwitchButtonDeviceFactory(ioProvider),
       TimerSwitchRelayDeviceFactory(ioProvider, timersScheduler),

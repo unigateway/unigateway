@@ -15,6 +15,7 @@ data class DeviceProperty(
 
 enum class DevicePropertyType {
   STATE,
+  MODE,
   POWER,
   TEMPERATURE,
   HUMIDITY,

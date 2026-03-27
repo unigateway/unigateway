@@ -3,6 +3,7 @@ package com.mqgateway.core.device
 enum class DeviceType {
   UNIGATEWAY,
   RELAY,
+  BUZZER,
   SWITCH_BUTTON,
   REED_SWITCH,
   MOTION_DETECTOR,

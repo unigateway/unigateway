@@ -109,7 +109,8 @@
         "GATE",
         "TEMPERATURE",
         "HUMIDITY",
-        "LIGHT"
+        "LIGHT",
+        "BUZZER"
       ]
     },
     "connector": {

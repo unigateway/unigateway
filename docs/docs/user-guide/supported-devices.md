@@ -183,6 +183,48 @@ devices:
     Both solid-state (SSR) relay and electromechanical (EMR) relay module, working with correct voltage for used hardware, can be used.  
     Any digital output pin can be used for communication.
 
+#### Buzzer
+
+Digital output buzzer that can: start beeping, stop beeping, beep continuously for a given number of seconds, beep with breaks for a given number of seconds.
+
+- configuration type: `BUZZER`
+- additional configuration:
+    - `triggerLevel` [one of: LOW, **HIGH**] - signal level that turns the buzzer ON
+
+Runtime properties:
+
+- `state` (`ON` / `OFF`) - starts or stops beeping
+- `mode` (`CONTINUOUS` / `INTERVAL`) - selects a beep type in runtime
+- `timer` (seconds) - starts beeping in currently selected mode for given number of seconds
+
+Home Assistant MQTT discovery creates:
+
+- a `switch` entity for `state`
+- a `select` entity for `mode`
+
+<details>
+<summary>Example configuration</summary>
+
+```yaml
+devices:
+  - id: "alarm_buzzer"
+    type: BUZZER
+    name: "Alarm buzzer"
+    connectors:
+      state: # connector configuration example for MqGateway
+        portNumber: 1
+        wires: BLUE_WHITE
+    config:
+      triggerLevel: "LOW" # optional - it will be HIGH by default
+```
+</details>
+
+??? example "Wiring"
+    Active buzzer modules that can be controlled directly by digital signal as long as the MCU (MqGateway/RaspberryPi) output pin voltage is the same as the buzzer control voltage (5V for MqGateway, 3.3V for RaspberryPi). You may need transistor base resistor and/or transistor to connect it safely. In that scenario any digital output pin can be used for communication.
+    
+    In case your active buzzer module voltage doesn't match the MCU voltage, you can connect it through the relay module. In that case, configuring the `triggerLevel` might be useful.
+
+
 #### Temperature sensor
 Temperature sensor. Examples are BME280, DHT22, DS18B20, SHT31.  
 Currently requires MySensors node.
