@@ -146,7 +146,7 @@ tasks.register<NpmTask>("npmBuild") {
 
 tasks.register<Copy>("copyWebApp") {
   dependsOn("npmBuild")
-  from(project.layout.projectDirectory.dir("ui").dir("build"))
+  from(project.layout.projectDirectory.dir("ui").dir("dist"))
   into(project.layout.buildDirectory.get().dir("resources").dir("main").dir("webapp"))
 }
 
