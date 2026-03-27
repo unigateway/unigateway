@@ -12,9 +12,10 @@ import com.mqgateway.core.device.DigitalOutputDevice
 import com.mqgateway.core.io.BinaryOutput
 import com.mqgateway.core.io.BinaryState
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.time.Clock
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.schedule
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -37,9 +38,10 @@ class BuzzerDevice(
     ),
     config,
   ) {
-  private val scheduler = Executors.newSingleThreadScheduledExecutor { runnable -> Thread(runnable, "buzzer-$id") }
-  private var intervalFuture: ScheduledFuture<*>? = null
-  private var stopFuture: ScheduledFuture<*>? = null
+  private var timer = Timer("Buzzer_$id", false)
+  private var intervalTimerTask: TimerTask? = null
+  private var stopTimerTask: TimerTask? = null
+  private var clock = Clock.systemDefaultZone()
   private var isToneOn = false
   private var currentMode: BuzzerMode = BuzzerMode.CONTINUOUS
   private var stateValue = STATE_OFF
@@ -77,7 +79,7 @@ class BuzzerDevice(
         currentMode = newMode
         notify(MODE, currentMode.value)
         if (stateValue == STATE_ON) {
-          val remainingMillis = stopAtMillis?.minus(System.currentTimeMillis())?.coerceAtLeast(1)
+          val remainingMillis = stopAtMillis?.minus(clock.millis())?.coerceAtLeast(1)
           startBeep(remainingMillis)
         }
       }
@@ -107,17 +109,13 @@ class BuzzerDevice(
     }
 
     updateState(STATE_ON)
-    stopAtMillis = durationMillis?.let { System.currentTimeMillis() + it }
+    stopAtMillis = durationMillis?.let { clock.millis() + it }
     durationMillis?.let {
-      stopFuture =
-        scheduler.schedule(
-          {
-            stopBeep()
-            notify(TIMER, 0)
-          },
-          it,
-          MILLISECONDS,
-        )
+      stopTimerTask =
+        timer.schedule(it) {
+          stopBeep()
+          notify(TIMER, 0)
+        }
     }
   }
 
@@ -130,15 +128,10 @@ class BuzzerDevice(
 
   private fun startIntervalBeep() {
     setToneState(true)
-    intervalFuture =
-      scheduler.scheduleAtFixedRate(
-        {
-          setToneState(!isToneOn)
-        },
-        BEEP_INTERVAL_MILLIS,
-        BEEP_INTERVAL_MILLIS,
-        MILLISECONDS,
-      )
+    intervalTimerTask =
+      timer.schedule(BEEP_INTERVAL_MILLIS, BEEP_INTERVAL_MILLIS) {
+        setToneState(!isToneOn)
+      }
   }
 
   private fun setToneState(on: Boolean) {
@@ -149,11 +142,19 @@ class BuzzerDevice(
   private fun openState(): BinaryState = closedState.invert()
 
   private fun cancelFutures() {
-    intervalFuture?.cancel(false)
-    intervalFuture = null
+    intervalTimerTask?.cancel()
+    intervalTimerTask = null
 
-    stopFuture?.cancel(false)
-    stopFuture = null
+    stopTimerTask?.cancel()
+    stopTimerTask = null
+  }
+
+  fun setTimerForTests(timer: Timer) {
+    this.timer = timer
+  }
+
+  fun setClockForTests(clock: Clock) {
+    this.clock = clock
   }
 
   private fun updateState(newState: String) {
