@@ -9,6 +9,10 @@ abstract class HomeAssistantComponent(
   @JsonIgnore val componentType: HomeAssistantComponentType,
   @field:JsonUnwrapped val properties: HomeAssistantComponentBasicProperties,
 ) {
+  @get:JsonProperty("default_entity_id")
+  val defaultEntityId: String
+    get() = "${componentType.value}.${properties.objectId}"
+
   protected fun uniqueId() = properties.uniqueId()
 }
 
@@ -16,7 +20,7 @@ abstract class HomeAssistantComponent(
 data class HomeAssistantComponentBasicProperties(
   @field:JsonProperty("device") val device: HomeAssistantDevice? = null,
   @JsonIgnore val nodeId: String,
-  @field:JsonProperty("object_id") val objectId: String,
+  @JsonIgnore val objectId: String,
   @field:JsonProperty("name") val name: String? = null,
 ) {
   fun uniqueId() = "${nodeId}_$objectId"
