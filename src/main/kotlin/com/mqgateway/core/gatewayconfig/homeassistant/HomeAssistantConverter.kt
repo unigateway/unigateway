@@ -33,6 +33,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
     val unigatewayId = uniGatewayDevice.id
     return mqGatewayCoreComponents +
       devices.flatMap { device ->
+        val suggestedArea = device.config[DEVICE_CONFIG_HA_AREA]
         val haDevice =
           HomeAssistantDevice(
             identifiers = listOf("${unigatewayId}_${device.id}"),
@@ -41,6 +42,7 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
             viaDevice = unigatewayId,
             firmwareVersion = gatewayFirmwareVersion,
             model = "UniGateway ${device.type.name}",
+            suggestedArea = suggestedArea,
           )
         val entityName = device.config[DEVICE_CONFIG_HA_ENTITY_NAME] ?: ""
         val basicProperties = HomeAssistantComponentBasicProperties(haDevice, unigatewayId, device.id, entityName)
@@ -336,5 +338,6 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
     const val DEVICE_CONFIG_HA_COMPONENT: String = "haComponent"
     const val DEVICE_CONFIG_HA_DEVICE_CLASS: String = "haDeviceClass"
     const val DEVICE_CONFIG_HA_ENTITY_NAME: String = "haEntityName"
+    const val DEVICE_CONFIG_HA_AREA: String = "haArea"
   }
 }

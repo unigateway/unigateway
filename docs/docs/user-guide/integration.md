@@ -14,6 +14,32 @@ After UniGateway start, you should be able to see all the UniGateway configured 
 
 If you want to disable broadcasting the Home Assistant configuration to MQTT, set environment variable `HOMEASSISTANT_ENABLED` to `false` (see [system configuration](configuration.md#system-configuration) for details). 
 
+#### Home Assistant device configuration
+
+The following per-device `config` options can be used to fine-tune how devices appear in Home Assistant:
+
+| Config key      | Description                                                                                                                                                | Example               |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
+| `haComponent`   | Override the Home Assistant entity type (e.g. `light`, `switch`, `sensor`, `trigger`)                                                                      | `light`               |
+| `haDeviceClass` | Override the device class (e.g., [for sensor](https://www.home-assistant.io/integrations/sensor/#device-class))                                            | `door`, `temperature` |
+| `haEntityName`  | Custom entity name visible in Home Assistant                                                                                                               | `My light`            |
+| `haArea`        | Assign the device to a Home Assistant [area](https://www.home-assistant.io/docs/organizing/areas/) automatically (sets `suggested_area` in MQTT discovery) | `Living Room`         |
+
+All of these are optional. Example usage:
+
+```yaml
+devices:
+  - id: "living_room_light"
+    name: "Living room light"
+    type: RELAY
+    connectors:
+      state:
+        gpio: 17
+    config:
+      haComponent: "light"
+      haArea: "Living Room"
+```
+
 
 ## OpenHab
 

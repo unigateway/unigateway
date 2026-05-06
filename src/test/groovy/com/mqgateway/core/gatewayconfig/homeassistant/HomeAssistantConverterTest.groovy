@@ -466,6 +466,52 @@ class HomeAssistantConverterTest extends Specification {
     lightComponent.properties.name == "Special Entity Name"
   }
 
+  def "should set suggested_area when haArea is configured"() {
+    given:
+    def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [state: new SimulatedConnector(1)],
+      [:], ["haArea": "Living Room"])
+    GatewayConfiguration gateway = gateway([relayDeviceConfig])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 1
+    components[0].properties.device.suggestedArea == "Living Room"
+  }
+
+  def "should not set suggested_area when haArea is not configured"() {
+    given:
+    def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [state: new SimulatedConnector(1)])
+    GatewayConfiguration gateway = gateway([relayDeviceConfig])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 1
+    components[0].properties.device.suggestedArea == null
+  }
+
+  def "should set suggested_area on trigger components when haArea is configured"() {
+    given:
+    def switchButtonDeviceConfig = new DeviceConfiguration("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON,
+      [state: new SimulatedConnector(1)], [:], [haComponent: "device_automation", "haArea": "Hallway"])
+    GatewayConfiguration gateway = gateway([switchButtonDeviceConfig])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 4
+    components.each {
+      assert it.properties.device.suggestedArea == "Hallway"
+    }
+  }
+
   private void assertHomeAssistantDevice(HomeAssistantComponent haComponent, GatewayConfiguration gateway, DeviceConfiguration deviceConfig) {
     assert haComponent.properties.device.firmwareVersion == firmwareVersion
     assert haComponent.properties.device.identifiers == [gateway.id + "_" + deviceConfig.id]
