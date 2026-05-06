@@ -23,7 +23,7 @@ The following per-device `config` options can be used to fine-tune how devices a
 | `haComponent`   | Override the Home Assistant entity type (e.g. `light`, `switch`, `sensor`, `trigger`)                                                                      | `light`               |
 | `haDeviceClass` | Override the device class (e.g., [for sensor](https://www.home-assistant.io/integrations/sensor/#device-class))                                            | `door`, `temperature` |
 | `haEntityName`  | Custom entity name visible in Home Assistant                                                                                                               | `My light`            |
-| `haArea`        | Assign the device to a Home Assistant [area](https://www.home-assistant.io/docs/organizing/areas/) automatically (sets `suggested_area` in MQTT discovery) | `Living Room`         |
+| `area`          | Assign the device to a Home Assistant [area](https://www.home-assistant.io/docs/organizing/areas/) automatically (sets `suggested_area` in MQTT discovery) | `Living Room`         |
 
 All of these are optional. Example usage:
 
@@ -37,7 +37,7 @@ devices:
         gpio: 17
     config:
       haComponent: "light"
-      haArea: "Living Room"
+      area: "Living Room"
 ```
 
 

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Search, Layers } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Search, Layers, MapPin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,6 +18,20 @@ export default function Devices() {
   const filteredDevices = devices.filter((device) =>
     device.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  const groupedDevices = useMemo(() => {
+    const groups = new Map<string, Device[]>()
+    for (const device of filteredDevices) {
+      const area = (device.properties.get('area') as string) || 'Other'
+      if (!groups.has(area)) groups.set(area, [])
+      groups.get(area)!.push(device)
+    }
+    return Array.from(groups.entries()).sort((a, b) => {
+      if (a[0] === 'Other') return 1
+      if (b[0] === 'Other') return -1
+      return a[0].localeCompare(b[0])
+    })
+  }, [filteredDevices])
 
   const handleDeviceStateChange = async (deviceId: string, propertyId: string, newValue: any) => {
     try {
@@ -177,35 +191,50 @@ export default function Devices() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredDevices.map((device) => (
-              <Card key={device.id} className="flex flex-col">
-                <CardHeader>
-                  <CardTitle className="text-base truncate">{device.name}</CardTitle>
-                  <CardDescription className="text-xs">{device.type}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  {view === 'config' ? (
-                    <div className="space-y-2 text-sm">
-                      <div className="text-muted-foreground">
-                        <span className="font-medium">ID:</span> {device.id}
-                      </div>
-                      <div className="text-muted-foreground">
-                        <span className="font-medium">Type:</span> {device.type}
-                      </div>
-                      {device.properties.size > 0 && (
-                        <div className="text-muted-foreground">
-                          <span className="font-medium">Properties:</span> {device.properties.size}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[100px]">
-                      {renderDeviceAction(device)}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+          <div className="space-y-8">
+            {groupedDevices.map(([area, areaDevices]) => (
+              <section key={area}>
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    {area}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    ({areaDevices.length})
+                  </span>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {areaDevices.map((device) => (
+                    <Card key={device.id} className="flex flex-col">
+                      <CardHeader>
+                        <CardTitle className="text-base truncate">{device.name}</CardTitle>
+                        <CardDescription className="text-xs">{device.type}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-1">
+                        {view === 'config' ? (
+                          <div className="space-y-2 text-sm">
+                            <div className="text-muted-foreground">
+                              <span className="font-medium">ID:</span> {device.id}
+                            </div>
+                            <div className="text-muted-foreground">
+                              <span className="font-medium">Type:</span> {device.type}
+                            </div>
+                            {device.properties.size > 0 && (
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Properties:</span> {device.properties.size}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full min-h-[100px]">
+                            {renderDeviceAction(device)}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}

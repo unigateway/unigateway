@@ -8,21 +8,194 @@ devices:
     connectors:
       state:
         source: HARDWARE
-        pin: 12
+        pin: 1
     config:
-      stringValue: "1"
-      intValue: 300
+      haComponent: "light"
   - id: "workshop_light_switch"
     type: SWITCH_BUTTON
     name: "Workshop light switch"
     connectors:
       state:
         source: HARDWARE
-        pin: 13
+        pin: 2
+  - id: "workshop_motion"
+    type: MOTION_DETECTOR
+    name: "Workshop motion detector"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 3
+
+  - id: "bedroom_light_relay"
+    type: RELAY
+    name: "Bedroom light relay"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 4
+    config:
+      haComponent: "light"
+      area: "bedroom"
   - id: "bedroom_light_switch"
     type: SWITCH_BUTTON
     name: "Bedroom light switch"
     connectors:
       state:
         source: HARDWARE
+        pin: 5
+    config:
+      area: "bedroom"
+  - id: "bedroom_temperature"
+    type: TEMPERATURE
+    name: "Bedroom temperature"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 6
+    config:
+      area: "bedroom"
+  - id: "bedroom_shutter_stop_relay"
+    type: RELAY
+    name: "Bedroom shutter stop relay"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 7
+  - id: "bedroom_shutter_updown_relay"
+    type: RELAY
+    name: "Bedroom shutter up-down relay"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 8
+  - id: "bedroom_shutter"
+    type: SHUTTER
+    name: "Bedroom shutter"
+    internalDevices:
+      stopRelay:
+        referenceId: "bedroom_shutter_stop_relay"
+      upDownRelay:
+        referenceId: "bedroom_shutter_updown_relay"
+    config:
+      fullOpenTimeMs: 25000
+      fullCloseTimeMs: 22000
+      area: "bedroom"
+
+  - id: "living_room_light_relay"
+    type: RELAY
+    name: "Living room light relay"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 9
+  - id: "living_room_light_switch1"
+    type: SWITCH_BUTTON
+    name: "Living room light switch 1"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 10
+  - id: "living_room_light_switch2"
+    type: SWITCH_BUTTON
+    name: "Living room light switch 2"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 11
+  - id: "living_room_light"
+    type: LIGHT
+    name: "Living room light"
+    internalDevices:
+      relay:
+        referenceId: "living_room_light_relay"
+      switch1:
+        referenceId: "living_room_light_switch1"
+      switch2:
+        referenceId: "living_room_light_switch2"
+    config:
+      area: "living room"
+  - id: "living_room_shutter_stop_relay"
+    type: RELAY
+    name: "Living room shutter stop relay"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 12
+  - id: "living_room_shutter_updown_relay"
+    type: RELAY
+    name: "Living room shutter up-down relay"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 13
+  - id: "living_room_shutter"
+    type: SHUTTER
+    name: "Living room shutter"
+    internalDevices:
+      stopRelay:
+        referenceId: "living_room_shutter_stop_relay"
+      upDownRelay:
+        referenceId: "living_room_shutter_updown_relay"
+    config:
+      fullOpenTimeMs: 28000
+      fullCloseTimeMs: 24000
+      area: "living room"
+
+  - id: "kitchen_light"
+    type: RELAY
+    name: "Kitchen light"
+    connectors:
+      state:
+        source: HARDWARE
         pin: 14
+    config:
+      haComponent: "light"
+      area: "kitchen"
+  - id: "kitchen_humidity"
+    type: HUMIDITY
+    name: "Kitchen humidity"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 15
+    config:
+      area: "kitchen"
+
+  - id: "garage_gate_button"
+    type: EMULATED_SWITCH
+    name: "Garage gate button"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 16
+  - id: "garage_gate_closed_reed"
+    type: REED_SWITCH
+    name: "Garage gate closed sensor"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 17
+    config:
+      haDeviceClass: "garage_door"
+      area: "garage"
+  - id: "garage_gate"
+    type: GATE
+    name: "Garage gate"
+    internalDevices:
+      actionButton:
+        referenceId: "garage_gate_button"
+      closedReedSwitch:
+        referenceId: "garage_gate_closed_reed"
+    config:
+      haDeviceClass: "garage"
+      area: "garage"
+  - id: "front_door_reed"
+    type: REED_SWITCH
+    name: "Front door sensor"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 18
+    config:
+      haDeviceClass: "door"
+      area: "garage"

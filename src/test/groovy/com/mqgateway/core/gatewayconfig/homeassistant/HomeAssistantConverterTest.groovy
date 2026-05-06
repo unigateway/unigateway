@@ -469,7 +469,7 @@ class HomeAssistantConverterTest extends Specification {
   def "should set suggested_area when haArea is configured"() {
     given:
     def relayDeviceConfig = new DeviceConfiguration("myRelay", "Test relay", DeviceType.RELAY, [state: new SimulatedConnector(1)],
-      [:], ["haArea": "Living Room"])
+      [:], ["area": "Living Room"])
     GatewayConfiguration gateway = gateway([relayDeviceConfig])
     def deviceRegistry = deviceRegistryFactory.create(gateway)
 
@@ -498,7 +498,7 @@ class HomeAssistantConverterTest extends Specification {
   def "should set suggested_area on trigger components when haArea is configured"() {
     given:
     def switchButtonDeviceConfig = new DeviceConfiguration("mySwitchButton", "Test button", DeviceType.SWITCH_BUTTON,
-      [state: new SimulatedConnector(1)], [:], [haComponent: "device_automation", "haArea": "Hallway"])
+      [state: new SimulatedConnector(1)], [:], [haComponent: "device_automation", "area": "Hallway"])
     GatewayConfiguration gateway = gateway([switchButtonDeviceConfig])
     def deviceRegistry = deviceRegistryFactory.create(gateway)
 
