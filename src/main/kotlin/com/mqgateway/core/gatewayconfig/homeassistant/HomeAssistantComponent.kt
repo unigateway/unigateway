@@ -9,6 +9,10 @@ abstract class HomeAssistantComponent(
   @JsonIgnore val componentType: HomeAssistantComponentType,
   @field:JsonUnwrapped val properties: HomeAssistantComponentBasicProperties,
 ) {
+  @get:JsonProperty("default_entity_id")
+  val defaultEntityId: String
+    get() = "${componentType.value}.${properties.objectId}"
+
   protected fun uniqueId() = properties.uniqueId()
 }
 
@@ -16,7 +20,7 @@ abstract class HomeAssistantComponent(
 data class HomeAssistantComponentBasicProperties(
   @field:JsonProperty("device") val device: HomeAssistantDevice? = null,
   @JsonIgnore val nodeId: String,
-  @field:JsonProperty("object_id") val objectId: String,
+  @JsonIgnore val objectId: String,
   @field:JsonProperty("name") val name: String? = null,
 ) {
   fun uniqueId() = "${nodeId}_$objectId"
@@ -36,6 +40,7 @@ data class HomeAssistantDevice(
 enum class HomeAssistantComponentType(val value: String) {
   LIGHT("light"),
   SWITCH("switch"),
+  SELECT("select"),
   BINARY_SENSOR("binary_sensor"),
   SENSOR("sensor"),
   COVER("cover"),
@@ -81,6 +86,17 @@ data class HomeAssistantSwitch(
       }
     }
   }
+}
+
+data class HomeAssistantSelect(
+  @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("command_topic") val commandTopic: String,
+  @field:JsonProperty("options") val options: List<String>,
+  @field:JsonProperty("retain") val retain: Boolean,
+) : HomeAssistantComponent(HomeAssistantComponentType.SELECT, basicProperties) {
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = uniqueId()
 }
 
 data class HomeAssistantBinarySensor(

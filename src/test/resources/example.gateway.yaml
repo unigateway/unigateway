@@ -199,3 +199,10 @@ devices:
     config:
       haDeviceClass: "door"
       area: "garage"
+  - id: "alarm_buzzer"
+    type: BUZZER
+    name: "Alarm buzzer"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 19
