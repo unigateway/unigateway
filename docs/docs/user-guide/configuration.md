@@ -17,6 +17,11 @@ Configures what and how smart devices are connected to UniGateway.
     There is a [JSON schema file](https://raw.githubusercontent.com/unigateway/unigateway/master/src/main/resources/config.schema.json) for this configuration. 
     Use it with your favourite YAML editor (e.g. IntelliJ or VSCode) for autocompletion and instant validation.
 
+!!! tip
+    You can also configure `gateway.yaml` with AI assistance by using the `unigateway-device-configurator` skill.
+    It supports both full setup from scratch and incremental updates (for example adding another device).
+    Skill definition: [docs/skills/unigateway-device-configurator/SKILL.md](https://github.com/unigateway/unigateway/blob/master/docs/skills/unigateway-device-configurator/SKILL.md).
+
 
 ### Structure
 

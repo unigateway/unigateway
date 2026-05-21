@@ -6,6 +6,11 @@ This is a list of devices currently supported by UniGateway. That means you can 
     Please do not connect anything to electricity yourself if you don't have enough knowledge, 
     and you are not completely sure what you are doing.   
 
+!!! tip
+    You can use AI assistance with the `unigateway-device-configurator` skill to create a new UniGateway configuration
+    or add devices incrementally based on this page.
+    Skill definition: [docs/skills/unigateway-device-configurator/SKILL.md](https://github.com/unigateway/unigateway/blob/master/docs/skills/unigateway-device-configurator/SKILL.md).
+
 ### Simple devices
 
 #### Relay module
