@@ -33,7 +33,7 @@ devices: # List of devices configurations
     connectors: # List of connectors which structure is specific for the underlying hardware (example for MqGateway)
       state: 
         portNumber: 1
-        wires: BLUE_WHITE
+        wireColor: BLUE_WHITE
     config: # contains properties for the device used to adjust device behaviour or integrations 
       delayMs: 100
       haComponent: SWITCH
@@ -172,7 +172,7 @@ See the example below which configures garage door (GATE device) with reed switc
         connectors:
           state:
             portNumber: 1
-            wires: BLUE_WHITE
+            wireColor: BLUE_WHITE
       - name: "Right garage door reed switch"
         id: "right_garage_door_closed_reed"
         type: REED_SWITCH

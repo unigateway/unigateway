@@ -88,7 +88,7 @@ devices:
     connectors:
       state: # connector configuration example for MqGateway
         portNumber: 1
-        wires: BLUE_WHITE
+        wireColor: BLUE_WHITE
 ```
 </details>
 
@@ -213,7 +213,7 @@ devices:
     connectors:
       state: # connector configuration example for MqGateway
         portNumber: 1
-        wires: BLUE_WHITE
+        wireColor: BLUE_WHITE
     config:
       triggerLevel: "LOW" # optional - it will be HIGH by default
 ```
@@ -450,7 +450,7 @@ devices:
     connectors:
       state: # connector configuration example for MqGateway
         portNumber: 1
-        wires: BLUE_WHITE
+        wireColor: BLUE_WHITE
   - id: "garage_door_closed_reed"
     name: "Garage door closed"
     type: REED_SWITCH
