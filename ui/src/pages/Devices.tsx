@@ -7,6 +7,64 @@ import { Switch } from '@/components/ui/switch'
 import { useGatewayStore, type Device } from '@/store/useGatewayStore'
 import { gatewayWebSocket } from '@/lib/websocket'
 
+function BuzzerDeviceAction({
+  device,
+  onStateChange,
+}: {
+  device: Device
+  onStateChange: (deviceId: string, propertyId: string, value: string) => void
+}) {
+  const [timerInput, setTimerInput] = useState('')
+  const state = device.properties.get('state')
+  const mode = device.properties.get('mode')
+
+  const handleSetTimer = () => {
+    const seconds = parseInt(timerInput, 10)
+    if (!isNaN(seconds) && seconds >= 0 && seconds <= 3600) {
+      onStateChange(device.id, 'timer', String(seconds))
+      setTimerInput('')
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <div className="flex items-center justify-center gap-4">
+        <span className={`text-sm font-medium ${state === 'OFF' ? 'text-foreground' : 'text-muted-foreground'}`}>OFF</span>
+        <Switch
+          checked={state === 'ON'}
+          onCheckedChange={(checked) => onStateChange(device.id, 'state', checked ? 'ON' : 'OFF')}
+          className="scale-125"
+        />
+        <span className={`text-sm font-medium ${state === 'ON' ? 'text-foreground' : 'text-muted-foreground'}`}>ON</span>
+      </div>
+      <div className="flex gap-2 justify-center">
+        <Button size="sm" variant={mode === 'CONTINUOUS' ? 'default' : 'outline'}
+          onClick={() => onStateChange(device.id, 'mode', 'CONTINUOUS')}>
+          Continuous
+        </Button>
+        <Button size="sm" variant={mode === 'INTERVAL' ? 'default' : 'outline'}
+          onClick={() => onStateChange(device.id, 'mode', 'INTERVAL')}>
+          Interval
+        </Button>
+      </div>
+      <div className="flex gap-2 items-center">
+        <Input
+          type="number"
+          min={0}
+          max={3600}
+          placeholder="Timer (s)"
+          value={timerInput}
+          onChange={(e) => setTimerInput(e.target.value)}
+          className="h-8 text-xs"
+        />
+        <Button size="sm" variant="outline" onClick={handleSetTimer}>
+          Set
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export default function Devices() {
   const [searchQuery, setSearchQuery] = useState('')
   const [view, setView] = useState<'action' | 'config'>('action')
@@ -120,6 +178,11 @@ export default function Devices() {
               {state || 'Unknown'}
             </div>
           </div>
+        )
+
+      case 'BUZZER':
+        return (
+          <BuzzerDeviceAction device={device} onStateChange={handleDeviceStateChange} />
         )
 
       default:

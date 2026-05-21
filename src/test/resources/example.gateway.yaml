@@ -26,3 +26,10 @@ devices:
       state:
         source: HARDWARE
         pin: 14
+  - id: "alarm_buzzer"
+    type: BUZZER
+    name: "Alarm buzzer"
+    connectors:
+      state:
+        source: HARDWARE
+        pin: 15
