@@ -4,6 +4,7 @@ import com.mqgateway.core.device.Device
 import com.mqgateway.core.device.DevicePropertyType
 import com.mqgateway.core.device.DeviceRegistry
 import com.mqgateway.core.device.DeviceType
+import com.mqgateway.core.device.buzzer.BuzzerDevice
 import com.mqgateway.core.device.emulatedswitch.EmulatedSwitchButtonDevice
 import com.mqgateway.core.device.gate.GateDevice
 import com.mqgateway.core.device.motiondetector.MotionSensorDevice
@@ -78,6 +79,30 @@ class HomeAssistantConverter(private val gatewayFirmwareVersion: String) {
               ),
             )
           }
+        }
+        DeviceType.BUZZER -> {
+          val stateTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE)
+          val stateCommandTopic = homieCommandTopic(unigatewayId, device.id, DevicePropertyType.STATE)
+          val modeTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.MODE)
+          val modeCommandTopic = homieCommandTopic(unigatewayId, device.id, DevicePropertyType.MODE)
+          listOf(
+            HomeAssistantSwitch(
+              basicProperties,
+              stateTopic,
+              stateCommandTopic,
+              true,
+              BuzzerDevice.STATE_ON,
+              BuzzerDevice.STATE_OFF,
+              HomeAssistantSwitch.DeviceClass.SWITCH,
+            ),
+            HomeAssistantSelect(
+              HomeAssistantComponentBasicProperties(haDevice, unigatewayId, "${device.id}_MODE", "${device.name} mode"),
+              modeTopic,
+              modeCommandTopic,
+              listOf(BuzzerDevice.MODE_CONTINUOUS, BuzzerDevice.MODE_INTERVAL),
+              true,
+            ),
+          )
         }
         DeviceType.SWITCH_BUTTON -> {
           val homieStateTopic = homieStateTopic(unigatewayId, device.id, DevicePropertyType.STATE)

@@ -38,6 +38,7 @@ data class HomeAssistantDevice(
 enum class HomeAssistantComponentType(val value: String) {
   LIGHT("light"),
   SWITCH("switch"),
+  SELECT("select"),
   BINARY_SENSOR("binary_sensor"),
   SENSOR("sensor"),
   COVER("cover"),
@@ -83,6 +84,17 @@ data class HomeAssistantSwitch(
       }
     }
   }
+}
+
+data class HomeAssistantSelect(
+  @JsonIgnore val basicProperties: HomeAssistantComponentBasicProperties,
+  @field:JsonProperty("state_topic") val stateTopic: String,
+  @field:JsonProperty("command_topic") val commandTopic: String,
+  @field:JsonProperty("options") val options: List<String>,
+  @field:JsonProperty("retain") val retain: Boolean,
+) : HomeAssistantComponent(HomeAssistantComponentType.SELECT, basicProperties) {
+  @field:JsonProperty("unique_id")
+  val uniqueId: String = uniqueId()
 }
 
 data class HomeAssistantBinarySensor(

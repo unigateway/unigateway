@@ -2,6 +2,7 @@ package com.mqgateway.core.gatewayconfig.homeassistant
 
 import static com.mqgateway.core.device.DevicePropertyType.IP_ADDRESS
 import static com.mqgateway.core.device.DevicePropertyType.MEMORY
+import static com.mqgateway.core.device.DevicePropertyType.MODE
 import static com.mqgateway.core.device.DevicePropertyType.POSITION
 import static com.mqgateway.core.device.DevicePropertyType.STATE
 import static com.mqgateway.core.device.DevicePropertyType.TEMPERATURE
@@ -84,6 +85,33 @@ class HomeAssistantConverterTest extends Specification {
     switchComponent.payloadOff == "OFF"
     switchComponent.uniqueId == gateway.id + "_" + relayDeviceConfig.id
     assertHomeAssistantDevice(switchComponent, gateway, relayDeviceConfig)
+  }
+
+  def "should convert MqGateway buzzer to HA switch and select"() {
+    given:
+    def buzzerDeviceConfig = new DeviceConfiguration("myBuzzer", "Test buzzer", DeviceType.BUZZER, [state: new SimulatedConnector(1)])
+    GatewayConfiguration gateway = gateway([buzzerDeviceConfig])
+    def deviceRegistry = deviceRegistryFactory.create(gateway)
+
+    when:
+    def components = converter.convert(deviceRegistry).findAll { isNotFromMqGatewayCore(it, gateway) }
+
+    then:
+    components.size() == 2
+
+    HomeAssistantSwitch switchComponent = components.find { it.componentType == HomeAssistantComponentType.SWITCH } as HomeAssistantSwitch
+    switchComponent.properties.objectId == "myBuzzer"
+    switchComponent.stateTopic == expectedStateTopic(gateway.id, buzzerDeviceConfig.id, STATE.toString())
+    switchComponent.commandTopic == expectedCommandTopic(gateway.id, buzzerDeviceConfig.id, STATE.toString())
+    switchComponent.payloadOn == "ON"
+    switchComponent.payloadOff == "OFF"
+
+    HomeAssistantSelect selectComponent = components.find { it.componentType == HomeAssistantComponentType.SELECT } as HomeAssistantSelect
+    selectComponent.properties.objectId == "myBuzzer_MODE"
+    selectComponent.stateTopic == expectedStateTopic(gateway.id, buzzerDeviceConfig.id, MODE.toString())
+    selectComponent.commandTopic == expectedCommandTopic(gateway.id, buzzerDeviceConfig.id, MODE.toString())
+    selectComponent.options == ["CONTINUOUS", "INTERVAL"]
+    assertHomeAssistantDevice(selectComponent, gateway, buzzerDeviceConfig)
   }
 
   def "should convert MqGateway RELAY to HA binary switch with chosen HA device class"(HomeAssistantSwitch.DeviceClass haDeviceClass) {
