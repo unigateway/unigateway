@@ -14,7 +14,7 @@ class HomeAssistantPublisherTest extends Specification {
 
 	MqttClientStub mqttClientStub = new MqttClientStub()
 
-	HomeAssistantDevice haDevice = new HomeAssistantDevice([], "manufacturerTestName", "modelTestName", "deviceTestName", "fwTestVersion", "viaDeviceTestValue")
+  HomeAssistantDevice haDevice = new HomeAssistantDevice([], "manufacturerTestName", "modelTestName", "deviceTestName", "fwTestVersion", "viaDeviceTestValue", null)
 
 	void setup() {
 		mqttClientStub.connect(new MqttMessage("", "", 1, true), true)

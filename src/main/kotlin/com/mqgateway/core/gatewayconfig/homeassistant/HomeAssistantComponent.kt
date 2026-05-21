@@ -26,6 +26,7 @@ data class HomeAssistantComponentBasicProperties(
   fun uniqueId() = "${nodeId}_$objectId"
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class HomeAssistantDevice(
   @field:JsonProperty("identifiers") val identifiers: List<String>,
   @field:JsonProperty("manufacturer") val manufacturer: String? = null,
@@ -33,6 +34,7 @@ data class HomeAssistantDevice(
   @field:JsonProperty("name") val name: String? = null,
   @field:JsonProperty("sw_version") val firmwareVersion: String? = null,
   @field:JsonProperty("via_device") val viaDevice: String? = null,
+  @field:JsonProperty("suggested_area") val suggestedArea: String? = null,
 )
 
 enum class HomeAssistantComponentType(val value: String) {
