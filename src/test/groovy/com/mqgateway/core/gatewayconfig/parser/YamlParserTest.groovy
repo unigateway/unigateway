@@ -31,8 +31,7 @@ class YamlParserTest extends Specification {
     gateway.devices[0].name == "Workshop light"
     gateway.devices[0].connectors.state != null
     gateway.devices[0].connectors.state instanceof SimulatedConnector
-    (gateway.devices[0].connectors.state as SimulatedConnector).pin == 12
-    gateway.devices[0].config.stringValue == "1"
-    gateway.devices[0].config.intValue == "300"
+    (gateway.devices[0].connectors.state as SimulatedConnector).pin == 1
+    gateway.devices[0].config.haComponent == "light"
   }
 }

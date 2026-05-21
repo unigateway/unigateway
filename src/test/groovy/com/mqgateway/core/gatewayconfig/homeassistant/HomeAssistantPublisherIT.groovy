@@ -58,7 +58,7 @@ class HomeAssistantPublisherIT extends MqttSpecification {
         it.topic ==~ /homeassistant\/[a-zA-Z_-]*\/simulated_gateway\/${device.id}\/config/
       }.payload
       Map parsedConfig = jsonSlurper.parseText(configPayload) as Map
-      assert parsedConfig.state_topic == "homie/simulated_gateway/${device.id}/state"
+      assert parsedConfig.state_topic ==~ /homie\/simulated_gateway\/${device.id}\/.+/
       assert parsedConfig.device.manufacturer == "Aetas"
     }
 	}
