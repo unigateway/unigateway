@@ -9,15 +9,17 @@ import com.mqgateway.utils.MqttSpecification
 import groovy.yaml.YamlSlurper
 import io.micronaut.context.ApplicationContext
 import io.micronaut.runtime.server.EmbeddedServer
+import java.util.concurrent.CopyOnWriteArraySet
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Timeout
 import spock.util.concurrent.BlockingVariable
+import spock.util.concurrent.PollingConditions
 
 @Timeout(30)
 class HomieDeviceIT extends MqttSpecification {
 
-  static Set<MqttMessage> receivedMessages = []
+  static Set<MqttMessage> receivedMessages = new CopyOnWriteArraySet<>()
   YamlSlurper slurper = new YamlSlurper()
 
   static BlockingVariable<Boolean> mqGatewayIsReady = new BlockingVariable<>()
@@ -65,11 +67,15 @@ class HomieDeviceIT extends MqttSpecification {
 
     then:
     mqGatewayIsReady.get()
-    !receivedMessages.isEmpty()
-    gatewayConfiguration.devices.forEach { Map device ->
-      assert receivedMessages.find { it.topic == "homie/simulated_gateway/${device.id}/\$name" }.payload == device.name
+
+    and:
+    new PollingConditions(timeout: 10).eventually {
+      assert !receivedMessages.isEmpty()
+      gatewayConfiguration.devices.forEach { Map device ->
+        assert receivedMessages.find { it.topic == "homie/simulated_gateway/${device.id}/\$name" }?.payload == device.name
+      }
+      assert receivedMessages.contains(new MqttMessage("homie/simulated_gateway/nonExistingDevice1", "", 0, false)) // deleting retained message
     }
-    receivedMessages.contains(new MqttMessage("homie/simulated_gateway/nonExistingDevice1", "", 0, false)) // deleting retained message
   }
 
   def "should initialize devices properties after UniGateway is connected to MQTT"() {
