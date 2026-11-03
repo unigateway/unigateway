@@ -86,7 +86,7 @@ IMG_MOUNT_PATH="/mnt/armbian"
 PARTITION_SIZE=5000M
 
 if [ "$SYSTEM" = "mqgateway" ]; then
-  JAVA_DOWNLOAD_URL="https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-arm32-vfp-hflt.tar.gz"
+  JAVA_DOWNLOAD_URL="https://download.bell-sw.com/java/21.0.13.0.3+5/bellsoft-jdk21.0.13.0.3+5-linux-arm32-vfp-hflt.tar.gz"
 elif [ "$SYSTEM" = "raspberrypi" ]; then
   JAVA_DOWNLOAD_URL="https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-aarch64.tar.gz"
 fi
@@ -102,7 +102,7 @@ MYSENSORS_BINARY_FILE_PATH="mysgw"
 MYSENSORS_SERVICE_FILE_PATH="$SCRIPT_DIR/mysgw.service"
 
 if [ "$SYSTEM" = "mqgateway" ]; then
-  OS_IMAGE_DOWNLOAD_URL="https://github.com/armbian/community/releases/download/25.8.0-trunk.245/Armbian_community_25.8.0-trunk.245_Nanopineo_noble_current_6.12.30.img.xz"
+  OS_IMAGE_DOWNLOAD_URL="https://github.com/armbian/community/releases/download/26.11.0-trunk.120/Armbian_community_26.11.0-trunk.120_Nanopineo_resolute_current_6.18.60_minimal.img.xz"
 elif [ "$SYSTEM" = "raspberrypi" ]; then
   OS_IMAGE_DOWNLOAD_URL="https://dl.armbian.com/rpi4b/Noble_current_server"
 fi

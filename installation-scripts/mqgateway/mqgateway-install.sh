@@ -23,7 +23,7 @@ then
     exit 1
 fi
 
-JAVA_DOWNLOAD_URL=https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-arm32-vfp-hflt.tar.gz
+JAVA_DOWNLOAD_URL=https://download.bell-sw.com/java/21.0.13.0.3+5/bellsoft-jdk21.0.13.0.3+5-linux-arm32-vfp-hflt.tar.gz
 JAVA_DESTINATION_PATH=/opt/java
 
 UNIGATEWAY_VERSION="latest-stable"
