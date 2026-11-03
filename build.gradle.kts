@@ -70,7 +70,7 @@ dependencies {
   testImplementation("org.apache.groovy:groovy-yaml")
   testImplementation("org.objenesis:objenesis:3.4")
   testImplementation("net.bytebuddy:byte-buddy:1.17.5")
-  testImplementation(platform("org.testcontainers:testcontainers-bom:1.21.1"))
+  testImplementation(platform("org.testcontainers:testcontainers-bom:1.21.4"))
   testImplementation("org.testcontainers:spock")
   testImplementation("io.micronaut:micronaut-http-client")
 }
